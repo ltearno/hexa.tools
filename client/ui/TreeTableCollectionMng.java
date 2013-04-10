@@ -15,8 +15,7 @@ import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.ui.TreeTableEditorManager.TreeTableEditorManagerCallback;
 import com.hexa.client.ui.TreeTableElemMng.TreeTableElemMngCallback;
 
-public abstract class TreeTableCollectionMng<T> implements AsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback,
-		ClickHandler
+public abstract class TreeTableCollectionMng<T> implements AsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler
 {
 	public abstract void reload();
 
@@ -61,11 +60,13 @@ public abstract class TreeTableCollectionMng<T> implements AsyncCallback<List<T>
 		initColumns( columns );
 		if( deleteButtonTitle != null )
 		{
-			columns.addColumn( new IColumnMng<T>() {
+			columns.addColumn( new IColumnMng<T>()
+			{
 				public void fillCell( int ordinal, TreeTable table, Object item, final T record )
 				{
 					ImageButton im = new ImageButton( HexaFramework.images.delete(), deleteButtonTitle );
-					im.addClickHandler( new ClickHandler() {
+					im.addClickHandler( new ClickHandler()
+					{
 						public void onClick( ClickEvent event )
 						{
 							onWantDelete( record );
@@ -129,7 +130,8 @@ public abstract class TreeTableCollectionMng<T> implements AsyncCallback<List<T>
 		tableMng.commitVersion( table );
 	}
 
-	private XTableListen<T> dataPlug = new XTableListen<T>() {
+	private XTableListen<T> dataPlug = new XTableListen<T>()
+	{
 		public void deleted( int recordId, T oldRecord, Object cookie )
 		{
 			remElem( recordId );

@@ -140,7 +140,8 @@ public class CriteriaInternal extends Composite
 
 		addStyleName( "CriteriaPanel" );
 
-		andAnchor.addClickHandler( new ClickHandler() {
+		andAnchor.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				op = "and";
@@ -148,7 +149,8 @@ public class CriteriaInternal extends Composite
 				event.preventDefault();
 			}
 		} );
-		orAnchor.addClickHandler( new ClickHandler() {
+		orAnchor.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				op = "or";
@@ -156,7 +158,8 @@ public class CriteriaInternal extends Composite
 				event.preventDefault();
 			}
 		} );
-		compareAnchor.addClickHandler( new ClickHandler() {
+		compareAnchor.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				op = "eq";
@@ -224,7 +227,8 @@ public class CriteriaInternal extends Composite
 
 				Anchor delAnchor = new Anchor( "remove" );
 				delAnchor.setHref( "#" );
-				delAnchor.addClickHandler( new ClickHandler() {
+				delAnchor.addClickHandler( new ClickHandler()
+				{
 					public void onClick( ClickEvent event )
 					{
 						ops.remove( criteria );
@@ -247,7 +251,8 @@ public class CriteriaInternal extends Composite
 			}
 
 			Button addButton = new Button( "..." );
-			addButton.addClickHandler( new ClickHandler() {
+			addButton.addClickHandler( new ClickHandler()
+			{
 				public void onClick( ClickEvent event )
 				{
 					ops.add( new CriteriaInternal( criteriaMngs ) );
@@ -271,7 +276,8 @@ public class CriteriaInternal extends Composite
 			}
 			if( curSel >= 0 )
 				lbField.setSelected( curSel );
-			lbField.setCallback( new ListBoxEx.Callback() {
+			lbField.setCallback( new ListBoxEx.Callback()
+			{
 				public void onListBoxExChange( ListBoxEx listBoxEx, Object cookie )
 				{
 					int sel = listBoxEx.getSelected();
@@ -294,7 +300,8 @@ public class CriteriaInternal extends Composite
 			catch( Exception e )
 			{
 			}
-			lbOp.setCallback( new ListBoxEx.Callback() {
+			lbOp.setCallback( new ListBoxEx.Callback()
+			{
 				public void onListBoxExChange( ListBoxEx listBoxEx, Object cookie )
 				{
 					op = CriteriaOp.values()[listBoxEx.getSelected()].name();
@@ -305,7 +312,8 @@ public class CriteriaInternal extends Composite
 
 			if( field != null )
 			{
-				Widget valueWidget = field.getValueWidget( value, new ICriteriaFieldMng.Callback() {
+				Widget valueWidget = field.getValueWidget( value, new ICriteriaFieldMng.Callback()
+				{
 					public void onValueChange( String newValue )
 					{
 						value = newValue;

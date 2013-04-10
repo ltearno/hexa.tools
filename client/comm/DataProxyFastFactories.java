@@ -72,7 +72,8 @@ public class DataProxyFastFactories
 
 			public Iterator<T> iterator()
 			{
-				return new Iterator<T>() {
+				return new Iterator<T>()
+				{
 					int idx = 0;
 
 					public boolean hasNext()

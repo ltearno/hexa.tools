@@ -75,7 +75,8 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 		for( ICriteriaMng mng : criteriaMngs )
 			lb.addItem( mng.getDisplayName(), mng );
 
-		lb.addChangeHandler( new ChangeHandler() {
+		lb.addChangeHandler( new ChangeHandler()
+		{
 			public void onChange( ChangeEvent event )
 			{
 				onSelChange();

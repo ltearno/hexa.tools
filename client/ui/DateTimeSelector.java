@@ -61,13 +61,15 @@ public class DateTimeSelector extends Composite
 	{
 		if( !fCallbackSet )
 		{
-			date.addValueChangeHandler( new IValueChangeHandler<HexaDate>() {
+			date.addValueChangeHandler( new IValueChangeHandler<HexaDate>()
+			{
 				public void onValueChange( HexaDate value )
 				{
 					changed();
 				}
 			} );
-			time.addValueChangeHandler( new IValueChangeHandler<HexaTime>() {
+			time.addValueChangeHandler( new IValueChangeHandler<HexaTime>()
+			{
 				public void onValueChange( HexaTime value )
 				{
 					changed();

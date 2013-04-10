@@ -35,7 +35,7 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 		void answerReceived( NetworkPendingRequestInfo request );
 
 		List<BeforeNetworkRequestHandler> getBeforeNetworkRequestHandlers();
-		
+
 		List<AfterNetworkRequestHandler> getAfterNetworkRequestHandlers();
 	}
 
@@ -141,14 +141,15 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 		// get custom first calls
 		final List<RequestCallInfo> prependedCalls = new ArrayList<RequestCallInfo>();
 		final List<RequestCallInfo> appendedCalls = new ArrayList<RequestCallInfo>();
-		
+
 		// get the preprended calls
-		
-		AcceptsRPCRequests prependerImpl = new AcceptsRPCRequests() {
+
+		AcceptsRPCRequests prependerImpl = new AcceptsRPCRequests()
+		{
 			public void sendRequest( boolean fUseCache, boolean fInvalidate, RequestDesc request, Object cookie, ServerCommCb callback )
 			{
 				// ignore useCache and fInvalidate
-				
+
 				RequestCallInfo callInfo = new RequestCallInfo( request );
 				callInfo.register( callback, cookie );
 
@@ -157,8 +158,7 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 				prependedCalls.add( callInfo );
 			}
 		};
-		
-		
+
 		List<BeforeNetworkRequestHandler> prependers = callback.getBeforeNetworkRequestHandlers();
 		if( prependers != null )
 		{
@@ -168,14 +168,15 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 				prepender.onBeforeNetworkRequest( prependerImpl );
 			}
 		}
-		
+
 		// get the appended calls
-		
-		AcceptsRPCRequests appenderImpl = new AcceptsRPCRequests() {
+
+		AcceptsRPCRequests appenderImpl = new AcceptsRPCRequests()
+		{
 			public void sendRequest( boolean fUseCache, boolean fInvalidate, RequestDesc request, Object cookie, ServerCommCb callback )
 			{
 				// ignore useCache and fInvalidate
-				
+
 				RequestCallInfo callInfo = new RequestCallInfo( request );
 				callInfo.register( callback, cookie );
 
@@ -184,8 +185,7 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 				appendedCalls.add( callInfo );
 			}
 		};
-		
-		
+
 		List<AfterNetworkRequestHandler> appenders = callback.getAfterNetworkRequestHandlers();
 		if( appenders != null )
 		{
@@ -215,7 +215,7 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 		// normal calls
 		for( RequestCallInfo info : sentRq )
 			calls.set( calls.size(), serializeCall( info ) );
-		
+
 		// appended calls
 		for( RequestCallInfo info : appendedCalls )
 			calls.set( calls.size(), serializeCall( info ) );
@@ -372,10 +372,10 @@ public class NetworkPendingRequestInfo implements RequestCallback, Scheduler.Rep
 		int prependedCallsSize = lastPrependedCallsSent != null ? lastPrependedCallsSent.size() : 0;
 		int appenedCallSize = lastAppendedCallsSent != null ? lastAppendedCallsSent.size() : 0;
 		int normalCallSize = jso.length() - prependedCallsSize - appenedCallSize;
-		
+
 		if( reqId < prependedCallsSize )
 			request = lastPrependedCallsSent.get( reqId );
-		else if( reqId < ( prependedCallsSize + normalCallSize ) )
+		else if( reqId < (prependedCallsSize + normalCallSize) )
 			request = sentRq.get( reqId - prependedCallsSize );
 		else
 			request = lastAppendedCallsSent.get( reqId - prependedCallsSize - normalCallSize );

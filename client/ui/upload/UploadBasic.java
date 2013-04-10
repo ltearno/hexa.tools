@@ -26,7 +26,8 @@ public class UploadBasic extends Composite implements IUploader
 		this.callback = callback;
 
 		ImageButton img = new ImageButton( buttonImg, "Upload a new image" );
-		img.addClickHandler( new ClickHandler() {
+		img.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				showUploadForm();
@@ -50,7 +51,8 @@ public class UploadBasic extends Composite implements IUploader
 
 		Button finished = new Button( "Finished" );
 		panel.add( finished );
-		finished.addClickHandler( new ClickHandler() {
+		finished.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				db.hide();

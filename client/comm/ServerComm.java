@@ -74,7 +74,7 @@ public class ServerComm
 	{
 		beforeNetworkRequestHandlers.remove( (BeforeNetworkRequestHandler) registration );
 	}
-	
+
 	public Object addAfterNetworkRequestHandler( AfterNetworkRequestHandler handler )
 	{
 		if( afterNetworkRequestHandlers == null )
@@ -140,7 +140,8 @@ public class ServerComm
 		String description = tmp.get( 3 );
 		JavaScriptObject hangOutCurrentData = hangOut.getGenericJSOByIdx( 2 );
 
-		serverCommMessageCb.hangOut( title, description, name, type, hangOutCurrentData, new IAsyncCallback<JavaScriptObject>() {
+		serverCommMessageCb.hangOut( title, description, name, type, hangOutCurrentData, new IAsyncCallback<JavaScriptObject>()
+		{
 			public void onSuccess( JavaScriptObject result )
 			{
 				JSONArray params = new JSONArray();
@@ -154,7 +155,8 @@ public class ServerComm
 		} );
 	}
 
-	private ScheduledCommand sendCommand = new ScheduledCommand() {
+	private ScheduledCommand sendCommand = new ScheduledCommand()
+	{
 		public void execute()
 		{
 			sendTimerEvent();
@@ -191,7 +193,8 @@ public class ServerComm
 		networkRqInfo.send( baseUrl );
 	}
 
-	XNetworkPendingRequestInfo rqCallback = new XNetworkPendingRequestInfo() {
+	XNetworkPendingRequestInfo rqCallback = new XNetworkPendingRequestInfo()
+	{
 		public void sent( NetworkPendingRequestInfo request )
 		{
 			inNetworkRequests.add( request );
@@ -219,23 +222,23 @@ public class ServerComm
 
 			switch( errorCode )
 			{
-				case ERROR_REQUEST_SEND:
-					break;
-				case ERROR_REQUEST_RESPONSE_STATUS:
-					HexaTools.alert( "Error with server connexion", "The remote server seems so be down.... We are trying to reconnect..." );
-					request.resend();
-					break;
-				case ERROR_REQUEST_RESPONSE_EMPTY:
-					// Window.alert(
-					// "Empty server response for request, status code: " +
-					// request.getResponse().getStatusCode() );
-					break;
-				case ERROR_REQUEST_RESPONSE_PARSE:
-					serverCommMessageCb.signalResultParseError( request.getReceivedText(), request.getTrace() );
-					break;
-				case ERROR_REQUEST_GWT:
-					serverCommMessageCb.signalRequestError( request.getTrace(), exception );
-					break;
+			case ERROR_REQUEST_SEND:
+				break;
+			case ERROR_REQUEST_RESPONSE_STATUS:
+				HexaTools.alert( "Error with server connexion", "The remote server seems so be down.... We are trying to reconnect..." );
+				request.resend();
+				break;
+			case ERROR_REQUEST_RESPONSE_EMPTY:
+				// Window.alert(
+				// "Empty server response for request, status code: " +
+				// request.getResponse().getStatusCode() );
+				break;
+			case ERROR_REQUEST_RESPONSE_PARSE:
+				serverCommMessageCb.signalResultParseError( request.getReceivedText(), request.getTrace() );
+				break;
+			case ERROR_REQUEST_GWT:
+				serverCommMessageCb.signalRequestError( request.getTrace(), exception );
+				break;
 			}
 		}
 

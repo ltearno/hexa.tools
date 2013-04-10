@@ -38,14 +38,15 @@ public class ServiceGenerator extends Generator
 	String createdClassName;
 	String fullCreatedClassName;
 	String packageName;
-	
+
 	int currentNumber = 0;
 	HashSet<JType> dataProxyFastFactories;
 	ArrayList<OnResponseCallbackInfo> onResponseCallbacks;
 	HashMap<String, JClassType> proxiesToGenerate;
-	
+
 	Map<String, JType> marshallsToGenerate;
 
+	@Override
 	public String generate( TreeLogger logger, GeneratorContext context, String requestedClass ) throws UnableToCompleteException
 	{
 		this.logger = logger;
@@ -61,7 +62,7 @@ public class ServiceGenerator extends Generator
 			logger.log( TreeLogger.ERROR, "Type '" + requestedClass + "' has not been found by the Oracle", null );
 			throw new UnableToCompleteException();
 		}
-		
+
 		proxiesToGenerate = new HashMap<String, JClassType>();
 		marshallsToGenerate = new HashMap<String, JType>();
 		onResponseCallbacks = new ArrayList<OnResponseCallbackInfo>();
@@ -97,7 +98,7 @@ public class ServiceGenerator extends Generator
 		composerFactory.addImport( "com.hexa.client.comm.ServerComm" );
 		composerFactory.addImport( "com.hexa.client.comm.AcceptsRPCRequests" );
 		composerFactory.addImport( "com.hexa.client.comm.ResponseJSO" );
-		composerFactory.addImport( "com.hexa.client.comm.JSArrayIterator");
+		composerFactory.addImport( "com.hexa.client.comm.JSArrayIterator" );
 		composerFactory.addImport( "com.hexa.client.comm.JSOArrayInteger" );
 		composerFactory.addImport( "com.hexa.client.comm.ServerComm.ServerCommCb" );
 		composerFactory.addImport( "com.hexa.client.interfaces.ITablesManager" );
@@ -168,6 +169,17 @@ public class ServiceGenerator extends Generator
 			context.commitResource( logger, phpStream );
 		}
 
+		// Generate the PHP interop service interface file
+		String javaInterfaceName = requestedClassName + "ServerSide";
+		OutputStream javaStream = context.tryCreateResource( logger, javaInterfaceName + ".java" );
+		if( javaStream != null )
+		{
+			PrintWriter javaPw = new PrintWriter( javaStream );
+			generateJavaInterface( javaPw, javaInterfaceName, requestedType, interfaceChecksum );
+			javaPw.flush();
+			context.commitResource( logger, javaStream );
+		}
+
 		return fullCreatedClassName;
 	}
 
@@ -228,6 +240,54 @@ public class ServiceGenerator extends Generator
 		w.println( "}" );
 		w.println();
 		w.println( "?>" );
+	}
+
+	private void generateJavaInterface( PrintWriter w, String javaInterfaceName, JClassType requestedType, String interfaceChecksum )
+	{
+		w.println( "public interface " + javaInterfaceName );
+		w.println( "{" );
+		w.println();
+
+		w.println( "public static final String CHECKSUM = \"" + interfaceChecksum + "\";" );
+		w.println();
+
+		JMethod[] methods = requestedType.getMethods();
+
+		w.println( "public static final String[] METHODS = new String[] {" );
+		for( int i = 0; i < methods.length; i++ )
+			w.println( (i > 0 ? ", " : "") + "\"" + methods[i].getName() + "\"" );
+		w.println( "};" );
+
+		for( JMethod method : methods )
+		{
+			JParameter[] params = method.getParameters();
+
+			JClassType cbType = typeOracle.findType( params[params.length - 1].getType().getQualifiedSourceName() );
+			if( cbType == null )
+			{
+				w.println( "*** ERROR : Unable to find callback type : " + params[params.length - 1].getType().getQualifiedSourceName() );
+				return;
+			}
+
+			JType returnType = params[params.length - 1].getType();
+			JParameterizedType returnTypeParametrized = returnType.isParameterized();
+			JClassType[] returnTypeTypeParameters = returnTypeParametrized.getTypeArgs();
+			assert returnTypeTypeParameters.length == 1;
+
+			String returnTypeName = returnTypeTypeParameters[0].getParameterizedQualifiedSourceName();
+
+			w.print( "    public " + returnTypeName + " " + method.getName() + "( " );
+			for( int p = 0; p < params.length - 1; p++ )
+			{
+				w.print( params[p].getType().getParameterizedQualifiedSourceName() + " " + params[p].getName() );
+				if( p < params.length - 2 )
+					w.print( ", " );
+			}
+			w.println( " );" );
+			w.println();
+		}
+
+		w.println( "}" );
 	}
 
 	private String genMethodPrototype( JMethod method )
@@ -497,17 +557,17 @@ public class ServiceGenerator extends Generator
 	{
 		return dataProxyFastType.getSimpleSourceName() + "Jso";
 	}
-	
+
 	String getDataProxyFastImplName( JType dataProxyFastType )
 	{
 		return dataProxyFastType.getQualifiedSourceName() + "Jso";
 	}
-	
+
 	String getDataProxyFastImplPackageName( JType dataProxyFastType )
 	{
 		String full = dataProxyFastType.getQualifiedSourceName();
-		int toRemove = dataProxyFastType.getSimpleSourceName().length()+1;
-		
+		int toRemove = dataProxyFastType.getSimpleSourceName().length() + 1;
+
 		return full.substring( 0, full.length() - toRemove );
 	}
 
@@ -515,10 +575,10 @@ public class ServiceGenerator extends Generator
 	{
 		if( dataProxyFastFactories.contains( dataProxyFastType ) )
 			return getDataProxyFastImplName( dataProxyFastType );
-		
+
 		sw.println( "// REGISTERED DATA PROXY FAST TYPE " + dataProxyFastType.getParameterizedQualifiedSourceName() );
 		dataProxyFastFactories.add( dataProxyFastType );
-		
+
 		return getDataProxyFastImplName( dataProxyFastType );
 	}
 
@@ -528,12 +588,12 @@ public class ServiceGenerator extends Generator
 		for( JType type : dataProxyFastFactories )
 		{
 			String jsoPackage = getDataProxyFastImplPackageName( type );
-			String jsoSimpleClassName = getDataProxyFastImplSimpleName( type);
-			
+			String jsoSimpleClassName = getDataProxyFastImplSimpleName( type );
+
 			PrintWriter pw2 = context.tryCreate( logger, jsoPackage, jsoSimpleClassName );
 			if( pw2 == null )
 				continue;
-			
+
 			ClassSourceFileComposerFactory cf2 = new ClassSourceFileComposerFactory( jsoPackage, jsoSimpleClassName );
 			cf2.addImport( "com.hexa.client.comm.GenericJSO" );
 			cf2.addImport( "com.google.gwt.core.client.JavaScriptObject" );
@@ -546,7 +606,7 @@ public class ServiceGenerator extends Generator
 			sw2.commit( logger );
 		}
 	}
-	
+
 	void generateDataProxyFastJSOImpl( String className, JType type, SourceWriter sw, TreeLogger logger )
 	{
 		sw.println( "protected " + className + "() {}" );
@@ -573,14 +633,12 @@ public class ServiceGenerator extends Generator
 	/*
 	 * 
 	 * 
-	 * class DaatDataProxyFastFactory implements
-	 * DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends
-	 * GenericJSO implements Daat { protected DaatImpl() {}
+	 * class DaatDataProxyFastFactory implements DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends GenericJSO implements Daat { protected
+	 * DaatImpl() {}
 	 * 
 	 * public final int getId() { return getInt( "field_name" ); } }
 	 * 
-	 * @Override public <T> T getData( JavaScriptObject obj ) { return
-	 * (T)((DaatImpl)obj); } }
+	 * @Override public <T> T getData( JavaScriptObject obj ) { return (T)((DaatImpl)obj); } }
 	 */
 
 	String registerOnResponseCallback( JType callbackType )
@@ -736,10 +794,10 @@ public class ServiceGenerator extends Generator
 				// write code to call the factory
 				sw.println( "// FactoryCall" );
 				String elementType = cbParamTypes[i].getQualifiedSourceName();
-				
+
 				sw.println( elementType + " param" + i + " = (" + jsoTypeName + ") response.getJSO(" + i + ").cast();" );
-				//sw.println( getDataProxyFastImplName( cbParamTypes[i] ) + " tmpObj" + i + " = response.getJSO(" + i + ").cast();" );
-				//sw.println( elementType + " param" + i + " = tmpObj" + i + ";" );
+				// sw.println( getDataProxyFastImplName( cbParamTypes[i] ) + " tmpObj" + i + " = response.getJSO(" + i + ").cast();" );
+				// sw.println( elementType + " param" + i + " = tmpObj" + i + ";" );
 			}
 			else if( paramTypeName.equals( "Iterable" ) )
 			{
@@ -750,13 +808,14 @@ public class ServiceGenerator extends Generator
 
 				String jsoTypeName = registeredDataFastJSOType( typeArgs[0] );
 				assert false;
-				
+
 				sw.println( "// FactoryCall" );
-				//String elementType = typeArgs[0].getQualifiedSourceName();
-				sw.println( "Iterable<"+jsoTypeName+"> param"+i+" = new JSArrayIterator<"+jsoTypeName+">( (JsArray<"+jsoTypeName+">) (response.getJSO(" + i + ").cast()) );" );
-				
-				//sw.println( "JsArray<JavaScriptObject> objTmp" + i + " = response.getJSO(" + i + ").cast();" );
-				//sw.println( "Iterable<" + elementType + "> param" + i + " = factory.getList( " + elementType + ".class, objTmp" + i + " );" );
+				// String elementType = typeArgs[0].getQualifiedSourceName();
+				sw.println( "Iterable<" + jsoTypeName + "> param" + i + " = new JSArrayIterator<" + jsoTypeName + ">( (JsArray<" + jsoTypeName
+						+ ">) (response.getJSO(" + i + ").cast()) );" );
+
+				// sw.println( "JsArray<JavaScriptObject> objTmp" + i + " = response.getJSO(" + i + ").cast();" );
+				// sw.println( "Iterable<" + elementType + "> param" + i + " = factory.getList( " + elementType + ".class, objTmp" + i + " );" );
 			}
 			else if( implementsInterface( cbParamTypes[i], "java.util.List" ) )
 			{

@@ -53,7 +53,8 @@ public abstract class TableServiceBase<T>
 			this.param = param;
 			this.callback = callback;
 			this.cookie = cookie;
-			command = new ITableCommand<T>() {
+			command = new ITableCommand<T>()
+			{
 				public boolean isLoaded()
 				{
 					return fWholeTableLoaded;
@@ -96,7 +97,8 @@ public abstract class TableServiceBase<T>
 						else
 						{
 							fFullLoadRequested = true;
-							doGetRecords( new SimpleAsyncCallback<Iterable<T>>() {
+							doGetRecords( new SimpleAsyncCallback<Iterable<T>>()
+							{
 								public void onSuccess( Iterable<T> result )
 								{
 									records.clear();
@@ -270,7 +272,8 @@ public abstract class TableServiceBase<T>
 
 	protected AsyncCallback<T> getAddInternalCallback( final IAsyncCallback<T> callback )
 	{
-		return new SimpleAsyncCallback<T>() {
+		return new SimpleAsyncCallback<T>()
+		{
 			public void onSuccess( T result )
 			{
 				if( result == null )
@@ -289,7 +292,8 @@ public abstract class TableServiceBase<T>
 
 	public void delete( final int recordId )
 	{
-		doDeleteRecord( recordId, new SimpleAsyncCallback<Integer>() {
+		doDeleteRecord( recordId, new SimpleAsyncCallback<Integer>()
+		{
 			public void onSuccess( Integer result )
 			{
 				if( result < 0 )
@@ -320,7 +324,8 @@ public abstract class TableServiceBase<T>
 				add();
 
 				add();
-				doUpdateField( recordId, fieldName, wantedValue, new SimpleAsyncCallback<String>() {
+				doUpdateField( recordId, fieldName, wantedValue, new SimpleAsyncCallback<String>()
+				{
 					public void onSuccess( String result )
 					{
 						rem();
@@ -328,7 +333,8 @@ public abstract class TableServiceBase<T>
 				} );
 
 				add();
-				doGetRecord( recordId, new SimpleAsyncCallback<T>() {
+				doGetRecord( recordId, new SimpleAsyncCallback<T>()
+				{
 					public void onSuccess( T result )
 					{
 						newValueRecord = result;

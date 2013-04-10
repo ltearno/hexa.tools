@@ -2,19 +2,24 @@ package com.hexa.client.tools;
 
 import java.util.Iterator;
 
-import com.hexa.client.ui.MyDialogBox;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.ui.Label;
+import com.hexa.client.ui.MyDialogBox;
 
 public class HexaTools
 {
 	public static native void firefox3compatibility()
 	/*-{
 		if (!$doc.getBoxObjectFor) {
-			$doc.getBoxObjectFor = function (element) {
+			$doc.getBoxObjectFor = function(element) {
 				var box = element.getBoundingClientRect();
-				return { "x" : box.left, "y" : box.top, "width" : box.width, "height" : box.height };
+				return {
+					"x" : box.left,
+					"y" : box.top,
+					"width" : box.width,
+					"height" : box.height
+				};
 			}
 		}
 	}-*/;
@@ -55,6 +60,22 @@ public class HexaTools
 				txt.append( "," );
 			fAddComa = true;
 			txt.append( o.toString() );
+		}
+
+		return txt.toString();
+	}
+
+	public static String arrayToString( int[] array )
+	{
+		StringBuilder txt = new StringBuilder();
+		boolean fAddComa = false;
+
+		for( int o : array )
+		{
+			if( fAddComa )
+				txt.append( "," );
+			fAddComa = true;
+			txt.append( o );
 		}
 
 		return txt.toString();

@@ -47,7 +47,8 @@ public class ListBoxDiscrete<T> extends Composite implements ClickHandler
 
 		label.addClickHandler( this );
 
-		listTable.addChangeHandler( new ChangeHandler() {
+		listTable.addChangeHandler( new ChangeHandler()
+		{
 			public void onChange( ChangeEvent event )
 			{
 				if( popup != null )
@@ -88,7 +89,8 @@ public class ListBoxDiscrete<T> extends Composite implements ClickHandler
 			popup = new MyPopupPanel( true );
 			popup.setWidget( listTable );
 
-			popup.addCloseHandler( new CloseHandler<PopupPanel>() {
+			popup.addCloseHandler( new CloseHandler<PopupPanel>()
+			{
 				public void onClose( CloseEvent<PopupPanel> event )
 				{
 					img.setResource( down );

@@ -43,7 +43,8 @@ public class Criteria extends Composite
 
 		Anchor a = new Anchor( "remove" );
 		a.getElement().getStyle().setFloat( Style.Float.RIGHT );
-		a.addClickHandler( new ClickHandler() {
+		a.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				event.preventDefault();
@@ -53,7 +54,8 @@ public class Criteria extends Composite
 		} );
 		panel.addAndReplaceElement( a, removeButtonId );
 
-		searchButton.addClickHandler( new ClickHandler() {
+		searchButton.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				setMode( true );

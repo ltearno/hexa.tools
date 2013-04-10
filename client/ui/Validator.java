@@ -114,15 +114,9 @@ public class Validator<T extends Widget> extends Composite implements ClickHandl
 			m_callback.onValidatorAction( ValidatorCallback.Button.Cancel );
 		}
 		/*
-		 * else if( event.getCharCode() == KeyCodes.KEY_TAB ) {
-		 * m_callback.onValidatorMoveRequest( 1, 0 ); } else if(
-		 * event.getCharCode() == KeyCodes.KEY_UP ) {
-		 * m_callback.onValidatorMoveRequest( 0, -1 ); } else if(
-		 * event.getCharCode() == KeyCodes.KEY_DOWN ) {
-		 * m_callback.onValidatorMoveRequest( 0, 1 ); } else if(
-		 * event.getCharCode() == KeyCodes.KEY_LEFT ) {
-		 * m_callback.onValidatorMoveRequest( -1, 0 ); } else if(
-		 * event.getCharCode() == KeyCodes.KEY_RIGHT ) {
+		 * else if( event.getCharCode() == KeyCodes.KEY_TAB ) { m_callback.onValidatorMoveRequest( 1, 0 ); } else if( event.getCharCode() == KeyCodes.KEY_UP ) {
+		 * m_callback.onValidatorMoveRequest( 0, -1 ); } else if( event.getCharCode() == KeyCodes.KEY_DOWN ) { m_callback.onValidatorMoveRequest( 0, 1 ); } else
+		 * if( event.getCharCode() == KeyCodes.KEY_LEFT ) { m_callback.onValidatorMoveRequest( -1, 0 ); } else if( event.getCharCode() == KeyCodes.KEY_RIGHT ) {
 		 * m_callback.onValidatorMoveRequest( 1, 0 ); }
 		 */
 		else

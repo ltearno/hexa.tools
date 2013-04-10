@@ -28,8 +28,7 @@ public class MiracleTable extends FlexTable
 	}
 
 	/*
-	 * private MouseMoveHandler onMouseMove = new MouseMoveHandler() { public
-	 * void onMouseMove(MouseMoveEvent event) { GWT.log( "on mouse move" ); } };
+	 * private MouseMoveHandler onMouseMove = new MouseMoveHandler() { public void onMouseMove(MouseMoveEvent event) { GWT.log( "on mouse move" ); } };
 	 */
 
 	public HandlerRegistration addMouseDownHandler( MouseDownHandler handler )

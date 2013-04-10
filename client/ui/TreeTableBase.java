@@ -60,7 +60,8 @@ public class TreeTableBase extends Panel
 		m_body = DOM.createTBody();
 		m_table.appendChild( m_body );
 
-		addDomHandler( new ClickHandler() {
+		addDomHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				if( m_handler == null )
@@ -488,8 +489,7 @@ public class TreeTableBase extends Panel
 
 		// returns true if the item is the last of its parent
 		/*
-		 * private boolean isLastChild() { Item parent = m_parent; if( parent ==
-		 * null ) parent = m_rootItem;
+		 * private boolean isLastChild() { Item parent = m_parent; if( parent == null ) parent = m_rootItem;
 		 * 
 		 * return parent.m_childs.get(parent.m_childs.size()-1) == this; }
 		 */
@@ -521,15 +521,12 @@ public class TreeTableBase extends Panel
 
 			return m_rootItem.m_childs.get( 0 );
 			/*
-			 * // while our parent if the last of its siblings, go up one level
-			 * Item ancestor = parent; while( ancestor!=null &&
-			 * ancestor.isLastChild() ) ancestor = ancestor.m_parent;
+			 * // while our parent if the last of its siblings, go up one level Item ancestor = parent; while( ancestor!=null && ancestor.isLastChild() )
+			 * ancestor = ancestor.m_parent;
 			 * 
-			 * // return the next sibling of this ancestor if( ancestor == null
-			 * ) return m_rootItem.m_childs.get(0);
+			 * // return the next sibling of this ancestor if( ancestor == null ) return m_rootItem.m_childs.get(0);
 			 * 
-			 * if( me == parent.m_childs.size() - 1 ) return
-			 * parent.m_childs.get( 0 ); return parent.m_childs.get( me + 1 );
+			 * if( me == parent.m_childs.size() - 1 ) return parent.m_childs.get( 0 ); return parent.m_childs.get( me + 1 );
 			 */
 		}
 
@@ -800,7 +797,8 @@ public class TreeTableBase extends Panel
 				final Element tr = m_trToDelete;
 				m_trToDelete = null;
 
-				JQuery.jqFadeOut( tr, 250, new JQuery.Callback() {
+				JQuery.jqFadeOut( tr, 250, new JQuery.Callback()
+				{
 					public void onFinished()
 					{
 						// physical remove
@@ -816,7 +814,8 @@ public class TreeTableBase extends Panel
 			// logical delete
 			logicalRemove();
 
-			JQuery.jqFadeOut( m_trToDelete, 250, new JQuery.Callback() {
+			JQuery.jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
+			{
 				public void onFinished()
 				{
 					// physical remove
