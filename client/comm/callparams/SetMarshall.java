@@ -8,12 +8,12 @@ import com.google.gwt.json.client.JSONValue;
 public class SetMarshall<T> implements ICallParamMarshall<Set<T>>
 {
 	ICallParamMarshall<T> subMarshall;
-
+	
 	public SetMarshall( ICallParamMarshall<T> subMarshall )
 	{
 		this.subMarshall = subMarshall;
 	}
-
+	
 	@Override
 	public JSONValue marshall( Set<T> value )
 	{
@@ -21,7 +21,7 @@ public class SetMarshall<T> implements ICallParamMarshall<Set<T>>
 		int i = 0;
 		for( T v : value )
 			array.set( i++, subMarshall.marshall( v ) );
-
+		
 		return array;
 	}
 

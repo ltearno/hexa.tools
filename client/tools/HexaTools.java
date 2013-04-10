@@ -18,17 +18,17 @@ public class HexaTools
 			}
 		}
 	}-*/;
-
+	
 	public static String arrayToStringHuman( Iterable<?> array, String coordinatorWord )
 	{
 		StringBuilder txt = new StringBuilder();
 		boolean fAddComa = false;
-
+		
 		Iterator<?> it = array.iterator();
 		while( it.hasNext() )
 		{
 			Object o = it.next();
-
+			
 			if( fAddComa )
 			{
 				if( it.hasNext() )
@@ -37,18 +37,18 @@ public class HexaTools
 					txt.append( " " + coordinatorWord + " " );
 			}
 			fAddComa = true;
-
+			
 			txt.append( o.toString() );
 		}
-
+		
 		return txt.toString();
 	}
-
+	
 	public static String arrayToString( Iterable<?> array )
 	{
 		StringBuilder txt = new StringBuilder();
 		boolean fAddComa = false;
-
+		
 		for( Object o : array )
 		{
 			if( fAddComa )
@@ -56,26 +56,25 @@ public class HexaTools
 			fAddComa = true;
 			txt.append( o.toString() );
 		}
-
+		
 		return txt.toString();
 	}
-
-	public static int[] stringToArray( String s )
-	{
+	
+	public static int[] stringToArray( String s ) {
 		if( s.length() == 0 )
 			return new int[0];
 		String[] ss = s.split( "," );
 		int[] res = new int[ss.length];
-		for( int i = 0; i < ss.length; i++ )
+		for( int i=0; i<ss.length; i++)
 			res[i] = Integer.parseInt( ss[i] );
 		return res;
 	}
-
+	
 	public static void alert( String message )
 	{
 		alert( "No title", message );
 	}
-
+	
 	public static void alert( String title, String message )
 	{
 		MyDialogBox db = new MyDialogBox();
@@ -84,12 +83,12 @@ public class HexaTools
 		db.show();
 		db.center();
 	}
-
+	
 	public static native JavaScriptObject evalJSO( String params )
 	/*-{
 		return eval('(' + params + ')');
 	}-*/;
-
+	
 	public static <T extends JavaScriptObject> String toJSON( T jso )
 	{
 		JSONObject obj = new JSONObject( jso );

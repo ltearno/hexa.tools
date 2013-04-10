@@ -9,17 +9,17 @@ public class JsIterator<T extends JavaScriptObject> implements Iterator<T>
 {
 	JsArray<T> js;
 	int curIdx = 0;
-
+	
 	public JsIterator( JavaScriptObject jso )
 	{
 		js = jso.cast();
 	}
-
+	
 	public JsIterator( JsArray<T> js )
 	{
 		this.js = js;
 	}
-
+	
 	public boolean hasNext()
 	{
 		return curIdx < js.length();

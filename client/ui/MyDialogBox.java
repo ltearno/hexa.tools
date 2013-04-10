@@ -1,6 +1,6 @@
 package com.hexa.client.ui;
 
-public class MyDialogBox extends MyDialogBox3
+public class MyDialogBox extends MyDialogBox1
 {
 	public MyDialogBox()
 	{

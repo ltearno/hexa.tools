@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.example.client.ui.Resources;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -13,16 +15,17 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.TreeTable;
 import com.hexa.client.ui.TreeTableBase.Item;
 import com.hexa.client.ui.TreeTableHandler;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
-public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayManager<T>
+public class DynTreeInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayManager<T>
 {
 	TreeTable table;
-	RefMng<T> refMng;
+	TreeRefMng<T> refMng;
 	
 	H headerData = null;
 	
@@ -48,7 +51,7 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 	
 	EditionState edition = null;
 	
-	public DynArrayInTreeTable( TreeTable table, RefMng<T> refMng )
+	public DynTreeInTreeTable( TreeTable table, TreeRefMng<T> refMng )
 	{
 		this.table = table;
 		this.refMng = refMng;
@@ -131,6 +134,8 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 	
 	public void printHeaders()
 	{
+		table.setHeader( 0, "+/-" );
+		
 		HdrInTreeTablePrinter printer = new HdrInTreeTablePrinter( table, 0 );
 		int nbCols = columns.size();
 		for( int i = 0; i<nbCols; i++ )
@@ -141,6 +146,8 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 			if( c.hdrPrintsOn.print( headerData, printer ) )
 				printer = new HdrInTreeTablePrinter( table, 0 );
 		}
+		
+		//table.setColumnWidth( 0, 12 );
 	}
 
 	@Override
@@ -152,24 +159,13 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		if( data == null )
 			return;
 		
-		// sort if needed
-		if( userComparator != null )
-		{
-			ArrayList<T> tmp = new ArrayList<T>();
-			for( T t : data )
-			{
-				int ins = Collections.binarySearch( tmp, t, userComparator );
-				tmp.add( -ins-1, t );
-			}
-			data = tmp;
-		}
-		
 		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( null, 0 );
 		
 		// each row
 		for( T d : data )
 		{
-			cp.item = table.addItem(null);
+			InsertPos insPos = getInsertPoint( d );
+			cp.item = insPos.insert();
 			cp.item.setRef( refMng.getRef( d ) );
 			
 			cp = printRow( d, cp );
@@ -185,37 +181,74 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		if( edition!=null && refMng.getRef(edition.editedObject)==objectRef )
 			killCurrentEdit();
 		
-		Item insPos = userComparator != null ? getInsertPoint( object ) : item;
+		//Item insPos = userComparator != null ? getInsertPoint( object ) : item;
+		InsertPos insPos = getInsertPoint( object );
 		
 		// insert or move the row to the right place and create a cell printer
 		if( item == null )
 		{
-			// new
-			if( insPos != null )
-				insPos = table.addItemBefore( insPos );
-			else
-				insPos = table.addItem(null);
+			// new item
+			item = insPos.insert();
 			
-			insPos.setRef( refMng.getRef( object ) );
+			item.setRef( refMng.getRef( object ) );
 		}
 		else
 		{
-			if( insPos != item )
+			if( insPos.before != item )
 			{
-				//GWT.log( "is at row " + row + " but should be at " + insPos );
-				item.moveBefore( insPos );
-				insPos = item;
+				insPos.move( item );
 			}
 		}
-		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( insPos, 0 );
+		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( item, 0 );
 		
 		// print the row
 		printRow( object, cp );
 	}
 	
-	private Item getInsertPoint( T object )
+	class InsertPos
 	{
-		ArrayList<Item> items = table.getItemChilds( null );
+		Item parent;
+		Item before;
+		
+		void move( Item item )
+		{
+			if( before != null )
+				item.moveBefore( before );
+			else
+				item.moveLastChild( parent );
+		}
+		
+		Item insert()
+		{
+			if( before != null )
+				return before.addBefore();
+			Item item = table.addItem( parent );
+			if( parent != null )
+			{
+				int ref = getRefAtRow( parent );
+				T obj = refMng.getObject( ref );
+				
+				PrinterFirstCol p = new PrinterFirstCol();
+				p.item = parent;
+				columns.get(0).prints.print( obj, p );
+			}
+			return item;
+		}
+	}
+	
+	private InsertPos getInsertPoint( T object )
+	{
+		InsertPos res = new InsertPos();
+		
+		// first get the parent
+		T parent = refMng.getParentObject( object );
+		if( parent != null )
+		{
+			res.parent = getRow( refMng.getRef(parent) );
+			assert( res.parent != null ) : "Cannot add a child of the parent is not firt added";
+		}
+		
+		ArrayList<Item> items = table.getItemChilds( res.parent );
 		int nbRows = items.size();
 		int objectRef= refMng.getRef( object );
 		
@@ -232,28 +265,35 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 						// keep the same place only if lesser than the nxt item or if there is no next
 						if( items.indexOf(item) == nbRows-1 )
 						{
-							return item;
+							res.before = item;
+							return res;
 						}
 						else
 						{
 							int refAtNextRow = getRefAtRow( item.getNextSiblingItem() );
 							if( userComparator.compare( object, refMng.getObject( refAtNextRow ) ) <= 0 )
-								return item;
+							{
+								res.before = item;
+								return res;
+							}
 						}
 					}
 					else
 					{
-						return item;
+						res.before = item;
+						return res;
 					}
 				}
 			}
 		}
 		
-		return null;
+		return res;
 	}
 	
 	public void deleteRow( int ref )
 	{
+		GWT.log( "DELETE ROW " + ref );
+		
 		Item item = getRow( ref );
 		if( item == null )
 			return;
@@ -262,7 +302,24 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		if( edition!=null && refMng.getRef(edition.editedObject)==ref )
 			killCurrentEdit();
 		
+		Item parent = item.getParent();
+		GWT.log( "PARENT : " + parent );
+		GWT.log( "PARENT REF : " + (parent==null?"-":parent.getRef()) );
+		
+		GWT.log( "BEFORE REMOVE " + ref );
 		item.remove();
+		GWT.log( "AFTER REMOVE " + ref );
+		
+		if( parent != null )
+		{
+			GWT.log( "PARENT HAS N CHILD : " + parent.getChilds().size() );
+			
+			T obj = refMng.getObject( parent.getRef() );
+			
+			PrinterFirstCol p = new PrinterFirstCol();
+			p.item = parent;
+			columns.get(0).prints.print( obj, p );
+		}
 	}
 	
 	public void setComparator( Comparator<T> comparator )
@@ -271,8 +328,13 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		sortAndPrint( comparator );
 	}
 	
+	public void sortAndPrint( Comparator<T> userComparator )
+	{
+		sortAndPrint( userComparator, null );
+	}
 	
-	public void sortAndPrint( final Comparator<T> userComparator )
+	// sort all children of parent
+	public void sortAndPrint( final Comparator<T> userComparator, Item parent )
 	{
 		class It
 		{
@@ -287,7 +349,7 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		ArrayList<It> its = new ArrayList<It>();
 		
 		// get all objects from the table
-		ArrayList<Item> childs = table.getItemChilds( null );
+		ArrayList<Item> childs = table.getItemChilds( parent );
 		for( Item item : childs )
 		{
 			int ref = getRefAtRow( item );
@@ -306,17 +368,15 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		// now reorder the lines
 		for( int j=0; j<its.size(); j++ )
 		{
-			// item at position j ?
-			Item atJ = table.getItemChilds(null).get( j );
-			// needed item is its[i].item
-			Item neededItem = its.get( j ).item;
-			
-			if( atJ != neededItem )
-			{
-				// move its[i].item before item at position i
-				neededItem.moveBefore( atJ );
-			}
+			InsertPos ip = getInsertPoint( its.get( j ).object );
+			if( ip.before != its.get( j ).item )
+				ip.move( its.get( j ).item );
 		}
+		
+		// proceed recursively for deeper level
+		childs = table.getItemChilds( parent );
+		for( Item item : childs )
+			sortAndPrint( userComparator, item );
 	}
 	
 	private int getRefAtRow( Item item )
@@ -344,8 +404,14 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		// no garbage is created here
 		printer.item.setRef( refMng.getRef( object ) );
 		
+		// print the icon correcponding to expand/shrink state
+		PrinterFirstCol firstCol = new PrinterFirstCol();
+		firstCol.item = printer.item;
+		columns.get(0).prints.print( object, firstCol );
+		//drawExpShrink( printer.item );
+		
 		// each column
-		for( int i=0; i<columns.size(); i++ )
+		for( int i=1; i<columns.size(); i++ )
 		{
 			printer.col = i;
 			
@@ -357,6 +423,42 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 		
 		return printer;
+	}
+	
+	class PrinterFirstCol implements Printer
+	{
+		Item item;
+		
+		@Override
+		public void setText(String text)
+		{
+			setHTML( text );
+		}
+
+		@Override
+		public void setHTML(String html)
+		{
+			item.setHTML( 0, getExpShrinkHTML() + html );
+		}
+
+		@Override
+		public void setWidget(Widget widget)
+		{
+			assert( false ) : "NOT IMPLEMENTED : PUTTING WIDGETS IN THE FIRST COLUMN...";
+		}
+		
+		private String getExpShrinkHTML()
+		{
+			if( item.hasChilds() )
+			{
+				if( item.getExpanded() )
+					return "<img src='"+Resources.get().images.treeMinus3().getURL()+"'/>";
+				else
+					return "<img src='"+Resources.get().images.treePlus3().getURL()+"'/>";
+			}
+			else
+				return "<img src='"+Resources.get().images.blank16().getURL()+"'/>";
+		}
 	}
 	
 	private boolean beginEdit( Item item, int col )
@@ -415,7 +517,7 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 			Element source = DOM.eventGetTarget(Event.as(event.getNativeEvent()));
 			
 			// try to see if it's not on a th element
-			int hdr = table.getEventTargetHeaderIdx( source );
+			int hdr = table.getEventTargetHeaderIdx( source ) - 1;
 			if( hdr < 0 )
 				return;
 			
@@ -463,7 +565,7 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		@Override
 		public void onDragDropFinished(Integer cookie, Element source, Element destination)
 		{
-			int newPos = table.getEventTargetHeaderIdx( destination );
+			int newPos = table.getEventTargetHeaderIdx( destination ) - 1;
 			if( newPos < 0 )
 				return;
 			
@@ -476,15 +578,24 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 			
 			// Redraw all objects in the table
 			CellInTreeTablePrinter printer = new CellInTreeTablePrinter( null, 0 );
-			ArrayList<Item> items = table.getItemChilds( null );
-			for( Item item : items )
-			{
-				printer.item = item;
-				int ref = item.getRef();
-				printer = printRow( refMng.getObject(ref), printer );
-			}
+			redrawAll( null, printer );
 		}
 	};
+	
+	private CellInTreeTablePrinter redrawAll( Item parent, CellInTreeTablePrinter printer )
+	{
+		ArrayList<Item> items = table.getItemChilds( parent );
+		for( Item item : items )
+		{
+			printer.item = item;
+			int ref = item.getRef();
+			printer = printRow( refMng.getObject(ref), printer );
+			
+			printer = redrawAll( item, printer );
+		}
+		
+		return printer;
+	}
 	
 	private Edits.Callback onEdit = new Edits.Callback() {
 		@Override
@@ -535,7 +646,7 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 		
 		// or on the next
-		item = item.getNextSiblingItem();
+		item = item.getNextTraversalItem();
 		for( int c=0; c<columns.size(); c++ )
 		{
 			if( columns.get(c).edits != null )
@@ -555,7 +666,7 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 		
 		// or on the previous
-		item = item.getPrevSiblingItem();
+		item = item.getPrevTraversalItem();
 		for( int c=columns.size()-1; c>=0; c-- )
 		{
 			if( columns.get(c).edits != null )
@@ -609,6 +720,9 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		@Override
 		public void onTableHeaderClick( int column, ClickEvent event )
 		{
+			if( column < 0 )
+				return;
+						
 			CellClickMng<H> clickMng = columns.get( column ).hdrClickMng;
 			if( clickMng == null )
 				return;
@@ -622,12 +736,27 @@ public class DynArrayInTreeTable<T,H> implements Prints<Iterable<T>>, DynArrayMa
 		public void onTableCellClick( Item item, int column, ClickEvent event )
 		{
 			int clickedRef = getRefAtRow(item);
-			
 			// if clicking on a cell that is in editing mode, return
 			if( edition!=null && ( refMng.getRef(edition.editedObject)==clickedRef && edition.editedCol==column ) )
 				return;
 			
 			killCurrentEdit();
+			
+			if( column == 0 )
+			{
+				// TODO : if clicked on the exp/shrink icon, do that
+				// else, offer the possibility to edit the cell, or else send the click event to click mng
+				
+				// expand / shrink item
+				item.setExpanded( ! item.getExpanded() );
+				
+				T obj = refMng.getObject( clickedRef );
+				
+				PrinterFirstCol p = new PrinterFirstCol();
+				p.item = item;
+				columns.get(0).prints.print( obj, p );
+				return;
+			}
 			
 			boolean fHandled = false;
 			

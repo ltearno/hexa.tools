@@ -8,8 +8,7 @@ public interface IValueControl<T>
 	}
 
 	public abstract void setValue( T value );
-
 	public abstract T getValue();
-
+	
 	public void addCallback( Callback<T> callback, Object cookie );
 }

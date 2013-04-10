@@ -7,24 +7,24 @@ public class HLevelStd implements HierarchySet.IHierarchyLevel<String>
 {
 	String id;
 	String name;
-
+	
 	public HLevelStd( String id, String name )
 	{
 		this.id = id;
 		this.name = name;
 	}
-
+	
 	public String getName()
 	{
 		return name;
 	}
 
-	public String getIdentifier( String record )
+	public String getIdentifier(String record)
 	{
 		return id;
 	}
 
-	public void fillRow( TreeTable table, Object item, String record )
+	public void fillRow(TreeTable table, Object item, String record)
 	{
 	}
 
@@ -32,5 +32,5 @@ public class HLevelStd implements HierarchySet.IHierarchyLevel<String>
 	{
 		return null;
 	}
-
+	
 }

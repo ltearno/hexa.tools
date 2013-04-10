@@ -2,87 +2,57 @@ package com.hexa.client.ui.search;
 
 import java.util.Collection;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.hexa.client.comm.HexaFramework;
 import com.hexa.client.ui.ListBoxDiscrete;
 
 public class CriteriaSwitch extends Composite implements ICriteriaWidget
 {
-	public interface Resources
-	{
-		ImageResource dropdown();
-	}
-
-	interface DefaultResources extends Resources, ClientBundle
-	{
-		@Source( "images/dropdown.png" )
-		ImageResource dropdown();
-	}
-
-	private static Resources defaultResources = null;
-	private Resources resources = null;
-
 	public interface XCriteriaSwitch
 	{
 		boolean getIsInline( ICriteriaMng mng );
 	}
-
+	
 	XCriteriaSwitch callback;
-
-	ListBoxDiscrete<ICriteriaMng> lb;
-
+	
+	ListBoxDiscrete<ICriteriaMng> lb = new ListBoxDiscrete<ICriteriaMng>( HexaFramework.images.dropdown(), HexaFramework.images.dropdown() );
+	
 	SimplePanel spotHorizontal = new SimplePanel();
 	SimplePanel spotVertical = new SimplePanel();
 	ICriteriaWidget iCriteria = null;
-
-	public CriteriaSwitch( Collection<ICriteriaMng> criteriaMngs, XCriteriaSwitch callback, Resources resources )
+	
+	public CriteriaSwitch( Collection<ICriteriaMng> criteriaMngs, XCriteriaSwitch callback )
 	{
-		if( resources == null )
-		{
-			if( defaultResources == null )
-				defaultResources = GWT.create( DefaultResources.class );
-
-			this.resources = defaultResources;
-		}
-		else
-		{
-			this.resources = resources;
-		}
-
-		lb = new ListBoxDiscrete<ICriteriaMng>( this.resources.dropdown(), this.resources.dropdown() );
-
 		this.callback = callback;
-
+		
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add( lb );
 		panel.setCellWidth( lb, "150px" );
 		panel.add( spotHorizontal );
-
+		
 		VerticalPanel v = new VerticalPanel();
 		v.add( panel );
 		v.add( spotVertical );
-
+		
 		initWidget( v );
-
+		
 		for( ICriteriaMng mng : criteriaMngs )
 			lb.addItem( mng.getDisplayName(), mng );
-
+		
 		lb.addChangeHandler( new ChangeHandler() {
-			public void onChange( ChangeEvent event )
+			public void onChange(ChangeEvent event)
 			{
 				onSelChange();
 			}
 		} );
 	}
-
+	
 	public JSONValue getValue()
 	{
 		if( iCriteria == null )
@@ -91,36 +61,36 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 	}
 
 	@Override
-	public void setValue( JSONValue json )
+	public void setValue(JSONValue json)
 	{
 		if( iCriteria == null )
 			return;
 		iCriteria.setValue( json );
 	}
-
+	
 	public void setCriteriaMng( ICriteriaMng mng )
 	{
 		lb.setSelected( mng );
 		updateCriteria( mng, null );
 	}
-
+	
 	public void setCriteriaMng( ICriteriaMng mng, ICriteriaWidget widget )
 	{
 		lb.setSelected( mng );
 		iCriteria = widget;
-
+		
 		boolean fIsInline = callback.getIsInline( mng );
-		(fIsInline ? spotHorizontal : spotVertical).setWidget( iCriteria.asWidget() );
-		(fIsInline ? spotVertical : spotHorizontal).clear();
+		( fIsInline ? spotHorizontal : spotVertical ).setWidget( iCriteria.asWidget() );
+		( fIsInline ? spotVertical : spotHorizontal ).clear();
 	}
-
+	
 	// the selection box value has changed
 	void onSelChange()
 	{
 		ICriteriaMng sel = lb.getSelected();
 		updateCriteria( sel, null );
 	}
-
+	
 	void updateCriteria( ICriteriaMng mng, JSONValue json )
 	{
 		if( mng == null )
@@ -130,12 +100,12 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 			spotVertical.clear();
 			return;
 		}
-
+		
 		iCriteria = mng.createCriteriaWidget( json );
-
+		
 		// get the alignment
 		boolean fIsInline = callback.getIsInline( mng );
-		(fIsInline ? spotHorizontal : spotVertical).setWidget( iCriteria.asWidget() );
-		(fIsInline ? spotVertical : spotHorizontal).clear();
+		( fIsInline ? spotHorizontal : spotVertical ).setWidget( iCriteria.asWidget() );
+		( fIsInline ? spotVertical : spotHorizontal ).clear();
 	}
 }

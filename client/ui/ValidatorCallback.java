@@ -6,8 +6,7 @@ public interface ValidatorCallback
 	{
 		Ok, Cancel;
 	}
-
+	
 	public void onValidatorAction( Button button );
-
 	public void onValidatorMoveRequest( int dx, int dy );
 }

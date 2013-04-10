@@ -10,55 +10,54 @@ import com.google.gwt.user.client.ui.Widget;
 public class Uploadify extends Widget implements IUploader
 {
 	Callback callback;
-
+	
 	Element i;
-
+	
 	String script;
 	String queueElementId;
 	JavaScriptObject data;
-
+	
 	public Uploadify( String script, String queueElementId, JavaScriptObject data, Callback callback )
 	{
 		this.data = data;
 		this.callback = callback;
 		this.script = script;
 		this.queueElementId = queueElementId;
-
+		
 		String id = DOM.createUniqueId();
 
 		Element div = DOM.createDiv();
-
+		
 		i = DOM.createElement( "input" );
 		i.setId( id );
 		i.setAttribute( "name", id );
 		i.setAttribute( "type", "file" );
-
+		
 		div.appendChild( i );
-
+		
 		setElement( div );
 	}
-
+	
 	boolean fUploadified = false;
-
 	@Override
 	protected void onLoad()
 	{
-		if( !fUploadified )
+		if( ! fUploadified )
 			uploadify();
 		fUploadified = true;
 	}
-
+	
 	private void uploadify()
 	{
 		JSONObject json = new JSONObject( data );
 		uploadifyImpl( i, script, json.toString(), queueElementId );
 	}
-
+	
 	public void onServerResponse( String response )
 	{
 		callback.onFileUploaded( response );
 	}
-
+	
 	public boolean onUploadOpen()
 	{
 		if( data == null )
@@ -66,20 +65,19 @@ public class Uploadify extends Widget implements IUploader
 			HexaTools.alert( "Error", "No uploadKey has been set, please retry !" );
 			return false;
 		}
-
+		
 		return true;
 	}
-
+	
 	public void onError( JavaScriptObject event, String ID, JavaScriptObject fileObj, JavaScriptObject errorObj )
 	{
 		JSONObject jsonEvent = new JSONObject( event );
 		JSONObject jsonFile = new JSONObject( fileObj );
 		JSONObject jsonError = new JSONObject( errorObj );
-
-		HexaTools.alert( "Error uploading", "Event<br>" + jsonEvent.toString() + "<br>ID:" + ID + "<br>File<br>" + jsonFile.toString() + "<br>Error<br>"
-				+ jsonError.toString() );
+		
+		HexaTools.alert( "Error uploading", "Event<br>"+jsonEvent.toString()+"<br>ID:"+ID+"<br>File<br>"+jsonFile.toString()+"<br>Error<br>"+jsonError.toString() );
 	}
-
+	
 	// script: '/karim/index.php'
 	public native void uploadifyImpl( Element e, String script, String data, String queueElementId )
 	/*-{

@@ -23,10 +23,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Arnaud
  *
  */
-public class Ribbon extends Composite implements RibbonView
-{
-	public interface RibbonCallback
-	{
+public class Ribbon extends Composite{
+	public interface RibbonCallback {
 		void onRibbonChange( Object obj );
 	}
 	RibbonCallback callback;
@@ -91,8 +89,7 @@ public class Ribbon extends Composite implements RibbonView
 		
 		panel.setWidth( "100%" );
 		hPanel.setWidth( "100%" );
-		if( conf.logo != null )
-			hPanel.add( new Image( conf.logo ) );
+		hPanel.add( new Image( conf.logo ) );
 		hPanel.add( panel );
 		if( conf.additionalWidget != null )
 			hPanel.add( conf.additionalWidget );
@@ -104,24 +101,6 @@ public class Ribbon extends Composite implements RibbonView
 		m_tabPanel.setStyleName( "RibbonPanel" );
 		
 		m_tabBar.selectTab( 0 );
-	}
-	
-	public void setEnabled( Object obj, boolean fEnabled )
-	{
-		for( int i=0; i<m_conf.tabs.size(); i++ )
-		{
-			FlexTable table = (FlexTable)m_tabs.get( i );
-			for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ )
-			{
-				Button button = (Button)table.getWidget( 0, j );
-				
-				if( m_conf.tabs.get(i).buttons.get(j).obj == obj )
-				{
-					button.setEnabled( fEnabled );
-					return;
-				}
-			}
-		}
 	}
 	
 	public void selectButton( Object obj )

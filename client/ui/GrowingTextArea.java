@@ -16,30 +16,30 @@ import com.google.gwt.user.client.ui.TextArea;
 public class GrowingTextArea extends TextArea implements KeyDownHandler, KeyUpHandler
 {
 	Element fakeDiv = null;
-
+	
 	public GrowingTextArea()
 	{
 		addKeyDownHandler( this );
 		addKeyUpHandler( this );
-
-		// getElement().getStyle().setOverflow( Overflow.HIDDEN );
+		
+		//getElement().getStyle().setOverflow( Overflow.HIDDEN );
 		applyStyle( getElement() );
 	}
-
+	
 	void applyStyle( Element element )
 	{
 		element.getStyle().setPadding( 5, Unit.PX );
 		element.getStyle().setBorderColor( "black" );
 		element.getStyle().setBorderStyle( BorderStyle.SOLID );
 		element.getStyle().setBorderWidth( 1, Unit.PX );
-
+		
 		element.getStyle().setProperty( "fontFamily", "Arial Unicode MS,Arial,sans-serif" );
-
+		
 		element.getStyle().setFontSize( 12, Unit.PT );
 		element.getStyle().setFontStyle( FontStyle.NORMAL );
 		element.getStyle().setFontWeight( FontWeight.NORMAL );
 	}
-
+	
 	void resize()
 	{
 		if( fakeDiv == null )
@@ -50,18 +50,18 @@ public class GrowingTextArea extends TextArea implements KeyDownHandler, KeyUpHa
 			getElement().getParentElement().insertAfter( fakeDiv, getElement() );
 			applyStyle( fakeDiv );
 		}
-
+		
 		int width = getElement().getAbsoluteRight() - getElement().getAbsoluteLeft();
 		fakeDiv.getStyle().setWidth( width - 10 - 2, Unit.PX );
-
+		
 		fakeDiv.setInnerText( getText() );
-
+		
 		int height = getHeightImpl( getElement() );
 		int newHeight = getHeightImpl( fakeDiv ) + 25;
 		if( height < newHeight )
 			getElement().getStyle().setHeight( newHeight, Unit.PX );
 	}
-
+	
 	private native int getHeightImpl( Element e )
 	/*-{
 		return $wnd.$( e ).height();

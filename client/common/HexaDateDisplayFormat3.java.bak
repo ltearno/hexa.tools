@@ -20,7 +20,7 @@ public class HexaDateDisplayFormat3 implements HexaDateDisplayFormat
 		HexaDate hdate = new HexaDate( year, month, date );
 		String res = fmt.format( hdate.getJavaDate() );
 		
-		//GWT.log( "HexaDateDisplayFormat3 format " + hdate.getString() + " => " + res );
+		GWT.log( "HexaDateDisplayFormat3 format " + hdate.getString() + " => " + res );
 		
 		return res;
 	}

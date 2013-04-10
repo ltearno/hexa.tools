@@ -1,6 +1,5 @@
 package com.hexa.client.comm;
 
-public @interface CustomMethod
-{
+public @interface CustomMethod {
 	String body();
 }

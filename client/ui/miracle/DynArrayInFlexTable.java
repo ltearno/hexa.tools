@@ -16,30 +16,31 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
-public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayManager<T>, HasColumns<T, H>
+public class DynArrayInFlexTable<T,H> implements Prints<Iterable<T>>, DynArrayManager<T>
 {
 	MiracleTable table;
 	RefMng<T> refMng;
-
+	
 	H headerData = null;
-
-	ArrayList<DynArrayInFlexTableColumnMng<T, H>> columns = new ArrayList<DynArrayInFlexTableColumnMng<T, H>>();
-
+	
+	ArrayList<DynArrayInFlexTableColumnMng<T,H>> columns = new ArrayList<DynArrayInFlexTableColumnMng<T,H>>();
+	
 	Comparator<T> userComparator = null;
-
+	
 	// edition state
 	private class EditionState
 	{
-		// int editedRow = -1;
+		//int editedRow = -1;
 		int editedCol = -1;
 		T editedObject = null;
 		Printer editedPrinter = null;
 		Editor editedEditor = null;
-
+		
 		void close()
 		{
 			if( editedEditor != null )
@@ -47,40 +48,39 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 			editedEditor = null;
 		}
 	}
-
+	
 	EditionState edition = null;
-
+	
 	public DynArrayInFlexTable( MiracleTable table, RefMng<T> refMng )
 	{
 		this.table = table;
 		this.refMng = refMng;
-
+		
 		table.addClickHandler( onTableClick );
-
+		
 		table.addDomHandler( onTableKeyUp, KeyDownEvent.getType() );
-
+		
 		table.addMouseDownHandler( onTableMouseDown );
 	}
-
+	
 	public void setHeaderData( H headerData )
 	{
 		this.headerData = headerData;
 	}
-
-	@Override
+	
 	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
 	{
-		columns.add( new DynArrayInFlexTableColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
+		columns.add( new DynArrayInFlexTableColumnMng<T,H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
-
+	
 	public void printHeaders()
 	{
 		MiracleTable.HdrInFlexTablePrinter printer = table.getHdrPrinter( 0 );
 		int nbCols = columns.size();
-		for( int i = 0; i < nbCols; i++ )
+		for( int i = 0; i<nbCols; i++ )
 		{
 			printer.col = i;
-
+			
 			DynArrayInFlexTableColumnMng<T, H> c = columns.get( i );
 			if( c.hdrPrintsOn.print( headerData, printer ) )
 				printer = table.getHdrPrinter( 0 );
@@ -92,46 +92,46 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	{
 		killCurrentEdit();
 		table.clear( true );
-
+		
 		if( data == null )
 			return;
-
+		
 		if( userComparator != null )
 		{
 			ArrayList<T> tmp = new ArrayList<T>();
 			for( T t : data )
 			{
 				int ins = Collections.binarySearch( tmp, t, userComparator );
-				tmp.add( -ins - 1, t );
+				tmp.add( -ins-1, t );
 			}
 			data = tmp;
 		}
-
+		
 		CellInFlexTablePrinter cp = new CellInFlexTablePrinter( table, 0, 0 );
-
+		
 		// each row
-		int j = 0;
+		int j=0;
 		for( T d : data )
 		{
 			cp.row = j;
-
+			
 			cp = printRow( d, cp );
-
+			
 			j++;
 		}
 	}
-
+	
 	public void updateRow( T object )
 	{
 		// find the row associated with this object
 		int objectRef = refMng.getRef( object );
 		int row = getRow( objectRef );
-
-		if( edition != null && refMng.getRef( edition.editedObject ) == objectRef )
+		
+		if( edition!=null && refMng.getRef(edition.editedObject)==objectRef )
 			killCurrentEdit();
-
+		
 		int insPos = userComparator != null ? getInsertPoint( object ) : row;
-
+		
 		// insert or move the row to the right place and create a cell printer
 		CellInFlexTablePrinter cp;
 		if( row < 0 )
@@ -151,293 +151,282 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 			}
 		}
 		cp = new CellInFlexTablePrinter( table, insPos, 0 );
-
+		
 		// print the row
 		printRow( object, cp );
 	}
-
+	
 	// return the row it was moved to
 	private int moveRowFor( int actual, int target, int objectRef )
 	{
 		com.google.gwt.user.client.Element tr = table.getBodyElement().getChild( actual ).cast();
-		assert tr.getPropertyInt( "ref" ) == objectRef; // just to be sure we do
-														// what we want
-
+		assert tr.getPropertyInt("ref") == objectRef; // just to be sure we do what we want
+		
 		com.google.gwt.user.client.Element parent = tr.getParentElement().cast();
-
+		
 		DOM.removeChild( parent, tr );
-
+		
 		if( target < 0 )
 		{
 			DOM.appendChild( parent, tr );
 			return parent.getChildCount() - 1;
 		}
-
+		
 		if( target >= actual )
 			target--;
-
+		
 		DOM.insertChild( parent, tr, target );
-
+		
 		return target;
 	}
-
+	
 	public void deleteRow( int ref )
 	{
 		int row = getRow( ref );
 		if( row < 0 )
 			return;
-
-		// to reset the edition state, just in case... (an only if we are
-		// editing on the row we delete)
-		if( edition != null && refMng.getRef( edition.editedObject ) == ref )
+		
+		// to reset the edition state, just in case... (an only if we are editing on the row we delete)
+		if( edition!=null && refMng.getRef(edition.editedObject)==ref )
 			killCurrentEdit();
-
+		
 		table.removeRow( row );
 	}
-
+	
 	public void setComparator( Comparator<T> comparator )
 	{
 		userComparator = comparator;
 		sortAndPrint( comparator );
 	}
-
+	
+	
 	public void sortAndPrint( final Comparator<T> userComparator )
 	{
 		class It
 		{
 			Element tr;
 			T object;
-
-			It( int row, Element tr, T object )
-			{
+			It( int row, Element tr, T object ) {
 				this.object = object;
 				this.tr = tr;
 			}
-		}
-		;
-
+		};
+		
 		ArrayList<It> its = new ArrayList<It>();
-
+		
 		// get all objects from the table
 		int nbRows = table.getRowCount();
-		for( int r = 0; r < nbRows; r++ )
+		for( int r=0; r<nbRows; r++ )
 		{
 			Element tr = table.getRowFormatter().getElement( r );
 			int ref = tr.getPropertyInt( "ref" );
-			its.add( new It( r, tr, refMng.getObject( ref ) ) );
+			its.add( new It( r, tr, refMng.getObject(ref) ) );
 		}
-
+		
 		// sort them
 		Collections.sort( its, new Comparator<It>() {
-			public int compare( It o1, It o2 )
+			public int compare(It o1, It o2)
 			{
 				return userComparator.compare( o1.object, o2.object );
 			}
 		} );
-
+		
 		// now reorder the lines
-		for( int j = 0; j < its.size(); j++ )
+		for( int j=0; j<its.size(); j++ )
 		{
 			int refAtRow = getRefAtRow( j );
-			int needRef = refMng.getRef( its.get( j ).object );
+			int needRef = refMng.getRef( its.get(j).object );
 			if( needRef != refAtRow )
 			{
 				// we have to take the row and put it at its right place
 				com.google.gwt.user.client.Element tr = its.get( j ).tr.cast();
-				assert tr.getPropertyInt( "ref" ) == needRef; // just to be sure
-																// we do what we
-																// want
-				DOM.insertChild( (com.google.gwt.user.client.Element) tr.getParentElement(), tr, j );
+				assert tr.getPropertyInt("ref") == needRef; // just to be sure we do what we want
+				DOM.insertChild( (com.google.gwt.user.client.Element)tr.getParentElement(), tr, j );
 			}
 		}
 	}
-
+	
+	
 	private int getRefAtRow( int row )
 	{
 		return table.getRowFormatter().getElement( row ).getPropertyInt( "ref" );
 	}
-
-	// return the row index of the row associated to the object referenced as
-	// objectRef
+	
+	// return the row index of the row associated to the object referenced as objectRef
 	// returns -1 if the row is not found
 	private int getRow( int objectRef )
 	{
-		JsArray<Element> rows = jqSelect( "tr[ref=\"" + objectRef + "\"]", table.getBodyElement() );
+		JsArray<Element> rows = jqSelect( "tr[ref=\""+objectRef+"\"]", table.getBodyElement() );
 		if( rows.length() > 1 )
 			return -1; // an error actually
 		if( rows.length() == 0 )
 			return -1;
 		Element tr = rows.get( 0 );
-		int row = DOM.getChildIndex( (com.google.gwt.user.client.Element) tr.getParentElement().cast(), (com.google.gwt.user.client.Element) tr.cast() );
-
+		int row = DOM.getChildIndex( (com.google.gwt.user.client.Element)tr.getParentElement().cast(), (com.google.gwt.user.client.Element)tr.cast() );
+		
 		return row;
 	}
-
+	
 	private static native JsArray<Element> jqSelect( String selector, Element element ) /*-{
-																						return $wnd.$( selector, element ).get();
-																						}-*/;
-
-	// returns a printer that can be used for the next call. a new one can be
-	// created
-	// WARNING : assumes the printer table and row fields are correctly
-	// initialized
+		return $wnd.$( selector, element ).get();
+	}-*/;
+	
+	// returns a printer that can be used for the next call. a new one can be created
+	// WARNING : assumes the printer table and row fields are correctly initialized
 	private CellInFlexTablePrinter printRow( T object, CellInFlexTablePrinter printer )
 	{
 		// to reset the edition state, just in case...
-		if( edition != null && refMng.getRef( edition.editedObject ) == refMng.getRef( object ) )
+		if( edition!=null && refMng.getRef(edition.editedObject)==refMng.getRef(object) )
 			killCurrentEdit();
-
+		
 		// each column
-		for( int i = 0; i < columns.size(); i++ )
+		for( int i=0; i<columns.size(); i++ )
 		{
 			printer.col = i;
-
+			
 			boolean fStillInUse = columns.get( i ).prints.print( object, printer );
-
+			
 			// recreate a printer if the old one is still in use by our client
 			if( fStillInUse )
 				printer = new CellInFlexTablePrinter( table, printer.row, 0 );
 		}
-
+		
 		// writes the element reference on the corresponding row element
-		// note that this does not create a hard link to the referenced object
-		// so
+		// note that this does not create a hard link to the referenced object so
 		// no garbage is created here
-
-		// to avoid cases when the colummn has printed nothing and the row
-		// doesnt exist
+		
+		// to avoid cases when the colummn has printed nothing and the row doesnt exist
 		if( table.getRowCount() <= printer.row )
 			table.setText( printer.row, 0, "" );
 		table.getRowFormatter().getElement( printer.row ).setPropertyInt( "ref", refMng.getRef( object ) );
-
+		
 		return printer;
 	}
-
+	
 	private boolean beginEdit( int row, int col )
 	{
-		if( edition != null && getRefAtRow( row ) == refMng.getRef( edition.editedObject ) )
+		if( edition!=null && getRefAtRow(row)==refMng.getRef(edition.editedObject) )
 			return true; // already began !!!
-
+		
 		killCurrentEdit();
-
+		
 		Edits<T> editMng = columns.get( col ).edits;
 		if( editMng == null )
 			return false;
-
+		
 		// find the T object that has been clicked
 		int ref = table.getRowFormatter().getElement( row ).getPropertyInt( "ref" );
 		T object = refMng.getObject( ref );
 		assert object != null;
 		if( object == null )
 			return false;
-
+		
 		Element td = table.getCellFormatter().getElement( row, col );
-
+		
 		edition = new EditionState();
-
+		
 		// initialize and set the current edit
-		// edition.editedRow = row;
+		//edition.editedRow = row;
 		edition.editedCol = col;
 		edition.editedObject = object;
-
+		
 		// create a Printer corresponding to this cell
 		edition.editedPrinter = new CellInFlexTablePrinter( table, row, col );
-
+		
 		edition.editedPrinter = new DynamicTablePrinter( object, col );
-
+		
 		// create an editor and init it
 		// -2 to remove padding : HACK HACK HACK
-		edition.editedEditor = editMng.createEditor( edition.editedObject, edition.editedPrinter, onEdit, td.getOffsetWidth() - 2, td.getClientHeight() - 2 );
-
+		edition.editedEditor = editMng.createEditor( edition.editedObject, edition.editedPrinter, onEdit, td.getOffsetWidth()-2, td.getClientHeight()-2 );
+		
 		return true;
 	}
-
+	
 	private class DynamicTablePrinter implements Printer
 	{
 		CellInFlexTablePrinter impl;
 		int objectRef;
-
+		
 		DynamicTablePrinter( T object, int col )
 		{
 			impl = new CellInFlexTablePrinter( table, -1, col );
 			objectRef = refMng.getRef( object );
 		}
-
+		
 		@Override
-		public void setWidget( Widget widget )
+		public void setWidget(Widget widget)
 		{
 			impl.row = getRow( objectRef );
 			impl.setWidget( widget );
 		}
-
+		
 		@Override
-		public void setText( String text )
+		public void setText(String text)
 		{
 			impl.row = getRow( objectRef );
 			impl.setText( text );
 		}
-
+		
 		@Override
-		public void setHTML( String html )
+		public void setHTML(String html)
 		{
 			impl.row = getRow( objectRef );
 			impl.setHTML( html );
 		}
 	}
-
+	
 	private static class CellPos
 	{
 		int row;
 		int col;
-
+		
 		CellPos( int row, int col )
 		{
 			this.row = row;
 			this.col = col;
 		}
 	}
-
+	
 	private ClickHandler onTableClick = new ClickHandler() {
 		@Override
-		public void onClick( ClickEvent event )
+		public void onClick(ClickEvent event)
 		{
-			// event.preventDefault();
-			// event.stopPropagation();
-
+			//event.preventDefault();
+			//event.stopPropagation();
+			
 			Cell cell = DynArrayInFlexTable.this.table.getCellForEvent( event );
-
+			
 			// if clicking on a cell that is in editing mode, return
-			if( cell != null && edition != null
-					&& (refMng.getRef( edition.editedObject ) == getRefAtRow( cell.getRowIndex() ) && edition.editedCol == cell.getCellIndex()) )
+			if( cell!=null && edition!=null && ( refMng.getRef(edition.editedObject)==getRefAtRow(cell.getRowIndex()) && edition.editedCol==cell.getCellIndex() ) )
 				return;
-
+			
 			killCurrentEdit();
-
+			
 			if( cell == null )
 			{
 				// try to see if it's not on a th element
 				int hdr = table.getHeaderForEvent( event.getNativeEvent() );
 				if( hdr < 0 )
 					return;
-
+				
 				CellClickMng<H> clickMng = columns.get( hdr ).hdrClickMng;
 				if( clickMng == null )
 					return;
-
+				
 				// get the printer, and go
 				Printer printer = table.getHdrPrinter( hdr );
-				clickMng.onTableClick( headerData, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), printer );
-
+				clickMng.onTableClick( headerData, DOM.eventGetTarget(Event.as(event.getNativeEvent())), printer );
+				
 				return;
 			}
-
+			
 			boolean fHandled = false;
-
+			
 			// Tries edition
 			fHandled = beginEdit( cell.getRowIndex(), cell.getCellIndex() );
-
+			
 			// If not handled, tries click manager
-			if( !fHandled )
+			if( ! fHandled )
 			{
 				// if there is a click manager
 				CellClickMng<T> clickMng = columns.get( cell.getCellIndex() ).clicks;
@@ -448,65 +437,67 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 					T object = refMng.getObject( ref );
 					if( object == null )
 						return;
-
+					
 					CellInFlexTablePrinter pr = new CellInFlexTablePrinter( table, cell.getRowIndex(), cell.getCellIndex() );
-
-					fHandled = clickMng.onTableClick( object, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), pr );
+					
+					fHandled = clickMng.onTableClick( object, DOM.eventGetTarget(Event.as(event.getNativeEvent())), pr );
 				}
 			}
 		}
 	};
-
+	
 	private MouseDownHandler onTableMouseDown = new MouseDownHandler() {
 		@Override
-		public void onMouseDown( MouseDownEvent event )
+		public void onMouseDown(MouseDownEvent event)
 		{
 			// try to see if it's not on a th element
 			int hdr = table.getHeaderForEvent( event.getNativeEvent() );
 			if( hdr < 0 )
 				return;
-
-			Element th = table.getEventTargetHeader( Event.as( event.getNativeEvent() ) );
-			DragDrop.initiate( (com.google.gwt.user.client.Element) th, onDragDrop, hdr, Event.as( event.getNativeEvent() ) );
+			
+			Element th = table.getEventTargetHeader( Event.as(event.getNativeEvent()) );
+			DragDrop.initiate( (com.google.gwt.user.client.Element)th, onDragDrop, hdr, Event.as(event.getNativeEvent()) );
 		}
 	};
-
+	
 	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>() {
 		@Override
-		public String getGhostInnerHTML( Integer cookie, Element source )
+		public String getGhostInnerHTML(Integer cookie, Element source)
 		{
 			// TODO Auto-generated method stub
 			return null;
 		}
-
+		
 		@Override
-		public void onDragDropFinished( Integer cookie, com.google.gwt.user.client.Element source, com.google.gwt.user.client.Element destination )
+		public void onDragDropFinished(Integer cookie,
+				com.google.gwt.user.client.Element source,
+				com.google.gwt.user.client.Element destination)
 		{
 			com.google.gwt.user.client.Element th = table.getElementTargetHeader( destination );
 			if( th == null )
 				return;
-
-			int newPos = DOM.getChildIndex( DOM.getParent( th ), th );
-
+			
+			int newPos = DOM.getChildIndex( DOM.getParent(th), th );
+			
 			DynArrayInFlexTableColumnMng<T, H> dum = columns.get( cookie );
 			columns.set( cookie, columns.get( newPos ) );
 			columns.set( newPos, dum );
-
+			
 			printHeaders();
 			// Redraw all objects in the table
 			CellInFlexTablePrinter printer = new CellInFlexTablePrinter( table, 0, 0 );
 			int nbRows = table.getRowCount();
-			for( int r = 0; r < nbRows; r++ )
+			for( int r=0; r<nbRows; r++ )
 			{
 				printer.row = r;
-
+				
 				Element tr = table.getRowFormatter().getElement( r );
 				int ref = tr.getPropertyInt( "ref" );
-				printer = printRow( refMng.getObject( ref ), printer );
+				printer = printRow( refMng.getObject(ref), printer );
 			}
 		}
 	};
-
+	
 	private Edits.Callback onEdit = new Edits.Callback() {
 		@Override
 		public void cancelEdition()
@@ -521,52 +512,50 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 			// that means we let the client continue drawing on its cell
 			if( edition != null && fJumpNext )
 			{
-				CellPos next = getNextPos( getRow( refMng.getRef( edition.editedObject ) ), edition.editedCol );
-
+				CellPos next = getNextPos( getRow(refMng.getRef(edition.editedObject)), edition.editedCol );
+				
 				edition.close();
 				edition = null;
-
+				
 				beginEdit( next.row, next.col );
 			}
 		}
 	};
-
+	
 	// wait a bit to avoid ui jitter...
 	// use refMng in case the data change during the time waited
 	private void killCurrentEdit()
 	{
 		if( edition == null )
 			return;
-
+		
 		// reprints the cell
-		// cols.get( edition.editedCol ).print( edition.editedObject,
-		// edition.editedPrinter );
-
+		//cols.get( edition.editedCol ).print( edition.editedObject, edition.editedPrinter );
+		
 		// reprints the cell, with uptodate data
-		columns.get( edition.editedCol ).prints.print( refMng.getObject( refMng.getRef( edition.editedObject ) ), edition.editedPrinter );
-
+		columns.get( edition.editedCol ).prints.print( refMng.getObject(refMng.getRef(edition.editedObject)), edition.editedPrinter );
+		
 		edition.close();
 		edition = null;
 	}
-
+	
 	private int getInsertPoint( T object )
 	{
 		int nbRows = table.getRowCount();
-		int objectRef = refMng.getRef( object );
-
+		int objectRef= refMng.getRef( object );
+		
 		if( userComparator != null )
 		{
 			// search the insert position
-			for( int i = 0; i < nbRows; i++ )
+			for( int i=0; i<nbRows; i++ )
 			{
 				int refAtRow = getRefAtRow( i );
 				if( userComparator.compare( object, refMng.getObject( refAtRow ) ) <= 0 )
 				{
 					if( refAtRow == objectRef )
 					{
-						// keep the same place only if lesser than th nxt item
-						// or if there is no next
-						if( i + 1 == nbRows )
+						// keep the same place only if lesser than th nxt item or if there is no next
+						if( i+1 == nbRows )
 						{
 							return i;
 						}
@@ -584,81 +573,81 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 				}
 			}
 		}
-
+		
 		return -1;
 	}
-
+	
 	CellPos getNextPos( int row, int col )
 	{
 		// either on the same row
-		for( int c = col + 1; c < columns.size(); c++ )
+		for( int c=col+1; c<columns.size(); c++ )
 		{
-			if( columns.get( c ).edits != null )
+			if( columns.get(c).edits != null )
 				return new CellPos( row, c );
 		}
-
+		
 		// or on the next
-		row = (row + 1) % table.getRowCount();
-		for( int c = 0; c < columns.size(); c++ )
+		row = (row+1) % table.getRowCount();
+		for( int c=0; c<columns.size(); c++ )
 		{
-			if( columns.get( c ).edits != null )
+			if( columns.get(c).edits != null )
 				return new CellPos( row, c );
 		}
-
+		
 		return null;
 	}
-
+	
 	CellPos getPrevPos( int row, int col )
 	{
 		// either on the same row
-		for( int c = col - 1; c >= 0; c-- )
+		for( int c=col-1; c>=0; c-- )
 		{
-			if( columns.get( c ).edits != null )
+			if( columns.get(c).edits != null )
 				return new CellPos( col, c );
 		}
-
+		
 		// or on the previous
-		row = (row + table.getRowCount() - 1) % table.getRowCount();
-		for( int c = columns.size() - 1; c >= 0; c-- )
+		row = (row+table.getRowCount()-1) % table.getRowCount();
+		for( int c=columns.size()-1; c>=0; c-- )
 		{
-			if( columns.get( c ).edits != null )
+			if( columns.get(c).edits != null )
 				return new CellPos( row, c );
 		}
-
+		
 		return null;
 	}
-
+	
 	private KeyDownHandler onTableKeyUp = new KeyDownHandler() {
 		@Override
-		public void onKeyDown( KeyDownEvent event )
+		public void onKeyDown(KeyDownEvent event)
 		{
 			if( event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE )
 			{
 				if( edition == null )
 					return;
-
+				
 				event.stopPropagation();
 				event.preventDefault();
-
+				
 				killCurrentEdit();
 			}
 			else if( event.getNativeKeyCode() == KeyCodes.KEY_TAB )
 			{
 				if( edition == null )
 					return;
-
+				
 				event.stopPropagation();
 				event.preventDefault();
-
+				
 				// find next cell to be edited
-
-				int editionRow = getRow( refMng.getRef( edition.editedObject ) );
+				
+				int editionRow = getRow(refMng.getRef(edition.editedObject));
 				CellPos pos = null;
 				if( event.isShiftKeyDown() )
 					pos = getPrevPos( editionRow, edition.editedCol );
 				else
 					pos = getNextPos( editionRow, edition.editedCol );
-
+				
 				if( pos != null )
 				{
 					beginEdit( pos.row, pos.col );

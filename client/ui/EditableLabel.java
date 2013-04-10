@@ -3,16 +3,11 @@ package com.hexa.client.ui;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Label;
 
-public class EditableLabel<COOKIE> extends EditableWidget<Label, COOKIE>
+public class EditableLabel<COOKIE> extends EditableWidget<Label,COOKIE>
 {
-	public interface Callback<COOKIE> extends EditableWidget.Callback<Label, COOKIE>
-	{
-	}
-
-	public interface OnEditCallback<COOKIE> extends EditableWidget.OnEditCallback<Label, COOKIE>
-	{
-	}
-
+	public interface Callback<COOKIE> extends EditableWidget.Callback<Label,COOKIE> {}
+	public interface OnEditCallback<COOKIE> extends EditableWidget.OnEditCallback<Label,COOKIE> {}
+	
 	public EditableLabel( ImageResource loadingImage, Callback<COOKIE> callback, COOKIE cookie )
 	{
 		super( loadingImage, callback, cookie );

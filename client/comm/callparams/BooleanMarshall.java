@@ -7,7 +7,7 @@ public class BooleanMarshall implements ICallParamMarshall<Boolean>
 {
 	public JSONValue marshall( Boolean value )
 	{
-		return new JSONNumber( (double) (value ? 1 : 0) );
-		// return new JSONString( value ? "1" : "0" );
+		return new JSONNumber( (double)(value ? 1 : 0) );
+		//return new JSONString( value ? "1" : "0" );
 	}
 }
