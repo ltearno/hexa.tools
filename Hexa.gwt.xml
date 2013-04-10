@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.1/distro-source/core/src/gwt-module.dtd">
+<module rename-to='com.hexa'>
+	<inherits name='com.google.gwt.user.User'/>
+	<inherits name="com.google.gwt.http.HTTP" />
+  	<inherits name='com.google.gwt.json.JSON'/>
+  	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
+  	
+  	<source path="client"/>
+  	
+  	<generate-with class="com.hexa.rebind.DataProxyGenerator">
+		<when-type-assignable class="com.hexa.client.comm.DataProxy"/>
+	</generate-with>
+	<generate-with class="com.hexa.rebind.DataProxyJSOGenerator">
+		<when-type-assignable class="com.hexa.client.comm.DataProxyJSO"/>
+	</generate-with>
+	<generate-with class="com.hexa.rebind.DataProxySerializedGenerator">
+		<when-type-assignable class="com.hexa.client.comm.DataProxySerialized"/>
+	</generate-with>
+	<generate-with class="com.hexa.rebind.ServiceGenerator">
+		<when-type-assignable class="com.hexa.client.comm.Service"/>
+	</generate-with>
+	<generate-with class="com.hexa.rebind.DataProxyFastFactoryGenerator">
+		<when-type-assignable class="com.hexa.client.comm.IDataProxyFastFactory"/>
+	</generate-with>
+	
+	<generate-with class="com.hexa.rebind.StackGenerator">
+		<when-type-assignable class="com.hexa.client.comm.Stack"/>
+	</generate-with>
+</module>
