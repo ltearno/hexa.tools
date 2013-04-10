@@ -19,66 +19,65 @@ public class Criteria extends Composite
 	{
 		return CriteriaInternal.getBeautifulText( searchString );
 	}
-
+	
 	boolean fMode; // false == no criteria displayed
 	SimplePanel spot = new SimplePanel();
-
+	
 	Anchor searchButton = new Anchor( "Click to specify your research..." );
-
+	
 	String criteriaSpotId = DOM.createUniqueId();
 	String removeButtonId = DOM.createUniqueId();
-
-	HTMLPanel panel = new HTMLPanel( "<div><a id='" + removeButtonId + "' href='#' style='float:right'>remove</a><div id='" + criteriaSpotId + "'/></div>" );
+	
+	HTMLPanel panel = new HTMLPanel( "<div><a id='"+removeButtonId+"' href='#' style='float:right'>remove</a><div id='"+criteriaSpotId+"'/></div>" );
 	CriteriaInternal realCriteria;
-
+	
 	public Criteria( ICriteriaFieldMng[] criteriaMngs )
 	{
 		realCriteria = new CriteriaInternal( criteriaMngs );
-
+		
 		spot.addStyleName( "FramedPanel" );
 		initWidget( spot );
-
+		
 		panel.add( realCriteria, criteriaSpotId );
 		setMode( false );
-
+		
 		Anchor a = new Anchor( "remove" );
 		a.getElement().getStyle().setFloat( Style.Float.RIGHT );
 		a.addClickHandler( new ClickHandler() {
-			public void onClick( ClickEvent event )
+			public void onClick(ClickEvent event)
 			{
 				event.preventDefault();
 				event.stopPropagation();
 				setMode( false );
 			}
-		} );
+		});
 		panel.addAndReplaceElement( a, removeButtonId );
-
+		
 		searchButton.addClickHandler( new ClickHandler() {
-			public void onClick( ClickEvent event )
-			{
+			public void onClick(ClickEvent event) {
 				setMode( true );
 			}
 		} );
 	}
-
+	
 	public JSONObject getSearchJson()
 	{
-		if( !fMode )
+		if( ! fMode )
 			return null;
-
+		
 		return realCriteria.getSearchJson().isObject();
 	}
-
+	
 	public JavaScriptObject getSearchJs()
 	{
 		JSONObject obj = getSearchJson();
-
+		
 		if( obj == null )
 			return null;
-
+		
 		return obj.getJavaScriptObject();
 	}
-
+	
 	public void setSearchString( GenericJSO jso )
 	{
 		if( jso == null )
@@ -86,15 +85,15 @@ public class Criteria extends Composite
 			setMode( false );
 			return;
 		}
-
+		
 		setMode( true );
 		realCriteria.setSearchString( jso );
 	}
-
+	
 	void setMode( boolean fMode )
 	{
 		this.fMode = fMode;
-
+		
 		if( fMode )
 			spot.setWidget( panel );
 		else

@@ -8,7 +8,7 @@ public class IntMarshall implements ICallParamMarshall<Integer>
 	@Override
 	public JSONValue marshall( Integer value )
 	{
-		return new JSONNumber( (double) value );
+		return new JSONNumber( (double)value );
 	}
 
 }

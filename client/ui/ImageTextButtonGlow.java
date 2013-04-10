@@ -7,34 +7,27 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 
-public class ImageTextButtonGlow extends Composite
-{
+public class ImageTextButtonGlow extends Composite {
 	private ImageResource resource = null;
 	HTML html = new HTML();
-
-	public @UiConstructor
-	ImageTextButtonGlow( ImageResource resource, String title )
-	{
+	
+	public @UiConstructor ImageTextButtonGlow( ImageResource resource, String title ) {
 		this.resource = resource;
-
-		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='" + resource.getURL()
-				+ "'/></div><div class='TestButton-text'>" + title + "</div><div class='TestButton-right'></div></div>" );
+		
+		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='"+resource.getURL()+"'/></div><div class='TestButton-text'>"+title+"</div><div class='TestButton-right'></div></div>" );
 		initWidget( html );
 	}
-
+	
 	public void setText( String text )
 	{
-		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='" + resource.getURL()
-				+ "'/></div><div class='TestButton-text'>" + text + "</div><div class='TestButton-right'></div><br style='clear:both;'/></div>" );
+		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='"+resource.getURL()+"'/></div><div class='TestButton-text'>"+text+"</div><div class='TestButton-right'></div><br style='clear:both;'/></div>" );
 	}
-
-	public void addClickHandler( ClickHandler handler )
-	{
+	
+	public void addClickHandler( ClickHandler handler ) {
 		html.addClickHandler( handler );
 	}
-
-	public boolean isMyClickEvent( ClickEvent event )
-	{
+	
+	public boolean isMyClickEvent( ClickEvent event ) {
 		if( event.getSource() == html )
 			return true;
 		return false;

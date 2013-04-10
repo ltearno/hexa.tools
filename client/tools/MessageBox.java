@@ -8,10 +8,10 @@ public class MessageBox
 	public static void show( String title, String message )
 	{
 		MyDialogBox db = new MyDialogBox();
-
+		
 		db.setTitle( title );
 		db.setWidget( new HTML( message ) );
-
+		
 		db.show();
 	}
 }

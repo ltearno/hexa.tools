@@ -16,102 +16,104 @@ import com.google.gwt.user.client.ui.Widget;
 public class MiracleTable extends FlexTable
 {
 	Element thead = null;
-
-	HashMap<Element, Widget> hdrWidgets = new HashMap<Element, Widget>();
-
+	
+	HashMap<Element,Widget> hdrWidgets = new HashMap<Element, Widget>();
+	
 	public MiracleTable()
 	{
 		super();
-
-		// sinkEvents( Event.ONMOUSEMOVE );
-		// addDomHandler( onMouseMove, MouseMoveEvent.getType() );
+		
+		//sinkEvents( Event.ONMOUSEMOVE );
+		//addDomHandler( onMouseMove, MouseMoveEvent.getType() );
 	}
-
-	/*
-	 * private MouseMoveHandler onMouseMove = new MouseMoveHandler() { public
-	 * void onMouseMove(MouseMoveEvent event) { GWT.log( "on mouse move" ); } };
-	 */
-
+	
+	/*private MouseMoveHandler onMouseMove = new MouseMoveHandler() {
+		public void onMouseMove(MouseMoveEvent event)
+		{
+			GWT.log( "on mouse move" );
+		}
+	};*/
+	
 	public HandlerRegistration addMouseDownHandler( MouseDownHandler handler )
 	{
 		sinkEvents( Event.ONMOUSEDOWN );
 		return addDomHandler( handler, MouseDownEvent.getType() );
 	}
-
+	
 	public Element getBodyElement()
 	{
 		int nbc = getElement().getChildCount();
-		for( int c = 0; c < nbc; c++ )
+		for( int c=0; c<nbc; c++ )
 		{
-			Node node = getElement().getChild( c );
+			Node node = getElement().getChild(c);
 			if( node.getNodeName().equalsIgnoreCase( "tbody" ) )
-				return (Element) (com.google.gwt.dom.client.Element.as( node ));
+				return (Element)(com.google.gwt.dom.client.Element.as( node ));
 		}
 		return null;
 	}
-
+	
 	public Element getHeaderElement()
 	{
 		int nbc = getElement().getChildCount();
-		for( int c = 0; c < nbc; c++ )
+		for( int c=0; c<nbc; c++ )
 		{
-			Node node = getElement().getChild( c );
+			Node node = getElement().getChild(c);
 			if( node.getNodeName().equalsIgnoreCase( "thead" ) )
-				return (Element) (com.google.gwt.dom.client.Element.as( node ));
+				return (Element)(com.google.gwt.dom.client.Element.as( node ));
 		}
 		return null;
 	}
-
+	
 	public HdrInFlexTablePrinter getHdrPrinter( int column )
 	{
 		ensureHeaderCell( column );
 		return new HdrInFlexTablePrinter( this, column );
 	}
-
+	
 	public void setHdrText( int col, String text )
 	{
 		ensureHeaderCell( col );
-
-		Element th = (Element) Element.as( thead.getChild( col ) );
-
+		
+		Element th = (Element) Element.as(thead.getChild(col));
+		
 		clearTH( th, false );
-
+		
 		th.setInnerText( text );
 	}
-
+	
 	public void setHdrHTML( int col, String html )
 	{
 		ensureHeaderCell( col );
-
-		Element th = (Element) Element.as( thead.getChild( col ) );
-
+		
+		Element th = (Element) Element.as(thead.getChild(col));
+		
 		clearTH( th, false );
-
+		
 		th.setInnerHTML( html );
 	}
-
+	
 	public void setHdrWidget( int col, Widget widget )
 	{
 		ensureHeaderCell( col );
-
-		Element th = (Element) Element.as( thead.getChild( col ) );
-
+		
+		Element th = (Element) Element.as(thead.getChild(col));
+		
 		clearTH( th, true );
-
-		if( widget != null )
+		
+		if (widget != null)
 		{
 			widget.removeFromParent();
-
+			
 			// Logical attach.
 			hdrWidgets.put( th, widget );
-
+			
 			// Physical attach.
-			DOM.appendChild( th, widget.getElement() );
-
-			adopt( widget );
+			DOM.appendChild(th, widget.getElement());
+			
+			adopt(widget);
 		}
 	}
-
+	
 	private void clearTH( Element th, boolean fClearHTML )
 	{
 		Widget w = hdrWidgets.remove( th );
@@ -125,72 +127,69 @@ public class MiracleTable extends FlexTable
 				DOM.setInnerHTML( th, "" );
 		}
 	}
-
-	public int getHeaderForEvent( NativeEvent event )
+	
+	
+	public int getHeaderForEvent(NativeEvent event)
 	{
-		Element th = getEventTargetHeader( Event.as( event ) );
-		if( th == null )
+		Element th = getEventTargetHeader(Event.as(event));
+		if (th == null)
 			return -1;
-
-		return DOM.getChildIndex( DOM.getParent( th ), th );
+		
+		return DOM.getChildIndex( DOM.getParent(th), th );
 	}
-
+	
 	public Element getElementTargetHeader( Element th )
 	{
 		Element headElem = getHeaderElement();
-
-		for( ; th != null; th = DOM.getParent( th ) )
-		{
-			if( DOM.getElementProperty( th, "tagName" ).equalsIgnoreCase( "th" ) )
-			{
-				Element head = DOM.getParent( th );
-				if( head == headElem )
-				{
+		
+		for (; th != null; th = DOM.getParent(th)) {
+			if (DOM.getElementProperty(th, "tagName").equalsIgnoreCase("th")) {
+				Element head = DOM.getParent(th);
+				if (head == headElem) {
 					return th;
 				}
 			}
 			// If we run into this table's head, we're out of options.
-			if( th == headElem )
-			{
+			if (th == headElem) {
 				return null;
 			}
 		}
 		return null;
 	}
-
-	public Element getEventTargetHeader( Event event )
+	
+	public Element getEventTargetHeader(Event event)
 	{
-		return getElementTargetHeader( DOM.eventGetTarget( event ) );
+		return getElementTargetHeader( DOM.eventGetTarget(event) );
 	}
 
 	public Element getRowElement( int row )
 	{
 		return getRowFormatter().getElement( row );
 	}
-
+	
 	private void ensureHeader()
 	{
 		if( thead != null )
 			return;
-
+		
 		thead = DOM.createTHead();
-
+		
 		getElement().insertBefore( thead, getBodyElement() );
 	}
-
+	
 	private void ensureHeaderCell( int col )
 	{
 		ensureHeader();
-
+		
 		while( thead.getChildCount() <= col )
 			thead.appendChild( DOM.createTH() );
 	}
-
+	
 	public static class HdrInFlexTablePrinter implements Printer
 	{
 		MiracleTable table;
 		int col;
-
+		
 		HdrInFlexTablePrinter( MiracleTable table, int col )
 		{
 			this.table = table;
@@ -204,13 +203,13 @@ public class MiracleTable extends FlexTable
 		}
 
 		@Override
-		public void setText( String text )
+		public void setText(String text)
 		{
 			table.setHdrText( col, text );
 		}
 
 		@Override
-		public void setWidget( Widget widget )
+		public void setWidget(Widget widget)
 		{
 			table.setHdrWidget( col, widget );
 		}

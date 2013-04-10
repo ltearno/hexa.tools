@@ -15,9 +15,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.resources.client.ImageResource;
 
+
 /**
  * @author Arnaud
- * 
+ *
  */
 public class TreeTable extends TreeTableBase
 {
@@ -26,12 +27,12 @@ public class TreeTable extends TreeTableBase
 	{
 		super();
 	}
-
+	
 	public TreeTable()
 	{
 		super();
 	}
-
+	
 	public void setText( Object item, int column, String text )
 	{
 		if( column == 0 )
@@ -39,17 +40,17 @@ public class TreeTable extends TreeTableBase
 		else
 			super.setText( item, column, text );
 	}
-
+	
 	public void setText( Object item, int column, int text )
 	{
-		setText( item, column, String.valueOf( text ) );
+		setText( item, column, String.valueOf(text) );
 	}
-
+	
 	public void setText( Object item, int column, double text )
 	{
-		setText( item, column, String.valueOf( text ) );
+		setText( item, column, String.valueOf(text) );
 	}
-
+	
 	public void setHTML( Object item, int column, String text )
 	{
 		if( column == 0 )
@@ -57,52 +58,52 @@ public class TreeTable extends TreeTableBase
 		else
 			super.setHTML( item, column, text );
 	}
-
+	
 	public void setWidget( Object item, int column, Widget w )
 	{
 		if( column == 0 )
-			w = new ExpShrinkWidget( (TreeTableBase.Item) item, w );
-
+			w = new ExpShrinkWidget( (TreeTableBase.Item)item, w );
+		
 		super.setWidget( item, column, w );
 	}
-
+	
 	class ExpShrinkWidget extends Composite implements TreeTableBase.IItemStateCallback, ClickHandler
 	{
 		TreeTableBase.Item item;
-
+		
 		ImageResource treePlus = HexaFramework.images.treePlus();
 		ImageResource treeMinus = HexaFramework.images.treeMinus();
 		ImageResource blank = HexaFramework.images.blank();
-
+		
 		ImageButton im = new ImageButton( blank, "Expand" );
-
+		
 		public ExpShrinkWidget( Item item, Widget child )
 		{
 			this.item = item;
-
+			
 			HorizontalPanel panel = new HorizontalPanel();
 			panel.add( im );
 			panel.add( child );
 			initWidget( panel );
-
+			
 			item.addStateChangeCallback( this );
 			update();
-
+			
 			im.addClickHandler( this );
 		}
-
+		
 		void update()
 		{
 			if( item.getChilds().size() == 0 )
 			{
 				im.getElement().getStyle().setDisplay( Display.NONE );
-				// im.setResource( blank );
+				//im.setResource( blank );
 				return;
 			}
-
+			
 			im.getElement().getStyle().clearDisplay();
-
-			if( !item.getExpanded() )
+			
+			if( ! item.getExpanded() )
 				im.setResource( treePlus );
 			else
 				im.setResource( treeMinus );
@@ -115,12 +116,12 @@ public class TreeTable extends TreeTableBase
 		}
 
 		@Override
-		public void onClick( ClickEvent event )
+		public void onClick(ClickEvent event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
-
-			item.setExpanded( !item.getExpanded() );
+			
+			item.setExpanded( ! item.getExpanded() );
 		}
 	}
 }

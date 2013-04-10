@@ -7,7 +7,7 @@ import com.google.gwt.user.client.DOM;
 public class HTMLSniper
 {
 	HashMap<String, String> elementIds = new HashMap<String, String>();
-
+	
 	String getId( String name )
 	{
 		String res = elementIds.get( name );
@@ -16,7 +16,7 @@ public class HTMLSniper
 			res = DOM.createUniqueId();
 			elementIds.put( name, res );
 		}
-
+		
 		return res;
 	}
 }

@@ -10,14 +10,13 @@ public class MyPopupPanel extends PopupPanel
 	{
 		this( autoHide, false );
 	}
-
 	public MyPopupPanel( boolean autoHide, boolean modal )
 	{
 		super( autoHide, modal );
-
+		
 		setStylePrimaryName( "hexa-PopupPanel" );
 	}
-
+	
 	public HandlerRegistration addCloseHandler( CloseHandler<PopupPanel> handler )
 	{
 		return super.addCloseHandler( handler );

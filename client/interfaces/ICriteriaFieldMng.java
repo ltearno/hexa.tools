@@ -8,10 +8,8 @@ public interface ICriteriaFieldMng
 	{
 		void onValueChange( String newValue );
 	}
-
+	
 	public Widget getValueWidget( final String value, final Callback callback );
-
 	public String getDisplayName();
-
 	public String getField();
 }

@@ -13,30 +13,30 @@ public class DateTimeSelector extends Composite
 {
 	DateSelector date = new DateSelector();
 	TimeSelector time = new TimeSelector();
-
+	
 	boolean fCallbackSet = false;
-
+	
 	ArrayList<IValueChangeHandler<HexaDateTime>> handlers = new ArrayList<IValueChangeHandler<HexaDateTime>>();
-
+	
 	public DateTimeSelector()
 	{
 		HTMLStream stream = new HTMLStream();
 		stream.addInline( date ).text( " at " ).addInline( time );
-
+		
 		initWidget( stream );
 	}
-
+	
 	public void clear()
 	{
 		date.clear();
 		time.clear();
 	}
-
+	
 	public HexaDateTime getDateTime()
 	{
 		return new HexaDateTime( date.getDate(), time.getTime() );
 	}
-
+	
 	public void setDateTime( HexaDateTime hexaDateTime )
 	{
 		if( hexaDateTime == null )
@@ -44,41 +44,41 @@ public class DateTimeSelector extends Composite
 			clear();
 			return;
 		}
-
+		
 		date.setDate( hexaDateTime.getHexaDate() );
 		time.setTime( hexaDateTime.getHexaTime() );
 	}
-
+	
 	public void setDateTime( HexaDateTime dateTime, boolean fFireEvent )
 	{
 		setDateTime( dateTime );
-
+		
 		if( fFireEvent )
 			fire( dateTime );
 	}
-
+	
 	public void addValueChangeHandler( IValueChangeHandler<HexaDateTime> handler )
 	{
-		if( !fCallbackSet )
+		if( ! fCallbackSet )
 		{
 			date.addValueChangeHandler( new IValueChangeHandler<HexaDate>() {
-				public void onValueChange( HexaDate value )
+				public void onValueChange(HexaDate value)
 				{
 					changed();
 				}
 			} );
 			time.addValueChangeHandler( new IValueChangeHandler<HexaTime>() {
-				public void onValueChange( HexaTime value )
+				public void onValueChange(HexaTime value)
 				{
 					changed();
 				}
 			} );
 			fCallbackSet = true;
 		}
-
+		
 		handlers.add( handler );
 	}
-
+	
 	private void fire( HexaDateTime dateTime )
 	{
 		for( IValueChangeHandler<HexaDateTime> handler : handlers )
@@ -88,7 +88,7 @@ public class DateTimeSelector extends Composite
 	void changed()
 	{
 		HexaDateTime time = getDateTime();
-
+		
 		fire( time );
 	}
 }

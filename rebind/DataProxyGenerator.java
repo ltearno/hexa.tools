@@ -25,25 +25,24 @@ public class DataProxyGenerator extends Generator
 	private String genMethodPrototype( JMethod method )
 	{
 		StringBuilder sb = new StringBuilder();
-
+		
 		sb.append( "public " + method.getReturnType().getParameterizedQualifiedSourceName() + " " + method.getName() + "( " );
-
-		for( int i = 0; i < method.getParameters().length; i++ )
+		
+		for( int i=0; i<method.getParameters().length; i++ )
 		{
 			JParameter param = method.getParameters()[i];
 			sb.append( param.getType().getParameterizedQualifiedSourceName() + " " + param.getName() );
 			if( i < method.getParameters().length - 1 )
 				sb.append( ", " );
 		}
-
+		
 		sb.append( " )" );
-
+		
 		return sb.toString();
 	}
-
+	
 	// HexaDate fields
 	HashMap<String, String> hexaDateFields = new HashMap<String, String>();
-
 	String registerHexaDateVariable( String fieldName )
 	{
 		String variableName = hexaDateFields.get( fieldName );
@@ -54,16 +53,14 @@ public class DataProxyGenerator extends Generator
 		}
 		return variableName;
 	}
-
 	void generateHexaDateVariables( SourceWriter sw )
 	{
 		for( String variableName : hexaDateFields.values() )
 			sw.println( "HexaDate " + variableName + " = null;" );
 	}
-
+	
 	// HexaTime fields
 	HashMap<String, String> hexaTimeFields = new HashMap<String, String>();
-
 	String registerHexaTimeVariable( String fieldName )
 	{
 		String variableName = hexaTimeFields.get( fieldName );
@@ -74,16 +71,14 @@ public class DataProxyGenerator extends Generator
 		}
 		return variableName;
 	}
-
 	void generateHexaTimeVariables( SourceWriter sw )
 	{
 		for( String variableName : hexaTimeFields.values() )
 			sw.println( "HexaTime " + variableName + " = null;" );
 	}
-
+	
 	// HexaDateTime fields
 	HashMap<String, String> hexaDateTimeFields = new HashMap<String, String>();
-
 	String registerHexaDateTimeVariable( String fieldName )
 	{
 		String variableName = hexaDateTimeFields.get( fieldName );
@@ -94,38 +89,38 @@ public class DataProxyGenerator extends Generator
 		}
 		return variableName;
 	}
-
 	void generateHexaDateTimeVariables( SourceWriter sw )
 	{
 		for( String variableName : hexaDateTimeFields.values() )
 			sw.println( "HexaDateTime " + variableName + " = null;" );
 	}
-
+	
 	@Override
-	public String generate( TreeLogger logger, GeneratorContext context, String requestedClass ) throws UnableToCompleteException
+	public String generate( TreeLogger logger, GeneratorContext context, String requestedClass )
+	throws UnableToCompleteException
 	{
-		logger.log( TreeLogger.INFO, "Generate '" + requestedClass, null );
-
+		logger.log( TreeLogger.INFO, "Generate '" + requestedClass , null );
+		
 		TypeOracle typeOracle = context.getTypeOracle();
-
+		
 		JClassType requestedType = typeOracle.findType( requestedClass );
-		if( requestedType == null )
+		if (requestedType == null)
 		{
 			logger.log( TreeLogger.ERROR, "Type '" + requestedClass + "' has not been found by the Oracle", null );
 			throw new UnableToCompleteException();
 		}
-
+		
 		String className = requestedType.getName() + "Impl";
 		String fullClassName = requestedClass + "Impl";
 		String packageName = requestedType.getPackage().getName();
-
+		
 		PrintWriter printWriter = context.tryCreate( logger, packageName, className );
-		if( printWriter == null )
-		{
+		if (printWriter == null) {
 			logger.log( TreeLogger.DEBUG, requestedClass + " : CANNOT CREATE PRINT WRITER", null );
 			return fullClassName;
 		}
-
+		
+		
 		// Get type parameters informations so that we generate a fitting class
 		String parameterizedTypeExt = "";
 		String typeExt = "";
@@ -136,7 +131,7 @@ public class DataProxyGenerator extends Generator
 			typeExt = "<";
 			JTypeParameter[] tps = genericType.getTypeParameters();
 			boolean needComa = false;
-			for( int i = 0; i < tps.length; i++ )
+			for( int i=0; i<tps.length; i++ )
 			{
 				if( needComa )
 				{
@@ -144,20 +139,20 @@ public class DataProxyGenerator extends Generator
 					typeExt += ", ";
 				}
 				needComa = true;
-
+				
 				JTypeParameter tp = tps[i];
-
+				
 				parameterizedTypeExt += tp.getName() + " extends ";
 				typeExt += tp.getName();
-
+				
 				JClassType[] cts = tp.getBounds();
 				boolean needAnd = false;
-				for( int j = 0; j < cts.length; j++ )
+				for( int j=0; j<cts.length; j++ )
 				{
 					if( needAnd )
 						parameterizedTypeExt += " & ";
 					needAnd = true;
-
+					
 					JClassType ct = cts[j];
 					parameterizedTypeExt += ct.getName();
 				}
@@ -165,8 +160,9 @@ public class DataProxyGenerator extends Generator
 			parameterizedTypeExt += ">";
 			typeExt += ">";
 		}
-
-		ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory( packageName, className + parameterizedTypeExt );
+		
+		
+		ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory( packageName, className+parameterizedTypeExt );
 		composerFactory.addImport( "com.google.gwt.core.client.GWT" );
 		composerFactory.addImport( "com.hexa.client.comm.DataProxy" );
 		composerFactory.addImport( "com.hexa.client.comm.GenericJSO" );
@@ -177,26 +173,25 @@ public class DataProxyGenerator extends Generator
 		composerFactory.addImport( "com.hexa.client.common.HexaTime" );
 		composerFactory.addImport( "com.hexa.client.common.HexaDateTime" );
 		composerFactory.addImport( "com.google.gwt.core.client.JavaScriptObject" );
-		composerFactory.addImplementedInterface( requestedClass + typeExt );
-
+		composerFactory.addImplementedInterface( requestedClass+typeExt );
+		
 		SourceWriter sw = composerFactory.createSourceWriter( context, printWriter );
 		if( sw == null )
 		{
-			// logger.log( TreeLogger.WARN, requestedClass +
-			// " : CANNOT CREATE SOURCEWRITER", null );
+			//logger.log( TreeLogger.WARN, requestedClass + " : CANNOT CREATE SOURCEWRITER", null );
 			return fullClassName; // null, already generated
 		}
-
+		
 		sw.println( "private GenericJSO jso = null;" );
-
+		
 		JMethod[] methods = requestedType.getMethods();
-
+		
 		sw.println( "public void init( GenericJSO jso ) {" );
 		sw.indent();
 		sw.println( "this.jso = jso;" );
 		sw.outdent();
 		sw.println( "}" );
-
+		
 		for( JMethod method : methods )
 		{
 			FieldName fnAnnotation = method.getAnnotation( FieldName.class );
@@ -214,50 +209,43 @@ public class DataProxyGenerator extends Generator
 				String methodPrototype = genMethodPrototype( method );
 				sw.println( methodPrototype );
 				sw.println( "{" );
-				// sw.println( "public " +
-				// method.getReturnType().getParameterizedQualifiedSourceName()
-				// + " " + method.getName() + "() {" );
+				//sw.println( "public " + method.getReturnType().getParameterizedQualifiedSourceName() + " " + method.getName() + "() {" );
 				sw.indent();
-
-				if( method.getReturnType().getSimpleSourceName().compareTo( "HexaDate" ) == 0 )
+				
+				if( method.getReturnType().getSimpleSourceName().compareTo("HexaDate") == 0 )
 				{
 					String variableName = registerHexaDateVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDate( jso.getString( \"" + fnAnnotation.fieldName()
-							+ "\" ) );" );
-					sw.println( "return " + variableName + ";" );
+					sw.println( "if( "+variableName+" == null ) "+variableName+" = new HexaDate( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
+					sw.println( "return "+variableName+";" );
 				}
-				else if( method.getReturnType().getSimpleSourceName().compareTo( "HexaTime" ) == 0 )
+				else if( method.getReturnType().getSimpleSourceName().compareTo("HexaTime") == 0 )
 				{
 					String variableName = registerHexaTimeVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaTime( jso.getString( \"" + fnAnnotation.fieldName()
-							+ "\" ) );" );
-					sw.println( "return " + variableName + ";" );
-
-					// sw.println( "return new HexaTime( jso.getString( \"" +
-					// fnAnnotation.fieldName() + "\" ) );" );
+					sw.println( "if( "+variableName+" == null ) "+variableName+" = new HexaTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
+					sw.println( "return "+variableName+";" );
+					
+					//sw.println( "return new HexaTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
 				}
-				else if( method.getReturnType().getSimpleSourceName().compareTo( "HexaDateTime" ) == 0 )
+				else if( method.getReturnType().getSimpleSourceName().compareTo("HexaDateTime") == 0 )
 				{
 					String variableName = registerHexaDateTimeVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName()
-							+ "\" ) );" );
-					sw.println( "return " + variableName + ";" );
-
-					// sw.println( "return new HexaDateTime( jso.getString( \""
-					// + fnAnnotation.fieldName() + "\" ) );" );
+					sw.println( "if( "+variableName+" == null ) "+variableName+" = new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
+					sw.println( "return "+variableName+";" );
+					
+					//sw.println( "return new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
 				}
 				else if( isJSOType( method.getReturnType() ) )
 				{
 					sw.println( "return jso.getGenericJSO( \"" + fnAnnotation.fieldName() + "\" ).cast();" );
 				}
-				else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
+				else if( ! method.getReturnType().getSimpleSourceName().equals("ArrayList") )
 				{
 					String jsoType = method.getReturnType().getSimpleSourceName();
-					if( method.getReturnType().getSimpleSourceName().compareTo( "int" ) == 0 )
+					if( method.getReturnType().getSimpleSourceName().compareTo("int") == 0 )
 						jsoType = "Int";
-					if( method.getReturnType().getSimpleSourceName().compareTo( "boolean" ) == 0 )
+					if( method.getReturnType().getSimpleSourceName().compareTo("boolean") == 0 )
 						jsoType = "Boolean";
-					if( method.getReturnType().getSimpleSourceName().compareTo( "double" ) == 0 )
+					if( method.getReturnType().getSimpleSourceName().compareTo("double") == 0 )
 						jsoType = "Double";
 					sw.println( "return jso.get" + jsoType + "( \"" + fnAnnotation.fieldName() + "\" );" );
 				}
@@ -265,34 +253,34 @@ public class DataProxyGenerator extends Generator
 				{
 					JParameterizedType ptype = method.getReturnType().isParameterized();
 					JClassType[] typeArgs = ptype.getTypeArgs();
-					assert (typeArgs.length == 1);
+					assert( typeArgs.length == 1 );
 					String type = typeArgs[0].getParameterizedQualifiedSourceName();
 					String field = fnAnnotation.fieldName();
-
-					sw.println( "ArrayList<" + type + "> res = new ArrayList<" + type + ">();" );
-					sw.println( "JsArray<GenericJSO> jsos = jso.getArray( \"" + field + "\" );" );
+					
+					sw.println( "ArrayList<"+type+"> res = new ArrayList<"+type+">();" );
+					sw.println( "JsArray<GenericJSO> jsos = jso.getArray( \""+field+"\" );" );
 					sw.println( "for( int i=0; i<jsos.length(); i++ ) {" );
-					sw.println( "	" + type + " elem = GWT.create( " + type + ".class );" );
+					sw.println( "	"+type+" elem = GWT.create( "+type+".class );" );
 					sw.println( "	elem.init( jsos.get(i) );" );
 					sw.println( "	res.add( elem );" );
 					sw.println( "}" );
 					sw.println( "return res;" );
 				}
-
+				
 				sw.outdent();
 				sw.println( "}" );
 			}
 		}
-
+		
 		generateHexaDateVariables( sw );
 		generateHexaTimeVariables( sw );
 		generateHexaDateTimeVariables( sw );
-
+		
 		sw.commit( logger );
-
+		
 		return fullClassName;
 	}
-
+	
 	boolean isJSOType( JType type )
 	{
 		JClassType cType = type.isClass();
@@ -300,19 +288,18 @@ public class DataProxyGenerator extends Generator
 			cType = type.isInterface();
 		if( cType == null )
 			return false;
-
-		for( JClassType t = cType; t != null; t = t.getSuperclass() )
+		
+		for( JClassType t=cType; t!=null; t=t.getSuperclass() )
 		{
-			// sw.println( "// supertype : " + t.getSimpleSourceName() );
+			//sw.println( "// supertype : " + t.getSimpleSourceName() );
 			JTypeParameter typeParam = t.isTypeParameter();
 			if( typeParam != null )
 			{
-				// sw.println( "// which is a type parameter" );
+				//sw.println( "// which is a type parameter" );
 				JClassType[] bounds = typeParam.getBounds();
-				for( int b = 0; b < bounds.length; b++ )
+				for( int b=0; b<bounds.length; b++ )
 				{
-					// sw.println( "// which is bound to : " +
-					// bounds[b].getSimpleSourceName() );
+					//sw.println( "// which is bound to : " + bounds[b].getSimpleSourceName() );
 					if( bounds[b].getSimpleSourceName().compareTo( "JavaScriptObject" ) == 0 )
 						return true;
 				}
@@ -320,7 +307,7 @@ public class DataProxyGenerator extends Generator
 			if( t.getSimpleSourceName().compareTo( "JavaScriptObject" ) == 0 )
 				return true;
 		}
-
+		
 		return false;
 	}
 }

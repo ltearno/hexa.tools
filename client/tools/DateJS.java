@@ -27,7 +27,7 @@ public class DateJS
 		
 		return object;
 	}-*/;
-
+	
 	// gives the value of the date in DB UTC format
 	public final static native String toConformity( JavaScriptObject date )
 	/*-{

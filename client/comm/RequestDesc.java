@@ -1,6 +1,7 @@
 package com.hexa.client.comm;
 
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
 public class RequestDesc
@@ -9,14 +10,14 @@ public class RequestDesc
 	String interfaceChecksum;
 	String method = null;
 	JSONArray params = null;
-
+	
 	String key = null;
-
+	
 	public RequestDesc( String service, String interfaceChecksum, int method, JSONArray params )
 	{
-		this( service, interfaceChecksum, String.valueOf( method ), params );
+		this( service, interfaceChecksum, String.valueOf(method), params );
 	}
-
+	
 	public RequestDesc( String service, String interfaceChecksum, String method, JSONArray params )
 	{
 		this.service = service;
@@ -24,25 +25,27 @@ public class RequestDesc
 		this.method = method;
 		this.params = params;
 	}
-
+	
 	public String getUniqueKey()
 	{
 		if( key == null )
 			key = _getUniqueKey();
-
+		
 		return key;
 	}
-
-	public JSONArray getJson()
+	
+	public JSONObject getJson()
 	{
-		JSONArray obj = new JSONArray();
-
-		obj.set( 0, new JSONString( method ) );
-		obj.set( 1, params );
-
+		JSONObject obj = new JSONObject();
+		
+		obj.put( "service", new JSONString( service ) );
+		obj.put( "checksum", new JSONString( interfaceChecksum ) );
+		obj.put( "method", new JSONString( method ) );
+		obj.put( "params", params );
+		
 		return obj;
 	}
-
+	
 	// calculate the unique key of that request
 	private String _getUniqueKey()
 	{
@@ -55,7 +58,7 @@ public class RequestDesc
 			b.append( "#" );
 			b.append( params.toString() );
 		}
-
+		
 		return b.toString();
 	}
 }

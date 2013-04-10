@@ -14,96 +14,92 @@ public class SidePanel extends SimplePanel implements ClickHandler
 {
 	Element contentElement;
 	String contentElementId = DOM.createUniqueId();
-
+	
 	Callback callback;
-
+	
 	boolean fShowState = false;
-
+	
 	public interface Callback
 	{
 		void onWantClose();
 	}
-
+	
 	public SidePanel( Callback callback )
 	{
 		super( DOM.createDiv() );
 		getElement().setClassName( "SidePanel" );
-
+		
 		this.callback = callback;
-
+		
 		contentElement = DOM.createDiv();
 		contentElement.setId( contentElementId );
 		Element e = getElement();
 		e.appendChild( contentElement );
 
 		CloseButton closeButton = new CloseButton();
-
+		
 		getElement().getStyle().setDisplay( Display.NONE );
 		RootPanel.get().add( this );
-
+		
 		attachCloseWidget( closeButton );
 	}
-
+	
 	class CloseButton extends Widget implements ClickHandler
 	{
 		public CloseButton()
 		{
 			Element e = DOM.createDiv();
 			e.setClassName( "SidePanelCloseButton" );
-
+			
 			setElement( e );
-
+			
 			addDomHandler( this, ClickEvent.getType() );
 		}
 
 		@Override
-		public void onClick( ClickEvent event )
+		public void onClick(ClickEvent event)
 		{
 			callback.onWantClose();
 		}
 	}
-
+	
 	Widget closeWidget = null;
-
 	private void attachCloseWidget( Widget w )
 	{
 		w.removeFromParent();
-
+		
 		if( closeWidget != null )
 		{
-			try
-			{
+			try {
 				orphan( closeWidget );
-			}
-			finally
-			{
+			} finally {
 				getElement().removeChild( closeWidget.getElement() );
-
+				
 				closeWidget = null;
 			}
 		}
-
+		
 		closeWidget = w;
-
+		
 		if( w != null )
 		{
 			DOM.appendChild( getElement(), w.getElement() );
-
+			
 			adopt( w );
 		}
 	}
-
+	
 	public void show()
 	{
 		if( fShowState )
 			return;
-
+		
 		Animation anim = new Animation() {
-			protected void onUpdate( double progress )
+			protected void onUpdate(double progress)
 			{
-				getElement().getStyle().setOpacity( interpolate( progress ) );
+				getElement().getStyle().setOpacity( interpolate(progress) );
 			}
-
+			
 			protected void onComplete()
 			{
 				fShowState = true;
@@ -112,18 +108,18 @@ public class SidePanel extends SimplePanel implements ClickHandler
 		anim.run( 1000 );
 		getElement().getStyle().setDisplay( Display.BLOCK );
 	}
-
+	
 	public void hide()
 	{
-		if( !fShowState )
+		if( ! fShowState )
 			return;
-
+		
 		Animation anim = new Animation() {
-			protected void onUpdate( double progress )
+			protected void onUpdate(double progress)
 			{
-				getElement().getStyle().setOpacity( 1.0 - interpolate( progress ) );
+				getElement().getStyle().setOpacity( 1.0 - interpolate(progress) );
 			}
-
+			
 			protected void onComplete()
 			{
 				getElement().getStyle().setDisplay( Display.NONE );
@@ -132,24 +128,24 @@ public class SidePanel extends SimplePanel implements ClickHandler
 		};
 		anim.run( 1000 );
 	}
-
+	
 	protected com.google.gwt.user.client.Element getContainerElement()
 	{
 		return DOM.getElementById( contentElementId );
 	}
-
+	
 	public void kill()
 	{
 		RootPanel.get().remove( this );
 	}
 
 	@Override
-	public void onClick( ClickEvent event )
+	public void onClick(ClickEvent event)
 	{
-
-		// if( event.getSource() == closeButton )
-		// {
-		// Window.alert( event.getNativeEvent().toString() );
-		// }
+		
+		//if( event.getSource() == closeButton )
+		//{
+		//	Window.alert( event.getNativeEvent().toString() );
+		//}
 	}
 }

@@ -12,32 +12,31 @@ public class ImageButton extends Image implements ClickHandler
 	{
 		void onClick( Object cookie );
 	}
-
+	
 	Object cookie = null;
 	Callback callback = null;
-
-	public @UiConstructor
-	ImageButton( ImageResource resource, String title )
+	
+	public @UiConstructor ImageButton( ImageResource resource, String title )
 	{
 		super( resource );
 		setTitle( title );
-
+		
 		addStyleName( "ImageButton" );
 	}
-
+	
 	public void setCallback( Callback callback, Object cookie )
 	{
 		this.callback = callback;
 		this.cookie = cookie;
-
+		
 		addClickHandler( this );
 	}
-
+	
 	@Override
-	public void onClick( ClickEvent event )
+	public void onClick(ClickEvent event)
 	{
-		assert (callback != null);
-
+		assert( callback != null );
+		
 		callback.onClick( cookie );
 	}
 }

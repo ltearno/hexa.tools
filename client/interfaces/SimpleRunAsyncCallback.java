@@ -5,7 +5,5 @@ import com.google.gwt.core.client.RunAsyncCallback;
 public abstract class SimpleRunAsyncCallback implements RunAsyncCallback
 {
 	@Override
-	public void onFailure( Throwable reason )
-	{
-	}
+	public void onFailure(Throwable reason) {}
 }

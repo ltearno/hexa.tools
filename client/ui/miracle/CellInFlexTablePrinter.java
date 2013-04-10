@@ -8,7 +8,7 @@ class CellInFlexTablePrinter implements Printer
 	FlexTable table;
 	int row;
 	int col;
-
+	
 	public CellInFlexTablePrinter( FlexTable table, int row, int col )
 	{
 		this.table = table;
@@ -19,21 +19,21 @@ class CellInFlexTablePrinter implements Printer
 	@Override
 	public void setHTML( String html )
 	{
-		if( (table.getRowCount() > row) && (table.getCellCount( row ) > col) )
+		if( ( table.getRowCount() > row ) && ( table.getCellCount( row ) > col ) )
 			table.clearCell( row, col );
 		table.setHTML( row, col, html );
 	}
 
 	@Override
-	public void setText( String text )
+	public void setText(String text)
 	{
-		if( (table.getRowCount() > row) && (table.getCellCount( row ) > col) )
+		if( ( table.getRowCount() > row ) && ( table.getCellCount( row ) > col ) )
 			table.clearCell( row, col );
 		table.setText( row, col, text );
 	}
 
 	@Override
-	public void setWidget( Widget widget )
+	public void setWidget(Widget widget)
 	{
 		table.setWidget( row, col, widget );
 	}
