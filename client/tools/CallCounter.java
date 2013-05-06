@@ -1,33 +1,25 @@
 package com.hexa.client.tools;
 
+/*
+ * This class is useful when wanting to wait for multiple callbacks
+ */
+
 public abstract class CallCounter
 {
-	public abstract void finalCall();
+	protected abstract void onFinish();
 
-	int c = 0;
-
-	public void reset()
-	{
-		c = 0;
-	}
+	private int count = 0;
 
 	public void add()
 	{
-		c++;
+		count++;
 	}
 
 	public void rem()
 	{
-		c--;
-		check();
-	}
+		count--;
 
-	public void check()
-	{
-		if( c == 0 )
-		{
-			finalCall();
-			c = -1;
-		}
+		if( count == 0 )
+			onFinish();
 	}
 }

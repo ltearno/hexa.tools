@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.hexa.client.interfaces.IAsyncCallback;
 import com.hexa.client.interfaces.SimpleAsyncCallback;
 import com.hexa.client.tools.CallCounter;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class TableServiceBase<T>
 {
@@ -53,12 +53,15 @@ public abstract class TableServiceBase<T>
 			this.param = param;
 			this.callback = callback;
 			this.cookie = cookie;
-			command = new ITableCommand<T>() {
+			command = new ITableCommand<T>()
+			{
+				@Override
 				public boolean isLoaded()
 				{
 					return fWholeTableLoaded;
 				}
 
+				@Override
 				public void waitLoaded( IAsyncCallback<Integer> callback )
 				{
 					if( fWholeTableLoaded )
@@ -72,6 +75,7 @@ public abstract class TableServiceBase<T>
 					waitingLoaded.add( callback );
 				}
 
+				@Override
 				public void quit()
 				{
 					// GWT.log( "TableServiceBase "+logName+" client leaving..."
@@ -79,6 +83,7 @@ public abstract class TableServiceBase<T>
 					clients.remove( ClientInfo.this );
 				}
 
+				@Override
 				public void askRefreshTable()
 				{
 					if( fWholeTableLoaded )
@@ -96,7 +101,9 @@ public abstract class TableServiceBase<T>
 						else
 						{
 							fFullLoadRequested = true;
-							doGetRecords( new SimpleAsyncCallback<Iterable<T>>() {
+							doGetRecords( new SimpleAsyncCallback<Iterable<T>>()
+							{
+								@Override
 								public void onSuccess( Iterable<T> result )
 								{
 									records.clear();
@@ -131,18 +138,21 @@ public abstract class TableServiceBase<T>
 					}
 				}
 
+				@Override
 				public T getRecord( int recordId )
 				{
 					assert (fWholeTableLoaded);
 					return records.get( recordId );
 				}
 
+				@Override
 				public Iterable<T> getRecords()
 				{
 					assert (fWholeTableLoaded);
 					return records.values();
 				}
 
+				@Override
 				public boolean isEmpty()
 				{
 					assert (fWholeTableLoaded);
@@ -202,6 +212,7 @@ public abstract class TableServiceBase<T>
 				this.raw = raw;
 			}
 
+			@Override
 			public Iterator<T> iterator()
 			{
 				class FilteredIterator implements Iterator<T>
@@ -214,11 +225,13 @@ public abstract class TableServiceBase<T>
 						prepareNextElem();
 					}
 
+					@Override
 					public boolean hasNext()
 					{
 						return nextElem != null;
 					}
 
+					@Override
 					public T next()
 					{
 						T curElem = nextElem;
@@ -242,6 +255,7 @@ public abstract class TableServiceBase<T>
 						}
 					}
 
+					@Override
 					public void remove()
 					{
 						assert (false) : "remove is not allowed ...";
@@ -270,7 +284,9 @@ public abstract class TableServiceBase<T>
 
 	protected AsyncCallback<T> getAddInternalCallback( final IAsyncCallback<T> callback )
 	{
-		return new SimpleAsyncCallback<T>() {
+		return new SimpleAsyncCallback<T>()
+		{
+			@Override
 			public void onSuccess( T result )
 			{
 				if( result == null )
@@ -289,7 +305,9 @@ public abstract class TableServiceBase<T>
 
 	public void delete( final int recordId )
 	{
-		doDeleteRecord( recordId, new SimpleAsyncCallback<Integer>() {
+		doDeleteRecord( recordId, new SimpleAsyncCallback<Integer>()
+		{
+			@Override
 			public void onSuccess( Integer result )
 			{
 				if( result < 0 )
@@ -320,7 +338,9 @@ public abstract class TableServiceBase<T>
 				add();
 
 				add();
-				doUpdateField( recordId, fieldName, wantedValue, new SimpleAsyncCallback<String>() {
+				doUpdateField( recordId, fieldName, wantedValue, new SimpleAsyncCallback<String>()
+				{
+					@Override
 					public void onSuccess( String result )
 					{
 						rem();
@@ -328,7 +348,9 @@ public abstract class TableServiceBase<T>
 				} );
 
 				add();
-				doGetRecord( recordId, new SimpleAsyncCallback<T>() {
+				doGetRecord( recordId, new SimpleAsyncCallback<T>()
+				{
+					@Override
 					public void onSuccess( T result )
 					{
 						newValueRecord = result;
@@ -339,7 +361,8 @@ public abstract class TableServiceBase<T>
 				rem();
 			}
 
-			public void finalCall()
+			@Override
+			protected void onFinish()
 			{
 				records.put( doGetRecordId( newValueRecord ), newValueRecord );
 

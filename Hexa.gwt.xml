@@ -27,4 +27,15 @@
 	<generate-with class="com.hexa.rebind.StackGenerator">
 		<when-type-assignable class="com.hexa.client.comm.Stack"/>
 	</generate-with>
+	
+	<generate-with class="com.hexa.rebind.ClazzGenerator">
+		<when-type-assignable class="com.hexa.client.classinfo.Clazz" />
+	</generate-with>
+	
+	<define-linker name="AppCacheLinker" class="com.hexa.linker.AppCacheLinker" />
+
+	<!-- You can add that in your own app module, to support HTML5 AppCache manifest -->
+	<!--<define-linker name="AppCacheLinker"
+		class="com.hexa.linker.AppCacheLinker" />
+	<add-linker name="AppCacheLinker" />-->
 </module>
