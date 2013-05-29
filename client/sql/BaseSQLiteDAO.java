@@ -2,13 +2,12 @@ package com.hexa.client.sql;
 
 import java.util.List;
 
-import paloit.devoxx2013.app.shared.dto.PagedResults;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.sql.SqlParser.SqlParseInfo;
 import com.hexa.client.tools.Action;
+import com.hexa.shared.dto.PagedResults;
 
 public abstract class BaseSQLiteDAO<T>
 {
@@ -39,39 +38,39 @@ public abstract class BaseSQLiteDAO<T>
 
 		return records;
 	}
-	
+
 	public PagedResults<T> getRecordsPaged( int offset, int pageSize )
 	{
-		String request = "select {" + clazz.getClassName() + "} from " + clazz.getClassName() + " order by id limit "+offset+","+pageSize;
-		
+		String request = "select {" + clazz.getClassName() + "} from " + clazz.getClassName() + " order by id limit " + offset + "," + pageSize;
+
 		SqlParser parser = new SqlParser();
 		SqlParseInfo pi = parser.parse( request );
 		JavaScriptObject results = db.execute( parser.getSql( pi ) );
 		SQLiteResult sqliteR = new SQLiteResult( results );
 		List<T> customers = parser.parseResults( pi, sqliteR, clazz.getReflectedClass() );
-		
+
 		results = db.execute( "select count(*) from " + clazz.getClassName() );
 		sqliteR = new SQLiteResult( results );
 		int count = 0;
 		try
 		{
-			for(SQLiteResult.Row row : sqliteR)
-				for(SQLiteResult.Cell cell : row )
+			for( SQLiteResult.Row row : sqliteR )
+				for( SQLiteResult.Cell cell : row )
 				{
 					count = Integer.parseInt( cell.value );
 					break;
 				}
 		}
-		catch(Exception e )
+		catch( Exception e )
 		{
-			
+
 		}
-		
+
 		PagedResults<T> res = new PagedResults<T>();
 		res.results = customers;
 		res.offset = offset;
 		res.totalNumberResults = count;
-		
+
 		return res;
 	}
 
