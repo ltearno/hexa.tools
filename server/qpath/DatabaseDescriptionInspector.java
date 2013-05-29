@@ -2,6 +2,7 @@ package com.hexa.server.qpath;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.hexa.server.qpath.DatabaseDescription.FieldDescription;
@@ -56,6 +57,29 @@ public class DatabaseDescriptionInspector
 					info.next(); // seek to the first and only result row
 					fieldDesc.comment = info.getString( commentColumn );
 				}
+			}
+
+			// Inspect unicity constraints
+			String sql = "select CONSTRAINT_NAME, COLUMN_NAME from information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='" + dbDesc.name
+					+ "' AND TABLE_NAME='" + table
+					+ "' AND REFERENCED_TABLE_NAME IS NULL AND CONSTRAINT_NAME != 'PRIMARY' ORDER BY CONSTRAINT_NAME, ORDINAL_POSITION";
+			DBResults constraintsRecords = db.sql( sql );
+			int constraintNameColumn = constraintsRecords.getColumnIndex( "CONSTRAINT_NAME" );
+			int columnNameColumn = constraintsRecords.getColumnIndex( "COLUMN_NAME" );
+			String currentConstraintName = null;
+			List<String> currentConstraintColumnNames = null;
+			while( constraintsRecords.next() )
+			{
+				String recordConstraintName = constraintsRecords.getString( constraintNameColumn );
+				if( currentConstraintName == null || !currentConstraintName.equalsIgnoreCase( recordConstraintName ) )
+				{
+					// initialize a new constraint description
+					currentConstraintName = recordConstraintName;
+					currentConstraintColumnNames = tableDesc.addUnicityConstraint( recordConstraintName );
+				}
+
+				// register that referenced column into the constraint
+				currentConstraintColumnNames.add( constraintsRecords.getString( columnNameColumn ) );
 			}
 		}
 
@@ -265,9 +289,6 @@ public class DatabaseDescriptionInspector
 
 		// merge sqls and sqlRefs
 		sqls.addAll( sqlRefs );
-
-		// String trace = Trace.peek();
-		// System.out.print( trace );
 
 		Trace.pop();
 

@@ -16,10 +16,10 @@ public class DatabaseSchema
 {
 	private static Logger log = Logger.getLogger( DatabaseSchema.class );
 
-	public static boolean updateDatabaseSchemaFromFile( File file, DatabaseContext ctx )
+	public static boolean updateDatabaseSchemaFromFile( File file, DatabaseContext ctx, boolean fDoDelete, boolean fReallyExecute )
 	{
 		log.log( "Updating database schema from file " + file.getAbsolutePath() );
-		
+
 		try
 		{
 			StringBuilder targetJson = new StringBuilder();
@@ -41,41 +41,49 @@ public class DatabaseSchema
 				log.err( "Cannot parse " + file.getAbsolutePath() + " to update DB, aborting schema update !" );
 				return false;
 			}
-			
+
 			DatabaseDescriptionInspector inspector = new DatabaseDescriptionInspector();
 			DatabaseDescription dbDesc = inspector.getDatabaseDescription( ctx.db, ctx.dbh );
 
-			ArrayList<String> sqls = inspector.getSqlForUpdateDb( dbDesc, targetDatabase, false );
-			if( sqls != null && ! sqls.isEmpty() )
+			ArrayList<String> sqls = inspector.getSqlForUpdateDb( dbDesc, targetDatabase, fDoDelete );
+			if( sqls != null && !sqls.isEmpty() )
 			{
 				log.log( " ... Needed to update database schema:" );
-				for( String sql : sqls )
+				if( fReallyExecute )
 				{
-					log.log( " ...  Executing " + sql );
-					ctx.db.sqlUpdate( sql );
-					log.log( " --- ok" );
+					for( String sql : sqls )
+					{
+						log.log( " ...  Executing " + sql );
+						ctx.db.sqlUpdate( sql );
+						log.log( " --- ok" );
+					}
+				}
+				else
+				{
+					for( String sql : sqls )
+						log.log( sql );
 				}
 			}
-			
+
 			log.log( " ... Your database schema is up to date" );
-			
+
 			return true;
 		}
 		catch( FileNotFoundException exception )
 		{
 			log.log( " ... " + file.getAbsolutePath() + " does not exist to update the database schema !" );
-			
+
 			return false;
 		}
 	}
-	
-	public static boolean dumpDatabseSchemaToFile( DatabaseContext ctx, File file )
+
+	public static boolean dumpDatabaseSchemaToFile( DatabaseContext ctx, File file )
 	{
 		log.log( "Dumping database schema to file " + file.getAbsolutePath() );
-		
+
 		DatabaseDescriptionInspector inspector = new DatabaseDescriptionInspector();
 		DatabaseDescription dbDesc = inspector.getDatabaseDescription( ctx.db, ctx.dbh );
-		
+
 		Gson gson = new Gson();
 		String json = gson.toJson( dbDesc );
 		try
@@ -84,13 +92,13 @@ public class DatabaseSchema
 			writer = new PrintWriter( file );
 			writer.print( json );
 			writer.close();
-			
+
 			return true;
 		}
 		catch( FileNotFoundException e )
 		{
 			e.printStackTrace();
-			
+
 			return false;
 		}
 	}
