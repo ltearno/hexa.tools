@@ -20,7 +20,6 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import com.example.server.tools.Trace;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +28,7 @@ import com.google.gson.JsonPrimitive;
 import com.hexa.client.comm.DataProxy;
 import com.hexa.client.comm.FieldName;
 import com.hexa.client.common.HexaDateTime;
+import com.hexa.server.tools.Trace;
 
 public abstract class HexaGWTServlet extends HttpServlet
 {

@@ -7,32 +7,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.example.server.spring.Logger;
-import com.hexa.server.database.DatabaseConnectionFactory;
+import com.hexa.server.tools.Logger;
 
 public class Database
 {
-	private final static int NBTRIES = 2;
-
-	DatabaseConnectionFactory connectionFactory;
-
 	Connection connection;
 
 	DatabaseMetaData databaseMetaData;
 
 	private final Logger logger = Logger.getLogger( Database.class );
 
-	public boolean init( DatabaseConnectionFactory connectionFactory )
+	public boolean init( Connection connection )
 	{
-		this.connectionFactory = connectionFactory;
-
-		connection = connectionFactory.getConnection();
+		logger.log( "Database initialisation" );
+		
+		this.connection = connection;
 
 		return true;
 	}
 
 	public void term()
 	{
+		logger.log( "Database term" );
+		
 		if( connection == null )
 			return;
 
@@ -48,12 +45,6 @@ public class Database
 		}
 
 		connection = null;
-	}
-
-	public void reinit()
-	{
-		term();
-		init( connectionFactory );
 	}
 
 	public String getCurrentDatabase()
@@ -97,58 +88,52 @@ public class Database
 
 	public DBResults sql( String sql )
 	{
-		int nbTries = NBTRIES;
-		while( nbTries-- > 0 )
+		try
 		{
-			try
-			{
-				logger.log( "SQL-SELECT: " + sql );
+			logger.log( "SQL-SELECT: " + sql );
 
-				Statement stmt = connection.createStatement();
+			Statement stmt = connection.createStatement();
 
-				DBResults res = new DBResults( stmt.executeQuery( sql ), stmt );
-				return res;
-			}
-			catch( SQLException exception )
-			{
-				exception.printStackTrace();
-
-				logger.wrn( "SQLException during call to sql, try reconnecting to the sql server..." );
-				reinit();
-			}
+			DBResults res = new DBResults( stmt.executeQuery( sql ), stmt );
+			return res;
 		}
+		catch( SQLException exception )
+		{
+			String message = "SQLException during call to sql executing statement '" + sql + "' !";
+			
+			logger.err( message );
 
-		return null;
+			exception.printStackTrace();
+			
+			throw new DatabaseException( message, exception );
+		}
 	}
 
 	public int sqlInsert( String sql )
 	{
-		int nbTries = NBTRIES;
-		while( nbTries-- > 0 )
+		try
 		{
-			try
-			{
-				logger.log( "SQL-INSERT: " + sql );
+			logger.log( "SQL-INSERT: " + sql );
 
-				PreparedStatement stmt = connection.prepareStatement( sql, Statement.RETURN_GENERATED_KEYS );
-				stmt.execute();
+			PreparedStatement stmt = connection.prepareStatement( sql, Statement.RETURN_GENERATED_KEYS );
+			stmt.execute();
 
-				ResultSet res = stmt.getGeneratedKeys();
-				if( !res.next() )
-					return 0;
+			ResultSet res = stmt.getGeneratedKeys();
+			if( !res.next() )
+				return 0;
 
-				return (int) res.getLong( 1 );
-			}
-			catch( SQLException exception )
-			{
-				exception.printStackTrace();
-
-				logger.wrn( "SQLException during call to sqlInsert, try reconnecting to the sql server..." );
-				reinit();
-			}
+			return (int) res.getLong( 1 );
 		}
+		catch( SQLException exception )
+		{
+			String message = "SQLException during call to sqlInsert executing statement '" + sql + "' !";
+			
+			logger.err( message );
 
-		return -1;
+			exception.printStackTrace();
+
+			throw new DatabaseException( message, exception );
+		}
 	}
 
 	public int sqlDelete( String sql )
@@ -160,28 +145,25 @@ public class Database
 
 	public int sqlUpdate( String sql )
 	{
-		int nbTries = NBTRIES;
-		while( nbTries-- > 0 )
+		try
 		{
-			try
-			{
-				logger.log( "SQL-MODIFY: " + sql );
+			logger.log( "SQL-MODIFY: " + sql );
 
-				PreparedStatement stmt = connection.prepareStatement( sql );
-				stmt.execute();
+			PreparedStatement stmt = connection.prepareStatement( sql );
+			stmt.execute();
 
-				return stmt.getUpdateCount();
-			}
-			catch( SQLException exception )
-			{
-				exception.printStackTrace();
-
-				logger.wrn( "SQLException during call to sqlUpdate, try reconnecting to the sql server..." );
-				reinit();
-			}
+			return stmt.getUpdateCount();
 		}
+		catch( SQLException exception )
+		{
+			String message = "SQLException during call to sqlUpdate executing statement '" + sql + "' !";
+			
+			logger.err( message );
 
-		return -1;
+			exception.printStackTrace();
+
+			throw new DatabaseException( message, exception );
+		}
 	}
 
 	private void ensureMetadata()
@@ -194,7 +176,13 @@ public class Database
 			}
 			catch( SQLException e )
 			{
+				String message = "SQLException during call to ensureMetadata !";
+				
+				logger.err( message );
+				
 				e.printStackTrace();
+				
+				throw new DatabaseException( message, e );
 			}
 		}
 	}

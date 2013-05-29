@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.example.server.spring.Logger;
 import com.hexa.server.qpath.QPathResult.QPathResultRow;
+import com.hexa.server.tools.Logger;
 
 public class QPath
 {
@@ -35,6 +35,14 @@ public class QPath
 		this.dbh = databaseHelper;
 
 		logger.log( "QPath initialized with database " + database.getCurrentDatabase() );
+	}
+
+	public void term()
+	{
+		db = null;
+		dbh = null;
+
+		logger.log( "QPath terminated" );
 	}
 
 	// function NewParsedQuery( $template )

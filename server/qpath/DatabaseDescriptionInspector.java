@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.example.server.tools.Trace;
 import com.hexa.server.qpath.DatabaseDescription.FieldDescription;
 import com.hexa.server.qpath.DatabaseDescription.FieldReference;
 import com.hexa.server.qpath.DatabaseDescription.TableDescription;
+import com.hexa.server.tools.Trace;
 
 public class DatabaseDescriptionInspector
 {

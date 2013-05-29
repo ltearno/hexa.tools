@@ -15,7 +15,7 @@ import com.hexa.shared.data.IdDTO;
 
 public class DatabaseHelper
 {
-	private final Database db;
+	private Database db;
 
 	private static final DateTimeFormat dateFormatter = DateTimeFormat.getFormat( "yyyy/MM/dd HH:mm:ss" );
 
@@ -24,6 +24,11 @@ public class DatabaseHelper
 	public DatabaseHelper( Database db )
 	{
 		this.db = db;
+	}
+
+	public void term()
+	{
+		db = null;
 	}
 
 	public boolean hasField( String table, String field )

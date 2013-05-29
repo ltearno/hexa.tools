@@ -6,9 +6,9 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.example.server.tools.Trace;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.hexa.server.tools.Trace;
 import com.hexa.shared.rpc.ListInteger;
 
 class ServiceDescription
