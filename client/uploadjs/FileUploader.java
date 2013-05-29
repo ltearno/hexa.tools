@@ -9,7 +9,7 @@ import com.google.gwt.core.client.JavaScriptException;
 
 public class FileUploader
 {
-	interface Callback
+	public interface Callback
 	{
 		void onStart();
 
