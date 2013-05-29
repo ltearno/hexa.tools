@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.example.server.data.UserDTO;
-import com.example.server.data.UserSecurityTokenDTO;
+import com.hexa.server.data.UserDTO;
+import com.hexa.server.data.UserSecurityTokenDTO;
 import com.hexa.server.database.DatabaseContext;
 import com.hexa.server.database.DatabaseContextFactory;
 import com.hexa.server.tools.Logger;
