@@ -2,16 +2,8 @@ package com.hexa.server.spring;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Date;
 import java.util.Properties;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.hexa.server.data.UserDTO;
-import com.hexa.server.data.UserSecurityTokenDTO;
 import com.hexa.server.database.DatabaseContext;
 import com.hexa.server.database.DatabaseContextFactory;
 import com.hexa.server.tools.Logger;
@@ -21,7 +13,7 @@ public class HexaSpring
 	private static Logger log = Logger.getLogger( HexaSpring.class );
 
 	private static HexaSpring instance = null;
-	
+
 	private static DatabaseContextFactory databaseContextFactory;
 
 	public static final String LOGGED_USER_ID = "LOGGED_USER_ID";
@@ -36,12 +28,7 @@ public class HexaSpring
 		return instance;
 	}
 
-	public final void onContextInitialized( ServletContextEvent servletContextEvent )
-	{
-		init();
-	}
-
-	private void init()
+	public void init()
 	{
 		log.log( "Initialisation..." );
 
@@ -50,7 +37,7 @@ public class HexaSpring
 
 		log.log( " ... DatabaseContext pool" );
 		databaseContextFactory = new DatabaseContextFactory();
-		if( ! databaseContextFactory.init( databaseUri ) )
+		if( !databaseContextFactory.init( databaseUri ) )
 		{
 			log.err( "**********************************************************************************" );
 			log.err( "Cannot initialize database connection pool, it won't be available to the program !" );
@@ -112,33 +99,8 @@ public class HexaSpring
 	{
 		return serverRootUrl;
 	}
-	
+
 	//
-
-	public void onBeginServletRequestProcessing( HttpServletRequest request, HttpServletResponse response )
-	{
-		// store session information
-		HexaThreadInfo info = HexaThreadInfo.get();
-		info.request = request;
-
-		// auto-login :
-		String tokenId = request.getParameter( USER_TOKEN_URL_PARAM_NAME );
-		if( tokenId != null )
-		{
-			UserSecurityTokenDTO token = HexaSpring.hexa().db().qpath.queryOneDTO( UserSecurityTokenDTO.class, "user_security_tokens [id='" + tokenId + "']" );
-			if( token != null && token.validUntil.compareTo( new Date() ) >= 0 )
-			{
-				UserDTO user = HexaSpring.hexa().db().qpath.queryOneDTO( UserDTO.class, "users [id=" + token.userId + "]" );
-				if( user != null )
-					userIn( user );
-			}
-		}
-	}
-
-	public void onEndServletRequestProcessing()
-	{
-		cleanThread();
-	}
 
 	public void runInBackground( final Runnable runnable )
 	{
@@ -159,17 +121,17 @@ public class HexaSpring
 
 		thread.start();
 	}
-	
+
 	public interface TransactionManagedAction<T>
 	{
 		T execute( DatabaseContext ctx );
 	}
-	
+
 	public <T> T manageTransaction( TransactionManagedAction<T> action )
 	{
 		return manageTransaction( db(), action );
 	}
-	
+
 	// do a transaction management : prepare tx, and watch for any exception, then rollback it.
 	// it everything goes fine, commit
 	public <T> T manageTransaction( DatabaseContext ctx, TransactionManagedAction<T> action )
@@ -178,29 +140,26 @@ public class HexaSpring
 		try
 		{
 			T result = action.execute( ctx );
-			
+
 			ctx.db.commit();
-			
+
 			return result;
 		}
 		catch( Exception exception )
 		{
 			ctx.db.rollback();
-			
+
 			throw new ManagedTransactionException( "Exception during managed transaction, see cause for details", exception );
 		}
 	}
-	
+
 	private void cleanThread()
 	{
 		HexaThreadInfo info = HexaThreadInfo.getIfPresent();
-		
+
 		if( info == null )
 			return;
-		
-		if( info.request != null )
-			info.request = null;
-		
+
 		// release current thread database context
 		if( info.databaseContext != null )
 		{
@@ -221,35 +180,5 @@ public class HexaSpring
 		assert info.databaseContext != null;
 
 		return info.databaseContext;
-	}
-
-	// Store HTTP session thread wide
-
-	public HttpSession httpSession()
-	{
-		return HexaThreadInfo.get().request.getSession();
-	}
-
-	public HttpServletRequest httpRequest()
-	{
-		return HexaThreadInfo.get().request;
-	}
-
-	// manage per http session logged user
-
-	public void userIn( UserDTO user )
-	{
-		// store session wide
-		httpSession().setAttribute( LOGGED_USER_ID, user );
-	}
-
-	public void userOut()
-	{
-		httpSession().invalidate();
-	}
-
-	public UserDTO user()
-	{
-		return (UserDTO) httpSession().getAttribute( LOGGED_USER_ID );
 	}
 }

@@ -3,21 +3,16 @@ package com.hexa.server.qpath;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.hexa.client.common.HexaDate;
-import com.hexa.client.common.HexaDateTime;
-import com.hexa.client.common.HexaTime;
-import com.hexa.client.common.text.DateTimeFormat;
 import com.hexa.shared.data.IdDTO;
 
 public class DatabaseHelper
 {
 	private Database db;
 
-	private static final DateTimeFormat dateFormatter = DateTimeFormat.getFormat( "yyyy/MM/dd HH:mm:ss" );
+	// private static final DateTimeFormat dateFormatter = DateTimeFormat.getFormat( "yyyy/MM/dd HH:mm:ss" );
 
 	HashMap<String, ArrayList<String>> cacheFields;
 
@@ -132,17 +127,8 @@ public class DatabaseHelper
 		if( o.getClass().isEnum() )
 			return "'" + o.toString() + "'";
 
-		if( o instanceof Date )
-			return "'" + dateFormatter.format( (Date) o ) + "'";
-
-		if( o instanceof HexaDateTime )
-			return "'" + ((HexaDateTime) o).getString() + "'";
-
-		if( o instanceof HexaDate )
-			return "'" + ((HexaDate) o).getString() + "'";
-
-		if( o instanceof HexaTime )
-			return "'" + ((HexaTime) o).getString() + "'";
+		// if( o instanceof Date )
+		// return "'" + dateFormatter.format( (Date) o ) + "'";
 
 		return "'" + o.toString() + "'";
 	}
