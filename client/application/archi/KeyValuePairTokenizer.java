@@ -137,7 +137,8 @@ public class KeyValuePairTokenizer
 	{
 		List<Entry<String, String>> entries = new ArrayList<Entry<String, String>>();
 		entries.addAll( values.entrySet() );
-		Collections.sort( entries, new Comparator<Entry<String, String>>() {
+		Collections.sort( entries, new Comparator<Entry<String, String>>()
+		{
 			public int compare( Entry<String, String> arg0, Entry<String, String> arg1 )
 			{
 				return arg0.getKey().compareTo( arg1.getKey() );

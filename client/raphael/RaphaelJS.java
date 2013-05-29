@@ -6,8 +6,7 @@ public class RaphaelJS extends JavaScriptObject
 {
 
 	/**
-	 * determine whether Raphael is defined on the client platform NB: do not
-	 * call any other methods if Raphael is not defined
+	 * determine whether Raphael is defined on the client platform NB: do not call any other methods if Raphael is not defined
 	 */
 	static public final native boolean isDefined() /*-{
 													return $wnd.Raphael!=undefined;
@@ -108,8 +107,7 @@ public class RaphaelJS extends JavaScriptObject
 	}
 
 	/**
-	 * overlay raphael class constructor - must be protected, empty, and
-	 * no-argument
+	 * overlay raphael class constructor - must be protected, empty, and no-argument
 	 */
 	protected RaphaelJS()
 	{
@@ -212,8 +210,7 @@ public class RaphaelJS extends JavaScriptObject
 	 * Draws a path to the Raphael canvas
 	 * 
 	 * @param obj
-	 *            string Attributes for the resulting path as described in the
-	 *            attr reference.
+	 *            string Attributes for the resulting path as described in the attr reference.
 	 * 
 	 * @return the path object
 	 */

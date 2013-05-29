@@ -16,7 +16,8 @@ public class JSArrayIterator<T extends JavaScriptObject> implements Iterable<T>
 
 	public Iterator<T> iterator()
 	{
-		return new Iterator<T>() {
+		return new Iterator<T>()
+		{
 			int idx = 0;
 
 			public boolean hasNext()

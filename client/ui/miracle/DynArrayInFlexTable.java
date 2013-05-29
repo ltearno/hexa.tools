@@ -228,7 +228,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 
 		// sort them
-		Collections.sort( its, new Comparator<It>() {
+		Collections.sort( its, new Comparator<It>()
+		{
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -397,7 +398,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
-	private ClickHandler onTableClick = new ClickHandler() {
+	private ClickHandler onTableClick = new ClickHandler()
+	{
 		@Override
 		public void onClick( ClickEvent event )
 		{
@@ -457,7 +459,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler() {
+	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
 		{
@@ -471,7 +474,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>() {
+	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>()
+	{
 		@Override
 		public String getGhostInnerHTML( Integer cookie, Element source )
 		{
@@ -507,7 +511,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private Edits.Callback onEdit = new Edits.Callback() {
+	private Edits.Callback onEdit = new Edits.Callback()
+	{
 		@Override
 		public void cancelEdition()
 		{
@@ -628,7 +633,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler() {
+	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
 		{

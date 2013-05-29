@@ -87,7 +87,8 @@ public class LayeredAbsoluteStackPanel extends Composite implements MouseWheelHa
 		m_backgroundCanvas.clear();
 	}
 
-	IBkgndStackPanel.Background bgProxy = new IBkgndStackPanel.Background() {
+	IBkgndStackPanel.Background bgProxy = new IBkgndStackPanel.Background()
+	{
 		public void setWidgetPosition( Widget w, int x, int y )
 		{
 			m_backgroundCanvas.setWidgetPosition( w, x, y );
@@ -138,7 +139,8 @@ public class LayeredAbsoluteStackPanel extends Composite implements MouseWheelHa
 		panel.setWidth( (width - 2 * scrollBarWidth) + "px" );
 		m_stacksPanel.add( scroll );
 
-		return new IStackPanelSized() {
+		return new IStackPanelSized()
+		{
 			public void clear()
 			{
 				panel.clear();

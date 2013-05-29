@@ -302,7 +302,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 
 		// sort them
-		Collections.sort( its, new Comparator<It>() {
+		Collections.sort( its, new Comparator<It>()
+		{
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -417,7 +418,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler() {
+	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
 		{
@@ -432,7 +434,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>() {
+	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>()
+	{
 		@Override
 		public String getGhostInnerHTML( Integer cookie, Element source )
 		{
@@ -498,7 +501,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private Edits.Callback onEdit = new Edits.Callback() {
+	private Edits.Callback onEdit = new Edits.Callback()
+	{
 		@Override
 		public void cancelEdition()
 		{
@@ -577,7 +581,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler() {
+	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
 		{
@@ -617,7 +622,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private TreeTableHandler tableHandler = new TreeTableHandler() {
+	private TreeTableHandler tableHandler = new TreeTableHandler()
+	{
 		@Override
 		public void onTableHeaderClick( int column, ClickEvent event )
 		{

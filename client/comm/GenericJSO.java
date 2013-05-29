@@ -72,7 +72,7 @@ public class GenericJSO extends JavaScriptObject
 	public final native JsArrayInteger getArrayOfInt( String fieldName ) /*-{ return this[fieldName]; }-*/;
 
 	public final native JsArrayString getArrayOfString( String fieldName ) /*-{ return this[fieldName]; }-*/;
-	
+
 	public final native int length()
 	/*-{
 	   	return this.length;

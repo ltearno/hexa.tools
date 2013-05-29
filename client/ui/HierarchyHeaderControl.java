@@ -74,10 +74,8 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 	}
 
 	/*
-	 * public String getLevelsString() { String res = "[ "; int count = 1; for(
-	 * IHierarchyLevel<T> level : currentLevels ) { res += "\"" +
-	 * level.getName() + "\""; if( count < currentLevels.size() ) res += ", ";
-	 * count ++; } res += "]";
+	 * public String getLevelsString() { String res = "[ "; int count = 1; for( IHierarchyLevel<T> level : currentLevels ) { res += "\"" + level.getName() +
+	 * "\""; if( count < currentLevels.size() ) res += ", "; count ++; } res += "]";
 	 * 
 	 * return res; }
 	 */
@@ -145,7 +143,8 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 
 		popup.setWidget( table );
 
-		table.setHandler( new TreeTableHandler() {
+		table.setHandler( new TreeTableHandler()
+		{
 			@Override
 			public void onTableHeaderClick( int column, ClickEvent event )
 			{
@@ -170,7 +169,8 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 			return;
 
 		final ImageTextButton im = new ImageTextButton( HexaFramework.images.delete(), level.getName() );
-		im.addClickHandler( new ClickHandler() {
+		im.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				_onLevelClick( level, im );

@@ -2,7 +2,7 @@ package com.hexa.client.common;
 
 import java.util.Date;
 
-import com.google.gwt.i18n.client.NumberFormat;
+import com.hexa.client.common.text.NumberFormat;
 
 public class HexaTime
 {

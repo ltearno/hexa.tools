@@ -26,14 +26,16 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 	{
 		initWidget( textBox );
 
-		textBox.addFocusHandler( new FocusHandler() {
+		textBox.addFocusHandler( new FocusHandler()
+		{
 			public void onFocus( FocusEvent event )
 			{
 				showPopup();
 			}
 		} );
 
-		textBox.addKeyUpHandler( new KeyUpHandler() {
+		textBox.addKeyUpHandler( new KeyUpHandler()
+		{
 			public void onKeyUp( KeyUpEvent event )
 			{
 				HexaDate hexaDate = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( textBox.getText() );
@@ -43,9 +45,8 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 		} );
 
 		/*
-		 * textBox.addClickHandler( new ClickHandler() { public void
-		 * onClick(ClickEvent event) { if( popup!=null && popup.isShowing() )
-		 * hidePopup(); else showPopup(); } });
+		 * textBox.addClickHandler( new ClickHandler() { public void onClick(ClickEvent event) { if( popup!=null && popup.isShowing() ) hidePopup(); else
+		 * showPopup(); } });
 		 */
 	}
 

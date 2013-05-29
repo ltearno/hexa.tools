@@ -2,7 +2,9 @@ package com.hexa.client.common;
 
 import java.util.Date;
 
-import com.google.gwt.i18n.client.NumberFormat;
+import com.hexa.client.common.hexadatedisplayformatfactory.HexaDateDisplayFormatFactory.Format;
+import com.hexa.client.common.text.DateTimeFormat;
+import com.hexa.client.common.text.NumberFormat;
 
 /*
  * Because java.util.Date is not well managed in GWT,
@@ -11,6 +13,8 @@ import com.google.gwt.i18n.client.NumberFormat;
 
 public class HexaDate
 {
+	DateTimeFormat ff;
+
 	public static int TIME_BEGIN = 732840;
 	public static int TIME_END = 758145;// 930000;
 
@@ -28,7 +32,7 @@ public class HexaDate
 		s_displayFormat = format;
 	}
 
-	static private HexaDateDisplayFormat s_displayFormat = new HexaDateDisplayFormat2();
+	static private HexaDateDisplayFormat s_displayFormat = HexaDateDisplayFormatList.getFormat( Format.FORMAT_2 );// new HexaDateDisplayFormat2();
 
 	// static private DateTimeFormat dateFormat =
 	// DateTimeFormat.getFormat("yyyy-MM-dd");
@@ -289,17 +293,17 @@ public class HexaDate
 	{
 		switch( month )
 		{
-			case 1:
-				return (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0) ? 29 : 28;
+		case 1:
+			return (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0) ? 29 : 28;
 
-			case 3:
-			case 5:
-			case 8:
-			case 10:
-				return 30;
+		case 3:
+		case 5:
+		case 8:
+		case 10:
+			return 30;
 
-			default:
-				return 31;
+		default:
+			return 31;
 		}
 	}
 }

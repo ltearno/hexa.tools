@@ -14,8 +14,7 @@ public class Element extends JavaScriptObject
 	}
 
 	/**
-	 * Gives you a reference to the DOM object, so you can assign event handlers
-	 * or just mess around.
+	 * Gives you a reference to the DOM object, so you can assign event handlers or just mess around.
 	 * 
 	 * @return reference to the current DOM object
 	 */
@@ -66,8 +65,7 @@ public class Element extends JavaScriptObject
 	 * @param degree
 	 *            number of degrees of rotation (0-360)
 	 * @param isAbsolute
-	 *            boolean Specifies if degree is relative to previous position
-	 *            (false) or is it absolute angle (true)
+	 *            boolean Specifies if degree is relative to previous position (false) or is it absolute angle (true)
 	 * 
 	 * @return the javascript object rotated
 	 */
@@ -148,20 +146,13 @@ public class Element extends JavaScriptObject
 																										}-*/;
 
 	/**
-	 * Linearly changes an attribute from its current value to its specified
-	 * value in the given amount of milliseconds.
+	 * Linearly changes an attribute from its current value to its specified value in the given amount of milliseconds.
 	 * 
 	 * @param newAttrs
-	 *            string Attributes of the object after animation (not all
-	 *            attributes can be animated)
-	 * @attributes_to_animate: 1. cx number 2. cy number 3. fill colour 4.
-	 *                         fill-opacity number 5. font-size number 6. height
-	 *                         number 7. opacity number 8. path pathString 9. r
-	 *                         number 10. rotation number 11. rx number 12. ry
-	 *                         number 13. scale CSV 14. stroke colour 15.
-	 *                         stroke-opacity number 16. stroke-width number 17.
-	 *                         translation CSV 18. width number 19. x number 20.
-	 *                         y number
+	 *            string Attributes of the object after animation (not all attributes can be animated)
+	 * @attributes_to_animate: 1. cx number 2. cy number 3. fill colour 4. fill-opacity number 5. font-size number 6. height number 7. opacity number 8. path
+	 *                         pathString 9. r number 10. rotation number 11. rx number 12. ry number 13. scale CSV 14. stroke colour 15. stroke-opacity number
+	 *                         16. stroke-width number 17. translation CSV 18. width number 19. x number 20. y number
 	 * @param duration
 	 *            The duration of the animation, given in milliseconds
 	 * 
@@ -171,14 +162,11 @@ public class Element extends JavaScriptObject
 																				}-*/;
 
 	/**
-	 * Linearly changes an attribute from its current value to its specified
-	 * value in the given amount of milliseconds (with callback)
+	 * Linearly changes an attribute from its current value to its specified value in the given amount of milliseconds (with callback)
 	 * 
 	 * @param newAttrs
-	 *            string Attributes of the object after animation (not all
-	 *            attributes can be animated)
-	 * @attributes_to_animate: see animate(String, int) function for complete
-	 *                         listing
+	 *            string Attributes of the object after animation (not all attributes can be animated)
+	 * @attributes_to_animate: see animate(String, int) function for complete listing
 	 * @param ms
 	 *            int the duration of the animation, given in milliseconds
 	 * @param easing
@@ -201,17 +189,11 @@ public class Element extends JavaScriptObject
 	 * 
 	 * @param attributeName
 	 *            string of the attribute name
-	 * @attribute_names: 1. cx number 2. cy number 3. fill colour 4.
-	 *                   fill-opacity number 5. font string 6. font-family
-	 *                   string 7. font-size number 8. font-weight string 9.
-	 *                   gradient object|string 10. height number 11. opacity
-	 *                   number 12. path pathString 13. r number 14. rotation
-	 *                   number 15. rx number 16. ry number 17. scale CSV 18.
-	 *                   src string (URL) 19. stroke colour 20. stroke-dasharray
-	 *                   string 21. stroke-linecap string 22. stroke-linejoin
-	 *                   string 23. stroke-miterlimit number 24. stroke-opacity
-	 *                   number 25. stroke-width number 26. translation CSV 27.
-	 *                   width number 28. x number 29. y number
+	 * @attribute_names: 1. cx number 2. cy number 3. fill colour 4. fill-opacity number 5. font string 6. font-family string 7. font-size number 8. font-weight
+	 *                   string 9. gradient object|string 10. height number 11. opacity number 12. path pathString 13. r number 14. rotation number 15. rx
+	 *                   number 16. ry number 17. scale CSV 18. src string (URL) 19. stroke colour 20. stroke-dasharray string 21. stroke-linecap string 22.
+	 *                   stroke-linejoin string 23. stroke-miterlimit number 24. stroke-opacity number 25. stroke-width number 26. translation CSV 27. width
+	 *                   number 28. x number 29. y number
 	 * @param value
 	 *            string of the new value
 	 * 
@@ -332,7 +314,6 @@ public class Element extends JavaScriptObject
 
 	/*
 	 * 
-	 * element.hover(function (event) { this.attr({fill: "red"}); }, function
-	 * (event) { this.attr({fill: "black"}); });
+	 * element.hover(function (event) { this.attr({fill: "red"}); }, function (event) { this.attr({fill: "black"}); });
 	 */
 }

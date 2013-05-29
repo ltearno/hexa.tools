@@ -168,7 +168,8 @@ public class Pager
 		return w;
 	}
 
-	EventListener firstEvent = new EventListener() {
+	EventListener firstEvent = new EventListener()
+	{
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )
@@ -182,7 +183,8 @@ public class Pager
 		}
 	};
 
-	EventListener prevEvent = new EventListener() {
+	EventListener prevEvent = new EventListener()
+	{
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )
@@ -197,7 +199,8 @@ public class Pager
 		}
 	};
 
-	EventListener nextEvent = new EventListener() {
+	EventListener nextEvent = new EventListener()
+	{
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )
@@ -212,7 +215,8 @@ public class Pager
 		}
 	};
 
-	EventListener lastEvent = new EventListener() {
+	EventListener lastEvent = new EventListener()
+	{
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )

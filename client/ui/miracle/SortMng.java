@@ -38,7 +38,8 @@ public class SortMng<T>
 		mng.setComparator( order > 0 ? currentComp : revComp );
 	}
 
-	private final Comparator<T> revComp = new Comparator<T>() {
+	private final Comparator<T> revComp = new Comparator<T>()
+	{
 		public int compare( T o1, T o2 )
 		{
 			return -currentComp.compare( o1, o2 );

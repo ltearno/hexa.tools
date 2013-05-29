@@ -94,7 +94,8 @@ public class CachedServerComm implements ServerCommCb, AcceptsRPCRequests
 		Scheduler.get().scheduleFinally( checkResults );
 	}
 
-	ScheduledCommand checkResults = new ScheduledCommand() {
+	ScheduledCommand checkResults = new ScheduledCommand()
+	{
 		public void execute()
 		{
 			while( !pendingRequests.isEmpty() )

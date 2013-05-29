@@ -104,8 +104,7 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 	}
 }
 /*
- * public class ImageTextButton extends Composite implements ClickHandler {
- * public interface Callback { void onClick( Object cookie ); }
+ * public class ImageTextButton extends Composite implements ClickHandler { public interface Callback { void onClick( Object cookie ); }
  * 
  * HTML h;
  * 
@@ -113,26 +112,19 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
  * 
  * Object cookie = null; Callback callback = null;
  * 
- * private String getHTML() { return
- * "<button class='ImageTextButtonV2' style=\"padding-left:"
- * +resource.getWidth()+
- * "px; background: url('"+resource.getURL()+"') no-repeat 0px center;\">"
- * +title+"</button>"; }
+ * private String getHTML() { return "<button class='ImageTextButtonV2' style=\"padding-left:" +resource.getWidth()+
+ * "px; background: url('"+resource.getURL()+"') no-repeat 0px center;\">" +title+"</button>"; }
  * 
- * @UiConstructor public ImageTextButton( ImageResource resource, String title )
- * { this.resource = resource; this.title = title;
+ * @UiConstructor public ImageTextButton( ImageResource resource, String title ) { this.resource = resource; this.title = title;
  * 
  * h = new HTML( getHTML() );
  * 
  * initWidget( h );
  * 
- * Element button = DOM.createButton(); button.setClassName( "ImageTextButtonV2"
- * ); button.setAttribute( "style",
- * "padding-left:"+resource.getWidth()+"px; background: url('"
- * +resource.getURL()+"') no-repeat 0px center;" ); }
+ * Element button = DOM.createButton(); button.setClassName( "ImageTextButtonV2" ); button.setAttribute( "style",
+ * "padding-left:"+resource.getWidth()+"px; background: url('" +resource.getURL()+"') no-repeat 0px center;" ); }
  * 
- * public void setCallback( Callback callback, Object cookie ) { this.callback =
- * callback; this.cookie = cookie;
+ * public void setCallback( Callback callback, Object cookie ) { this.callback = callback; this.cookie = cookie;
  * 
  * addClickHandler( this ); }
  * 
@@ -142,11 +134,9 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
  * 
  * public void setText( String text ) { title = text; h.setHTML( getHTML() ); }
  * 
- * public void addClickHandler( ClickHandler handler ) { h.addClickHandler(
- * handler ); }
+ * public void addClickHandler( ClickHandler handler ) { h.addClickHandler( handler ); }
  * 
- * public boolean isMyClickEvent( ClickEvent event ) { if( event.getSource() ==
- * h ) return true; return false; }
+ * public boolean isMyClickEvent( ClickEvent event ) { if( event.getSource() == h ) return true; return false; }
  * 
  * @Override public void onClick(ClickEvent event) { assert( callback != null );
  * 

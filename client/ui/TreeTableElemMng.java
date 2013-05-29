@@ -24,7 +24,8 @@ public class TreeTableElemMng<T>
 
 	ArrayList<Integer> elementsToRemove = new ArrayList<Integer>();
 	TreeTable hackTable = null;
-	Timer timer = new Timer() {
+	Timer timer = new Timer()
+	{
 		@Override
 		public void run()
 		{
@@ -37,9 +38,8 @@ public class TreeTableElemMng<T>
 			}
 
 			/*
-			 * if( elementsAdded.size() > 0 ) { if( elementsAdded.size() <=
-			 * elements.size()/2 ) { for( Object element : elementsAdded )
-			 * hackTable.highLite( element ); } elementsAdded.clear(); }
+			 * if( elementsAdded.size() > 0 ) { if( elementsAdded.size() <= elements.size()/2 ) { for( Object element : elementsAdded ) hackTable.highLite(
+			 * element ); } elementsAdded.clear(); }
 			 */
 		}
 	};

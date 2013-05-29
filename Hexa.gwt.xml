@@ -6,6 +6,7 @@
   	<inherits name='com.google.gwt.json.JSON'/>
   	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
   	
+  	<super-source path="jre"/>
   	<source path="client"/>
   	
   	<generate-with class="com.hexa.rebind.DataProxyGenerator">

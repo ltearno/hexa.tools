@@ -1,9 +1,12 @@
 package com.hexa.client.common;
 
+import com.hexa.client.common.hexadatedisplayformatfactory.HexaDateDisplayFormatFactory;
+import com.hexa.client.common.hexadatedisplayformatfactory.HexaDateDisplayFormatFactory.Format;
+
 public class HexaDateDisplayFormatList
 {
-	private static HexaDateDisplayFormat[] s_formats = new HexaDateDisplayFormat[] { new HexaDateDisplayFormat1(), new HexaDateDisplayFormat2(),
-			new HexaDateDisplayFormat3() };
+	private static HexaDateDisplayFormat[] s_formats = new HexaDateDisplayFormat[] { HexaDateDisplayFormatFactory.get( Format.FORMAT_1 ),
+			HexaDateDisplayFormatFactory.get( Format.FORMAT_2 ), HexaDateDisplayFormatFactory.get( Format.FORMAT_3 ) };
 
 	private static String[] s_possibleFormats = null;
 
@@ -33,5 +36,20 @@ public class HexaDateDisplayFormatList
 
 		// return the default one if nothing matching is found
 		return s_formats[0];
+	}
+
+	public static HexaDateDisplayFormat getFormat( Format format )
+	{
+		switch( format )
+		{
+		case FORMAT_1:
+			return s_formats[0];
+		case FORMAT_2:
+			return s_formats[1];
+		case FORMAT_3:
+			return s_formats[2];
+		}
+
+		return null;
 	}
 }

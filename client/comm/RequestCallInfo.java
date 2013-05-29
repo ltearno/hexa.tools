@@ -39,7 +39,8 @@ public class RequestCallInfo
 		this.msg = msg;
 
 		// quietly give back the results
-		Scheduler.get().scheduleIncremental( new Scheduler.RepeatingCommand() {
+		Scheduler.get().scheduleIncremental( new Scheduler.RepeatingCommand()
+		{
 			public boolean execute()
 			{
 				if( callbacks.isEmpty() )
