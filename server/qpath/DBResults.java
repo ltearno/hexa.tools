@@ -147,6 +147,19 @@ public class DBResults
 		}
 	}
 
+	public Integer getInt( int column )
+	{
+		try
+		{
+			return sqlRes.getInt( column + 1 );
+		}
+		catch( SQLException e )
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	/*
 	 * Privates...
 	 */
