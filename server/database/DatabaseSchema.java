@@ -16,7 +16,7 @@ public class DatabaseSchema
 {
 	private static Logger log = Logger.getLogger( DatabaseSchema.class );
 
-	public static boolean updateDatabaseSchemaFromFile( File file, DatabaseContext ctx, boolean fDoDelete, boolean fReallyExecute )
+	public static ArrayList<String> updateDatabaseSchemaFromFile( File file, DatabaseContext ctx, boolean fDoDelete, boolean fReallyExecute )
 	{
 		log.log( "Updating database schema from file " + file.getAbsolutePath() );
 
@@ -39,13 +39,13 @@ public class DatabaseSchema
 			if( targetDatabase == null )
 			{
 				log.err( "Cannot parse " + file.getAbsolutePath() + " to update DB, aborting schema update !" );
-				return false;
+				return null;
 			}
 
 			DatabaseDescriptionInspector inspector = new DatabaseDescriptionInspector();
 			DatabaseDescription dbDesc = inspector.getDatabaseDescription( ctx.db, ctx.dbh );
 
-			ArrayList<String> sqls = inspector.getSqlForUpdateDb( dbDesc, targetDatabase, fDoDelete );
+			ArrayList<String> sqls = inspector.getSqlForUpdateDb( dbDesc, targetDatabase, fDoDelete, true/* table upper case */);
 			if( sqls != null && !sqls.isEmpty() )
 			{
 				log.log( " ... Needed to update database schema:" );
@@ -67,13 +67,13 @@ public class DatabaseSchema
 
 			log.log( " ... Your database schema is up to date" );
 
-			return true;
+			return sqls;
 		}
 		catch( FileNotFoundException exception )
 		{
 			log.log( " ... " + file.getAbsolutePath() + " does not exist to update the database schema !" );
 
-			return false;
+			return null;
 		}
 	}
 
