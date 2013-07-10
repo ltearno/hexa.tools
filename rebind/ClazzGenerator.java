@@ -11,6 +11,7 @@ import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
+import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -306,7 +307,16 @@ public class ClazzGenerator extends Generator
 		{
 			if( p > 0 )
 				sb.append( ", " );
-			sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") parameters[" + p + "]" );
+			JPrimitiveType primitive = params[p].getType().isPrimitive();
+			if( primitive != null )
+			{
+				String boxedCast = primitive.getQualifiedBoxedSourceName();
+				sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") (" + boxedCast + ") parameters[" + p + "]" );
+			}
+			else
+			{
+				sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") parameters[" + p + "]" );
+			}
 		}
 		sb.append( ");" );
 		sourceWriter.println( sb.toString() );
