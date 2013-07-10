@@ -9,18 +9,17 @@ import com.hexa.client.tools.Action1;
 public class CompositeObjectAdapter implements DataAdapter
 {
 	private final Object source;
-	private final String property;
+	private final String[] path;
 	
 	public CompositeObjectAdapter( Object source, String property )
 	{
 		this.source = source;
-		this.property = property;
+		path = property.split( "\\." );
 	}
 	
 	class PropertyChangedManager implements Action1<DataBinding.DataAdapter>
 	{
 		PropertyChangedManager[] managers;
-		
 		Action1<DataAdapter> callback;
 		
 		String[] path;
@@ -90,10 +89,6 @@ public class CompositeObjectAdapter implements DataAdapter
 	@Override
 	public Object registerPropertyChanged( final Action1<DataAdapter> callback )
 	{
-		String[] path = property.split( "\\." );
-		if( path==null || path.length<=0 )
-			path = new String[] { property };
-		
 		PropertyChangedManager[] managers = new PropertyChangedManager[path.length];
 		
 		managers[0] = new PropertyChangedManager( path, 0, callback, managers );
@@ -115,8 +110,6 @@ public class CompositeObjectAdapter implements DataAdapter
 	
 	private Object getValue( int level )
 	{
-		String[] path = property.split( "\\." );
-		
 		Object cur = source;
 		for( int i=0; i<=level; i++)
 		{
@@ -138,16 +131,12 @@ public class CompositeObjectAdapter implements DataAdapter
 	@Override
 	public Object getValue()
 	{
-		String[] path = property.split( "\\." );
-		
 		return getValue(path.length-1);
 	}
 
 	@Override
 	public void setValue( Object object )
 	{
-		String[] path = property.split( "\\." );
-		
 		Object cur = source;
 		for( int i=0; i<path.length-1; i++)
 		{
