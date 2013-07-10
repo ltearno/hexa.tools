@@ -54,6 +54,8 @@ public class DataBinding
 	public void activate()
 	{
 		fActivated = true;
+
+		onSourceChanged.exec( null );
 	}
 
 	private final Action1<DataAdapter> onSourceChanged = new Action1<DataBinding.DataAdapter>()
