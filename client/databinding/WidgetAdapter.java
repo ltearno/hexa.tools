@@ -7,7 +7,8 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.hexa.client.databinding.DataBinding.DataAdapter;
 import com.hexa.client.tools.Action1;
 
-@SuppressWarnings( "rawtypes" ) class WidgetAdapter implements DataAdapter, ValueChangeHandler
+@SuppressWarnings( "rawtypes" )
+class WidgetAdapter implements DataAdapter, ValueChangeHandler
 {
 	Object widget;
 
@@ -16,9 +17,6 @@ import com.hexa.client.tools.Action1;
 	public WidgetAdapter( Object widget )
 	{
 		this.widget = widget;
-
-		if( !(widget instanceof HasValueChangeHandlers) )
-			throw new RuntimeException( "Should have HasValueChangeHandlers interface implemented" );
 
 		if( !(widget instanceof HasValue) )
 			throw new RuntimeException( "Should have HasValue interface implemented" );
@@ -29,6 +27,9 @@ import com.hexa.client.tools.Action1;
 	public void registerPropertyChanged( Action1<DataAdapter> callback )
 	{
 		this.callback = callback;
+
+		if( !(widget instanceof HasValueChangeHandlers) )
+			throw new RuntimeException( "Should have HasValueChangeHandlers interface implemented" );
 
 		((HasValueChangeHandlers) widget).addValueChangeHandler( this );
 	}

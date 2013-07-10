@@ -8,6 +8,8 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
+import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
@@ -130,100 +132,14 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
 
+		// Fields
+
 		JField[] fields = reflectedType.getFields();
 		for( int f = 0; f < fields.length; f++ )
 		{
 			JField field = fields[f];
-			String fieldClassName = field.getName() + "_FieldImpl";
 
-			sourceWriter.println( "class " + fieldClassName + " extends com.hexa.client.classinfo.internal.FieldBase<" + reflectedTypeName + "> {" );
-			sourceWriter.indent();
-			sourceWriter.println( "public " + fieldClassName + "()" );
-			sourceWriter.println( "{" );
-			sourceWriter.indent();
-			sourceWriter.println( "super(" + field.getType().getQualifiedSourceName() + ".class, \"" + field.getName() + "\");" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "@Override" );
-			sourceWriter.println( "public void setValue( Object object, int value )" );
-			sourceWriter.println( "{" );
-			sourceWriter.indent();
-			sourceWriter.println( "setValueInternal_int( object, value );" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "@Override" );
-			sourceWriter.println( "public int getValueInt( Object object )" );
-			sourceWriter.println( "{" );
-			sourceWriter.indent();
-			sourceWriter.println( "return getValueInternal_int( object );" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "@Override" );
-			sourceWriter.println( "public void setValue( Object object, Object value )" );
-			sourceWriter.println( "{" );
-			sourceWriter.indent();
-			sourceWriter.println( "setValueInternal_Object( object, value );" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "@Override" );
-			sourceWriter.println( "public <OUT> OUT getValue( Object object )" );
-			sourceWriter.println( "{" );
-			sourceWriter.indent();
-			sourceWriter.println( "return (OUT) getValueInternal_Object( object );" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}" );
-			sourceWriter.println( "" );
-
-			// @Override
-			// public void copyValueTo(T source, T destination) {
-			// if (_class == int.class)
-			// setValue(destination, getValueInt(source));
-			// else
-			// setValue(destination, getValue(source));
-			// }
-			sourceWriter.println( "@Override public native final void copyValueTo( " + reflectedTypeName + " source, " + reflectedTypeName + " destination )" );
-			sourceWriter.println( "/*-{" );
-			sourceWriter.indent();
-			sourceWriter.println( "destination.@" + reflectedTypeName + "::" + field.getName() + " = source.@" + reflectedTypeName + "::" + field.getName()
-					+ ";" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}-*/;" );
-			sourceWriter.println( "" );
-
-			sourceWriter.println( "private native final void setValueInternal_int( Object object, int value )" );
-			sourceWriter.println( "/*-{" );
-			sourceWriter.indent();
-			sourceWriter.println( "object.@" + reflectedTypeName + "::" + field.getName() + " = value;" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}-*/;" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "private native final int getValueInternal_int( Object object )" );
-			sourceWriter.println( "/*-{" );
-			sourceWriter.indent();
-			sourceWriter.println( "return object.@" + reflectedTypeName + "::" + field.getName() + ";" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}-*/;" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "private native final void setValueInternal_Object( Object object, Object value )" );
-			sourceWriter.println( "/*-{" );
-			sourceWriter.indent();
-			sourceWriter.println( "object.@" + reflectedTypeName + "::" + field.getName() + " = value;" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}-*/;" );
-			sourceWriter.println( "" );
-			sourceWriter.println( "private native final Object getValueInternal_Object( Object object )" );
-			sourceWriter.println( "/*-{" );
-			sourceWriter.indent();
-			sourceWriter.println( "return object.@" + reflectedTypeName + "::" + field.getName() + ";" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}-*/;" );
-			sourceWriter.outdent();
-			sourceWriter.println( "}" );
-			sourceWriter.println( "" );
+			generateFieldClass( field, sourceWriter );
 		}
 
 		sourceWriter.println( "protected void _addFields()" );
@@ -239,11 +155,167 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
 
+		// Methods
+
+		JMethod[] methods = reflectedType.getMethods();
+
+		for( int m = 0; m < methods.length; m++ )
+		{
+			JMethod method = methods[m];
+			generateMethodClass( method, sourceWriter );
+		}
+
+		sourceWriter.println( "protected void _addMethods()" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		for( int m = 0; m < methods.length; m++ )
+		{
+			JMethod method = methods[m];
+			String methodClassName = method.getName() + "_MethodImpl";
+			sourceWriter.println( "_methods.add( new " + methodClassName + "());" );
+		}
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+
+		// New
+
 		sourceWriter.println( "@Override" );
 		sourceWriter.println( "public " + reflectedTypeName + " NEW()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
 		sourceWriter.println( "return new " + reflectedTypeName + "();" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+	}
+
+	private void generateFieldClass( JField field, SourceWriter sourceWriter )
+	{
+		String fieldClassName = field.getName() + "_FieldImpl";
+
+		sourceWriter.println( "class " + fieldClassName + " extends com.hexa.client.classinfo.internal.FieldBase<" + reflectedTypeName + "> {" );
+		sourceWriter.indent();
+		sourceWriter.println( "public " + fieldClassName + "()" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		sourceWriter.println( "super(" + field.getType().getQualifiedSourceName() + ".class, \"" + field.getName() + "\");" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+		sourceWriter.println( "@Override" );
+		sourceWriter.println( "public void setValue( Object object, Object value )" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		if( field.getType().isPrimitive() != null )
+			sourceWriter.println( "setValueInternal_int( object, (Integer) value );" );
+		else
+			sourceWriter.println( "setValueInternal_Object( object, value );" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+		sourceWriter.println( "@Override" );
+		sourceWriter.println( "public <OUT> OUT getValue( Object object )" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		if( field.getType().isPrimitive() != null )
+			sourceWriter.println( "return (OUT) (Integer) getValueInternal_int( object );" );
+		else
+			sourceWriter.println( "return (OUT) getValueInternal_Object( object );" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+
+		sourceWriter.println( "@Override public native final void copyValueTo( " + reflectedTypeName + " source, " + reflectedTypeName + " destination )" );
+		sourceWriter.println( "/*-{" );
+		sourceWriter.indent();
+		sourceWriter.println( "destination.@" + reflectedTypeName + "::" + field.getName() + " = source.@" + reflectedTypeName + "::" + field.getName() + ";" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}-*/;" );
+		sourceWriter.println( "" );
+
+		sourceWriter.println( "private native final void setValueInternal_int( Object object, int value )" );
+		sourceWriter.println( "/*-{" );
+		sourceWriter.indent();
+		sourceWriter.println( "object.@" + reflectedTypeName + "::" + field.getName() + " = value;" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}-*/;" );
+		sourceWriter.println( "" );
+		sourceWriter.println( "private native final int getValueInternal_int( Object object )" );
+		sourceWriter.println( "/*-{" );
+		sourceWriter.indent();
+		sourceWriter.println( "return object.@" + reflectedTypeName + "::" + field.getName() + ";" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}-*/;" );
+		sourceWriter.println( "" );
+		sourceWriter.println( "private native final void setValueInternal_Object( Object object, Object value )" );
+		sourceWriter.println( "/*-{" );
+		sourceWriter.indent();
+		sourceWriter.println( "object.@" + reflectedTypeName + "::" + field.getName() + " = value;" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}-*/;" );
+		sourceWriter.println( "" );
+		sourceWriter.println( "private native final Object getValueInternal_Object( Object object )" );
+		sourceWriter.println( "/*-{" );
+		sourceWriter.indent();
+		sourceWriter.println( "return object.@" + reflectedTypeName + "::" + field.getName() + ";" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}-*/;" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+	}
+
+	private void generateMethodClass( JMethod method, SourceWriter sourceWriter )
+	{
+		String methodClassName = method.getName() + "_MethodImpl";
+
+		JParameter[] params = method.getParameters();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append( "new Class<?>[] {" );
+		for( int p = 0; p < params.length; p++ )
+		{
+			if( p > 0 )
+				sb.append( ", " );
+			sb.append( params[p].getType().getQualifiedSourceName() );
+			sb.append( ".class" );
+		}
+		sb.append( "}" );
+
+		sourceWriter.println( "class " + methodClassName + " extends com.hexa.client.classinfo.internal.MethodBase {" );
+		sourceWriter.indent();
+		sourceWriter.println( "public " + methodClassName + "()" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		sourceWriter.println( "super(" + method.getReturnType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", " + sb.toString() + ");" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+
+		sourceWriter.println( "@Override" );
+		sourceWriter.println( "public Object call( Object target, Object[] parameters )" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		sb = new StringBuilder();
+		if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
+			sb.append( "((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
+		else
+			sb.append( "return (Object) ((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
+		for( int p = 0; p < params.length; p++ )
+		{
+			if( p > 0 )
+				sb.append( ", " );
+			sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") parameters[" + p + "]" );
+		}
+		sb.append( ");" );
+		sourceWriter.println( sb.toString() );
+		if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
+			sourceWriter.println( "return null;" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );

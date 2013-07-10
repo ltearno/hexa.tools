@@ -6,10 +6,6 @@ public interface Field<T>
 
 	Class<?> getType();
 
-	void setValue( Object object, int value );
-
-	int getValueInt( Object object );
-
 	void setValue( Object object, Object value );
 
 	<OUT> OUT getValue( Object object );

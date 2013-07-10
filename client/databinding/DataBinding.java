@@ -11,7 +11,7 @@ public class DataBinding
 	private final DataAdapter destination;
 	private final Mode bindingMode;
 
-	interface DataAdapter
+	public interface DataAdapter
 	{
 		public void registerPropertyChanged( Action1<DataAdapter> callback );
 

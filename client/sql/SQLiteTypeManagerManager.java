@@ -16,7 +16,10 @@ public class SQLiteTypeManagerManager
 			throw new IllegalStateException( "AutoUpdateTimestamp trigger not supported for this type !" );
 		}
 
-		public Boolean localRecordStateCreateTriggerSql( SQLite db, String tableName, String fieldName ) { return true; }
+		public Boolean localRecordStateCreateTriggerSql( SQLite db, String tableName, String fieldName )
+		{
+			return true;
+		}
 
 		abstract public boolean appendUpdateValueSql( StringBuilder sb, Field<?> field, Object record );
 
@@ -50,7 +53,7 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 
 		return "INTEGER";
 	}
-	
+
 	/*
 	 * Créee un trigger qui permet la maj automatique d'un champ de statut (INTEGER) dont la valeur signifiera : - 0 : enregistrement créé localement - 1 :
 	 * enregistrement copie conforme du serveur - 2 : enregistrement modifié localement
@@ -61,9 +64,8 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 	public Boolean localRecordStateCreateTriggerSql( SQLite db, String tableName, String fieldName )
 	{
 		String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_localstate_update BEFORE UPDATE ON " + tableName
-				//+ " FOR EACH ROW " + "WHEN NEW." + fieldName + " IS NULL OR NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET "
-				+ " FOR EACH ROW " + "WHEN NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET "
-				+ fieldName + " = 2 WHERE id=NEW.id; END";
+		// + " FOR EACH ROW " + "WHEN NEW." + fieldName + " IS NULL OR NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET "
+				+ " FOR EACH ROW " + "WHEN NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = 2 WHERE id=NEW.id; END";
 
 		db.execute( triggerSql );
 
@@ -73,7 +75,7 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 	@Override
 	public boolean appendUpdateValueSql( StringBuilder sb, Field<?> field, Object record )
 	{
-		sb.append( field.getValueInt( record ) );
+		sb.append( field.getValue( record ) );
 
 		return true;
 	}

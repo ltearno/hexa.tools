@@ -6,6 +6,7 @@ import com.hexa.client.databinding.DataBinding.DataAdapter;
 public class Bind
 {
 	private DataAdapter source;
+	private Mode mode = Mode.TwoWay;
 
 	public static Bind Source( Object source, String propertyName )
 	{
@@ -24,6 +25,12 @@ public class Bind
 		return b;
 	}
 
+	public Bind Mode( Mode mode )
+	{
+		this.mode = mode;
+		return this;
+	}
+
 	public void To( Object source, String propertyName )
 	{
 		To( new ObjectAdapter( source, propertyName ) );
@@ -36,7 +43,7 @@ public class Bind
 
 	public void To( DataAdapter destination )
 	{
-		DataBinding binding = new DataBinding( source, destination, Mode.TwoWay );
+		DataBinding binding = new DataBinding( source, destination, mode );
 		binding.activate();
 		source = null;
 	}

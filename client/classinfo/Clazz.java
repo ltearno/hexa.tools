@@ -12,5 +12,9 @@ public interface Clazz<T>
 
 	Field<T> getField( String fieldName );
 
+	List<Method> getMethods();
+
+	Method getMethod( String methodName );
+
 	T NEW();
 }

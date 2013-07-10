@@ -101,7 +101,7 @@ public class SqlHelper
 		if( idField == null )
 			throw new IllegalStateException( "No id field found for class " + clazz.getClassName() );
 
-		int recordId = idField.getValueInt( record );
+		int recordId = (Integer) idField.getValue( record );
 
 		// UPDATE users SET name = 'toto', xxx = value WHERE expression;
 
@@ -194,7 +194,7 @@ public class SqlHelper
 			// we dont insert id field when they are not specified...
 			if( field.getName().equals( "id" ) )
 			{
-				if( field.getValueInt( record ) == 0 )
+				if( ((Integer) field.getValue( record )) == 0 )
 				{
 					field.setValue( record, SQLite.createLocalId() );
 				}
