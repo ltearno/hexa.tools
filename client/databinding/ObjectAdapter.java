@@ -1,5 +1,6 @@
 package com.hexa.client.databinding;
 
+import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Method;
@@ -7,7 +8,7 @@ import com.hexa.client.databinding.DataBinding.DataAdapter;
 import com.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
 import com.hexa.client.tools.Action1;
 
-class ObjectAdapter implements DataAdapter, Handler
+public class ObjectAdapter implements DataAdapter, Handler
 {
 	private final Object source;
 	private final String sourceProperty;
@@ -23,11 +24,17 @@ class ObjectAdapter implements DataAdapter, Handler
 	}
 
 	@Override
-	public void registerPropertyChanged( Action1<DataAdapter> callback )
+	public Object registerPropertyChanged( Action1<DataAdapter> callback )
 	{
 		this.callback = callback;
 
-		((INotifyPropertyChanged) source).registerPropertyChangedEvent( this );
+		return ((INotifyPropertyChanged) source).registerPropertyChangedEvent( this );
+	}
+
+	@Override
+	public void removePropertyChangedHandler( Object handler )
+	{
+		((HandlerRegistration)handler).removeHandler();
 	}
 
 	@Override
@@ -35,7 +42,9 @@ class ObjectAdapter implements DataAdapter, Handler
 	{
 		Clazz<?> s = ClassInfo.Clazz( source.getClass() );
 
-		Method getter = s.getMethod( "get" + sourceProperty.substring( 0, 1 ).toUpperCase() + sourceProperty.substring( 1 ) );
+		String getterName = "get" + sourceProperty.substring( 0, 1 ).toUpperCase() + sourceProperty.substring( 1 );
+		Method getter = s.getMethod( getterName );
+		assert getter != null : "ObjectAdapter : getter " + getterName;
 		Object value = getter.call( source, null );
 
 		// Object value = s.getField( sourceProperty ).getValue( source );
