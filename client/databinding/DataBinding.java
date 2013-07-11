@@ -1,5 +1,7 @@
 package com.hexa.client.databinding;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.HasValue;
 import com.hexa.client.tools.Action1;
 
@@ -63,6 +65,18 @@ public class DataBinding
 		fActivated = true;
 
 		onSourceChanged.exec( null );
+	}
+
+	public void deferActivate()
+	{
+		Scheduler.get().scheduleDeferred( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				activate();
+			}
+		} );
 	}
 
 	public void term()

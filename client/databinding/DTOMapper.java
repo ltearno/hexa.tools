@@ -18,26 +18,26 @@ public class DTOMapper
 	// tries to bind as much fields of source to destination and the other way around
 	public static void Map( Object source, Object destination )
 	{
-		GWT.log( "Binding object of class " + source.getClass().getName() + " to another of class " + destination.getClass().getName() );
-		
+		GWT.log( "Binding object of class " + getSimpleName(source.getClass()) + " to another of class " + getSimpleName(destination.getClass()) );
+
 		Clazz<?> sourceClass = ClassInfo.Clazz( source.getClass() );
 		Clazz<?> destinationClass = ClassInfo.Clazz( destination.getClass() );
-		
+
 		// registers all possible bindings...
 		HashSet<String> bindedNames = new HashSet<String>();
-		
+
 		// fields wise...
 		for( Field<?> field : sourceClass.getFields() )
 			bindedNames.add( field.getName() );
 		for( Field<?> field : destinationClass.getFields() )
 			bindedNames.add( field.getName() );
-		
+
 		// ... and method wise
 		for( Method method : sourceClass.getMethods() )
 		{
 			if( ! method.getName().startsWith( "get" ) && ! method.getName().startsWith( "set" ) )
 				continue;
-			
+
 			String fieldName = method.getName().substring( 3, 4 ).toLowerCase() + method.getName().substring( 4 );
 			bindedNames.add( fieldName );
 		}
@@ -45,70 +45,104 @@ public class DTOMapper
 		{
 			if( ! method.getName().startsWith( "get" ) && ! method.getName().startsWith( "set" ) )
 				continue;
-			
+
 			String fieldName = method.getName().substring( 3, 4 ).toLowerCase() + method.getName().substring( 4 );
 			bindedNames.add( fieldName );
 		}
-		
+
 		for( String name : bindedNames )
 		{
 			boolean srcRead = ClazzUtils.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
 			boolean srcWrite = ClazzUtils.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
-			
+
 			boolean destinationRead = ClazzUtils.HasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
 			boolean destinationWrite = ClazzUtils.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
-			
+
 			// ensure both have necessary methods or field
 			if( ! srcRead || ! destinationWrite )
 				continue; // bypass
-			
+
 			// adjust binding mode according to capabilities
 			Mode bindingMode = Mode.OneWay;
 			if( srcWrite && destinationRead )
 				bindingMode = Mode.TwoWay;
-			
-			// ensure that types match
-			Class<?> srcPptyType = ClazzUtils.GetPropertyType( ClassInfo.Clazz( source.getClass() ), name );
-			Class<?> destPptyType = ClazzUtils.GetPropertyType( ClassInfo.Clazz( destination.getClass() ), name );
-			
-			Converter converter = null;
-			DataAdapter destinationAdapter = null;
-			// test if the destination is a widget and has the HasValue interface... we do that kind of blindly !
-			Object widget = ClazzUtils.GetProperty( destination, name );
-			if( widget != null && (widget instanceof HasValue) )
+
+			DataAdapterInfo sourceAdapterInfo = createDataAdapter( source, name, null );
+			if( sourceAdapterInfo == null )
+				continue;
+
+			DataAdapterInfo destinationAdapterInfo = createDataAdapter( destination, name, sourceAdapterInfo.dataType );
+			if( destinationAdapterInfo == null )
+				continue;
+
+			// bind source, "color" <----> destination, "color.$HasValue"
+			String symbol = "";
+			switch( bindingMode )
 			{
-				// the destination is a HasValue<T> widget
-				// we hope in that case that T is the same as srcPptyType, but we cannot know for sure right now...
-				
-				// try to guess the HasValue type
-				Class<?> hasValueType = null;
-				if( widget instanceof TextBox )
-					hasValueType = String.class;
-				
-				if( hasValueType!=null && hasValueType!=srcPptyType )
-				{
-					// try to find a converter
-					converter = Converters.findConverter( srcPptyType, hasValueType );
-					if( converter == null )
-						continue;
-				}
-				
-				destinationAdapter = new WidgetAdapter( widget );
+			case OneWay: symbol = "----->"; break;
+			case TwoWay: symbol = "<---->"; break;
+			case OneWayToSource: symbol = "<-----"; break;
 			}
-			else
-			{
-				if( srcPptyType != destPptyType )
-					continue;
-				
-				destinationAdapter = new ObjectAdapter( destination, name );
-			}
-			
-			GWT.log( "Binding property " + name );
-			
-			ObjectAdapter sourceAdapter = new ObjectAdapter( source, name );
-			
-			DataBinding binding = new DataBinding( sourceAdapter, destinationAdapter, bindingMode, converter );
+
+			GWT.log( "[" + getSimpleName(sourceAdapterInfo.dataType) + "] " + sourceAdapterInfo.debugString + "---"+symbol+"--->" + destinationAdapterInfo.debugString );
+
+			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter );
 			binding.activate();
 		}
+	}
+
+	static String getSimpleName( Class<?> cls )
+	{
+		String[] path = cls.getName().split( "\\." );
+		return path[path.length-1];
+	}
+
+	static class DataAdapterInfo
+	{
+		DataAdapter adapter;
+		Converter converter;
+		Class<?> dataType;
+
+		String debugString;
+	}
+
+	static DataAdapterInfo createDataAdapter( Object context, String property, Class<?> srcPptyType )
+	{
+		DataAdapterInfo res = new DataAdapterInfo();
+		res.dataType = ClazzUtils.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
+		res.debugString = getSimpleName(context.getClass()) + ", ";
+
+		// test to see if the asked property is in fact a HasValue widget
+		Object widget = ClazzUtils.GetProperty( context, property );
+		if( widget != null && (widget instanceof HasValue) )
+		{
+			// try to guess the HasValue type
+			res.dataType = null;
+			if( widget instanceof TextBox )
+				res.dataType = String.class;
+
+			// try to find a converter if dataType does not match srcPptyType
+			if( srcPptyType!=null && res.dataType!=null && res.dataType!=srcPptyType )
+			{
+				// try to find a converter, if not : fail
+				res.converter = Converters.findConverter( srcPptyType, res.dataType );
+				if( res.converter == null )
+					return null;
+
+				res.debugString = "["+getSimpleName(srcPptyType)+">"+getSimpleName(res.dataType)+"] " + res.debugString;
+			}
+
+			res.debugString += "\"" + property + ".$HasValue\"";
+
+			res.adapter = new CompositeObjectAdapter( context, property + ".$HasValue" );
+		}
+		else
+		{
+			res.debugString += "\"" + property + "\"";
+
+			res.adapter = new ObjectAdapter( context, property );
+		}
+
+		return res;
 	}
 }

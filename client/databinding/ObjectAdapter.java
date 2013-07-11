@@ -27,7 +27,7 @@ public class ObjectAdapter implements DataAdapter, Handler
 		// Can we register ?
 		if( ! ( source instanceof INotifyPropertyChanged ) )
 			return null;
-		
+
 		this.callback = callback;
 
 		return ((INotifyPropertyChanged) source).registerPropertyChangedEvent( this );

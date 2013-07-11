@@ -1,6 +1,5 @@
 package com.hexa.client.databinding;
 
-import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -11,16 +10,13 @@ import com.hexa.client.tools.Action1;
 @SuppressWarnings( "rawtypes" )
 class WidgetAdapter implements DataAdapter, ValueChangeHandler
 {
-	Object widget;
+	HasValue widget;
 
 	Action1<DataAdapter> callback;
 
-	public WidgetAdapter( Object widget )
+	public WidgetAdapter( HasValue widget )
 	{
 		this.widget = widget;
-
-		if( !(widget instanceof HasValue) )
-			throw new RuntimeException( "Should have HasValue interface implemented" );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -29,10 +25,7 @@ class WidgetAdapter implements DataAdapter, ValueChangeHandler
 	{
 		this.callback = callback;
 
-		if( !(widget instanceof HasValueChangeHandlers) )
-			throw new RuntimeException( "Should have HasValueChangeHandlers interface implemented" );
-
-		return ((HasValueChangeHandlers) widget).addValueChangeHandler( this );
+		return widget.addValueChangeHandler( this );
 	}
 
 	@Override
@@ -45,14 +38,14 @@ class WidgetAdapter implements DataAdapter, ValueChangeHandler
 	@Override
 	public Object getValue()
 	{
-		return ((HasValue) widget).getValue();
+		return widget.getValue();
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setValue( Object object )
 	{
-		((HasValue) widget).setValue( object, false );
+		widget.setValue( object, true );
 	}
 
 	@Override
