@@ -9,18 +9,17 @@ public class DataBinding
 
 	private DataAdapter source;
 	private Object sourceHandler;
-	
+
 	private DataAdapter destination;
 	private Object destinationHandler;
-	
-	private final Mode bindingMode;
+
 	private Converter converter;
 
 	public interface DataAdapter
 	{
 		// returns handle
 		public Object registerPropertyChanged( Action1<DataAdapter> callback );
-		
+
 		public void removePropertyChangedHandler( Object handler );
 
 		public Object getValue();
@@ -42,7 +41,6 @@ public class DataBinding
 	{
 		this.source = source;
 		this.destination = destination;
-		this.bindingMode = bindingMode;
 		this.converter = converter;
 
 		switch( bindingMode )
@@ -66,20 +64,20 @@ public class DataBinding
 
 		onSourceChanged.exec( null );
 	}
-	
+
 	public void term()
 	{
 		fActivated = false;
 		converter = null;
-		
+
 		source.removePropertyChangedHandler( sourceHandler );
 		source = null;
 		sourceHandler = null;
-		
+
 		destination.removePropertyChangedHandler( destinationHandler );
 		destination = null;
 		destinationHandler = null;
-		
+
 	}
 
 	private final Action1<DataAdapter> onSourceChanged = new Action1<DataBinding.DataAdapter>()
@@ -91,7 +89,7 @@ public class DataBinding
 				return;
 
 			Object value = source.getValue();
-			
+
 			if( converter != null )
 				value = converter.convert( value );
 
@@ -108,7 +106,7 @@ public class DataBinding
 				return;
 
 			Object value = destination.getValue();
-			
+
 			if( converter != null )
 				value = converter.convertBack( value );
 
