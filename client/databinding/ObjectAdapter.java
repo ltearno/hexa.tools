@@ -1,9 +1,7 @@
 package com.hexa.client.databinding;
 
 import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.hexa.client.classinfo.ClassInfo;
-import com.hexa.client.classinfo.Clazz;
-import com.hexa.client.classinfo.Method;
+import com.hexa.client.classinfo.ClazzUtils;
 import com.hexa.client.databinding.DataBinding.DataAdapter;
 import com.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
 import com.hexa.client.tools.Action1;
@@ -26,6 +24,10 @@ public class ObjectAdapter implements DataAdapter, Handler
 	@Override
 	public Object registerPropertyChanged( Action1<DataAdapter> callback )
 	{
+		// Can we register ?
+		if( ! ( source instanceof INotifyPropertyChanged ) )
+			return null;
+		
 		this.callback = callback;
 
 		return ((INotifyPropertyChanged) source).registerPropertyChangedEvent( this );
@@ -34,31 +36,20 @@ public class ObjectAdapter implements DataAdapter, Handler
 	@Override
 	public void removePropertyChangedHandler( Object handler )
 	{
-		((HandlerRegistration)handler).removeHandler();
+		if( handler != null )
+			((HandlerRegistration)handler).removeHandler();
 	}
 
 	@Override
 	public Object getValue()
 	{
-		Clazz<?> s = ClassInfo.Clazz( source.getClass() );
-
-		String getterName = "get" + sourceProperty.substring( 0, 1 ).toUpperCase() + sourceProperty.substring( 1 );
-		Method getter = s.getMethod( getterName );
-		assert getter != null : "ObjectAdapter : getter " + getterName;
-		Object value = getter.call( source, null );
-
-		// Object value = s.getField( sourceProperty ).getValue( source );
-		return value;
+		return ClazzUtils.GetProperty( source, sourceProperty, true );
 	}
 
 	@Override
 	public void setValue( Object value )
 	{
-		Clazz<?> d = ClassInfo.Clazz( source.getClass() );
-
-		Method setter = d.getMethod( "set" + sourceProperty.substring( 0, 1 ).toUpperCase() + sourceProperty.substring( 1 ) );
-		setter.call( source, new Object[] { value } );
-		// d.getField( sourceProperty ).setValue( source, value );
+		ClazzUtils.SetProperty( source, sourceProperty, value, true );
 	}
 
 	@Override
