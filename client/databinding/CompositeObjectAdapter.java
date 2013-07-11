@@ -2,6 +2,7 @@ package com.hexa.client.databinding;
 
 import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
+import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
 import com.hexa.client.databinding.DataBinding.DataAdapter;
 import com.hexa.client.tools.Action1;
@@ -111,6 +112,7 @@ public class CompositeObjectAdapter implements DataAdapter
 	private Object getValue( int level )
 	{
 		Object cur = source;
+		
 		for( int i=0; i<=level; i++)
 		{
 			if( cur == null )
@@ -120,9 +122,26 @@ public class CompositeObjectAdapter implements DataAdapter
 
 			String getterName = "get" + canon(path[i]);
 			Method getter = s.getMethod( getterName );
-			assert getter != null : "ObjectAdapter : getter " + getterName + " not found !";
-			
-			cur = getter.call( cur, null );
+			if( getter != null )
+			{
+				cur = getter.call( cur, null );
+			}
+			else
+			{
+				//GWT.log( "ObjectAdapter : getter " + getterName + " not found, trying direct field access..." );
+				
+				// try direct field access
+				Field<?> field = s.getField( path[i] );
+				if( field != null )
+				{
+					cur = field.getValue( cur );
+				}
+				else
+				{
+					assert false : "ObjectAdapter : getter " + getterName + " and field not found !";
+					return null;
+				}
+			}
 		}
 		
 		return cur;
@@ -138,27 +157,38 @@ public class CompositeObjectAdapter implements DataAdapter
 	public void setValue( Object object )
 	{
 		Object cur = source;
-		for( int i=0; i<path.length-1; i++)
+		
+		if( path.length > 1 )
+			cur = getValue( path.length - 2 );
+		
+		if( cur == null )
 		{
-			if( cur == null )
-				return;
-			
-			Clazz<?> s = ClassInfo.Clazz( cur.getClass() );
-
-			String getterName = "get" + canon(path[i]);
-			Method getter = s.getMethod( getterName );
-			assert getter != null : "ObjectAdapter : getter " + getterName + " not found !";
-			
-			cur = getter.call( cur, null );
+			assert false : "ObjectAdapter : Cannot find nothing to set !";
+			return;
 		}
 		
 		Clazz<?> s = ClassInfo.Clazz( cur.getClass() );
 
 		String setterName = "set" + canon(path[path.length-1]);
 		Method setter = s.getMethod( setterName );
-		assert setter != null : "ObjectAdapter : setter " + setterName + " not found !";
-		
-		setter.call( cur, new Object[] { object } );
+		if( setter != null )
+		{
+			setter.call( cur, new Object[] { object } );
+		}
+		else
+		{
+			// try direct field access
+			//GWT.log( "ObjectAdapter : setter " + setterName + " not found on object of class " + cur.getClass().getName() + " trying direct field access" );
+			Field<?> field = s.getField( path[path.length-1] );
+			if( field != null )
+			{
+				field.setValue( cur, object );
+			}
+			else
+			{
+				assert false : "ObjectAdapter : no setter nor field " + path[path.length-1] + " found on instance of class " + cur.getClass().getName();
+			}
+		}
 	}
 	
 	private static String canon(String s)
