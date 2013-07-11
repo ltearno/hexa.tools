@@ -1,6 +1,8 @@
 package com.hexa.rebind;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -70,6 +72,11 @@ public class ClazzGenerator extends Generator
 
 			if( reflectedType == null )
 				throw new UnableToCompleteException();
+			
+			if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
+			{
+				return "com.hexa.client.databinding.JavaScriptObjectClazz";
+			}
 
 			packageName = reflectedType.getPackage().getName();
 			generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
@@ -135,23 +142,25 @@ public class ClazzGenerator extends Generator
 
 		// Fields
 
+		List<String> fieldClassNames = new ArrayList<String>();
 		JField[] fields = reflectedType.getFields();
 		for( int f = 0; f < fields.length; f++ )
 		{
 			JField field = fields[f];
-
+			if( field.isStatic() )
+				continue; // skip
+			
+			String fieldClassName = field.getName() + "_FieldImpl";
+			fieldClassNames.add( fieldClassName );
+			
 			generateFieldClass( field, sourceWriter );
 		}
 
 		sourceWriter.println( "protected void _addFields()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		for( int f = 0; f < fields.length; f++ )
-		{
-			JField field = fields[f];
-			String fieldClassName = field.getName() + "_FieldImpl";
+		for( String fieldClassName : fieldClassNames )
 			sourceWriter.println( "_fields.add( new " + fieldClassName + "());" );
-		}
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -160,21 +169,23 @@ public class ClazzGenerator extends Generator
 
 		JMethod[] methods = reflectedType.getMethods();
 
+		List<String> methodClassNames = new ArrayList<String>();
 		for( int m = 0; m < methods.length; m++ )
 		{
 			JMethod method = methods[m];
-			generateMethodClass( method, sourceWriter );
+			String methodClassName = method.getName() + "_MethodImpl";
+			while( methodClassNames.contains( methodClassName ) )
+				methodClassName += "_";
+			methodClassNames.add( methodClassName );
+			
+			generateMethodClass( methodClassName, method, sourceWriter );
 		}
 
 		sourceWriter.println( "protected void _addMethods()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		for( int m = 0; m < methods.length; m++ )
-		{
-			JMethod method = methods[m];
-			String methodClassName = method.getName() + "_MethodImpl";
+		for( String methodClassName : methodClassNames )
 			sourceWriter.println( "_methods.add( new " + methodClassName + "());" );
-		}
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -267,10 +278,8 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "" );
 	}
 
-	private void generateMethodClass( JMethod method, SourceWriter sourceWriter )
+	private void generateMethodClass( String methodClassName, JMethod method, SourceWriter sourceWriter )
 	{
-		String methodClassName = method.getName() + "_MethodImpl";
-
 		JParameter[] params = method.getParameters();
 
 		StringBuilder sb = new StringBuilder();
@@ -289,7 +298,7 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "public " + methodClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "super(" + method.getReturnType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", " + sb.toString() + ");" );
+		sourceWriter.println( "super(" + method.getReturnType().getErasedType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", " + sb.toString() + ");" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -298,30 +307,37 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "public Object call( Object target, Object[] parameters )" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sb = new StringBuilder();
-		if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
-			sb.append( "((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
-		else
-			sb.append( "return (Object) ((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
-		for( int p = 0; p < params.length; p++ )
+		if( method.isPrivate() )
 		{
-			if( p > 0 )
-				sb.append( ", " );
-			JPrimitiveType primitive = params[p].getType().isPrimitive();
-			if( primitive != null )
-			{
-				String boxedCast = primitive.getQualifiedBoxedSourceName();
-				sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") (" + boxedCast + ") parameters[" + p + "]" );
-			}
-			else
-			{
-				sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") parameters[" + p + "]" );
-			}
+			sourceWriter.println( "throw new java.lang.RuntimeException(\"CANNOT CALL PRIVATE METHOD " + method.getName() + "\" );" );
 		}
-		sb.append( ");" );
-		sourceWriter.println( sb.toString() );
-		if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
-			sourceWriter.println( "return null;" );
+		else
+		{
+			sb = new StringBuilder();
+			if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
+				sb.append( "((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
+			else
+				sb.append( "return (Object) ((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
+			for( int p = 0; p < params.length; p++ )
+			{
+				if( p > 0 )
+					sb.append( ", " );
+				JPrimitiveType primitive = params[p].getType().isPrimitive();
+				if( primitive != null )
+				{
+					String boxedCast = primitive.getQualifiedBoxedSourceName();
+					sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") (" + boxedCast + ") parameters[" + p + "]" );
+				}
+				else
+				{
+					sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") parameters[" + p + "]" );
+				}
+			}
+			sb.append( ");" );
+			sourceWriter.println( sb.toString() );
+			if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
+				sourceWriter.println( "return null;" );
+		}
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
