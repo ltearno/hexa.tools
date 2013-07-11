@@ -5,6 +5,8 @@
 	<inherits name="com.google.gwt.http.HTTP" />
   	<inherits name='com.google.gwt.json.JSON'/>
   	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
+  	<inherits name='com.github.gwtbootstrap.Bootstrap'/>
+  	<inherits name='com.github.gwtbootstrap.datepicker.Datepicker'/>
   	
   	<super-source path="jre"/>
   	<source path="client"/>
@@ -31,6 +33,10 @@
 	
 	<generate-with class="com.hexa.rebind.ClazzGenerator">
 		<when-type-assignable class="com.hexa.client.classinfo.Clazz" />
+	</generate-with>
+	
+	<generate-with class="com.hexa.rebind.ClazzBundleGenerator">
+		<when-type-assignable class="com.hexa.client.classinfo.ClazzBundle" />
 	</generate-with>
 	
 	<define-linker name="AppCacheLinker" class="com.hexa.linker.AppCacheLinker" />
