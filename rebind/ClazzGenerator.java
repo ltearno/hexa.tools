@@ -66,8 +66,6 @@ public class ClazzGenerator extends Generator
 
 				reflectedType = typeArgs[0];
 				reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
-
-				logger.log( TreeLogger.INFO, askedTypeName + " reflection for class / " + typeArgs.length + " type args:" + reflectedType.getName() );
 			}
 
 			if( reflectedType == null )

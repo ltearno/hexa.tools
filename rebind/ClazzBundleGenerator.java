@@ -114,7 +114,7 @@ public class ClazzBundleGenerator extends Generator
 		
 		for( JType type : returnTypes )
 		{
-			String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "" );
+			String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
 			names.add( interfaceName );
 			
 			sourceWriter.println( "public interface "+interfaceName+" extends Clazz<"+type.getQualifiedSourceName()+"> {}" );
