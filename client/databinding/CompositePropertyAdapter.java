@@ -1,7 +1,7 @@
 package com.hexa.client.databinding;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.hexa.client.classinfo.ClazzUtils;
+import com.hexa.client.databinding.propertyadapters.ClazzUtils;
 import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
@@ -18,6 +18,67 @@ public class CompositePropertyAdapter implements PropertyAdapter
 	{
 		this.source = source;
 		path = property.split( "\\." );
+	}
+
+	@Override
+	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
+	{
+		PropertyChangedManager[] managers = new PropertyChangedManager[path.length];
+
+		// initiate watching on properties (first, the first one on the path)
+		managers[0] = new PropertyChangedManager( 0, callback, managers );
+		managers[0].register( source );
+
+		return managers;
+	}
+
+	@Override
+	public void removePropertyChangedHandler( Object handler )
+	{
+		PropertyChangedManager[] managers = (PropertyChangedManager[]) handler;
+		for( int i=0; i<managers.length; i++ )
+		{
+			if( managers[i] == null )
+				continue;
+
+			managers[i].unregister();
+			managers[i] = null;
+		}
+	}
+
+	private Object getValue( int level )
+	{
+		Object cur = source;
+
+		for( int i=0; i<=level; i++)
+		{
+			if( cur == null )
+				return null;
+
+			cur = ClazzUtils.GetProperty( cur, path[i] );
+		}
+
+		return cur;
+	}
+
+	@Override
+	public Object getValue()
+	{
+		return getValue(path.length-1);
+	}
+
+	@Override
+	public void setValue( Object object )
+	{
+		Object cur = source;
+
+		if( path.length > 1 )
+			cur = getValue( path.length - 2 );
+
+		if( cur == null )
+			return;
+
+		ClazzUtils.SetProperty( cur, path[path.length-1], object );
 	}
 
 	class PropertyChangedManager implements Action2<PropertyAdapter, Object>
@@ -99,62 +160,5 @@ public class CompositePropertyAdapter implements PropertyAdapter
 
 			managers[position+1].exec( param, null );
 		}
-	}
-
-	@Override
-	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
-	{
-		PropertyChangedManager[] managers = new PropertyChangedManager[path.length];
-
-		managers[0] = new PropertyChangedManager( 0, callback, managers );
-		managers[0].register( source );
-
-		return managers;
-	}
-
-	@Override
-	public void removePropertyChangedHandler( Object handler )
-	{
-		PropertyChangedManager[] managers = (PropertyChangedManager[]) handler;
-		for( int i=0; i<managers.length; i++ )
-		{
-			managers[i].unregister();
-			managers[i] = null;
-		}
-	}
-
-	private Object getValue( int level )
-	{
-		Object cur = source;
-
-		for( int i=0; i<=level; i++)
-		{
-			if( cur == null )
-				return null;
-
-			cur = ClazzUtils.GetProperty( cur, path[i] );
-		}
-
-		return cur;
-	}
-
-	@Override
-	public Object getValue()
-	{
-		return getValue(path.length-1);
-	}
-
-	@Override
-	public void setValue( Object object )
-	{
-		Object cur = source;
-
-		if( path.length > 1 )
-			cur = getValue( path.length - 2 );
-
-		if( cur == null )
-			return;
-
-		ClazzUtils.SetProperty( cur, path[path.length-1], object );
 	}
 }

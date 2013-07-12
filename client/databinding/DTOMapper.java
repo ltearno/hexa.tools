@@ -7,11 +7,11 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
-import com.hexa.client.classinfo.ClazzUtils;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
-import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.ClazzUtils;
 import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
 
 
 public class DTOMapper

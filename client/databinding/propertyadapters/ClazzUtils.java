@@ -1,6 +1,10 @@
-package com.hexa.client.classinfo;
+package com.hexa.client.databinding.propertyadapters;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.hexa.client.classinfo.ClassInfo;
+import com.hexa.client.classinfo.Clazz;
+import com.hexa.client.classinfo.Field;
+import com.hexa.client.classinfo.Method;
 import com.hexa.client.databinding.CompositePropertyAdapter;
 
 

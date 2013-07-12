@@ -1,7 +1,6 @@
 package com.hexa.client.databinding.propertyadapters;
 
 import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.hexa.client.classinfo.ClazzUtils;
 import com.hexa.client.databinding.INotifyPropertyChanged;
 import com.hexa.client.databinding.NotifyPropertyChangedEvent;
 import com.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
