@@ -84,7 +84,7 @@ public class DTOMapper
 			case OneWayToSource: symbol = "<-----"; break;
 			}
 
-			GWT.log( "[" + getSimpleName(sourceAdapterInfo.dataType) + "] " + sourceAdapterInfo.debugString + "---"+symbol+"--->" + destinationAdapterInfo.debugString );
+			GWT.log( "[" + getSimpleName(sourceAdapterInfo.dataType) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
 
 			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter );
 			binding.activate();
