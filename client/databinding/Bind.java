@@ -1,27 +1,28 @@
 package com.hexa.client.databinding;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.hexa.client.databinding.DataBinding.DataAdapter;
+import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
 
 public class Bind
 {
-	private DataAdapter source;
+	private PropertyAdapter source;
 	private Mode mode = Mode.TwoWay;
 	private Converter converter;
 	private boolean fDeferActivate;
 
 	public static Bind Source( Object source, String propertyName )
 	{
-		return Source( new CompositeObjectAdapter( source, propertyName ) );
+		return Source( new CompositePropertyAdapter( source, propertyName ) );
 	}
 
 	@SuppressWarnings( "rawtypes" )
 	public static Bind Source( HasValue widget )
 	{
-		return Source( new WidgetAdapter( widget ) );
+		return Source( new WidgetPropertyAdapter( widget ) );
 	}
 
-	public static Bind Source( DataAdapter source )
+	public static Bind Source( PropertyAdapter source )
 	{
 		Bind b = new Bind();
 		b.source = source;
@@ -36,16 +37,16 @@ public class Bind
 
 	public DataBinding To( Object source, String propertyName )
 	{
-		return To( new CompositeObjectAdapter( source, propertyName ) );
+		return To( new CompositePropertyAdapter( source, propertyName ) );
 	}
 
 	@SuppressWarnings( "rawtypes" )
 	public DataBinding To( HasValue widget )
 	{
-		return To( new WidgetAdapter( widget ) );
+		return To( new WidgetPropertyAdapter( widget ) );
 	}
 
-	public DataBinding To( DataAdapter destination )
+	public DataBinding To( PropertyAdapter destination )
 	{
 		DataBinding binding = new DataBinding( source, destination, mode, converter );
 		if( fDeferActivate )

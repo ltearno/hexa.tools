@@ -1,7 +1,7 @@
 package com.hexa.client.classinfo;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.hexa.client.databinding.CompositeObjectAdapter;
+import com.hexa.client.databinding.CompositePropertyAdapter;
 
 
 public class ClazzUtils
@@ -55,7 +55,7 @@ public class ClazzUtils
 	@SuppressWarnings( "rawtypes" )
 	public static Object GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
 	{
-		if( name.equals( CompositeObjectAdapter.HASVALUE_TOKEN ) )
+		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 			return ((HasValue) object).getValue();
 
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
@@ -122,7 +122,7 @@ public class ClazzUtils
 	{
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
 
-		if( name.equals( CompositeObjectAdapter.HASVALUE_TOKEN ) )
+		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 		{
 			((HasValue) object).setValue( value );
 			return true;

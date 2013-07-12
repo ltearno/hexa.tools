@@ -10,7 +10,8 @@ import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.ClazzUtils;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
-import com.hexa.client.databinding.DataBinding.DataAdapter;
+import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 
 
 public class DTOMapper
@@ -99,7 +100,7 @@ public class DTOMapper
 
 	static class DataAdapterInfo
 	{
-		DataAdapter adapter;
+		PropertyAdapter adapter;
 		Converter converter;
 		Class<?> dataType;
 
@@ -134,13 +135,13 @@ public class DTOMapper
 
 			res.debugString += "\"" + property + ".$HasValue\"";
 
-			res.adapter = new CompositeObjectAdapter( context, property + ".$HasValue" );
+			res.adapter = new CompositePropertyAdapter( context, property + ".$HasValue" );
 		}
 		else
 		{
 			res.debugString += "\"" + property + "\"";
 
-			res.adapter = new ObjectAdapter( context, property );
+			res.adapter = new ObjectPropertyAdapter( context, property );
 		}
 
 		return res;

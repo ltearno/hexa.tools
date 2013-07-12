@@ -1,12 +1,11 @@
-package com.hexa.client.databinding;
+package com.hexa.client.databinding.propertyadapters;
 
-import com.hexa.client.databinding.DataBinding.DataAdapter;
-import com.hexa.client.tools.Action1;
+import com.hexa.client.tools.Action2;
 
-public abstract class WriteOnlyDataAdapter implements DataAdapter
+public abstract class WriteOnlyPropertyAdapter implements PropertyAdapter
 {
 	@Override
-	public final Object registerPropertyChanged( Action1<DataAdapter> callback )
+	public final Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
 		throw new RuntimeException("Not implemented in WriteOnlyDataAdapter");
 	}

@@ -2,37 +2,37 @@ package com.hexa.client.databinding;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.hexa.client.classinfo.ClazzUtils;
-import com.hexa.client.databinding.DataBinding.DataAdapter;
-import com.hexa.client.tools.Action1;
+import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
+import com.hexa.client.tools.Action2;
 
-public class CompositeObjectAdapter implements DataAdapter
+public class CompositePropertyAdapter implements PropertyAdapter
 {
 	public final static String HASVALUE_TOKEN = "$HasValue";
 
 	private final Object source;
 	private final String[] path;
 
-	public CompositeObjectAdapter( Object source, String property )
+	public CompositePropertyAdapter( Object source, String property )
 	{
 		this.source = source;
 		path = property.split( "\\." );
 	}
 
-	class PropertyChangedManager implements Action1<DataBinding.DataAdapter>
+	class PropertyChangedManager implements Action2<PropertyAdapter, Object>
 	{
 		PropertyChangedManager[] managers;
-		Action1<DataAdapter> callback;
+		Action2<PropertyAdapter, Object> callback;
 
-		String[] path;
 		int position;
 
-		DataAdapter adapter;
+		PropertyAdapter adapter;
 		Object handler;
 
-		public PropertyChangedManager( String[] path, int position, Action1<DataAdapter> callback, PropertyChangedManager[] managers )
+		public PropertyChangedManager( int position, Action2<PropertyAdapter, Object> callback, PropertyChangedManager[] managers )
 		{
 			this.callback = callback;
-			this.path = path;
 			this.position = position;
 			this.managers = managers;
 		}
@@ -47,18 +47,18 @@ public class CompositeObjectAdapter implements DataAdapter
 			if( HASVALUE_TOKEN.equals( pptyName ) )
 			{
 				assert (source instanceof HasValue) : "CompositeObjectAdapter : source is not HasValue : " + source.getClass().getName();
-				adapter = new WidgetAdapter( (HasValue) source );
+				adapter = new WidgetPropertyAdapter( (HasValue) source );
 			}
 			else
 			{
-				adapter = new ObjectAdapter( source, path[position] );
+				adapter = new ObjectPropertyAdapter( source, path[position] );
 			}
 
-			handler = adapter.registerPropertyChanged( this );
+			handler = adapter.registerPropertyChanged( this, null );
 			if( handler == null )
 			{
 				// exec() will never be called, so try to call it now !
-				exec( null );
+				exec( CompositePropertyAdapter.this, null );
 			}
 		}
 
@@ -73,12 +73,12 @@ public class CompositeObjectAdapter implements DataAdapter
 
 		// a change occurs on the watched property
 		@Override
-		public void exec( DataAdapter param )
+		public void exec( PropertyAdapter param, Object cookie )
 		{
 			// is that the end ?
 			if( position == path.length-1 )
 			{
-				callback.exec( CompositeObjectAdapter.this );
+				callback.exec( CompositePropertyAdapter.this, null );
 				return; // that's it
 			}
 
@@ -93,20 +93,20 @@ public class CompositeObjectAdapter implements DataAdapter
 			}
 
 			if( managers[position+1] == null )
-				managers[position+1] = new PropertyChangedManager( path, position+1, callback, managers );
+				managers[position+1] = new PropertyChangedManager( position+1, callback, managers );
 
 			managers[position+1].register( currentValue );
 
-			managers[position+1].exec( param );
+			managers[position+1].exec( param, null );
 		}
 	}
 
 	@Override
-	public Object registerPropertyChanged( final Action1<DataAdapter> callback )
+	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
 		PropertyChangedManager[] managers = new PropertyChangedManager[path.length];
 
-		managers[0] = new PropertyChangedManager( path, 0, callback, managers );
+		managers[0] = new PropertyChangedManager( 0, callback, managers );
 		managers[0].register( source );
 
 		return managers;

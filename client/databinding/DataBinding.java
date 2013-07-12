@@ -3,43 +3,34 @@ package com.hexa.client.databinding;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.HasValue;
-import com.hexa.client.tools.Action1;
+import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
+import com.hexa.client.tools.Action2;
 
 public class DataBinding
 {
 	private boolean fActivated;
 
-	private DataAdapter source;
+	private PropertyAdapter source;
 	private Object sourceHandler;
 
-	private DataAdapter destination;
+	private PropertyAdapter destination;
 	private Object destinationHandler;
 
 	private Converter converter;
 
-	public interface DataAdapter
-	{
-		// returns handle
-		public Object registerPropertyChanged( Action1<DataAdapter> callback );
-
-		public void removePropertyChangedHandler( Object handler );
-
-		public Object getValue();
-
-		public void setValue( Object object );
-	}
-
 	public DataBinding( Object source, String sourceProperty, Object destination, String destinationProperty, Mode bindingMode )
 	{
-		this( new ObjectAdapter( source, sourceProperty ), new ObjectAdapter( destination, destinationProperty ), bindingMode, null );
+		this( new ObjectPropertyAdapter( source, sourceProperty ), new ObjectPropertyAdapter( destination, destinationProperty ), bindingMode, null );
 	}
 
 	public DataBinding( Object source, String sourceProperty, HasValue<?> destination, Mode bindingMode )
 	{
-		this( new ObjectAdapter( source, sourceProperty ), new WidgetAdapter( destination ), bindingMode, null );
+		this( new ObjectPropertyAdapter( source, sourceProperty ), new WidgetPropertyAdapter( destination ), bindingMode, null );
 	}
 
-	public DataBinding( DataAdapter source, DataAdapter destination, Mode bindingMode, Converter converter )
+	public DataBinding( PropertyAdapter source, PropertyAdapter destination, Mode bindingMode, Converter converter )
 	{
 		this.source = source;
 		this.destination = destination;
@@ -48,14 +39,14 @@ public class DataBinding
 		switch( bindingMode )
 		{
 		case OneWay:
-			sourceHandler = source.registerPropertyChanged( onSourceChanged );
+			sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
 			break;
 		case OneWayToSource:
-			destinationHandler = destination.registerPropertyChanged( onDestinationChanged );
+			destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
 			break;
 		case TwoWay:
-			sourceHandler = source.registerPropertyChanged( onSourceChanged );
-			destinationHandler = destination.registerPropertyChanged( onDestinationChanged );
+			sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
+			destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
 			break;
 		}
 	}
@@ -64,7 +55,7 @@ public class DataBinding
 	{
 		fActivated = true;
 
-		onSourceChanged.exec( null );
+		onSourceChanged.exec( null, null );
 	}
 
 	public void deferActivate()
@@ -94,10 +85,10 @@ public class DataBinding
 
 	}
 
-	private final Action1<DataAdapter> onSourceChanged = new Action1<DataBinding.DataAdapter>()
+	private final Action2<PropertyAdapter, Object> onSourceChanged = new Action2<PropertyAdapter, Object>()
 	{
 		@Override
-		public void exec( DataAdapter param )
+		public void exec( PropertyAdapter param, Object cookie )
 		{
 			if( !fActivated )
 				return;
@@ -111,10 +102,10 @@ public class DataBinding
 		}
 	};
 
-	private final Action1<DataAdapter> onDestinationChanged = new Action1<DataBinding.DataAdapter>()
+	private final Action2<PropertyAdapter, Object> onDestinationChanged = new Action2<PropertyAdapter, Object>()
 	{
 		@Override
-		public void exec( DataAdapter param )
+		public void exec( PropertyAdapter param, Object cookie )
 		{
 			if( !fActivated )
 				return;

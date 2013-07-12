@@ -1,51 +1,52 @@
-package com.hexa.client.databinding;
+package com.hexa.client.databinding.propertyadapters;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
-import com.hexa.client.databinding.DataBinding.DataAdapter;
-import com.hexa.client.tools.Action1;
+import com.hexa.client.tools.Action2;
 
 @SuppressWarnings( "rawtypes" )
-class WidgetAdapter implements DataAdapter, ValueChangeHandler
+public class WidgetPropertyAdapter implements PropertyAdapter, ValueChangeHandler
 {
-	HasValue widget;
+	HasValue hasValue;
 
-	Action1<DataAdapter> callback;
+	Action2<PropertyAdapter, Object> callback;
+	Object cookie;
 
-	public WidgetAdapter( HasValue widget )
+	public WidgetPropertyAdapter( HasValue hasValue )
 	{
-		this.widget = widget;
+		this.hasValue = hasValue;
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public Object registerPropertyChanged( Action1<DataAdapter> callback )
+	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
 		this.callback = callback;
+		this.cookie = cookie;
 
-		return widget.addValueChangeHandler( this );
+		return hasValue.addValueChangeHandler( this );
 	}
 
 	@Override
 	public void onValueChange( ValueChangeEvent event )
 	{
 		if( callback != null )
-			callback.exec( this );
+			callback.exec( this, cookie );
 	}
 
 	@Override
 	public Object getValue()
 	{
-		return widget.getValue();
+		return hasValue.getValue();
 	}
 
 	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setValue( Object object )
 	{
-		widget.setValue( object, true );
+		hasValue.setValue( object, true );
 	}
 
 	@Override
