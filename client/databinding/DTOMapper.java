@@ -9,8 +9,9 @@ import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
-import com.hexa.client.databinding.propertyadapters.ClazzUtils;
+import com.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
+import com.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
 
 
@@ -53,11 +54,11 @@ public class DTOMapper
 
 		for( String name : bindedNames )
 		{
-			boolean srcRead = ClazzUtils.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
-			boolean srcWrite = ClazzUtils.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcRead = ObjectPropertiesUtils.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
 
-			boolean destinationRead = ClazzUtils.HasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
-			boolean destinationWrite = ClazzUtils.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationRead = ObjectPropertiesUtils.HasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
 
 			// ensure both have necessary methods or field
 			if( ! srcRead || ! destinationWrite )
@@ -110,11 +111,11 @@ public class DTOMapper
 	static DataAdapterInfo createDataAdapter( Object context, String property, Class<?> srcPptyType )
 	{
 		DataAdapterInfo res = new DataAdapterInfo();
-		res.dataType = ClazzUtils.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
+		res.dataType = ObjectPropertiesUtils.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
 		res.debugString = getSimpleName(context.getClass()) + ", ";
 
 		// test to see if the asked property is in fact a HasValue widget
-		Object widget = ClazzUtils.GetProperty( context, property );
+		Object widget = ObjectPropertiesUtils.GetProperty( context, property );
 		if( widget != null && (widget instanceof HasValue) )
 		{
 			// try to guess the HasValue type

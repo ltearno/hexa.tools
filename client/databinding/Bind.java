@@ -1,6 +1,7 @@
 package com.hexa.client.databinding;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
 

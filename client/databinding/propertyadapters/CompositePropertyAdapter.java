@@ -1,10 +1,6 @@
-package com.hexa.client.databinding;
+package com.hexa.client.databinding.propertyadapters;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.hexa.client.databinding.propertyadapters.ClazzUtils;
-import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
-import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
-import com.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
 import com.hexa.client.tools.Action2;
 
 public class CompositePropertyAdapter implements PropertyAdapter
@@ -55,7 +51,7 @@ public class CompositePropertyAdapter implements PropertyAdapter
 			if( cur == null )
 				return null;
 
-			cur = ClazzUtils.GetProperty( cur, path[i] );
+			cur = ObjectPropertiesUtils.GetProperty( cur, path[i] );
 		}
 
 		return cur;
@@ -78,7 +74,7 @@ public class CompositePropertyAdapter implements PropertyAdapter
 		if( cur == null )
 			return;
 
-		ClazzUtils.SetProperty( cur, path[path.length-1], object );
+		ObjectPropertiesUtils.SetProperty( cur, path[path.length-1], object );
 	}
 
 	class PropertyChangedManager implements Action2<PropertyAdapter, Object>

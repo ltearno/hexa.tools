@@ -45,13 +45,13 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 	@Override
 	public Object getValue()
 	{
-		return ClazzUtils.GetProperty( source, sourceProperty, true );
+		return ObjectPropertiesUtils.GetProperty( source, sourceProperty, true );
 	}
 
 	@Override
 	public void setValue( Object value )
 	{
-		ClazzUtils.SetProperty( source, sourceProperty, value, true );
+		ObjectPropertiesUtils.SetProperty( source, sourceProperty, value, true );
 	}
 
 	@Override

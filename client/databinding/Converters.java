@@ -1,6 +1,6 @@
 package com.hexa.client.databinding;
 
-import com.hexa.client.databinding.propertyadapters.ClazzUtils;
+import com.hexa.client.classinfo.ClazzUtils;
 
 public enum Converters implements Converter
 {

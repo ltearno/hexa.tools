@@ -5,10 +5,9 @@ import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
-import com.hexa.client.databinding.CompositePropertyAdapter;
 
 
-public class ClazzUtils
+public class ObjectPropertiesUtils
 {
 	public static boolean HasSomethingToGetField( Clazz<?> clazz, String name )
 	{
@@ -54,6 +53,11 @@ public class ClazzUtils
 	public static Object GetProperty( Object object, String name )
 	{
 		return GetProperty( object, name, true );
+	}
+
+	public interface PropertyGetter
+	{
+		Object getPropertyValue();
 	}
 
 	@SuppressWarnings( "rawtypes" )
@@ -166,18 +170,5 @@ public class ClazzUtils
 	public static String uncanon(String s)
 	{
 		return s.substring( 0, 1 ).toLowerCase() + s.substring( 1 );
-	}
-
-	public static Class<?> getBoxedType( Class<?> c )
-	{
-		if( c == int.class )
-			return Integer.class;
-		if( c == char.class )
-			return Character.class;
-		if( c == double.class )
-			return Double.class;
-		if( c == float.class )
-			return Float.class;
-		return c;
 	}
 }
