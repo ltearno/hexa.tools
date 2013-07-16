@@ -11,6 +11,7 @@ public class Bind
 	private Mode mode = Mode.TwoWay;
 	private Converter converter;
 	private boolean fDeferActivate;
+	private String logPrefix;
 
 	public static Bind Source( Object source, String propertyName )
 	{
@@ -35,6 +36,12 @@ public class Bind
 		this.mode = mode;
 		return this;
 	}
+	
+	public Bind Log( String prefix )
+	{
+		this.logPrefix = prefix;
+		return this;
+	}
 
 	public DataBinding To( Object source, String propertyName )
 	{
@@ -49,7 +56,7 @@ public class Bind
 
 	public DataBinding To( PropertyAdapter destination )
 	{
-		DataBinding binding = new DataBinding( source, destination, mode, converter );
+		DataBinding binding = new DataBinding( source, destination, mode, converter, logPrefix );
 		if( fDeferActivate )
 			binding.deferActivate();
 		else

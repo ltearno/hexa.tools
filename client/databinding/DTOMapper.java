@@ -1,6 +1,8 @@
 package com.hexa.client.databinding;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasValue;
@@ -10,16 +12,19 @@ import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
 import com.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
-import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
+import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
 
 
 public class DTOMapper
 {
 	// tries to bind as much fields of source to destination and the other way around
-	public static void Map( Object source, Object destination )
+	// returns mapping resources handle that were created for this mapping
+	public static Object Map( Object source, Object destination )
 	{
+		List<DataBinding> res = new ArrayList<DataBinding>();
+		
 		GWT.log( "Binding object of class " + getSimpleName(source.getClass()) + " to another of class " + getSimpleName(destination.getClass()) );
 
 		Clazz<?> sourceClass = ClassInfo.Clazz( source.getClass() );
@@ -88,9 +93,22 @@ public class DTOMapper
 
 			GWT.log( "[" + getSimpleName(sourceAdapterInfo.dataType) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
 
-			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter );
+			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter, null );
 			binding.activate();
+			
+			res.add( binding );
 		}
+		
+		return res;
+	}
+	
+	public static void FreeMapping( Object mappingResourceHandle )
+	{
+		@SuppressWarnings( "unchecked" )
+		List<DataBinding> bindings = (List<DataBinding>) mappingResourceHandle;
+		for( DataBinding binding : bindings )
+			binding.term();
+		bindings.clear();
 	}
 
 	static String getSimpleName( Class<?> cls )

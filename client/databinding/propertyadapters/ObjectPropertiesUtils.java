@@ -65,6 +65,9 @@ public class ObjectPropertiesUtils
 	{
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 			return ((HasValue) object).getValue();
+		
+		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
+			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
 
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
 
@@ -75,7 +78,7 @@ public class ObjectPropertiesUtils
 
 		if( ! fTryDirectFieldAccess )
 		{
-			assert false : "ObjectAdapter : no getter for property " + name + " and field not found !";
+			assert false : "ObjectAdapter ("+object.getClass().getName()+") : no getter for property " + name + " and field not found !";
 			return null;
 		}
 
@@ -86,7 +89,7 @@ public class ObjectPropertiesUtils
 			return field.getValue( object );
 		}
 
-		assert false : "ObjectAdapter : no getter/field for property " + name + " and field not found !";
+		assert false : "ObjectAdapter ("+object.getClass().getName()+") : no getter/field for property " + name + " and field not found !";
 		return null;
 	}
 
@@ -132,7 +135,7 @@ public class ObjectPropertiesUtils
 
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 		{
-			((HasValue) object).setValue( value );
+			((HasValue) object).setValue( value, true );
 			return true;
 		}
 

@@ -6,6 +6,7 @@ import com.hexa.client.tools.Action2;
 public class CompositePropertyAdapter implements PropertyAdapter
 {
 	public final static String HASVALUE_TOKEN = "$HasValue";
+	public final static String DTOMAP_TOKEN = "$DTOMap";
 
 	private final Object source;
 	private final String[] path;
@@ -105,6 +106,10 @@ public class CompositePropertyAdapter implements PropertyAdapter
 			{
 				assert (source instanceof HasValue) : "CompositeObjectAdapter : source is not HasValue : " + source.getClass().getName();
 				adapter = new WidgetPropertyAdapter( (HasValue) source );
+			}
+			else if( DTOMAP_TOKEN.equals( pptyName ) )
+			{
+				adapter = new DTOMapperPropertyAdapter( source );
 			}
 			else
 			{

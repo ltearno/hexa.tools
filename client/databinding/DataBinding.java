@@ -2,6 +2,7 @@ package com.hexa.client.databinding;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
@@ -19,22 +20,25 @@ public class DataBinding
 	private Object destinationHandler;
 
 	private Converter converter;
+	
+	private final String logPrefix;
 
 	public DataBinding( Object source, String sourceProperty, Object destination, String destinationProperty, Mode bindingMode )
 	{
-		this( new ObjectPropertyAdapter( source, sourceProperty ), new ObjectPropertyAdapter( destination, destinationProperty ), bindingMode, null );
+		this( new ObjectPropertyAdapter( source, sourceProperty ), new ObjectPropertyAdapter( destination, destinationProperty ), bindingMode, null, null );
 	}
 
 	public DataBinding( Object source, String sourceProperty, HasValue<?> destination, Mode bindingMode )
 	{
-		this( new ObjectPropertyAdapter( source, sourceProperty ), new WidgetPropertyAdapter( destination ), bindingMode, null );
+		this( new ObjectPropertyAdapter( source, sourceProperty ), new WidgetPropertyAdapter( destination ), bindingMode, null, null );
 	}
 
-	public DataBinding( PropertyAdapter source, PropertyAdapter destination, Mode bindingMode, Converter converter )
+	public DataBinding( PropertyAdapter source, PropertyAdapter destination, Mode bindingMode, Converter converter, String logPrefix )
 	{
 		this.source = source;
 		this.destination = destination;
 		this.converter = converter;
+		this.logPrefix = logPrefix;
 
 		switch( bindingMode )
 		{
@@ -50,16 +54,28 @@ public class DataBinding
 			break;
 		}
 	}
+	
+	private void log( String text )
+	{
+		if( logPrefix == null )
+			return;
+		
+		GWT.log( "DATABINDING " + logPrefix + " : " + text );
+	}
 
 	public void activate()
 	{
 		fActivated = true;
+		
+		log( "activation" );
 
 		onSourceChanged.exec( null, null );
 	}
 
 	public void deferActivate()
 	{
+		log( "deferred activation..." );
+		
 		Scheduler.get().scheduleDeferred( new ScheduledCommand()
 		{
 			@Override
@@ -72,6 +88,8 @@ public class DataBinding
 
 	public void term()
 	{
+		log( "term" );
+		
 		fActivated = false;
 		converter = null;
 
@@ -90,15 +108,22 @@ public class DataBinding
 		@Override
 		public void exec( PropertyAdapter param, Object cookie )
 		{
+			log( "source changed, propagating to destination ..." );
+			
 			if( !fActivated )
 				return;
 
 			Object value = source.getValue();
 
 			if( converter != null )
+			{
+				log( "... converting value ..." );
 				value = converter.convert( value );
+			}
 
 			destination.setValue( value );
+			
+			log( "... done !" );
 		}
 	};
 
@@ -107,15 +132,22 @@ public class DataBinding
 		@Override
 		public void exec( PropertyAdapter param, Object cookie )
 		{
+			log( "destination changed, propagating to source ..." );
+			
 			if( !fActivated )
 				return;
 
 			Object value = destination.getValue();
 
 			if( converter != null )
+			{
+				log( "... converting value ..." );
 				value = converter.convertBack( value );
+			}
 
 			source.setValue( value );
+			
+			log( "done !" );
 		}
 	};
 }
