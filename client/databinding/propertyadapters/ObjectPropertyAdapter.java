@@ -1,6 +1,5 @@
 package com.hexa.client.databinding.propertyadapters;
 
-import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.hexa.client.databinding.INotifyPropertyChanged;
 import com.hexa.client.databinding.NotifyPropertyChangedEvent;
 import com.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
@@ -13,8 +12,6 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 
 	private Action2<PropertyAdapter, Object> callback;
 	private Object cookie;
-
-	private boolean fChanging = false;
 
 	public ObjectPropertyAdapter( Object source, String sourceProperty )
 	{
@@ -32,14 +29,16 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 		this.callback = callback;
 		this.cookie = cookie;
 
-		return ((INotifyPropertyChanged) source).registerPropertyChangedEvent( this );
+		return ((INotifyPropertyChanged) source).registerPropertyChangedEvent( sourceProperty, this );
 	}
 
 	@Override
-	public void removePropertyChangedHandler( Object handler )
+	public void removePropertyChangedHandler( Object registration )
 	{
-		if( handler != null )
-			((HandlerRegistration)handler).removeHandler();
+		if( ! ( source instanceof INotifyPropertyChanged ) )
+			return;
+		
+		((INotifyPropertyChanged) source).removePropertyChangedHandler( registration );
 	}
 
 	@Override
@@ -57,11 +56,9 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 	@Override
 	public void onNotifyPropertChanged( NotifyPropertyChangedEvent event )
 	{
-		if( callback != null && !fChanging && event.getPropertyName().equals( sourceProperty ) )
-		{
-			fChanging = true;
-			callback.exec( this, cookie );
-			fChanging = false;
-		}
+		if( callback == null )
+			return;
+		
+		callback.exec( this, cookie );
 	}
 }

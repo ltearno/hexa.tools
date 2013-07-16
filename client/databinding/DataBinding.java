@@ -15,9 +15,11 @@ public class DataBinding
 
 	private PropertyAdapter source;
 	private Object sourceHandler;
+	private boolean fSettingSource;
 
 	private PropertyAdapter destination;
 	private Object destinationHandler;
+	private boolean fSettingDestination;
 
 	private Converter converter;
 	
@@ -108,6 +110,10 @@ public class DataBinding
 		@Override
 		public void exec( PropertyAdapter param, Object cookie )
 		{
+			// prevent us to wake up ourselves
+			if( fSettingSource )
+				return;
+			
 			log( "source changed, propagating to destination ..." );
 			
 			if( !fActivated )
@@ -121,9 +127,11 @@ public class DataBinding
 				value = converter.convert( value );
 			}
 
+			fSettingDestination = true;
 			destination.setValue( value );
+			fSettingDestination = false;
 			
-			log( "... done !" );
+			log( "done setting source to " + value );
 		}
 	};
 
@@ -132,6 +140,10 @@ public class DataBinding
 		@Override
 		public void exec( PropertyAdapter param, Object cookie )
 		{
+			// prevent us to wake up ourselves
+			if( fSettingDestination )
+				return;
+			
 			log( "destination changed, propagating to source ..." );
 			
 			if( !fActivated )
@@ -145,9 +157,11 @@ public class DataBinding
 				value = converter.convertBack( value );
 			}
 
+			fSettingSource = true;
 			source.setValue( value );
+			fSettingSource = false;
 			
-			log( "done !" );
+			log( "done setting destination to " + value );
 		}
 	};
 }
