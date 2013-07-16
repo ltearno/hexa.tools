@@ -9,14 +9,15 @@ import com.hexa.client.tools.Action2;
 @SuppressWarnings( "rawtypes" )
 public class WidgetPropertyAdapter implements PropertyAdapter, ValueChangeHandler
 {
-	HasValue hasValue;
+	HasValue<Object> hasValue;
 
 	Action2<PropertyAdapter, Object> callback;
 	Object cookie;
 
-	public WidgetPropertyAdapter( HasValue hasValue )
+	@SuppressWarnings( "unchecked" )
+	public WidgetPropertyAdapter( HasValue<?> hasValue )
 	{
-		this.hasValue = hasValue;
+		this.hasValue = (HasValue<Object>) hasValue;
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -42,7 +43,6 @@ public class WidgetPropertyAdapter implements PropertyAdapter, ValueChangeHandle
 		return hasValue.getValue();
 	}
 
-	@SuppressWarnings( "unchecked" )
 	@Override
 	public void setValue( Object object )
 	{

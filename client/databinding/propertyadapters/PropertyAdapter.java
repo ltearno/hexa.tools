@@ -13,5 +13,5 @@ public interface PropertyAdapter
 
 	// registration to changes
 	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie );
-	public void removePropertyChangedHandler( Object handler );
+	public void removePropertyChangedHandler( Object handlerRegistration );
 }

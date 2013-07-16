@@ -7,7 +7,7 @@ public abstract class WriteOnlyPropertyAdapter implements PropertyAdapter
 	@Override
 	public final Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
-		throw new RuntimeException("Not implemented in WriteOnlyDataAdapter");
+		return null;
 	}
 
 	@Override
