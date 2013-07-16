@@ -2,7 +2,9 @@ package com.hexa.rebind;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -11,15 +13,18 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.hexa.client.classinfo.ReflectedClasses;
 
 public class ClazzBundleGenerator extends Generator
 {
 	// Context and logger for code generation
 	TreeLogger logger = null;
 	GeneratorContext context = null;
+	TypeOracle typeOracle = null;
 
 	// asked type name
 	String askedTypeName = null;
@@ -28,7 +33,7 @@ public class ClazzBundleGenerator extends Generator
 	JClassType askedType = null;
 
 	// 
-	List<JType> returnTypes;
+	Set<JType> introspectedTypes;
 
 	// package of the asked type
 	String packageName = null;
@@ -44,17 +49,29 @@ public class ClazzBundleGenerator extends Generator
 		this.askedTypeName = typeName;
 
 		// get the "reflection" machine of GWT compiler
-		TypeOracle typeOracle = context.getTypeOracle();
+		typeOracle = context.getTypeOracle();
 		try
 		{
 			// get classType and save instance variables
 			askedType = typeOracle.getType( typeName );
 			
+			introspectedTypes = new HashSet<JType>();
+			
 			// list all return types of all methods
 			JMethod[] methods = askedType.getMethods();
-			returnTypes = new ArrayList<JType>();
 			for( int i=0; i<methods.length; i++ )
-				returnTypes.add(methods[i].getReturnType());
+			{
+				ReflectedClasses classes = methods[i].getAnnotation( ReflectedClasses.class );
+				if( classes==null || classes.classes()==null || classes.classes().length==0 )
+					continue;
+				
+				for( int c=0; c<classes.classes().length; c++ )
+				{
+					JType classType = typeOracle.getType( classes.classes()[c].getName() );
+					if( classType != null )
+						introspectedTypes.add( classType );
+				}
+			}
 
 			packageName = askedType.getPackage().getName();
 			generatedClassName = askedType.getSimpleSourceName() + "ClazzBundleImpl";
@@ -111,8 +128,7 @@ public class ClazzBundleGenerator extends Generator
 		sourceWriter.println( "" );
 		
 		List<String> names = new ArrayList<String>();
-		
-		for( JType type : returnTypes )
+		for( JType type : introspectedTypes )
 		{
 			String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
 			names.add( interfaceName );
@@ -121,19 +137,38 @@ public class ClazzBundleGenerator extends Generator
 		}
 		sourceWriter.println( "" );
 		
-		sourceWriter.println( "public void register()" );
-		sourceWriter.println( "{" );
-		sourceWriter.indent();
-		for( String name : names )
-			sourceWriter.println( "ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( "+name+".class ) );" );
-		sourceWriter.outdent();
-		sourceWriter.println( "}" );
-		sourceWriter.println( "" );
 		
 		JMethod[] methods = askedType.getMethods();
-		for( int i=0; i<methods.length; i++ )
+		for( int m=0; m<methods.length; m++ )
 		{
-			sourceWriter.println( "public "+methods[i].getReturnType().getQualifiedSourceName()+" "+methods[i].getName()+"() { return null; }" );
+			JMethod method = methods[m];
+			ReflectedClasses classes = method.getAnnotation( ReflectedClasses.class );
+			if( classes==null || classes.classes()==null || classes.classes().length==0 )
+				continue;
+			
+			sourceWriter.println( "public void "+method.getName()+"()" );
+			sourceWriter.println( "{" );
+			sourceWriter.indent();
+			for( int c=0; c<classes.classes().length; c++ )
+			{
+				JType type;
+				try
+				{
+					type = typeOracle.getType( classes.classes()[c].getName() );
+				}
+				catch( NotFoundException e )
+				{
+					e.printStackTrace();
+					continue;
+				}
+				
+				String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
+				
+				sourceWriter.println( "ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( "+interfaceName+".class ) );" );
+			}
+			sourceWriter.outdent();
+			sourceWriter.println( "}" );
+			sourceWriter.println( "" );
 		}
 	}
 }
