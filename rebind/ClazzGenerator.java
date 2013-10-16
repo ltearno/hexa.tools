@@ -30,16 +30,6 @@ public class ClazzGenerator extends Generator
 	// type info on the asked class
 	JClassType askedType = null;
 
-	// type for which we provide informations
-	JClassType reflectedType = null;
-	String reflectedTypeName;
-
-	// package of the asked type
-	String packageName = null;
-
-	// generated class name
-	String generatedClassName = null;
-
 	@Override
 	public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException
 	{
@@ -54,45 +44,68 @@ public class ClazzGenerator extends Generator
 			// get classType and save instance variables
 			askedType = typeOracle.getType( typeName );
 
+			JClassType reflectedType = null;
+
 			// normally, this class inherits Class<T>. Mission is to find T
 			JClassType[] interfaces = askedType.getImplementedInterfaces();
 			for( int i = 0; i < interfaces.length; i++ )
 			{
-				if( !interfaces[i].getQualifiedSourceName().equals( "com.hexa.client.classinfo.Clazz" ) )
+				if( ! interfaces[i].getQualifiedSourceName().equals( "com.hexa.client.classinfo.Clazz" ) )
 					continue;
 
 				JParameterizedType parametrized = interfaces[i].isParameterized();
 				JClassType[] typeArgs = parametrized.getTypeArgs();
 
 				reflectedType = typeArgs[0];
-				reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
+				break;
 			}
 
 			if( reflectedType == null )
 				throw new UnableToCompleteException();
+
+			String reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
 
 			if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
 				return "com.hexa.client.classinfo.internal.JavaScriptObjectClazz";
 			if( reflectedTypeName.equals( "java.lang.Object" ) )
 				return "com.hexa.client.classinfo.internal.ObjectClazz";
 
-			packageName = reflectedType.getPackage().getName();
-			generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
+			OneClazzGenerator generator = new OneClazzGenerator( reflectedType );
 
 			// Generate class source code
-			generateClass();
+			return generator.generateClass( logger, context );
 		}
 		catch( Exception e )
 		{
 			// record to logger that Map generation threw an exception
-			logger.log( TreeLogger.ERROR, "ERROR when generating " + generatedClassName + " for " + typeName, e );
+			logger.log( TreeLogger.ERROR, "ERROR when generating class reflection for " + typeName, e );
+			return null;
 		}
+	}
+}
 
-		// return the fully qualifed name of the class generated
-		return packageName + "." + generatedClassName;
+
+class OneClazzGenerator
+{
+	// package of the asked type
+	String packageName = null;
+	// generated class name
+	String generatedClassName = null;
+
+	// type for which we provide informations
+	JClassType reflectedType = null;
+	String reflectedTypeName;
+
+	public OneClazzGenerator( JClassType reflectedType )
+	{
+		this.reflectedType = reflectedType;
+
+		reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
+		packageName = reflectedType.getPackage().getName();
+		generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
 	}
 
-	private void generateClass()
+	public String generateClass( TreeLogger logger, GeneratorContext context )
 	{
 		// get print writer that receives the source code
 		PrintWriter printWriter = null;
@@ -100,16 +113,13 @@ public class ClazzGenerator extends Generator
 		printWriter = context.tryCreate( logger, packageName, generatedClassName );
 		// print writer if null, source code has ALREADY been generated, return
 		if( printWriter == null )
-			return;
+			return null;
 
 		// init composer, set class properties, create source writer
 		ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory( packageName, generatedClassName );
 
 		// output a class "typeName" + "Impl"
-		// which extends the asked type
 		composer.setSuperclass( "com.hexa.client.classinfo.internal.ClazzBase<" + reflectedTypeName + ">" );
-		//composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );// "com.hexa.client.classinfo.Clazz<"+reflectedTypeName+">"
-																							// );
 		composer.addImport( "java.util.List" );
 		composer.addImport( "java.util.ArrayList" );
 		composer.addImport( "com.hexa.client.classinfo.Field" );
@@ -118,7 +128,7 @@ public class ClazzGenerator extends Generator
 		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );
 
 		// generate the List<String> getMethods(); method
-		generateClass( sourceWriter );
+		generateClass( sourceWriter, logger, context );
 
 		// close generated class
 		sourceWriter.outdent();
@@ -126,23 +136,40 @@ public class ClazzGenerator extends Generator
 
 		// commit generated class
 		context.commit( logger, printWriter );
+
+		// return the fully qualifed name of the class generated
+		return packageName + "." + generatedClassName;
 	}
 
-	private void generateClass( SourceWriter sourceWriter )
+	private void generateClass( SourceWriter sourceWriter, TreeLogger logger, GeneratorContext context )
 	{
 		sourceWriter.println( "" );
 
 		String superClassName;
+		String superclassGeneratedClazz = null;
 		JClassType superClass = reflectedType.getSuperclass();
 		if( superClass != null )
+		{
 			superClassName = superClass.getQualifiedSourceName() + ".class";
+
+			// generate clazz for super class
+			//OneClazzGenerator superclassGeneartor = new OneClazzGenerator( reflectedType.getSuperclass() );
+			//superclassGeneratedClazz = superclassGeneartor.generateClass( logger, context );
+		}
 		else
+		{
 			superClassName = "null";
+			superclassGeneratedClazz = null;
+		}
 
 		sourceWriter.println( "public " + generatedClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
 		sourceWriter.println( "super( " + reflectedTypeName + ".class, \"" + reflectedType.getSimpleSourceName() + "\", " + superClassName + " );" );
+		if( superclassGeneratedClazz != null )
+		{
+			//sourceWriter.println( "com.hexa.client.classinfo.ClassInfo.RegisterClazz( new "+superclassGeneratedClazz+"() );" );
+		}
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
