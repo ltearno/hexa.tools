@@ -50,7 +50,7 @@ public class GenericJSO extends JavaScriptObject
 	}
 
 	public final native int getInt_REAL( String fieldName )
-	/*-{ 
+	/*-{
 		var v = 1 * this[fieldName];
 		if( isNaN( v ) )
 			return -12566; // magik value !!!
@@ -94,15 +94,15 @@ public class GenericJSO extends JavaScriptObject
 		{
 			var dumped_text = "";
 			var level = 0;
-			
+
 			//The padding given at the beginning of the line.
 			var level_padding = "";
 			for(var j=0;j<level+1;j++) level_padding += "    ";
-			
-			if(typeof(arr) == 'object') { //Array/Hashes/Objects 
+
+			if(typeof(arr) == 'object') { //Array/Hashes/Objects
 				for(var item in arr) {
 					var value = arr[item];
-					
+
 					if(typeof(value) == 'object') { //If it is an array,
 						dumped_text += level_padding + "'" + item + "' ...\n";
 						dumped_text += dump(value,level+1);

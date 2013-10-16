@@ -95,15 +95,15 @@ public class ServiceGenerator extends Generator
 		composerFactory.addImport( "com.hexa.client.comm.DataProxy" );
 		composerFactory.addImport( "com.hexa.client.comm.Service" );
 		composerFactory.addImport( "com.hexa.client.comm.RequestDesc" );
-		composerFactory.addImport( "com.hexa.client.comm.ServerComm" );
+		composerFactory.addImport( "com.hexa.client.comm.RPCProxy" );
 		composerFactory.addImport( "com.hexa.client.comm.AcceptsRPCRequests" );
 		composerFactory.addImport( "com.hexa.client.comm.ResponseJSO" );
 		composerFactory.addImport( "com.hexa.client.comm.JSArrayIterator" );
 		composerFactory.addImport( "com.hexa.client.comm.JSOArrayInteger" );
-		composerFactory.addImport( "com.hexa.client.comm.ServerComm.ServerCommCb" );
+		composerFactory.addImport( "com.hexa.client.comm.XRPCProxy" );
 		composerFactory.addImport( "com.hexa.client.interfaces.ITablesManager" );
 		composerFactory.addImport( "com.hexa.client.interfaces.IAsyncCallback" );
-		composerFactory.addImport( "com.hexa.client.comm.ServerComm.ServerCommMessageCb" );
+		composerFactory.addImport( "com.hexa.client.comm.XRPCRequest" );
 		composerFactory.addImport( "com.google.gwt.core.client.GWT" );
 		composerFactory.addImport( "com.google.gwt.core.client.JsArray" );
 		composerFactory.addImport( "com.google.gwt.core.client.JsArrayInteger" );
@@ -523,6 +523,7 @@ public class ServiceGenerator extends Generator
 
 		// writes the code to create the request description object
 		sw.println( "RequestDesc desc = new RequestDesc( \"" + service + "\", \"" + interfaceChecksum + "\", " + methodOrdinal + ", call_params );" );
+		sw.println( "desc.setExtraInfo( \"" + method.getName() + "\" );" );
 
 		// register and get the name of the callback to use
 		String onResponseCallback = registerOnResponseCallback( params[params.length - 1].getType() );
@@ -665,7 +666,7 @@ public class ServiceGenerator extends Generator
 	void generateOnResponseCallback( OnResponseCallbackInfo info )
 	{
 		sw.println( "// Callback type : " + info.callbackType.getParameterizedQualifiedSourceName() );
-		sw.println( "ServerCommCb " + info.callbackName + " = new ServerCommCb() {" );
+		sw.println( "XRPCRequest " + info.callbackName + " = new XRPCRequest() {" );
 
 		sw.indent();
 

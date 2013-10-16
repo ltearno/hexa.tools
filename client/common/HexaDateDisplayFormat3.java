@@ -46,11 +46,9 @@ public class HexaDateDisplayFormat3 implements HexaDateDisplayFormat
 		return new HexaDate( "-" );
 
 		/*
-		 * JavaScriptObject obj = DateJS.create( string ); HexaDate date = new
-		 * HexaDate( DateJS.toConformity( obj ) );
+		 * JavaScriptObject obj = DateJS.create( string ); HexaDate date = new HexaDate( DateJS.toConformity( obj ) );
 		 * 
-		 * GWT.log( "HexaDateDisplayFormat3 parse " + string + " => " +
-		 * date.getString() );
+		 * GWT.log( "HexaDateDisplayFormat3 parse " + string + " => " + date.getString() );
 		 * 
 		 * return date;
 		 */

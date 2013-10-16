@@ -39,6 +39,11 @@ public class HexaDateTime
 		this.time = time;
 	}
 
+	public static HexaDateTime now()
+	{
+		return new HexaDateTime();
+	}
+
 	public HexaDate getHexaDate()
 	{
 		return date;

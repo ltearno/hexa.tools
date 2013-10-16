@@ -23,6 +23,7 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 
 	interface DefaultResources extends Resources, ClientBundle
 	{
+		@Override
 		@Source( "images/dropdown.png" )
 		ImageResource dropdown();
 	}
@@ -37,14 +38,18 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 
 	XCriteriaSwitch callback;
 
+	private boolean fReadOnly;
+
 	ListBoxDiscrete<ICriteriaMng> lb;
 
 	SimplePanel spotHorizontal = new SimplePanel();
 	SimplePanel spotVertical = new SimplePanel();
 	ICriteriaWidget iCriteria = null;
 
-	public CriteriaSwitch( Collection<ICriteriaMng> criteriaMngs, XCriteriaSwitch callback, Resources resources )
+	public CriteriaSwitch( Collection<ICriteriaMng> criteriaMngs, XCriteriaSwitch callback, Resources resources, boolean fReadOnly )
 	{
+		this.fReadOnly = fReadOnly;
+
 		if( resources == null )
 		{
 			if( defaultResources == null )
@@ -77,6 +82,7 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 
 		lb.addChangeHandler( new ChangeHandler()
 		{
+			@Override
 			public void onChange( ChangeEvent event )
 			{
 				onSelChange();
@@ -84,6 +90,7 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 		} );
 	}
 
+	@Override
 	public JSONValue getValue()
 	{
 		if( iCriteria == null )
@@ -132,7 +139,7 @@ public class CriteriaSwitch extends Composite implements ICriteriaWidget
 			return;
 		}
 
-		iCriteria = mng.createCriteriaWidget( json );
+		iCriteria = mng.createCriteriaWidget( json, fReadOnly );
 
 		// get the alignment
 		boolean fIsInline = callback.getIsInline( mng );

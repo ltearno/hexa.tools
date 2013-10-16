@@ -12,6 +12,8 @@ public class RequestDesc
 
 	String key = null;
 
+	String extraInfo = null;
+
 	public RequestDesc( String service, String interfaceChecksum, int method, JSONArray params )
 	{
 		this( service, interfaceChecksum, String.valueOf( method ), params );
@@ -23,6 +25,16 @@ public class RequestDesc
 		this.interfaceChecksum = interfaceChecksum;
 		this.method = method;
 		this.params = params;
+	}
+
+	public void setExtraInfo( String extraInfo )
+	{
+		this.extraInfo = extraInfo;
+	}
+
+	public String getExtraInfo()
+	{
+		return extraInfo;
 	}
 
 	public String getUniqueKey()

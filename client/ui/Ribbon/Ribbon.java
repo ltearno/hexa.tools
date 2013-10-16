@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.hexa.client.ui.Ribbon;
 
@@ -15,15 +15,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.SimplePanel;
 //import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Arnaud
- * 
+ *
  */
-public class Ribbon extends Composite implements RibbonView
+public class Ribbon extends ResizeComposite implements RibbonView
 {
 	public interface RibbonCallback
 	{
@@ -48,6 +49,7 @@ public class Ribbon extends Composite implements RibbonView
 
 		m_tabBar = new TabBar( new TabBar.Callback()
 		{
+			@Override
 			public void onSelection( int index )
 			{
 				m_tabPanel.setWidget( m_tabs.get( index ) );
@@ -74,6 +76,7 @@ public class Ribbon extends Composite implements RibbonView
 
 				Button button = new Button( conf.tabs.get( i ).buttons.get( j ).name, new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent event )
 					{
 						callback.onRibbonChange( obj );
@@ -88,7 +91,7 @@ public class Ribbon extends Composite implements RibbonView
 			 * FlexTable table = new FlexTable(); for( int j=0; j<conf.tabs.get(i).buttons.size(); j++ ) { final Object obj =
 			 * conf.tabs.get(i).buttons.get(j).obj; Button button = new Button( conf.tabs.get(i).buttons.get(j).name, new ClickHandler() { public void onClick(
 			 * ClickEvent event ) { callback.onRibbonChange( obj ); } } );
-			 * 
+			 *
 			 * table.setWidget( 0, j, button ); } m_tabs.add( table );
 			 */
 		}
@@ -128,12 +131,17 @@ public class Ribbon extends Composite implements RibbonView
 			/*
 			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button = (Button)table.getWidget(
 			 * 0, j );
-			 * 
+<<<<<<< HEAD
+			 *
+=======
+			 *
+>>>>>>> origin/regsys
 			 * if( m_conf.tabs.get(i).buttons.get(j).obj == obj ) { button.setEnabled( fEnabled ); return; } }
 			 */
 		}
 	}
 
+	@Override
 	public void selectButton( Object obj )
 	{
 		for( int i = 0; i < m_conf.tabs.size(); i++ )
@@ -152,13 +160,18 @@ public class Ribbon extends Composite implements RibbonView
 			/*
 			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button = (Button)table.getWidget(
 			 * 0, j );
-			 * 
+<<<<<<< HEAD
+			 *
+=======
+			 *
+>>>>>>> origin/regsys
 			 * if( m_conf.tabs.get(i).buttons.get(j).obj == obj ) { m_tabBar.selectTab( i ); button.addStyleName( "Ribbon-selected" ); } else {
 			 * button.removeStyleName( "Ribbon-selected" ); } }
 			 */
 		}
 	}
 
+	@Override
 	public void setTabText( String id, String text )
 	{
 		int index = -1;
@@ -174,6 +187,7 @@ public class Ribbon extends Composite implements RibbonView
 		m_tabBar.setTabText( index, text );
 	}
 
+	@Override
 	public void setButtonText( Object obj, String text )
 	{
 		for( int i = 0; i < m_conf.tabs.size(); i++ )
@@ -184,7 +198,11 @@ public class Ribbon extends Composite implements RibbonView
 			/*
 			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button = (Button)table.getWidget(
 			 * 0, j );
-			 * 
+<<<<<<< HEAD
+			 *
+=======
+			 *
+>>>>>>> origin/regsys
 			 * if( m_conf.tabs.get(i).buttons.get(j).obj == obj ) { button.setText( text ); return; } }
 			 */
 		}

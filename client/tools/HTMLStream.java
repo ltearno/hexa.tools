@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
 
@@ -43,7 +44,9 @@ public class HTMLStream extends ComplexPanel
 	{
 		WidgetCollection childs = getChildren();
 		while( childs.size() > 0 )
+		{
 			childs.remove( 0 );
+		}
 		div.setInnerHTML( "" );
 		currentParagraph = null;
 		curSet.clear();
@@ -166,6 +169,11 @@ public class HTMLStream extends ComplexPanel
 		addPrivate( widget );
 
 		return this;
+	}
+
+	public HTMLStream addInline( IsWidget widget )
+	{
+		return addInline( widget.asWidget() );
 	}
 
 	public HTMLStream addInline( Widget widget )

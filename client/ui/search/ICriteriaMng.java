@@ -6,5 +6,5 @@ public interface ICriteriaMng
 {
 	String getDisplayName();
 
-	ICriteriaWidget createCriteriaWidget( JSONValue json );
+	ICriteriaWidget createCriteriaWidget( JSONValue json, boolean fReadOnly );
 }

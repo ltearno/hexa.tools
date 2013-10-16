@@ -63,6 +63,7 @@ public class DateTimeSelector extends Composite
 		{
 			date.addValueChangeHandler( new IValueChangeHandler<HexaDate>()
 			{
+				@Override
 				public void onValueChange( HexaDate value )
 				{
 					changed();
@@ -70,6 +71,7 @@ public class DateTimeSelector extends Composite
 			} );
 			time.addValueChangeHandler( new IValueChangeHandler<HexaTime>()
 			{
+				@Override
 				public void onValueChange( HexaTime value )
 				{
 					changed();
@@ -92,5 +94,11 @@ public class DateTimeSelector extends Composite
 		HexaDateTime time = getDateTime();
 
 		fire( time );
+	}
+
+	public void setEnabled( boolean enabled )
+	{
+		date.setEnabled( enabled );
+		time.setEnabled( enabled );
 	}
 }
