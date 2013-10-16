@@ -14,6 +14,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
@@ -41,9 +42,17 @@ public class ClazzGenerator extends Generator
 	// generated class name
 	String generatedClassName = null;
 
-	private JClassType getReflectedType( TypeOracle typeOracle, String askedTypeName ) throws NotFoundException, UnableToCompleteException
+	private JClassType getReflectedType( TypeOracle typeOracle, String askedTypeName ) throws UnableToCompleteException
 	{
-		JClassType askedType = typeOracle.getType( askedTypeName );
+		JClassType askedType;
+		try
+		{
+			askedType = typeOracle.getType( askedTypeName );
+		}
+		catch( NotFoundException e )
+		{
+			throw new UnableToCompleteException();
+		}
 
 		JClassType[] interfaces = askedType.getImplementedInterfaces();
 		for( int i = 0; i < interfaces.length; i++ )
@@ -72,24 +81,51 @@ public class ClazzGenerator extends Generator
 		try
 		{
 			reflectedType = getReflectedType( typeOracle, typeName );
-			reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
 
-			if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
-				return "com.hexa.client.classinfo.internal.JavaScriptObjectClazz";
-			if( reflectedTypeName.equals( "java.lang.Object" ) )
-				return "com.hexa.client.classinfo.internal.ObjectClazz";
-
-			packageName = reflectedType.getPackage().getName();
-			generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
-
-			// Generate class source code
-			generateClass();
+			OneClazzGenerator generator = new OneClazzGenerator( logger, context );
+			String generatedClassName = generator.generateClassFor( reflectedType );
+			return generatedClassName;
 		}
 		catch( Exception e )
 		{
 			// record to logger that Map generation threw an exception
 			logger.log( TreeLogger.ERROR, "ERROR when generating " + generatedClassName + " for " + typeName, e );
+			return null;
 		}
+	}
+}
+
+class OneClazzGenerator
+{
+	TreeLogger logger;
+	GeneratorContext context;
+
+	JClassType reflectedType;
+	String reflectedTypeName;
+	String packageName;
+	String generatedClassName;
+
+	public OneClazzGenerator( TreeLogger logger, GeneratorContext context )
+	{
+		this.logger = logger;
+		this.context = context;
+	}
+
+	public String generateClassFor( JClassType reflectedType )
+	{
+		this.reflectedType = reflectedType;
+		reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
+
+		if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
+			return "com.hexa.client.classinfo.internal.JavaScriptObjectClazz";
+		if( reflectedTypeName.equals( "java.lang.Object" ) )
+			return "com.hexa.client.classinfo.internal.ObjectClazz";
+
+		packageName = reflectedType.getPackage().getName();
+		generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
+
+		// Generate class source code
+		generateClass();
 
 		// return the fully qualifed name of the class generated
 		return packageName + "." + generatedClassName;
@@ -111,8 +147,6 @@ public class ClazzGenerator extends Generator
 		// output a class "typeName" + "Impl"
 		// which extends the asked type
 		composer.setSuperclass( "com.hexa.client.classinfo.internal.ClazzBase<" + reflectedTypeName + ">" );
-		//composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );// "com.hexa.client.classinfo.Clazz<"+reflectedTypeName+">"
-																							// );
 		composer.addImport( "java.util.List" );
 		composer.addImport( "java.util.ArrayList" );
 		composer.addImport( "com.hexa.client.classinfo.Field" );
@@ -136,16 +170,35 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "" );
 
 		String superClassName;
+		String superclassGeneratedClazz;
+
 		JClassType superClass = reflectedType.getSuperclass();
 		if( superClass != null )
+		{
 			superClassName = superClass.getQualifiedSourceName() + ".class";
+
+			OneClazzGenerator superclassGenerator = new OneClazzGenerator( logger, context );
+			superclassGeneratedClazz = superclassGenerator.generateClassFor( reflectedType.getSuperclass() );
+		}
 		else
+		{
 			superClassName = "null";
+			superclassGeneratedClazz = null;
+		}
 
 		sourceWriter.println( "public " + generatedClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "super( " + reflectedTypeName + ".class, \"" + reflectedType.getSimpleSourceName() + "\", " + superClassName + " );" );
+		sourceWriter.println( "super( " + reflectedType.getQualifiedSourceName() + ".class, \"" + reflectedType.getSimpleSourceName() + "\", " + superClassName + " );" );
+		sourceWriter.outdent();
+		sourceWriter.println( "}" );
+		sourceWriter.println( "" );
+
+		sourceWriter.println( "protected void _ensureSuperClassInfoRegistered()" );
+		sourceWriter.println( "{" );
+		sourceWriter.indent();
+		if( superclassGeneratedClazz != null )
+			sourceWriter.println( "com.hexa.client.classinfo.ClassInfo.RegisterClazz( new "+superclassGeneratedClazz+"() );" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -210,9 +263,21 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
 		if( reflectedType.isAbstract() )
+		{
 			sourceWriter.println( "throw new IllegalArgumentException( \"Targetted class is abstract, cannot create instance\" );" );
+		}
 		else
-			sourceWriter.println( "return new " + reflectedTypeName + "();" );
+		{
+			try
+			{
+				reflectedType.getConstructor( new JType[] {} );
+				sourceWriter.println( "return new " + reflectedType.getQualifiedSourceName() + "();" );
+			}
+			catch( NotFoundException e )
+			{
+				sourceWriter.println( "throw new IllegalArgumentException( \"Targetted class does not have a zero argument constructor, cannot create instance\" );" );
+			}
+		}
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -267,7 +332,7 @@ public class ClazzGenerator extends Generator
 	{
 		String fieldClassName = field.getName() + "_FieldImpl";
 
-		sourceWriter.println( "class " + fieldClassName + " extends com.hexa.client.classinfo.internal.FieldBase {" );
+		sourceWriter.println( "static class " + fieldClassName + " extends com.hexa.client.classinfo.internal.FieldBase {" );
 		sourceWriter.indent();
 		sourceWriter.println( "public " + fieldClassName + "()" );
 		sourceWriter.println( "{" );
@@ -302,7 +367,7 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "@Override public native final void copyValueTo( Object source, Object destination )" );
 		sourceWriter.println( "/*-{" );
 		sourceWriter.indent();
-		sourceWriter.println( "destination.@" + reflectedTypeName + "::" + field.getName() + " = source.@" + reflectedTypeName + "::" + field.getName() + ";" );
+		sourceWriter.println( "destination.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + " = source.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + ";" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}-*/;" );
 		sourceWriter.println( "" );
@@ -310,28 +375,28 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "private native final void setValueInternal_int( Object object, int value )" );
 		sourceWriter.println( "/*-{" );
 		sourceWriter.indent();
-		sourceWriter.println( "object.@" + reflectedTypeName + "::" + field.getName() + " = value;" );
+		sourceWriter.println( "object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + " = value;" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}-*/;" );
 		sourceWriter.println( "" );
 		sourceWriter.println( "private native final int getValueInternal_int( Object object )" );
 		sourceWriter.println( "/*-{" );
 		sourceWriter.indent();
-		sourceWriter.println( "return object.@" + reflectedTypeName + "::" + field.getName() + ";" );
+		sourceWriter.println( "return object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + ";" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}-*/;" );
 		sourceWriter.println( "" );
 		sourceWriter.println( "private native final void setValueInternal_Object( Object object, Object value )" );
 		sourceWriter.println( "/*-{" );
 		sourceWriter.indent();
-		sourceWriter.println( "object.@" + reflectedTypeName + "::" + field.getName() + " = value;" );
+		sourceWriter.println( "object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + " = value;" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}-*/;" );
 		sourceWriter.println( "" );
 		sourceWriter.println( "private native final Object getValueInternal_Object( Object object )" );
 		sourceWriter.println( "/*-{" );
 		sourceWriter.indent();
-		sourceWriter.println( "return object.@" + reflectedTypeName + "::" + field.getName() + ";" );
+		sourceWriter.println( "return object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + ";" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}-*/;" );
 		sourceWriter.outdent();
@@ -349,12 +414,12 @@ public class ClazzGenerator extends Generator
 		{
 			if( p > 0 )
 				sb.append( ", " );
-			sb.append( params[p].getType().getQualifiedSourceName() );
+			sb.append( params[p].getType().getErasedType().getQualifiedSourceName() );
 			sb.append( ".class" );
 		}
 		sb.append( "}" );
 
-		sourceWriter.println( "class " + methodClassName + " extends com.hexa.client.classinfo.internal.MethodBase {" );
+		sourceWriter.println( "static class " + methodClassName + " extends com.hexa.client.classinfo.internal.MethodBase {" );
 		sourceWriter.indent();
 		sourceWriter.println( "public " + methodClassName + "()" );
 		sourceWriter.println( "{" );
@@ -383,10 +448,12 @@ public class ClazzGenerator extends Generator
 				sb.append( "((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
 			else
 				sb.append( "return (Object) ((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
+
 			for( int p = 0; p < params.length; p++ )
 			{
 				if( p > 0 )
 					sb.append( ", " );
+
 				JPrimitiveType primitive = params[p].getType().isPrimitive();
 				if( primitive != null )
 				{
@@ -395,7 +462,7 @@ public class ClazzGenerator extends Generator
 				}
 				else
 				{
-					sb.append( "(" + params[p].getType().getQualifiedSourceName() + ") parameters[" + p + "]" );
+					sb.append( "(" + params[p].getType().getErasedType().getQualifiedSourceName() + ") parameters[" + p + "]" );
 				}
 			}
 			sb.append( ");" );

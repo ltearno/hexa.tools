@@ -38,7 +38,12 @@ public class ObjectClazz extends com.hexa.client.classinfo.internal.ClazzBase<ja
 	@Override
 	public java.lang.Object NEW()
 	{
-		return null;// new java.lang.Object();
+		return new java.lang.Object();
+	}
+
+	@Override
+	protected void _ensureSuperClassInfoRegistered()
+	{
 	}
 
 //	class ___clazz_FieldImpl extends com.hexa.client.classinfo.internal.FieldBase

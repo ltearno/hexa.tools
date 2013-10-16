@@ -14,6 +14,7 @@ public abstract class ClazzBase<T> implements Clazz<T>
 	// To implement :
 	protected abstract List<Field> _getDeclaredFields();
 	protected abstract List<Method> _getMethods();
+	protected abstract void _ensureSuperClassInfoRegistered();
 
 	private Class<? super T> _superClass;
 	private Class<T> _reflectedClass;
@@ -30,9 +31,10 @@ public abstract class ClazzBase<T> implements Clazz<T>
 	{
 	}
 
-	protected ClazzBase( Class<T> reflectedClass, String className, Class<? super T> superClass )
+	@SuppressWarnings( "unchecked" )
+	protected ClazzBase( Class<?> reflectedClass, String className, Class<? super T> superClass )
 	{
-		_reflectedClass = reflectedClass;
+		_reflectedClass = (Class<T>) reflectedClass;
 		_className = className;
 		_superClass = superClass;
 	}
@@ -42,6 +44,8 @@ public abstract class ClazzBase<T> implements Clazz<T>
 	{
 		if( _superClass == null )
 			return null;
+
+		_ensureSuperClassInfoRegistered();
 
 		return ClassInfo.Clazz( _superClass );
 	}
@@ -55,6 +59,8 @@ public abstract class ClazzBase<T> implements Clazz<T>
 	@Override
 	public Class<T> getReflectedClass()
 	{
+		_ensureSuperClassInfoRegistered();
+
 		return _reflectedClass;
 	}
 
