@@ -14,6 +14,7 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
+import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -28,7 +29,7 @@ public class ClazzGenerator extends Generator
 	String askedTypeName = null;
 
 	// type info on the asked class
-	JClassType askedType = null;
+	//JClassType askedType = null;
 
 	// type for which we provide informations
 	JClassType reflectedType = null;
@@ -39,6 +40,25 @@ public class ClazzGenerator extends Generator
 
 	// generated class name
 	String generatedClassName = null;
+
+	private JClassType getReflectedType( TypeOracle typeOracle, String askedTypeName ) throws NotFoundException, UnableToCompleteException
+	{
+		JClassType askedType = typeOracle.getType( askedTypeName );
+
+		JClassType[] interfaces = askedType.getImplementedInterfaces();
+		for( int i = 0; i < interfaces.length; i++ )
+		{
+			if( ! interfaces[i].getQualifiedSourceName().equals( "com.hexa.client.classinfo.Clazz" ) )
+				continue;
+
+			JParameterizedType parametrized = interfaces[i].isParameterized();
+			JClassType[] typeArgs = parametrized.getTypeArgs();
+
+			return typeArgs[0];
+		}
+
+		throw new UnableToCompleteException();
+	}
 
 	@Override
 	public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException
@@ -51,25 +71,8 @@ public class ClazzGenerator extends Generator
 		TypeOracle typeOracle = context.getTypeOracle();
 		try
 		{
-			// get classType and save instance variables
-			askedType = typeOracle.getType( typeName );
-
-			// normally, this class inherits Class<T>. Mission is to find T
-			JClassType[] interfaces = askedType.getImplementedInterfaces();
-			for( int i = 0; i < interfaces.length; i++ )
-			{
-				if( !interfaces[i].getQualifiedSourceName().equals( "com.hexa.client.classinfo.Clazz" ) )
-					continue;
-
-				JParameterizedType parametrized = interfaces[i].isParameterized();
-				JClassType[] typeArgs = parametrized.getTypeArgs();
-
-				reflectedType = typeArgs[0];
-				reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
-			}
-
-			if( reflectedType == null )
-				throw new UnableToCompleteException();
+			reflectedType = getReflectedType( typeOracle, typeName );
+			reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
 
 			if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
 				return "com.hexa.client.classinfo.internal.JavaScriptObjectClazz";
