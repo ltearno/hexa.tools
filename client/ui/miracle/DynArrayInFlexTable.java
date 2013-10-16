@@ -27,7 +27,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 	H headerData = null;
 
-	ArrayList<DynArrayInFlexTableColumnMng<T, H>> columns = new ArrayList<DynArrayInFlexTableColumnMng<T, H>>();
+	ArrayList<ColumnMng<T, H>> columns = new ArrayList<ColumnMng<T, H>>();
 
 	Comparator<T> userComparator = null;
 
@@ -70,7 +70,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	@Override
 	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
 	{
-		columns.add( new DynArrayInFlexTableColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
+		columns.add( new ColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
 
 	public void printHeaders()
@@ -81,7 +81,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		{
 			printer.col = i;
 
-			DynArrayInFlexTableColumnMng<T, H> c = columns.get( i );
+			ColumnMng<T, H> c = columns.get( i );
 			if( c.hdrPrintsOn.print( headerData, printer ) )
 				printer = table.getHdrPrinter( 0 );
 		}
@@ -228,7 +228,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 
 		// sort them
-		Collections.sort( its, new Comparator<It>() {
+		Collections.sort( its, new Comparator<It>()
+		{
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -397,7 +398,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
-	private ClickHandler onTableClick = new ClickHandler() {
+	private ClickHandler onTableClick = new ClickHandler()
+	{
 		@Override
 		public void onClick( ClickEvent event )
 		{
@@ -457,7 +459,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler() {
+	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
 		{
@@ -471,7 +474,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>() {
+	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>()
+	{
 		@Override
 		public String getGhostInnerHTML( Integer cookie, Element source )
 		{
@@ -488,7 +492,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 			int newPos = DOM.getChildIndex( DOM.getParent( th ), th );
 
-			DynArrayInFlexTableColumnMng<T, H> dum = columns.get( cookie );
+			ColumnMng<T, H> dum = columns.get( cookie );
 			columns.set( cookie, columns.get( newPos ) );
 			columns.set( newPos, dum );
 
@@ -507,7 +511,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private Edits.Callback onEdit = new Edits.Callback() {
+	private Edits.Callback onEdit = new Edits.Callback()
+	{
 		@Override
 		public void cancelEdition()
 		{
@@ -628,7 +633,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler() {
+	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
 		{

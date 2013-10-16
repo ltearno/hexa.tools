@@ -38,7 +38,7 @@ public class PlaceController implements ValueChangeHandler<String>
 			History.newItem( token );
 		}
 	}
-	
+
 	public void refreshCurrentPlace()
 	{
 		History.fireCurrentHistoryState();
@@ -70,12 +70,8 @@ public class PlaceController implements ValueChangeHandler<String>
 		}
 
 		String url = Location.getProtocol() + "//" + Location.getHost() + Location.getPath() + queryString/*
-																																 * Location
-																																 * .
-																																 * getQueryString
-																																 * (
-																																 * )
-																																 */+ "#" + token;
+																										 * Location . getQueryString ( )
+																										 */+ "#" + token;
 
 		Window.Location.replace( url );
 	}

@@ -2,88 +2,124 @@ package com.hexa.client.comm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.hexa.client.comm.ServerComm.ServerCommCb;
-import com.hexa.client.comm.ServerComm.ServerCommMessageCb;
 
 /*
  * class CachedServerComm
- * 
+ *
  * Handles the process of caching service calls results
  * It mainly replicate ServerComm interface but with
  * added parameters to manage cached data
- * 
+ *
  * It also ensures that answers are given to the clients
  * in the order they were asked.
  */
-public class CachedServerComm implements ServerCommCb, AcceptsRPCRequests
+public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests
 {
-	ServerComm srv = new ServerComm();
+	RPCProxy srv = new RPCProxy();
 
-	public void Init( String baseUrl, ServerCommMessageCb serverCommMessageCb )
+	public void Init( String baseUrl, XRPCProxy serverCommMessageCb )
 	{
 		srv.Init( baseUrl, serverCommMessageCb );
 	}
 
-	public ServerComm getInternalServerComm()
+	public RPCProxy getInternalServerComm()
 	{
 		return srv;
 	}
 
-	List<CallInfo> pendingRequests = new ArrayList<CallInfo>();
+	ArrayList<PendingRequestInfo> pendingRequests = new ArrayList<PendingRequestInfo>();
 	HashMap<String, ResponseJSO> cache = new HashMap<String, ResponseJSO>();
 
+	// requests as received by the sendRequest method
+	ArrayList<RequestCallInfo> requestStack = new ArrayList<RequestCallInfo>();
+
+	boolean fCallbackingScheduled = false;
+
+	class PendingRequestInfo
+	{
+		boolean fStoreResultInCache;
+
+		String requestKey;
+
+		ArrayList<RequestCallInfo> subscriptions = new ArrayList<RequestCallInfo>();
+
+		public PendingRequestInfo( boolean fStoreResultInCache, RequestCallInfo requestCallInfo )
+		{
+			this.fStoreResultInCache = fStoreResultInCache;
+
+			requestKey = requestCallInfo.request.getUniqueKey();
+			addSubscription( requestCallInfo );
+		}
+
+		public void addSubscription( RequestCallInfo requestCallInfo )
+		{
+			subscriptions.add( requestCallInfo );
+		}
+	}
+
 	@Override
-	public void sendRequest( boolean fUseCache, boolean fInvalidate, RequestDesc request, Object cookie, ServerCommCb callback )
+	public void sendRequest( boolean fUseCache, boolean fInvalidate, RequestDesc request, Object cookie, XRPCRequest callback )
 	{
 		// destroys the data cache if specified so
 		if( fInvalidate )
 		{
-			GWT.log( "Clear cache", null );
+			GWT.log( "Clear cache for request " + request.getUniqueKey() + " / " + request.getExtraInfo(), null );
 			cache.clear();
 		}
 
-		CallInfo info = new CallInfo( fUseCache && (!fInvalidate), request, cookie, callback );
-		pendingRequests.add( info );
+		RequestCallInfo requestCallInfo = new RequestCallInfo( request, callback, cookie );
+		requestStack.add( requestCallInfo );
 
 		if( fUseCache )
 		{
+			// is the result already in cache ?
 			ResponseJSO cached = cache.get( request.getUniqueKey() );
 			if( cached != null )
 			{
-				// because results are already in the cache
-				info.fPutResultInCache = false;
-
-				// give results
-				info.setResult( cached, 0, "" );
-
-				// calls back the clients
+				requestCallInfo.setResult( 0, null, null, cached );
 				checkAnswersToGive();
+				return;
+			}
 
+			// is the same request already pending ?
+			for( PendingRequestInfo pending : pendingRequests )
+			{
+				if( !pending.requestKey.equals( request.getUniqueKey() ) )
+					continue;
+
+				pending.addSubscription( requestCallInfo );
 				return;
 			}
 		}
 
-		// really send the request to the server
-		srv.sendRequest( request, info, this );
+		// create a pending request
+		PendingRequestInfo pending = new PendingRequestInfo( fUseCache && (!fInvalidate), requestCallInfo );
+		pendingRequests.add( pending );
+
+		// send the request to the server
+		srv.sendRequest( request, pending, this );
 	}
 
 	// receives the answer from the ServerComm object
 	@Override
 	public void onResponse( Object cookie, ResponseJSO response, int msgLevel, String msg )
 	{
-		CallInfo info = (CallInfo) cookie;
+		PendingRequestInfo info = (PendingRequestInfo) cookie;
 
 		// Store answer in cache
-		if( info.fPutResultInCache )
-			cache.put( info.request.getUniqueKey(), response );
+		if( info.fStoreResultInCache )
+			cache.put( info.requestKey, response );
 
-		// stores the result
-		info.setResult( response, msgLevel, msg );
+		// give the result to all the subscribees
+		for( RequestCallInfo call : info.subscriptions )
+			call.setResult( msgLevel, msg, null, response );
+
+		// forget this request
+		pendingRequests.remove( info );
 
 		// calls back the clients
 		checkAnswersToGive();
@@ -91,58 +127,33 @@ public class CachedServerComm implements ServerCommCb, AcceptsRPCRequests
 
 	private void checkAnswersToGive()
 	{
+		if( fCallbackingScheduled )
+			return;
+
+		fCallbackingScheduled = true;
 		Scheduler.get().scheduleFinally( checkResults );
 	}
 
-	ScheduledCommand checkResults = new ScheduledCommand() {
+	ScheduledCommand checkResults = new ScheduledCommand()
+	{
+		@Override
 		public void execute()
 		{
-			while( !pendingRequests.isEmpty() )
-			{
-				CallInfo info = pendingRequests.get( 0 );
+			fCallbackingScheduled = false;
 
-				// we give back results in the order requests have been made
-				if( !info.fResult )
+			while( !requestStack.isEmpty() )
+			{
+				RequestCallInfo info = requestStack.get( 0 );
+
+				// we give back results in the order requests have been made,
+				// here we may need to wait for other responses to arrive
+				if( !info.fResultReceived )
 					return;
 
-				pendingRequests.remove( 0 ).callback.onResponse( info.cookie, info.response, info.msgLevel, info.msg );
+				requestStack.remove( 0 );
+
+				info.giveResultToCallbacks();
 			}
 		}
 	};
-
-	// stores call to sendRequest(...) information
-	class CallInfo
-	{
-		CallInfo( boolean fPutResultInCache, RequestDesc request, Object cookie, ServerCommCb callback )
-		{
-			this.fPutResultInCache = fPutResultInCache;
-			this.request = request;
-			this.cookie = cookie;
-			this.callback = callback;
-		}
-
-		void setResult( ResponseJSO response, int msgLevel, String msg )
-		{
-			fResult = true;
-			this.response = response;
-			this.msgLevel = msgLevel;
-			this.msg = msg;
-		}
-
-		// cache directives
-		boolean fPutResultInCache;
-
-		// request-call description
-		RequestDesc request;
-
-		// caller information
-		ServerCommCb callback;
-		Object cookie;
-
-		// results, valid only when fResult is true;
-		boolean fResult = false;
-		ResponseJSO response = null;
-		int msgLevel;
-		String msg;
-	}
 }

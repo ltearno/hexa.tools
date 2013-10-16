@@ -39,9 +39,9 @@ public class HexaDate
 
 	private boolean fInvalid = false;
 
-	private int year = 0;
-	private int month = 0;
-	private int date = 0;
+	private int year = 0; // -1900
+	private int month = 0; // 0 to 11
+	private int date = 0; // 1 to 31
 
 	// needs contructor from :
 	// * String
@@ -65,33 +65,7 @@ public class HexaDate
 	// string is in the YYYY-MM-DD format.
 	public HexaDate( String string )
 	{
-		// assert string.length() == 10;
-		if( string.length() != 10 )
-		{
-			// GWT.log( "Invalid string " + string +
-			// " for HexaDate initialization" );
-			fInvalid = true;
-			return;
-		}
-
-		if( string.compareTo( "0000-00-00" ) == 0 )
-		{
-			// GWT.log( "Invalid string " + string +
-			// " for HexaDate initialization" );
-			fInvalid = true;
-			return;
-		}
-
-		try
-		{
-			year = Integer.parseInt( string.substring( 0, 4 ) ) - 1900;
-			month = Integer.parseInt( string.substring( 5, 7 ) ) - 1;
-			date = Integer.parseInt( string.substring( 8, 10 ) );
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
+		set( string );
 	}
 
 	// day is the int encoded version
@@ -119,6 +93,43 @@ public class HexaDate
 		set( year, month, date );
 	}
 
+	public void set( String string )
+	{
+		fInvalid = false;
+		if( string.length() != 10 )
+		{
+			// GWT.log( "Invalid string " + string +
+			// " for HexaDate initialization" );
+			fInvalid = true;
+			return;
+		}
+
+		if( string.compareTo( "0000-00-00" ) == 0 )
+		{
+			// GWT.log( "Invalid string " + string +
+			// " for HexaDate initialization" );
+			fInvalid = true;
+			return;
+		}
+
+		try
+		{
+			year = Integer.parseInt( string.substring( 0, 4 ) ) - 1900;
+			month = Integer.parseInt( string.substring( 5, 7 ) ) - 1;
+			date = Integer.parseInt( string.substring( 8, 10 ) );
+		}
+		catch( Exception e )
+		{
+			fInvalid = true;
+			e.printStackTrace();
+		}
+	}
+
+	public static HexaDate now()
+	{
+		return new HexaDate();
+	}
+
 	public int compareTo( HexaDate date )
 	{
 		return toInt() - date.toInt();
@@ -129,6 +140,14 @@ public class HexaDate
 		if( other.fInvalid == fInvalid && other.year == year && other.month == month && other.date == date )
 			return true;
 		return false;
+	}
+
+	// TODO : à essayer avec les années bissextiles
+	public int getIntervalDays( HexaDate other )
+	{
+		long interval = other.getJavaDate().getTime() - getJavaDate().getTime();
+		int res = (int) (interval / 86400000);
+		return res;
 	}
 
 	public HexaDate addDays( int nbDays )
@@ -206,7 +225,23 @@ public class HexaDate
 		return month;
 	}
 
+	// position of the day in the month (from 1 to 31)
 	public int getDate()
+	{
+		return date;
+	}
+
+	public int getHumanYear()
+	{
+		return year + 1900;
+	}
+
+	public int getHumanMonth()
+	{
+		return month + 1;
+	}
+
+	public int getHumanDate()
 	{
 		return date;
 	}
@@ -242,10 +277,11 @@ public class HexaDate
 		return day;
 	}
 
+	@Override
 	public String toString()
 	{
-		assert false; // prevents automatic conversion to string
-		return getDisplayString();
+		assert false : "Please do not use the HexaDate::toString, use getString() instead, it will minimize chances of human errors...";
+		return getString();
 	}
 
 	public String getDisplayString()

@@ -10,10 +10,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.hexa.client.common.HexaDate;
 import com.hexa.client.interfaces.IValueChangeHandler;
-import com.hexa.client.ui.MyPopupPanel;
 
 public class DateSelector extends Composite implements JQDatepicker.Callback
 {
+	boolean enabled = true;
+
 	TextBox textBox = new TextBox();
 
 	boolean fCallbackSet = false; // denotes if a call to
@@ -26,14 +27,19 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 	{
 		initWidget( textBox );
 
-		textBox.addFocusHandler( new FocusHandler() {
+		textBox.addFocusHandler( new FocusHandler()
+		{
+			@Override
 			public void onFocus( FocusEvent event )
 			{
-				showPopup();
+				if( enabled )
+					showPopup();
 			}
 		} );
 
-		textBox.addKeyUpHandler( new KeyUpHandler() {
+		textBox.addKeyUpHandler( new KeyUpHandler()
+		{
+			@Override
 			public void onKeyUp( KeyUpEvent event )
 			{
 				HexaDate hexaDate = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( textBox.getText() );
@@ -43,9 +49,8 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 		} );
 
 		/*
-		 * textBox.addClickHandler( new ClickHandler() { public void
-		 * onClick(ClickEvent event) { if( popup!=null && popup.isShowing() )
-		 * hidePopup(); else showPopup(); } });
+		 * textBox.addClickHandler( new ClickHandler() { public void onClick(ClickEvent event) { if( popup!=null && popup.isShowing() ) hidePopup(); else
+		 * showPopup(); } });
 		 */
 	}
 
@@ -136,5 +141,11 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 	{
 		for( IValueChangeHandler<HexaDate> handler : handlers )
 			handler.onValueChange( date );
+	}
+
+	public void setEnabled( boolean enabled )
+	{
+		this.enabled = enabled;
+		textBox.setEnabled( enabled );
 	}
 }

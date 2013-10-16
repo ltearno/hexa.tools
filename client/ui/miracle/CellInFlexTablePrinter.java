@@ -3,7 +3,7 @@ package com.hexa.client.ui.miracle;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
 
-class CellInFlexTablePrinter implements Printer
+public class CellInFlexTablePrinter implements Printer
 {
 	FlexTable table;
 	int row;

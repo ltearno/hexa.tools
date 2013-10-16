@@ -36,14 +36,16 @@ public class ConfirmationBox
 		vp.add( yes );
 		vp.add( no );
 
-		no.addClickHandler( new ClickHandler() {
+		no.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				db.hide();
 			}
 		} );
 
-		yes.addClickHandler( new ClickHandler() {
+		yes.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				db.hide();

@@ -15,6 +15,7 @@ public class ImageButton extends Image implements ClickHandler
 
 	Object cookie = null;
 	Callback callback = null;
+	boolean enabled = true;
 
 	public @UiConstructor
 	ImageButton( ImageResource resource, String title )
@@ -38,6 +39,12 @@ public class ImageButton extends Image implements ClickHandler
 	{
 		assert (callback != null);
 
-		callback.onClick( cookie );
+		if( enabled )
+			callback.onClick( cookie );
+	}
+
+	public void setEnabled( boolean enabled )
+	{
+		this.enabled = enabled;
 	}
 }

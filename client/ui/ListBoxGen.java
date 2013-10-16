@@ -62,4 +62,9 @@ public class ListBoxGen<T> extends Composite
 	{
 		base.addChangeHandler( handler );
 	}
+
+	public void setEnabled( boolean fEnabled )
+	{
+		base.setEnabled( fEnabled );
+	}
 }

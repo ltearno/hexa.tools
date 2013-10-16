@@ -5,19 +5,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import com.hexa.client.tools.JQuery;
-import com.hexa.client.ui.TreeTableHandler;
-import com.hexa.client.ui.miracle.Printer;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.JQuery;
+import com.hexa.client.ui.miracle.Printer;
 
 public class TreeTableBase extends Panel
 {
@@ -60,7 +59,9 @@ public class TreeTableBase extends Panel
 		m_body = DOM.createTBody();
 		m_table.appendChild( m_body );
 
-		addDomHandler( new ClickHandler() {
+		addDomHandler( new ClickHandler()
+		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				if( m_handler == null )
@@ -85,6 +86,12 @@ public class TreeTableBase extends Panel
 					m_handler.onTableCellClick( item, column, event );
 			}
 		}, ClickEvent.getType() );
+	}
+
+	@Override
+	public void clear()
+	{
+		emptyTable();
 	}
 
 	public void setHandler( TreeTableHandler handler )
@@ -488,9 +495,8 @@ public class TreeTableBase extends Panel
 
 		// returns true if the item is the last of its parent
 		/*
-		 * private boolean isLastChild() { Item parent = m_parent; if( parent ==
-		 * null ) parent = m_rootItem;
-		 * 
+		 * private boolean isLastChild() { Item parent = m_parent; if( parent == null ) parent = m_rootItem;
+		 *
 		 * return parent.m_childs.get(parent.m_childs.size()-1) == this; }
 		 */
 
@@ -521,15 +527,12 @@ public class TreeTableBase extends Panel
 
 			return m_rootItem.m_childs.get( 0 );
 			/*
-			 * // while our parent if the last of its siblings, go up one level
-			 * Item ancestor = parent; while( ancestor!=null &&
-			 * ancestor.isLastChild() ) ancestor = ancestor.m_parent;
-			 * 
-			 * // return the next sibling of this ancestor if( ancestor == null
-			 * ) return m_rootItem.m_childs.get(0);
-			 * 
-			 * if( me == parent.m_childs.size() - 1 ) return
-			 * parent.m_childs.get( 0 ); return parent.m_childs.get( me + 1 );
+			 * // while our parent if the last of its siblings, go up one level Item ancestor = parent; while( ancestor!=null && ancestor.isLastChild() )
+			 * ancestor = ancestor.m_parent;
+			 *
+			 * // return the next sibling of this ancestor if( ancestor == null ) return m_rootItem.m_childs.get(0);
+			 *
+			 * if( me == parent.m_childs.size() - 1 ) return parent.m_childs.get( 0 ); return parent.m_childs.get( me + 1 );
 			 */
 		}
 
@@ -800,7 +803,9 @@ public class TreeTableBase extends Panel
 				final Element tr = m_trToDelete;
 				m_trToDelete = null;
 
-				JQuery.jqFadeOut( tr, 250, new JQuery.Callback() {
+				JQuery.jqFadeOut( tr, 250, new JQuery.Callback()
+				{
+					@Override
 					public void onFinished()
 					{
 						// physical remove
@@ -816,7 +821,9 @@ public class TreeTableBase extends Panel
 			// logical delete
 			logicalRemove();
 
-			JQuery.jqFadeOut( m_trToDelete, 250, new JQuery.Callback() {
+			JQuery.jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
+			{
+				@Override
 				public void onFinished()
 				{
 					// physical remove
@@ -888,17 +895,20 @@ public class TreeTableBase extends Panel
 			this.column = column;
 		}
 
+		@Override
 		public void setWidget( Widget widget )
 		{
 			assert false;
 			setHeader( column, "WIDGET SHOULD BE HERE, NOT IMPLEMENTED" );
 		}
 
+		@Override
 		public void setText( String text )
 		{
 			setHeader( column, text );
 		}
 
+		@Override
 		public void setHTML( String html )
 		{
 			setHeader( column, html + " (html not implemented)" );
@@ -954,6 +964,11 @@ public class TreeTableBase extends Panel
 			DOM.insertChild( m_head, m_headerRow, 0 );
 
 		m_rowTemplate = bTemplate.toString();
+	}
+
+	public Item addItem()
+	{
+		return addItem( null );
 	}
 
 	// adds an item at the end of the children of the parent

@@ -55,56 +55,56 @@ public class ServiceBase
 	{
 		abstract public T create( GenericJSO jso );
 	}
-	
+
 	class ArrayJSOProxy<T> extends SimplifiedList<T>
 	{
 		T[] internal;
-		
+
 		Proxy<T> proxy;
-		
+
 		GenericJSO fields;
 		int nbFields;
-		
+
 		JsArray<GenericJSO> rows;
 		int lenght;
-		
+
 		@SuppressWarnings( "unchecked" )
 		public ArrayJSOProxy( GenericJSO jso, Proxy<T> proxy )
 		{
 			this.proxy = proxy;
-			
+
 			fields = jso.getGenericJSO( "fields" );
 			nbFields = fields.length();
-			
+
 			rows = jso.getArray( "rows" );
 			lenght = rows.length();
-			
+
 			if( lenght > 0 )
 				internal = (T[]) new Object[lenght];
 		}
-		
+
 		private native void setJso( JavaScriptObject obj, JsArrayString fields, JavaScriptObject source )
 		/*-{
 			for( i=0; i<fields.length; i++ )
 				obj[fields[i]] = source[i];
 		}-*/;
-		
+
 		@Override
 		public T get( int index )
 		{
 			T item = internal[index];
 			if( item != null )
 				return item;
-			
+
 			GenericJSO row = rows.get( index );
-			
+
 			JavaScriptObject fake = JavaScriptObject.createObject().cast();
-			for( int f=0; f<nbFields; f++ )
+			for( int f = 0; f < nbFields; f++ )
 				setJso( fake, (JsArrayString) fields.cast(), (JavaScriptObject) row.cast() );
-			
+
 			item = proxy.create( (GenericJSO) fake.cast() );
 			internal[index] = item;
-			
+
 			return item;
 		}
 
@@ -146,7 +146,7 @@ public class ServiceBase
 			assert false;
 			return null;
 		}
-		
+
 		class It implements Iterator<T>
 		{
 			int curIndex = 0;
@@ -168,57 +168,50 @@ public class ServiceBase
 			{
 				assert false;
 			}
-			
+
 		}
 	}
-	
+
 	protected boolean isOptimizedArray( GenericJSO jso )
 	{
 		try
 		{
 			String magic = jso.getString( "magic" );
-			if( magic!=null && magic.equals( "ar2ra" ) )
+			if( magic != null && magic.equals( "ar2ra" ) )
 				return true;
 		}
 		catch( Exception e )
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
-	
+
 	protected <T> List<T> deserializeArray( JsArray<GenericJSO> jsoss, Proxy<T> proxy )
 	{
 		if( isOptimizedArray( (GenericJSO) jsoss.cast() ) )
 		{
 			GenericJSO jso = (GenericJSO) jsoss.cast();
-			
+
 			return new ArrayJSOProxy<T>( jso, proxy );
-			
-			/*GenericJSO fields = jso.getGenericJSO( "fields" );
-			int nbFields = fields.length();
-			
-			ArrayList<T> result = new ArrayList<T>();
-			
-			JsArray<GenericJSO> rows = jso.getArray( "rows" );
-			int lenght = rows.length();
-			for( int i=0; i<lenght; i++ )
-			{
-				GenericJSO row = rows.get( i );
-				
-				// make up a jso ok for the proxy
-				// it is an object with values indexed by field names
-				GenericJSO item = JavaScriptObject.createObject().cast();
-				
-				for( int f=0; f<nbFields; f++ )
-					//item.setObject( fields.getStringByIdx( f ), row.getGenericJSOByIdx( f ) );
-					set( (JavaScriptObject) item.cast(), (JsArrayString) fields.cast(), (JavaScriptObject) row.cast() );
-				
-				result.add( proxy.create( item ) );
-			}
-			
-			return result;*/
+
+			/*
+			 * GenericJSO fields = jso.getGenericJSO( "fields" ); int nbFields = fields.length();
+			 * 
+			 * ArrayList<T> result = new ArrayList<T>();
+			 * 
+			 * JsArray<GenericJSO> rows = jso.getArray( "rows" ); int lenght = rows.length(); for( int i=0; i<lenght; i++ ) { GenericJSO row = rows.get( i );
+			 * 
+			 * // make up a jso ok for the proxy // it is an object with values indexed by field names GenericJSO item = JavaScriptObject.createObject().cast();
+			 * 
+			 * for( int f=0; f<nbFields; f++ ) //item.setObject( fields.getStringByIdx( f ), row.getGenericJSOByIdx( f ) ); set( (JavaScriptObject) item.cast(),
+			 * (JsArrayString) fields.cast(), (JavaScriptObject) row.cast() );
+			 * 
+			 * result.add( proxy.create( item ) ); }
+			 * 
+			 * return result;
+			 */
 		}
 		else
 		{
@@ -229,15 +222,13 @@ public class ServiceBase
 			return list;
 		}
 	}
-	
+
 	private native void set( JavaScriptObject obj, JsArrayString fields, JavaScriptObject source )
 	/*-{
 		for( i=0; i<fields.length; i++ )
 			obj[fields[i]] = source[i];
 	}-*/;
 }
-
-
 
 abstract class SimplifiedList<T> implements List<T>
 {

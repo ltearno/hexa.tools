@@ -53,7 +53,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	H headerData = null;
 
-	ArrayList<DynArrayInFlexTableColumnMng<T, H>> columns = new ArrayList<DynArrayInFlexTableColumnMng<T, H>>();
+	ArrayList<ColumnMng<T, H>> columns = new ArrayList<ColumnMng<T, H>>();
 
 	Comparator<T> userComparator = null;
 
@@ -109,7 +109,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
 	{
-		columns.add( new DynArrayInFlexTableColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
+		columns.add( new ColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
 
 	class HdrInTreeTablePrinter implements Printer
@@ -183,7 +183,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		{
 			printer.col = i;
 
-			DynArrayInFlexTableColumnMng<T, H> c = columns.get( i );
+			ColumnMng<T, H> c = columns.get( i );
 			if( c.hdrPrintsOn.print( headerData, printer ) )
 				printer = new HdrInTreeTablePrinter( table, 0 );
 		}
@@ -405,7 +405,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 
 		// sort them
-		Collections.sort( its, new Comparator<It>() {
+		Collections.sort( its, new Comparator<It>()
+		{
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -560,7 +561,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	}
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler() {
+	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
 		{
@@ -575,7 +577,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	};
 
-	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>() {
+	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>()
+	{
 		@Override
 		public String getGhostInnerHTML( Integer cookie, Element source )
 		{
@@ -622,7 +625,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 			if( newPos < 0 )
 				return;
 
-			DynArrayInFlexTableColumnMng<T, H> dum = columns.get( cookie );
+			ColumnMng<T, H> dum = columns.get( cookie );
 			columns.set( cookie, columns.get( newPos ) );
 			columns.set( newPos, dum );
 
@@ -650,7 +653,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		return printer;
 	}
 
-	private Edits.Callback onEdit = new Edits.Callback() {
+	private Edits.Callback onEdit = new Edits.Callback()
+	{
 		@Override
 		public void cancelEdition()
 		{
@@ -729,7 +733,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler() {
+	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
 		{
@@ -769,7 +774,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	};
 
-	private TreeTableHandler tableHandler = new TreeTableHandler() {
+	private TreeTableHandler tableHandler = new TreeTableHandler()
+	{
 		@Override
 		public void onTableHeaderClick( int column, ClickEvent event )
 		{

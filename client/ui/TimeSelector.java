@@ -96,4 +96,10 @@ public class TimeSelector extends Composite implements ChangeHandler
 
 		fire( time );
 	}
+
+	public void setEnabled( boolean enabled )
+	{
+		hour.setEnabled( enabled );
+		minute.setEnabled( enabled );
+	}
 }

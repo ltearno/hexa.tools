@@ -1,57 +1,41 @@
 package com.hexa.client.comm;
 
-import java.util.ArrayList;
-
-import com.google.gwt.core.client.Scheduler;
-import com.hexa.client.comm.ServerComm.ServerCommCb;
-
-// Stores all clients waiting for a specific RequestDesc
-// manages the process of calling back the clients
+// Stores a request description together with the objects that need to get the answer
 public class RequestCallInfo
 {
 	// request description
 	public RequestDesc request;
 
-	// clients waiting on it
-	private ArrayList<ServerCommCb> callbacks = new ArrayList<ServerCommCb>();
-	private ArrayList<Object> cookies = new ArrayList<Object>();
+	// client waiting on it
+	XRPCRequest callback = null;
+	Object cookie = null;
 
 	// data, when received
-	private ResponseJSO retValue = null;
-	private int msgLevel = 0;
-	private String msg = null;
+	boolean fResultReceived = false;
+	ResponseJSO retValue = null;
+	int msgLevel = 0;
+	String msg = null;
+	GenericJSO hangout = null;
 
-	public RequestCallInfo( RequestDesc request )
+	public RequestCallInfo( RequestDesc request, XRPCRequest callback, Object cookie )
 	{
 		this.request = request;
+		this.callback = callback;
+		this.cookie = cookie;
 	}
 
-	public void register( ServerCommCb callback, Object cookie )
+	public void setResult( int msgLevel, String msg, GenericJSO hangOut, ResponseJSO retValue )
 	{
-		callbacks.add( callback );
-		cookies.add( cookie );
-	}
+		fResultReceived = true;
 
-	void giveResultToCallbacks( ResponseJSO retValue, int msgLevel, String msg )
-	{
-		this.retValue = retValue;
 		this.msgLevel = msgLevel;
 		this.msg = msg;
+		this.hangout = hangOut;
+		this.retValue = retValue;
+	}
 
-		// quietly give back the results
-		Scheduler.get().scheduleIncremental( new Scheduler.RepeatingCommand() {
-			public boolean execute()
-			{
-				if( callbacks.isEmpty() )
-					return false;
-
-				ServerCommCb callback = callbacks.remove( 0 );
-				Object cookie = cookies.remove( 0 );
-
-				callback.onResponse( cookie, RequestCallInfo.this.retValue, RequestCallInfo.this.msgLevel, RequestCallInfo.this.msg );
-
-				return !callbacks.isEmpty();
-			}
-		} );
+	public void giveResultToCallbacks()
+	{
+		callback.onResponse( cookie, retValue, msgLevel, msg );
 	}
 }

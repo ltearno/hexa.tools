@@ -22,7 +22,8 @@ public class ListTable<T> extends Composite
 
 		setStylePrimaryName( "ListTable" );
 
-		table.addClickHandler( new ClickHandler() {
+		table.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				Cell cell = table.getCellForEvent( event );
@@ -43,7 +44,8 @@ public class ListTable<T> extends Composite
 
 	public void addChangeHandler( final ChangeHandler handler )
 	{
-		table.addClickHandler( new ClickHandler() {
+		table.addClickHandler( new ClickHandler()
+		{
 			public void onClick( ClickEvent event )
 			{
 				handler.onChange( null );

@@ -98,7 +98,8 @@ public class SidePanel extends SimplePanel implements ClickHandler
 		if( fShowState )
 			return;
 
-		Animation anim = new Animation() {
+		Animation anim = new Animation()
+		{
 			protected void onUpdate( double progress )
 			{
 				getElement().getStyle().setOpacity( interpolate( progress ) );
@@ -118,7 +119,8 @@ public class SidePanel extends SimplePanel implements ClickHandler
 		if( !fShowState )
 			return;
 
-		Animation anim = new Animation() {
+		Animation anim = new Animation()
+		{
 			protected void onUpdate( double progress )
 			{
 				getElement().getStyle().setOpacity( 1.0 - interpolate( progress ) );

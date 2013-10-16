@@ -2,10 +2,11 @@ package com.hexa.client.tools;
 
 import java.util.Iterator;
 
-import com.hexa.client.ui.MyDialogBox;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.hexa.client.ui.MyDialogBox;
 
 public class HexaTools
 {
@@ -81,6 +82,15 @@ public class HexaTools
 		MyDialogBox db = new MyDialogBox();
 		db.setTitle( title );
 		db.setWidget( new Label( message ) );
+		db.show();
+		db.center();
+	}
+
+	public static void alertHtml( String title, String html )
+	{
+		MyDialogBox db = new MyDialogBox();
+		db.setTitle( title );
+		db.setWidget( new HTML( html ) );
 		db.show();
 		db.center();
 	}

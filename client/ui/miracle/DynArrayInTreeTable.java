@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.google.gwt.user.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -12,6 +11,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.TreeTable;
@@ -26,7 +26,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 	H headerData = null;
 
-	ArrayList<DynArrayInFlexTableColumnMng<T, H>> columns = new ArrayList<DynArrayInFlexTableColumnMng<T, H>>();
+	ArrayList<ColumnMng<T, H>> columns = new ArrayList<ColumnMng<T, H>>();
 
 	Comparator<T> userComparator = null;
 
@@ -66,70 +66,10 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	@Override
 	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
 	{
-		columns.add( new DynArrayInFlexTableColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
+		columns.add( new ColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
 
-	class HdrInTreeTablePrinter implements Printer
-	{
-		TreeTable table;
-		int col;
-
-		HdrInTreeTablePrinter( TreeTable table, int col )
-		{
-			this.table = table;
-			this.col = col;
-		}
-
-		@Override
-		public void setText( String text )
-		{
-			table.setHeader( col, text );
-		}
-
-		@Override
-		public void setHTML( String html )
-		{
-			setText( html );
-		}
-
-		@Override
-		public void setWidget( Widget widget )
-		{
-			assert false;
-			table.setHeader( col, "WIDGET PLACE" );
-		}
-	}
-
-	class CellInTreeTablePrinter implements Printer
-	{
-		Item item;
-		int col;
-
-		CellInTreeTablePrinter( Item item, int col )
-		{
-			this.item = item;
-			this.col = col;
-		}
-
-		@Override
-		public void setText( String text )
-		{
-			item.setText( col, text );
-		}
-
-		@Override
-		public void setHTML( String html )
-		{
-			item.setHTML( col, html );
-		}
-
-		@Override
-		public void setWidget( Widget widget )
-		{
-			item.setWidget( col, widget );
-		}
-	}
-
+	@Override
 	public void printHeaders()
 	{
 		HdrInTreeTablePrinter printer = new HdrInTreeTablePrinter( table, 0 );
@@ -138,7 +78,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		{
 			printer.col = i;
 
-			DynArrayInFlexTableColumnMng<T, H> c = columns.get( i );
+			ColumnMng<T, H> c = columns.get( i );
 			if( c.hdrPrintsOn.print( headerData, printer ) )
 				printer = new HdrInTreeTablePrinter( table, 0 );
 		}
@@ -177,6 +117,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
+	@Override
 	public void updateRow( T object )
 	{
 		// find the row associated with this object
@@ -255,6 +196,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return null;
 	}
 
+	@Override
 	public void deleteRow( int ref )
 	{
 		Item item = getRow( ref );
@@ -269,6 +211,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		item.remove();
 	}
 
+	@Override
 	public void setComparator( Comparator<T> comparator )
 	{
 		userComparator = comparator;
@@ -302,7 +245,9 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 
 		// sort them
-		Collections.sort( its, new Comparator<It>() {
+		Collections.sort( its, new Comparator<It>()
+		{
+			@Override
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -417,7 +362,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler() {
+	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
 		{
@@ -432,7 +378,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>() {
+	DragDrop.Callback<Integer> onDragDrop = new DragDrop.Callback<Integer>()
+	{
 		@Override
 		public String getGhostInnerHTML( Integer cookie, Element source )
 		{
@@ -443,16 +390,19 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 			{
 				String html = null;
 
+				@Override
 				public void setWidget( Widget widget )
 				{
 					assert false;
 				}
 
+				@Override
 				public void setText( String text )
 				{
 					html = text;
 				}
 
+				@Override
 				public void setHTML( String html )
 				{
 					this.html = html;
@@ -479,7 +429,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 			if( newPos < 0 )
 				return;
 
-			DynArrayInFlexTableColumnMng<T, H> dum = columns.get( cookie );
+			ColumnMng<T, H> dum = columns.get( cookie );
 			columns.set( cookie, columns.get( newPos ) );
 			columns.set( newPos, dum );
 
@@ -498,7 +448,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private Edits.Callback onEdit = new Edits.Callback() {
+	private Edits.Callback onEdit = new Edits.Callback()
+	{
 		@Override
 		public void cancelEdition()
 		{
@@ -577,7 +528,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler() {
+	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
 		{
@@ -617,7 +569,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	};
 
-	private TreeTableHandler tableHandler = new TreeTableHandler() {
+	private TreeTableHandler tableHandler = new TreeTableHandler()
+	{
 		@Override
 		public void onTableHeaderClick( int column, ClickEvent event )
 		{
