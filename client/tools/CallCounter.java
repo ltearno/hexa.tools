@@ -22,4 +22,9 @@ public abstract class CallCounter
 		if( count == 0 )
 			onFinish();
 	}
+
+	public void reset()
+	{
+		count = 0;
+	}
 }
