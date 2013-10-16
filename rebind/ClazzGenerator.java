@@ -70,11 +70,11 @@ public class ClazzGenerator extends Generator
 
 			if( reflectedType == null )
 				throw new UnableToCompleteException();
-			
+
 			if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
-			{
-				return "com.hexa.client.databinding.JavaScriptObjectClazz";
-			}
+				return "com.hexa.client.classinfo.internal.JavaScriptObjectClazz";
+			if( reflectedTypeName.equals( "java.lang.Object" ) )
+				return "com.hexa.client.classinfo.internal.ObjectClazz";
 
 			packageName = reflectedType.getPackage().getName();
 			generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
@@ -108,10 +108,12 @@ public class ClazzGenerator extends Generator
 		// output a class "typeName" + "Impl"
 		// which extends the asked type
 		composer.setSuperclass( "com.hexa.client.classinfo.internal.ClazzBase<" + reflectedTypeName + ">" );
-		composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );// "com.hexa.client.classinfo.Clazz<"+reflectedTypeName+">"
+		//composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );// "com.hexa.client.classinfo.Clazz<"+reflectedTypeName+">"
 																							// );
 		composer.addImport( "java.util.List" );
 		composer.addImport( "java.util.ArrayList" );
+		composer.addImport( "com.hexa.client.classinfo.Field" );
+		composer.addImport( "com.hexa.client.classinfo.Method" );
 
 		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );
 
@@ -130,10 +132,17 @@ public class ClazzGenerator extends Generator
 	{
 		sourceWriter.println( "" );
 
+		String superClassName;
+		JClassType superClass = reflectedType.getSuperclass();
+		if( superClass != null )
+			superClassName = superClass.getQualifiedSourceName() + ".class";
+		else
+			superClassName = "null";
+
 		sourceWriter.println( "public " + generatedClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "super( " + reflectedTypeName + ".class, \"" + reflectedType.getSimpleSourceName() + "\" );" );
+		sourceWriter.println( "super( " + reflectedTypeName + ".class, \"" + reflectedType.getSimpleSourceName() + "\", " + superClassName + " );" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -147,19 +156,21 @@ public class ClazzGenerator extends Generator
 			JField field = fields[f];
 			if( field.isStatic() )
 				continue; // skip
-			
+
 			String fieldClassName = field.getName() + "_FieldImpl";
 			fieldClassNames.add( fieldClassName );
-			
+
 			generateFieldClass( field, sourceWriter );
 		}
 
-		sourceWriter.println( "protected void _addFields()" );
+		sourceWriter.println( "protected List<Field> _getDeclaredFields()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
+		sourceWriter.println( "ArrayList<Field> res = new ArrayList<Field>();" );
 		for( String fieldClassName : fieldClassNames )
-			sourceWriter.println( "_fields.add( new " + fieldClassName + "());" );
+			sourceWriter.println( "res.add( new " + fieldClassName + "());" );
 		sourceWriter.outdent();
+		sourceWriter.println( "return res;" );
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
 
@@ -175,41 +186,90 @@ public class ClazzGenerator extends Generator
 			while( methodClassNames.contains( methodClassName ) )
 				methodClassName += "_";
 			methodClassNames.add( methodClassName );
-			
+
 			generateMethodClass( methodClassName, method, sourceWriter );
 		}
 
-		sourceWriter.println( "protected void _addMethods()" );
+		sourceWriter.println( "protected List<Method> _getMethods()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
+		sourceWriter.println( "ArrayList<Method> res = new ArrayList<Method>();" );
 		for( String methodClassName : methodClassNames )
-			sourceWriter.println( "_methods.add( new " + methodClassName + "());" );
+			sourceWriter.println( "res.add( new " + methodClassName + "());" );
 		sourceWriter.outdent();
+		sourceWriter.println( "return res;" );
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
 
 		// New
-
 		sourceWriter.println( "@Override" );
 		sourceWriter.println( "public " + reflectedTypeName + " NEW()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "return new " + reflectedTypeName + "();" );
+		if( reflectedType.isAbstract() )
+			sourceWriter.println( "throw new IllegalArgumentException( \"Targetted class is abstract, cannot create instance\" );" );
+		else
+			sourceWriter.println( "return new " + reflectedTypeName + "();" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
+	}
+
+	private static class ModifierBuilder
+	{
+		StringBuilder sb = new StringBuilder();
+		boolean empty = true;
+
+		public void append( String s )
+		{
+			if( !empty )
+				sb.append( " & " );
+			empty = false;
+			sb.append( s );
+		}
+
+		@Override
+		public String toString()
+		{
+			String res = sb.toString();
+			if( res.isEmpty() )
+				return "0";
+			return res;
+		}
+	}
+
+	private String getFieldModifier( JField field )
+	{
+		ModifierBuilder mb = new ModifierBuilder();
+		if( field.isPrivate() )
+			mb.append( "java.lang.reflect.Modifier.PRIVATE" );
+		if( field.isProtected() )
+			mb.append( "java.lang.reflect.Modifier.PROTECTED" );
+		if( field.isPublic() )
+			mb.append( "java.lang.reflect.Modifier.PUBLIC" );
+
+		if( field.isStatic() )
+			mb.append( "java.lang.reflect.Modifier.STATIC" );
+		if( field.isTransient() )
+			mb.append( "java.lang.reflect.Modifier.TRANSIENT" );
+		if( field.isVolatile() )
+			mb.append( "java.lang.reflect.Modifier.VOLATILE" );
+		if( field.isFinal() )
+			mb.append( "java.lang.reflect.Modifier.FINAL" );
+
+		return mb.toString();
 	}
 
 	private void generateFieldClass( JField field, SourceWriter sourceWriter )
 	{
 		String fieldClassName = field.getName() + "_FieldImpl";
 
-		sourceWriter.println( "class " + fieldClassName + " extends com.hexa.client.classinfo.internal.FieldBase<" + reflectedTypeName + "> {" );
+		sourceWriter.println( "class " + fieldClassName + " extends com.hexa.client.classinfo.internal.FieldBase {" );
 		sourceWriter.indent();
 		sourceWriter.println( "public " + fieldClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "super(" + field.getType().getQualifiedSourceName() + ".class, \"" + field.getName() + "\");" );
+		sourceWriter.println( "super(" + field.getType().getQualifiedSourceName() + ".class, \"" + field.getName() + "\", " + getFieldModifier( field ) + ");" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -236,7 +296,7 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
 
-		sourceWriter.println( "@Override public native final void copyValueTo( " + reflectedTypeName + " source, " + reflectedTypeName + " destination )" );
+		sourceWriter.println( "@Override public native final void copyValueTo( Object source, Object destination )" );
 		sourceWriter.println( "/*-{" );
 		sourceWriter.indent();
 		sourceWriter.println( "destination.@" + reflectedTypeName + "::" + field.getName() + " = source.@" + reflectedTypeName + "::" + field.getName() + ";" );
@@ -296,7 +356,8 @@ public class ClazzGenerator extends Generator
 		sourceWriter.println( "public " + methodClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "super(" + method.getReturnType().getErasedType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", " + sb.toString() + ");" );
+		sourceWriter.println( "super(" + method.getReturnType().getErasedType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", "
+				+ sb.toString() + ");" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -311,6 +372,9 @@ public class ClazzGenerator extends Generator
 		}
 		else
 		{
+			sourceWriter.println( "try {" );
+			sourceWriter.indent();
+
 			sb = new StringBuilder();
 			if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
 				sb.append( "((" + reflectedType.getQualifiedSourceName() + ") target)." + method.getName() + "(" );
@@ -335,6 +399,13 @@ public class ClazzGenerator extends Generator
 			sourceWriter.println( sb.toString() );
 			if( method.getReturnType().getSimpleSourceName().equals( "void" ) )
 				sourceWriter.println( "return null;" );
+
+			sourceWriter.outdent();
+			sourceWriter.println( "} catch( Throwable e ) {" );
+			sourceWriter.indent();
+			sourceWriter.println( "throw new java.lang.RuntimeException(\"CALLED METHOD RAISED AN EXCEPTION " + method.getName() + "\" );" );
+			sourceWriter.outdent();
+			sourceWriter.println( "}" );
 		}
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );

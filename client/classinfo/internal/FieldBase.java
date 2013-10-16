@@ -2,15 +2,17 @@ package com.hexa.client.classinfo.internal;
 
 import com.hexa.client.classinfo.Field;
 
-public abstract class FieldBase<T> implements Field<T>
+public abstract class FieldBase implements Field
 {
 	private final Class<?> _class;
 	private final String _fieldName;
+	private int _modifier;
 
-	protected FieldBase( Class<?> clazz, String fieldName )
+	protected FieldBase( Class<?> clazz, String fieldName, int modifier )
 	{
 		_class = clazz;
 		_fieldName = fieldName;
+		_modifier = modifier;
 	}
 
 	@Override
@@ -23,6 +25,12 @@ public abstract class FieldBase<T> implements Field<T>
 	public Class<?> getType()
 	{
 		return _class;
+	}
+
+	@Override
+	public int getModifier()
+	{
+		return _modifier;
 	}
 
 	// @Override

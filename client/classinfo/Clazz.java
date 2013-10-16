@@ -5,12 +5,18 @@ import java.util.List;
 public interface Clazz<T>
 {
 	String getClassName();
-
 	Class<T> getReflectedClass();
 
-	List<Field<T>> getFields();
+	Clazz<? super T> getSuperclass();
 
-	Field<T> getField( String fieldName );
+	List<Field> getAllFields();
+	Field getAllField( String fieldName );
+
+	List<Field> getFields();
+	Field getField( String fieldName );
+
+	List<Field> getDeclaredFields();
+	Field getDeclaredField( String fieldName );
 
 	List<Method> getMethods();
 

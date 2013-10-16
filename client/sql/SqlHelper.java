@@ -97,7 +97,7 @@ public class SqlHelper
 		if( clazz == null )
 			return false;
 
-		Field<?> idField = clazz.getField( "id" );
+		Field idField = clazz.getField( "id" );
 		if( idField == null )
 			throw new IllegalStateException( "No id field found for class " + clazz.getClassName() );
 
@@ -114,7 +114,7 @@ public class SqlHelper
 		sb.append( " SET " );
 
 		boolean fComa = false;
-		for( Field<?> field : clazz.getFields() )
+		for( Field field : clazz.getFields() )
 		{
 			// we dont update id field
 			if( field.getName().equals( "id" ) )
@@ -154,8 +154,8 @@ public class SqlHelper
 
 		// update the given object
 		T newVersion = find( db, (Class<T>) record.getClass(), recordId );
-		for( Field<?> field : clazz.getFields() )
-			((Field<Object>) field).copyValueTo( newVersion, record );
+		for( Field field : clazz.getFields() )
+			field.copyValueTo( newVersion, record );
 
 		return true;
 	}
@@ -189,7 +189,7 @@ public class SqlHelper
 		StringBuilder sbValues = new StringBuilder();
 
 		boolean fComa = false;
-		for( Field<?> field : clazz.getFields() )
+		for( Field field : clazz.getFields() )
 		{
 			// we dont insert id field when they are not specified...
 			if( field.getName().equals( "id" ) )
@@ -244,8 +244,7 @@ public class SqlHelper
 		int lastId = db.getLastInsertedId();
 		if( lastId > 0 )
 		{
-			@SuppressWarnings( "unchecked" )
-			Field<T> idField = (Field<T>) clazz.getField( "id" );
+			Field idField = clazz.getField( "id" );
 			if( idField != null )
 				idField.setValue( record, lastId );
 		}

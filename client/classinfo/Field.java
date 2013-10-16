@@ -1,6 +1,6 @@
 package com.hexa.client.classinfo;
 
-public interface Field<T>
+public interface Field
 {
 	String getName();
 
@@ -10,5 +10,7 @@ public interface Field<T>
 
 	<OUT> OUT getValue( Object object );
 
-	void copyValueTo( T source, T destination );
+	void copyValueTo( Object source, Object destination );
+
+	int getModifier();
 }

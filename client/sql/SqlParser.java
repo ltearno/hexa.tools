@@ -24,7 +24,7 @@ public class SqlParser
 		public String className;
 		public String tableAlias;
 
-		public HashMap<String, Field<?>> bindings = new HashMap<String, Field<?>>();
+		public HashMap<String, Field> bindings = new HashMap<String, Field>();
 
 		public String generatedSelect;
 	}
@@ -66,7 +66,7 @@ public class SqlParser
 
 			for( SQLiteResult.Cell cell : row )
 			{
-				Field<?> field = pi.bindings.get( cell.column );
+				Field field = pi.bindings.get( cell.column );
 				if( field == null )
 					continue;
 
@@ -95,7 +95,7 @@ public class SqlParser
 
 			for( SQLiteResult.Cell cell : row )
 			{
-				Field<?> field = pi.bindings.get( cell.column );
+				Field field = pi.bindings.get( cell.column );
 				if( field == null )
 					continue;
 
@@ -169,7 +169,7 @@ public class SqlParser
 			return false;
 
 		boolean fComa = false;
-		for( Field<?> field : clazz.getFields() )
+		for( Field field : clazz.getFields() )
 		{
 			// no need to select fields that we don't know how to manage
 			if( SQLiteTypeManagerManager.get( field.getType() ) == null )

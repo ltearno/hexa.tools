@@ -1,4 +1,4 @@
-package com.hexa.client.databinding;
+package com.hexa.client.classinfo.internal;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +15,7 @@ public class JavaScriptObjectClazz implements Clazz<JavaScriptObject>
 	{
 		return "JavaScriptObject";
 	}
-	
+
 	@Override
 	public Class<JavaScriptObject> getReflectedClass()
 	{
@@ -23,55 +23,62 @@ public class JavaScriptObjectClazz implements Clazz<JavaScriptObject>
 	}
 
 	@Override
-	public List<Field<JavaScriptObject>> getFields()
+	public List<Field> getFields()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	private static HashMap<String, Field<JavaScriptObject>> fields = new HashMap<String, Field<JavaScriptObject>>(); 
-	
+
+	private static HashMap<String, Field> fields = new HashMap<String, Field>();
+
 	private native void setJsoProperty( JavaScriptObject jso, String property, Object value )
 	/*-{
 		jso[property] = value;
 	}-*/;
 
 	@Override
-	public Field<JavaScriptObject> getField( final String fieldName )
+	public Field getField( final String fieldName )
 	{
-		Field<JavaScriptObject> res = fields.get( fieldName );
+		Field res = fields.get( fieldName );
 		if( res == null )
 		{
-			res = new Field<JavaScriptObject>()
+			res = new Field()
 			{
 				@Override
 				public void setValue( Object object, Object value )
 				{
 					setJsoProperty( (JavaScriptObject) object, fieldName, value );
 				}
-				
+
 				@Override
 				public <OUT> OUT getValue( Object object )
 				{
 					throw new RuntimeException( "Not yet implemented" );
 				}
-				
+
 				@Override
 				public Class<?> getType()
 				{
 					return null;
 				}
-				
+
 				@Override
 				public String getName()
 				{
 					return fieldName;
 				}
-				
+
 				@Override
-				public void copyValueTo( JavaScriptObject source, JavaScriptObject destination )
+				public void copyValueTo( Object source, Object destination )
 				{
 					throw new RuntimeException( "Not yet implemented" );
+				}
+
+				@Override
+				public int getModifier()
+				{
+					// TODO Auto-generated method stub
+					return 0;
 				}
 			};
 			fields.put( fieldName, res );
@@ -97,6 +104,39 @@ public class JavaScriptObjectClazz implements Clazz<JavaScriptObject>
 	public JavaScriptObject NEW()
 	{
 		throw new RuntimeException("Cannot create a JavaScriptObject");
+	}
+
+	@Override
+	public Clazz<? super JavaScriptObject> getSuperclass()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Field> getDeclaredFields()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Field getDeclaredField( String fieldName )
+	{
+		return getField( fieldName );
+	}
+
+	@Override
+	public List<Field> getAllFields()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Field getAllField( String fieldName )
+	{
+		return getField( fieldName );
 	}
 
 }

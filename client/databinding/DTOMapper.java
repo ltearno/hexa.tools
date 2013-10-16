@@ -24,7 +24,7 @@ public class DTOMapper
 	public static Object Map( Object source, Object destination )
 	{
 		List<DataBinding> res = new ArrayList<DataBinding>();
-		
+
 		GWT.log( "Binding object of class " + getSimpleName(source.getClass()) + " to another of class " + getSimpleName(destination.getClass()) );
 
 		Clazz<?> sourceClass = ClassInfo.Clazz( source.getClass() );
@@ -34,9 +34,9 @@ public class DTOMapper
 		HashSet<String> bindedNames = new HashSet<String>();
 
 		// fields wise...
-		for( Field<?> field : sourceClass.getFields() )
+		for( Field field : sourceClass.getFields() )
 			bindedNames.add( field.getName() );
-		for( Field<?> field : destinationClass.getFields() )
+		for( Field field : destinationClass.getFields() )
 			bindedNames.add( field.getName() );
 
 		// ... and method wise
@@ -95,13 +95,13 @@ public class DTOMapper
 
 			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter, null );
 			binding.activate();
-			
+
 			res.add( binding );
 		}
-		
+
 		return res;
 	}
-	
+
 	public static void FreeMapping( Object mappingResourceHandle )
 	{
 		@SuppressWarnings( "unchecked" )

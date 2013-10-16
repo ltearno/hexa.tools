@@ -6,18 +6,17 @@ import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
 
-
 public class ObjectPropertiesUtils
 {
 	public static boolean HasSomethingToGetField( Clazz<?> clazz, String name )
 	{
-		String getterName = "get" + canon(name);
+		String getterName = "get" + canon( name );
 		Method getter = clazz.getMethod( getterName );
 		if( getter != null )
 			return true;
 
 		// try direct field access
-		Field<?> field = clazz.getField( name );
+		Field field = clazz.getAllField( name );
 		if( field != null )
 			return true;
 
@@ -37,13 +36,13 @@ public class ObjectPropertiesUtils
 
 	public static Class<?> GetGetterPropertyType( Clazz<?> clazz, String name )
 	{
-		String getterName = "get" + canon(name);
+		String getterName = "get" + canon( name );
 		Method getter = clazz.getMethod( getterName );
 		if( getter != null )
 			return getter.getReturnType();
 
 		// try direct field access
-		Field<?> field = clazz.getField( name );
+		Field field = clazz.getAllField( name );
 		if( field != null )
 			return field.getType();
 
@@ -65,43 +64,41 @@ public class ObjectPropertiesUtils
 	{
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 			return ((HasValue) object).getValue();
-		
+
 		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
 			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
 
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
 
-		String getterName = "get" + canon(name);
+		String getterName = "get" + canon( name );
 		Method getter = s.getMethod( getterName );
 		if( getter != null )
 			return getter.call( object, null );
 
-		if( ! fTryDirectFieldAccess )
+		if( !fTryDirectFieldAccess )
 		{
-			assert false : "ObjectAdapter ("+object.getClass().getName()+") : no getter for property " + name + " and field not found !";
+			assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter for property " + name + " and field not found !";
 			return null;
 		}
 
 		// try direct field access
-		Field<?> field = s.getField( name );
+		Field field = s.getAllField( name );
 		if( field != null )
-		{
 			return field.getValue( object );
-		}
 
-		assert false : "ObjectAdapter ("+object.getClass().getName()+") : no getter/field for property " + name + " and field not found !";
+		assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter/field for property " + name + " and field not found !";
 		return null;
 	}
 
 	public static boolean HasSomethingToSetField( Clazz<?> clazz, String name )
 	{
-		String setterName = "set" + canon(name);
+		String setterName = "set" + canon( name );
 		Method setter = clazz.getMethod( setterName );
 		if( setter != null )
 			return true;
 
 		// try direct field access
-		Field<?> field = clazz.getField( name );
+		Field field = clazz.getAllField( name );
 		if( field != null )
 			return true;
 
@@ -110,16 +107,15 @@ public class ObjectPropertiesUtils
 
 	public static Class<?> GetSetterPropertyType( Clazz<?> clazz, String name )
 	{
-		String setterName = "set" + canon(name);
+		String setterName = "set" + canon( name );
 		Method setter = clazz.getMethod( setterName );
-		if( setter!=null && setter.getParameterTypes().size()==1 )
+		if( setter != null && setter.getParameterTypes().size() == 1 )
 			return setter.getParameterTypes().get( 0 );
 
 		// try direct field access
-		Field<?> field = clazz.getField( name );
+		Field field = clazz.getAllField( name );
 		if( field != null )
 			return field.getType();
-
 		return null;
 	}
 
@@ -139,7 +135,7 @@ public class ObjectPropertiesUtils
 			return true;
 		}
 
-		String setterName = "set" + canon(name);
+		String setterName = "set" + canon( name );
 		Method setter = s.getMethod( setterName );
 		if( setter != null )
 		{
@@ -147,14 +143,14 @@ public class ObjectPropertiesUtils
 			return true;
 		}
 
-		if( ! fTryDirectFieldAccess )
+		if( !fTryDirectFieldAccess )
 		{
 			assert false : "ObjectAdapter : no setter " + name + " found on instance of class " + object.getClass().getName();
 			return false;
 		}
 
 		// try direct field access
-		Field<?> field = s.getField( name );
+		Field field = s.getAllField( name );
 		if( field != null )
 		{
 			field.setValue( object, value );
@@ -165,12 +161,12 @@ public class ObjectPropertiesUtils
 		return false;
 	}
 
-	public static String canon(String s)
+	public static String canon( String s )
 	{
 		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
 	}
 
-	public static String uncanon(String s)
+	public static String uncanon( String s )
 	{
 		return s.substring( 0, 1 ).toLowerCase() + s.substring( 1 );
 	}

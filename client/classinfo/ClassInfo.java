@@ -2,6 +2,9 @@ package com.hexa.client.classinfo;
 
 import java.util.HashMap;
 
+import com.google.gwt.core.shared.GWT;
+import com.hexa.client.classinfo.internal.ObjectClazz;
+
 public class ClassInfo
 {
 	private static HashMap<Class<?>, Clazz<?>> clazzz;
@@ -22,6 +25,12 @@ public class ClassInfo
 	{
 		_ensureMap();
 
+		if( clazzz.containsKey( clazz.getReflectedClass() ) )
+		{
+			GWT.log( "Class " + clazz.getClassName() + " already registered..." );
+			return;
+		}
+
 		clazzz.put( clazz.getReflectedClass(), clazz );
 	}
 
@@ -40,5 +49,6 @@ public class ClassInfo
 			return;
 
 		clazzz = new HashMap<Class<?>, Clazz<?>>();
+		clazzz.put( java.lang.Object.class, new ObjectClazz() );
 	}
 }

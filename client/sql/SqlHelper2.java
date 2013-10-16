@@ -6,13 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.gwt.core.shared.GWT;
 import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
 import com.hexa.client.tools.Func2;
-
-import com.google.gwt.core.shared.GWT;
 
 public class SqlHelper2
 {
@@ -63,7 +62,7 @@ public class SqlHelper2
 
 			this.tableName = this.clazz.getClassName();
 
-			for( Field<?> field : this.clazz.getFields() )
+			for( Field field : this.clazz.getFields() )
 			{
 				SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
 				if( mng == null )
@@ -204,7 +203,7 @@ public class SqlHelper2
 				 + "BEGIN "
 				 + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '"
 				 + tableName + "'); END";
-			
+
 			 db.execute(triggerSql);
 
 			return true;

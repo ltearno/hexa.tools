@@ -1,28 +1,49 @@
 package com.hexa.client.classinfo.internal;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hexa.client.classinfo.ClassInfo;
 import com.hexa.client.classinfo.Clazz;
 import com.hexa.client.classinfo.Field;
 import com.hexa.client.classinfo.Method;
 
 public abstract class ClazzBase<T> implements Clazz<T>
 {
-	protected Class<T> _reflectedClass;
-	protected String _className;
-	protected List<Field<T>> _fields;
-	protected List<Method> _methods;
+	// To implement :
+	protected abstract List<Field> _getDeclaredFields();
+	protected abstract List<Method> _getMethods();
+
+	private Class<? super T> _superClass;
+	private Class<T> _reflectedClass;
+	private String _className;
+
+	private List<Field> _allFields;
+	private List<Field> _declaredFields;
+	private List<Field> _fields;
+
+	private List<Method> _methods;
 
 	@SuppressWarnings( "unused" )
 	private ClazzBase()
 	{
 	}
 
-	protected ClazzBase( Class<T> reflectedClass, String className )
+	protected ClazzBase( Class<T> reflectedClass, String className, Class<? super T> superClass )
 	{
 		_reflectedClass = reflectedClass;
 		_className = className;
+		_superClass = superClass;
+	}
+
+	@Override
+	public Clazz<? super T> getSuperclass()
+	{
+		if( _superClass == null )
+			return null;
+
+		return ClassInfo.Clazz( _superClass );
 	}
 
 	@Override
@@ -38,21 +59,82 @@ public abstract class ClazzBase<T> implements Clazz<T>
 	}
 
 	@Override
-	public List<Field<T>> getFields()
+	public List<Field> getAllFields()
+	{
+		if( _allFields == null )
+		{
+			_allFields = _getDeclaredFields();
+
+			// all public declared fields of superclass
+			Clazz<? super T> superClass = getSuperclass();
+			if( superClass != null )
+				_allFields.addAll( superClass.getAllFields() );
+		}
+
+		return _allFields;
+	}
+
+	@Override
+	public Field getAllField( String name )
+	{
+		// first, search in declared fields
+		for( Field field : getDeclaredFields() )
+			if( field.getName().equals( name ) )
+				return field;
+
+		// then try superclass
+		Clazz<? super T> superClass = getSuperclass();
+		if( superClass != null )
+			return superClass.getAllField( name );
+
+		return null;
+	}
+
+	@Override
+	public List<Field> getDeclaredFields()
+	{
+		if( _declaredFields == null )
+			_declaredFields = _getDeclaredFields();
+
+		return _declaredFields;
+	}
+
+	@Override
+	public Field getDeclaredField( String name )
+	{
+		for( Field field : getDeclaredFields() )
+			if( field.getName().equals( name ) )
+				return field;
+
+		return null;
+	}
+
+	@Override
+	public List<Field> getFields()
 	{
 		if( _fields == null )
 		{
-			_fields = new ArrayList<Field<T>>();
-			_addFields();
+			// all public declared fields
+			_fields = new ArrayList<Field>();
+			for( Field field : getDeclaredFields() )
+			{
+				if( (field.getModifier() & Modifier.PUBLIC) == Modifier.PUBLIC )
+					_fields.add( field );
+			}
+
+			// all public declared fields of superclass
+			Clazz<? super T> superClass = getSuperclass();
+			if( superClass != null )
+				_fields.addAll( superClass.getDeclaredFields() );
 		}
 
 		return _fields;
 	}
 
 	@Override
-	public Field<T> getField( String fieldName )
+	public Field getField( String fieldName )
 	{
-		for( Field<T> field : getFields() )
+		for( Field field : getFields() )
 			if( field.getName().equals( fieldName ) )
 				return field;
 		return null;
@@ -64,7 +146,7 @@ public abstract class ClazzBase<T> implements Clazz<T>
 		if( _methods == null )
 		{
 			_methods = new ArrayList<Method>();
-			_addMethods();
+			_methods.addAll( _getMethods() );
 		}
 
 		return _methods;
@@ -78,17 +160,4 @@ public abstract class ClazzBase<T> implements Clazz<T>
 				return method;
 		return null;
 	}
-
-	// To implement :
-	// @Override
-	// public T NEW()
-	// {
-	// return new T();
-	// }
-
-	// To implement :
-	// _fields.add( new something_extending_FieldBase )
-	protected abstract void _addFields();
-
-	protected abstract void _addMethods();
 }

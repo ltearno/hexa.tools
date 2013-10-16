@@ -21,9 +21,9 @@ public class SQLiteTypeManagerManager
 			return true;
 		}
 
-		abstract public boolean appendUpdateValueSql( StringBuilder sb, Field<?> field, Object record );
+		abstract public boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record );
 
-		abstract public void setFieldValueFromString( Field<?> field, Object object, String value );
+		abstract public void setFieldValueFromString( Field field, Object object, String value );
 	}
 
 	private static HashMap<Class<?>, SQLiteTypeManager> typeManagers;
@@ -57,7 +57,7 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 	/*
 	 * Créee un trigger qui permet la maj automatique d'un champ de statut (INTEGER) dont la valeur signifiera : - 0 : enregistrement créé localement - 1 :
 	 * enregistrement copie conforme du serveur - 2 : enregistrement modifié localement
-	 * 
+	 *
 	 * @see com.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager #localRecordStateCreateTriggerSql(java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -73,7 +73,7 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 	}
 
 	@Override
-	public boolean appendUpdateValueSql( StringBuilder sb, Field<?> field, Object record )
+	public boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record )
 	{
 		sb.append( field.getValue( record ) );
 
@@ -81,7 +81,7 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 	}
 
 	@Override
-	public void setFieldValueFromString( Field<?> field, Object object, String value )
+	public void setFieldValueFromString( Field field, Object object, String value )
 	{
 		field.setValue( object, Integer.parseInt( value ) );
 	}
@@ -96,7 +96,7 @@ class SQLiteTypeManager_String extends SQLiteTypeManagerManager.SQLiteTypeManage
 	}
 
 	@Override
-	public boolean appendUpdateValueSql( StringBuilder sb, Field<?> field, Object record )
+	public boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record )
 	{
 		sb.append( "'" + field.<String> getValue( record ) + "'" );
 
@@ -104,7 +104,7 @@ class SQLiteTypeManager_String extends SQLiteTypeManagerManager.SQLiteTypeManage
 	}
 
 	@Override
-	public void setFieldValueFromString( Field<?> field, Object object, String value )
+	public void setFieldValueFromString( Field field, Object object, String value )
 	{
 		field.setValue( object, value );
 	}
@@ -128,7 +128,7 @@ class SQLiteTypeManager_Date extends SQLiteTypeManagerManager.SQLiteTypeManager
 	}
 
 	@Override
-	public boolean appendUpdateValueSql( StringBuilder sb, Field<?> field, Object record )
+	public boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record )
 	{
 		Date value = field.<Date> getValue( record );
 		sb.append( "'" + (value != null ? SQLite.dateTimeFormat.format( value ) : "") + "'" );
@@ -137,7 +137,7 @@ class SQLiteTypeManager_Date extends SQLiteTypeManagerManager.SQLiteTypeManager
 	}
 
 	@Override
-	public void setFieldValueFromString( Field<?> field, Object object, String value )
+	public void setFieldValueFromString( Field field, Object object, String value )
 	{
 		field.setValue( object, parseDate( value ) );
 	}
