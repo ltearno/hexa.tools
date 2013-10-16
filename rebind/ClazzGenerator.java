@@ -431,7 +431,7 @@ class OneClazzGenerator
 		sourceWriter.println( "" );
 
 		sourceWriter.println( "@Override" );
-		sourceWriter.println( "public Object call( Object target, Object[] parameters )" );
+		sourceWriter.println( "public Object invoke( Object target, Object... parameters )" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
 		if( method.isPrivate() )

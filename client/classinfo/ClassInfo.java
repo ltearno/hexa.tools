@@ -1,6 +1,7 @@
 package com.hexa.client.classinfo;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import com.google.gwt.core.shared.GWT;
 import com.hexa.client.classinfo.internal.ObjectClazz;
@@ -41,6 +42,11 @@ public class ClassInfo
 				return clazz;
 
 		return null;
+	}
+
+	public static Set<Class<?>> GetRegisteredClazz()
+	{
+		return clazzz.keySet();
 	}
 
 	private static void _ensureMap()

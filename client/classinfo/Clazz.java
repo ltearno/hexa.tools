@@ -19,7 +19,6 @@ public interface Clazz<T>
 	Field getDeclaredField( String fieldName );
 
 	List<Method> getMethods();
-
 	Method getMethod( String methodName );
 
 	T NEW();

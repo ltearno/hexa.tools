@@ -73,7 +73,7 @@ public class ObjectPropertiesUtils
 		String getterName = "get" + canon( name );
 		Method getter = s.getMethod( getterName );
 		if( getter != null )
-			return getter.call( object, null );
+			return getter.invoke( object );
 
 		if( !fTryDirectFieldAccess )
 		{
@@ -139,7 +139,7 @@ public class ObjectPropertiesUtils
 		Method setter = s.getMethod( setterName );
 		if( setter != null )
 		{
-			setter.call( object, new Object[] { value } );
+			setter.invoke( object, value );
 			return true;
 		}
 

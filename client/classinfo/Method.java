@@ -10,5 +10,5 @@ public interface Method
 
 	List<Class<?>> getParameterTypes();
 
-	Object call( Object target, Object[] parameters );
+	Object invoke( Object target, Object... parameters );
 }
