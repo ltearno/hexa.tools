@@ -1,9 +1,9 @@
-package com.hexa.client.uploadjs;
+package com.hexa.client.ui.uploadjs;
 
 import java.util.HashMap;
 
 import com.hexa.client.tools.Action;
-import com.hexa.client.uploadjs.Tasker.AsynchroneTask;
+import com.hexa.client.ui.uploadjs.Tasker.AsynchroneTask;
 
 public class UploadManager
 {

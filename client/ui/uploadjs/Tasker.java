@@ -1,11 +1,10 @@
-package com.hexa.client.uploadjs;
+package com.hexa.client.ui.uploadjs;
 
 import java.util.ArrayList;
 
-import com.hexa.client.tools.Action;
-
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.hexa.client.tools.Action;
 
 public class Tasker
 {
