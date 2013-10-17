@@ -1,11 +1,11 @@
 package com.hexa.client.ui.chart;
 
-import com.hydro4ge.raphaelgwt.client.PathBuilder;
-import com.hydro4ge.raphaelgwt.client.Raphael.Circle;
-import com.hydro4ge.raphaelgwt.client.Raphael.Path;
-import com.hydro4ge.raphaelgwt.client.Raphael.Rect;
-import com.hydro4ge.raphaelgwt.client.Raphael.Shape;
-import com.hydro4ge.raphaelgwt.client.Raphael.Text;
+import com.hexa.client.ui.chart.raphael.PathBuilder;
+import com.hexa.client.ui.chart.raphael.Raphael.Circle;
+import com.hexa.client.ui.chart.raphael.Raphael.Path;
+import com.hexa.client.ui.chart.raphael.Raphael.Rect;
+import com.hexa.client.ui.chart.raphael.Raphael.Shape;
+import com.hexa.client.ui.chart.raphael.Raphael.Text;
 
 public class Layer {
 	Chart chart;

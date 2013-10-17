@@ -2,8 +2,8 @@ package com.hexa.client.ui.chart;
 
 import java.util.ArrayList;
 
-import com.hydro4ge.raphaelgwt.client.PathBuilder;
-import com.hydro4ge.raphaelgwt.client.Raphael.Path;
+import com.hexa.client.ui.chart.raphael.PathBuilder;
+import com.hexa.client.ui.chart.raphael.Raphael.Path;
 
 public class Grid
 {

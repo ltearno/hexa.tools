@@ -1,7 +1,7 @@
 package com.hexa.client.ui.chart;
 
-import com.hydro4ge.raphaelgwt.client.Raphael.Circle;
-import com.hydro4ge.raphaelgwt.client.Raphael.Text;
+import com.hexa.client.ui.chart.raphael.Raphael.Circle;
+import com.hexa.client.ui.chart.raphael.Raphael.Text;
 
 public class LegendElement {
 	Layer layer = null;

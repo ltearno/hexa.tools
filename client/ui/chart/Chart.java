@@ -1,7 +1,7 @@
 package com.hexa.client.ui.chart;
 
 import com.google.gwt.dom.client.Style.Overflow;
-import com.hydro4ge.raphaelgwt.client.Raphael;
+import com.hexa.client.ui.chart.raphael.Raphael;
 
 public class Chart extends Raphael
 {

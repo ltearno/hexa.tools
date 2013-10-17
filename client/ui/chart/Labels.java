@@ -3,7 +3,7 @@ package com.hexa.client.ui.chart;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.Scheduler;
-import com.hydro4ge.raphaelgwt.client.Raphael.Text;
+import com.hexa.client.ui.chart.raphael.Raphael.Text;
 
 public class Labels {
 	Layer layer = null;
