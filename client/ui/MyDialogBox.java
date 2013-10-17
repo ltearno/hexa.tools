@@ -1,5 +1,7 @@
 package com.hexa.client.ui;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MyDialogBox
@@ -15,6 +17,18 @@ public class MyDialogBox
 	public MyDialogBox( boolean autoHide, boolean modal )
 	{
 		this.modal = modal;
+
+		if( autoHide )
+		{
+			impl.addCloseClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					impl.hide();
+				}
+			} );
+		}
 	}
 
 	public void setText( String text )
@@ -29,7 +43,7 @@ public class MyDialogBox
 
 	public void add( Widget w )
 	{
-		impl.setContent( w );
+		setWidget( w );
 	}
 
 	public void setWidget( Widget w )

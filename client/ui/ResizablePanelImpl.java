@@ -1,5 +1,8 @@
 package com.hexa.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -33,9 +36,6 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 	int minWidth = 50;
 	int minHeight = 50;
 
-	int width = 200;
-	int height = 200;
-
 	Element topLeft;
 	Element top;
 	Element topRight;
@@ -67,9 +67,9 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 			+ "<div class='bottom_handler' style='position: absolute; left:#HANDLER_SIZE#px; height:#HANDLER_SIZE#px; right:#HANDLER_SIZE#px; bottom:0px;'></div>"
 			+ "<div class='bottom_left_handler' style='position: absolute; left:0px; height:#HANDLER_SIZE#px; width:#HANDLER_SIZE#px; bottom:0px;'></div>"
 			+ "<div class='left_handler' style='position: absolute; left:0px; top:#HANDLER_SIZE#px; width:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>"
-			+ "<div class='title' style='position: absolute; left:#HANDLER_SIZE#px; top:#HANDLER_SIZE#px; right:#TITLE_RIGHT#px; height:#TITLE_SIZE#px;'></div>"
+			+ "<div class='title' style='overflow:hidden; position: absolute; left:#HANDLER_SIZE#px; top:#HANDLER_SIZE#px; right:#TITLE_RIGHT#px; height:#TITLE_SIZE#px;'></div>"
 			+ "<div class='close_button' style='position: absolute; width:#TITLE_SIZE#px; top:#HANDLER_SIZE#px; right:#HANDLER_SIZE#px; height:#TITLE_SIZE#px;'><img></img></div>"
-			+ "<div class='content' style='position: absolute; left:#HANDLER_SIZE#px; top:#CONTENT_TOP#px; right:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>";
+			+ "<div class='content' style='overflow:auto; position: absolute; left:#HANDLER_SIZE#px; top:#CONTENT_TOP#px; right:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>";
 
 	public ResizablePanelImpl()
 	{
@@ -124,6 +124,46 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 
 	public void show( boolean modal )
 	{
+		// try to auto size the dialog, based on the content size, mais ca marche pas ... :(
+		if( contentWidget != null )
+		{
+			Scheduler.get().scheduleDeferred( new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					int w = Math.max( contentWidget.getElement().getScrollWidth(), contentWidget.getElement().getOffsetWidth() );
+					int h = Math.max( contentWidget.getElement().getScrollHeight(), contentWidget.getElement().getOffsetHeight() );
+
+					if( w > minWidth )
+					{
+						w+= resizeHandlerSize*2;
+
+						GWT.log( "Dialog width put to " + w );
+
+						int screenWidth = RootLayoutPanel.get().getOffsetWidth();
+
+						RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanelImpl.this, (screenWidth - w) / 2, Unit.PX, w, Unit.PX );
+
+						RootLayoutPanel.get().animate( 300 );
+					}
+
+					if( h > minHeight )
+					{
+						h+=resizeHandlerSize*2;
+
+						GWT.log( "Dialog height put to " + h );
+
+						int screenHeight = RootLayoutPanel.get().getOffsetHeight();
+
+						RootLayoutPanel.get().setWidgetTopHeight( ResizablePanelImpl.this, (screenHeight - h) / 2, Unit.PX, h, Unit.PX );
+
+						RootLayoutPanel.get().animate( 300 );
+					}
+				}
+			} );
+		}
+
 		if( modal )
 		{
 			glass = new Glass();
@@ -135,8 +175,12 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 		int screenWidth = RootLayoutPanel.get().getOffsetWidth();
 		int screenHeight = RootLayoutPanel.get().getOffsetHeight();
 
+		int width = 600;
+		int height = 230;
 		RootLayoutPanel.get().setWidgetLeftWidth( this, (screenWidth - width) / 2, Unit.PX, width, Unit.PX );
 		RootLayoutPanel.get().setWidgetTopHeight( this, (screenHeight - height) / 2, Unit.PX, height, Unit.PX );
+
+		RootLayoutPanel.get().animate( 300 );
 	}
 
 	public void hide()
