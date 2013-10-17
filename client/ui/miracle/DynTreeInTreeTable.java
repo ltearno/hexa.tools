@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -14,7 +11,10 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.TreeTable;
@@ -35,12 +35,15 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	interface DefaultResources extends Resources, ClientBundle
 	{
+		@Override
 		@Source( "images/treeMinus3.png" )
 		ImageResource treeMinus3();
 
+		@Override
 		@Source( "images/treePlus3.png" )
 		ImageResource treePlus3();
 
+		@Override
 		@Source( "images/blank16.png" )
 		ImageResource blank16();
 	}
@@ -173,6 +176,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	}
 
+	@Override
 	public void printHeaders()
 	{
 		table.setHeader( 0, "+/-" );
@@ -213,6 +217,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	}
 
+	@Override
 	public void updateRow( T object )
 	{
 		// find the row associated with this object
@@ -333,6 +338,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		return res;
 	}
 
+	@Override
 	public void deleteRow( int ref )
 	{
 		GWT.log( "DELETE ROW " + ref );
@@ -366,6 +372,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	}
 
+	@Override
 	public void setComparator( Comparator<T> comparator )
 	{
 		userComparator = comparator;
@@ -407,6 +414,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		// sort them
 		Collections.sort( its, new Comparator<It>()
 		{
+			@Override
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -503,12 +511,12 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 			if( item.hasChilds() )
 			{
 				if( item.getExpanded() )
-					return "<img src='" + resources.treeMinus3().getURL() + "'/>";
+					return "<img src='" + resources.treeMinus3().getSafeUri().asString() + "'/>";
 				else
-					return "<img src='" + resources.treePlus3().getURL() + "'/>";
+					return "<img src='" + resources.treePlus3().getSafeUri().asString() + "'/>";
 			}
 			else
-				return "<img src='" + resources.blank16().getURL() + "'/>";
+				return "<img src='" + resources.blank16().getSafeUri().asString() + "'/>";
 		}
 	}
 
@@ -589,16 +597,19 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 			{
 				String html = null;
 
+				@Override
 				public void setWidget( Widget widget )
 				{
 					assert false;
 				}
 
+				@Override
 				public void setText( String text )
 				{
 					html = text;
 				}
 
+				@Override
 				public void setHTML( String html )
 				{
 					this.html = html;

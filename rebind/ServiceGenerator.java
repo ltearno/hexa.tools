@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -271,6 +272,11 @@ public class ServiceGenerator extends Generator
 
 			JType returnType = params[params.length - 1].getType();
 			JParameterizedType returnTypeParametrized = returnType.isParameterized();
+			if( returnTypeParametrized == null )
+			{
+				logger.log( Type.WARN, "When generating method " + method.getName() + " for server side service interface " + requestedType.getName() + ", return type was not found. This method will not be declared for the server." );
+				continue;
+			}
 			JClassType[] returnTypeTypeParameters = returnTypeParametrized.getTypeArgs();
 			assert returnTypeTypeParameters.length == 1;
 
@@ -632,13 +638,13 @@ public class ServiceGenerator extends Generator
 	}
 
 	/*
-	 * 
-	 * 
+	 *
+	 *
 	 * class DaatDataProxyFastFactory implements DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends GenericJSO implements Daat { protected
 	 * DaatImpl() {}
-	 * 
+	 *
 	 * public final int getId() { return getInt( "field_name" ); } }
-	 * 
+	 *
 	 * @Override public <T> T getData( JavaScriptObject obj ) { return (T)((DaatImpl)obj); } }
 	 */
 

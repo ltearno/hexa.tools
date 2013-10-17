@@ -129,16 +129,11 @@ public class DragDrop
 		Callback<T> callback;
 		T cookie;
 
-		int w;
-		int h;
-
 		public Ghost( int x, int y, int w, int h, Element source, Callback<T> callback, T cookie )
 		{
 			this.source = source;
 			this.callback = callback;
 			this.cookie = cookie;
-			this.w = w;
-			this.h = h;
 
 			Element ghost = DOM.createDiv();
 

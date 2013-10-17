@@ -5,8 +5,9 @@
 	<inherits name="com.google.gwt.http.HTTP" />
   	<inherits name='com.google.gwt.json.JSON'/>
   	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
-  	<inherits name='com.github.gwtbootstrap.Bootstrap'/>
-  	<inherits name='com.github.gwtbootstrap.datepicker.Datepicker'/>
+  	
+  	<!-- For using GWTBootstrap and Hexa Utils associated with it, inherit the following module -->
+  	<!-- <inherits name='com.hexa.HexaGwtBootstrap'/> -->
   	
   	<super-source path="jre"/>
   	<source path="client"/>

@@ -17,14 +17,14 @@ public class ImageTextButtonGlow extends Composite
 	{
 		this.resource = resource;
 
-		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='" + resource.getURL()
+		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='" + resource.getSafeUri().asString()
 				+ "'/></div><div class='TestButton-text'>" + title + "</div><div class='TestButton-right'></div></div>" );
 		initWidget( html );
 	}
 
 	public void setText( String text )
 	{
-		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='" + resource.getURL()
+		html.setHTML( "<div class='TestButton'><div class='TestButton-left'></div><div class='TestButton-image'><img src='" + resource.getSafeUri().asString()
 				+ "'/></div><div class='TestButton-text'>" + text + "</div><div class='TestButton-right'></div><br style='clear:both;'/></div>" );
 	}
 
