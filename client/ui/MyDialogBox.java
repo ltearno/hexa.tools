@@ -1,14 +1,53 @@
 package com.hexa.client.ui;
 
-public class MyDialogBox extends MyDialogBox3
+import com.google.gwt.user.client.ui.Widget;
+
+public class MyDialogBox
 {
+	ResizablePanelImpl impl = new ResizablePanelImpl();
+	boolean modal;
+
 	public MyDialogBox()
 	{
-		super();
+		this( true, true );
 	}
 
-	public MyDialogBox( boolean f1, boolean f2 )
+	public MyDialogBox( boolean autoHide, boolean modal )
 	{
-		super( f1, f2 );
+		this.modal = modal;
+	}
+
+	public void setText( String text )
+	{
+		impl.setText( text );
+	}
+
+	public void setTitle( String text )
+	{
+		impl.setText( text );
+	}
+
+	public void add( Widget w )
+	{
+		impl.setContent( w );
+	}
+
+	public void setWidget( Widget w )
+	{
+		impl.setContent( w );
+	}
+
+	public void show()
+	{
+		impl.show( modal );
+	}
+
+	public void center()
+	{
+	}
+
+	public void hide()
+	{
+		impl.hide();
 	}
 }
