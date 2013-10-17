@@ -1,10 +1,16 @@
 package com.hexa.client.ui.resources.image;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
 public interface ImageResources extends ClientBundle
 {
+	public final static ImageResources INSTANCE = GWT.create( ImageResources.class );
+
+	@Source( "16-em-cross.png" )
+	ImageResource close();
+
 	@Source( "edit.png" )
 	ImageResource edit();
 
