@@ -2,6 +2,7 @@ package com.hexa.server.qpath;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.hexa.server.qpath.DatabaseDescription.FieldDescription;
@@ -11,6 +12,8 @@ import com.hexa.server.tools.Trace;
 
 public class DatabaseDescriptionInspector
 {
+	DatabaseMySQLDialect dialect = new DatabaseMySQLDialect();
+
 	// returns an array containing the description of the database schema
 	public DatabaseDescription getDatabaseDescription( Database db, DatabaseHelper dbh )
 	{
@@ -56,6 +59,29 @@ public class DatabaseDescriptionInspector
 					info.next(); // seek to the first and only result row
 					fieldDesc.comment = info.getString( commentColumn );
 				}
+			}
+
+			// Inspect unicity constraints
+			String sql = "select CONSTRAINT_NAME, COLUMN_NAME from information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='" + dbDesc.name
+					+ "' AND TABLE_NAME='" + table
+					+ "' AND REFERENCED_TABLE_NAME IS NULL AND CONSTRAINT_NAME != 'PRIMARY' ORDER BY CONSTRAINT_NAME, ORDINAL_POSITION";
+			DBResults constraintsRecords = db.sql( sql );
+			int constraintNameColumn = constraintsRecords.getColumnIndex( "CONSTRAINT_NAME" );
+			int columnNameColumn = constraintsRecords.getColumnIndex( "COLUMN_NAME" );
+			String currentConstraintName = null;
+			List<String> currentConstraintColumnNames = null;
+			while( constraintsRecords.next() )
+			{
+				String recordConstraintName = constraintsRecords.getString( constraintNameColumn );
+				if( currentConstraintName == null || !currentConstraintName.equalsIgnoreCase( recordConstraintName ) )
+				{
+					// initialize a new constraint description
+					currentConstraintName = recordConstraintName;
+					currentConstraintColumnNames = tableDesc.addUnicityConstraint( recordConstraintName );
+				}
+
+				// register that referenced column into the constraint
+				currentConstraintColumnNames.add( constraintsRecords.getString( columnNameColumn ) );
 			}
 		}
 
@@ -124,13 +150,15 @@ public class DatabaseDescriptionInspector
 	// returns the array of sql statements to be executed to update the db
 	// currentDB is a kind of a hack : for the deletion of a constraint in the target database, we need to query the db for all the constraint names to delete
 	// them
-	public ArrayList<String> getSqlForUpdateDb( DatabaseDescription currentDbDesc, DatabaseDescription targetDbDesc, boolean fDoDelete )
+	public ArrayList<String> getSqlForUpdateDb( DatabaseDescription currentDbDesc, DatabaseDescription targetDbDesc, boolean fDoDelete,
+			boolean fTableNameUpperCase )
 	{
 		Trace.push();
 		Trace.it( "Database comparison" );
 
 		ArrayList<String> sqls = new ArrayList<String>();
 		ArrayList<String> sqlRefs = new ArrayList<String>();
+		ArrayList<String> sqlConstraints = new ArrayList<String>();
 
 		ArrayList<String> newTables = new ArrayList<String>();
 		ArrayList<String> maybeModifiedTables = new ArrayList<String>();
@@ -158,38 +186,12 @@ public class DatabaseDescriptionInspector
 			TableDescription desc = targetDbDesc.tables.get( newTableName );
 			Trace.it( "New table " + newTableName );
 
-			StringBuilder keys = new StringBuilder();
-			int keysComa = 0;
+			String sql = dialect.getSqlForCreateTable( fTableNameUpperCase, newTableName, desc.fields.values() );
 
-			StringBuilder sql = new StringBuilder();
-			sql.append( "CREATE TABLE `" + newTableName + "` ( " );
-			boolean coma = false;
+			sqls.add( sql );
 
 			for( FieldDescription fieldDesc : desc.fields.values() )
-			{
-				if( coma )
-					sql.append( ", " );
-				else
-					coma = true;
-
-				sql.append( getColumnSql( fieldDesc ) );
-
-				if( fieldDesc.primaryKey )
-					keys.append( (keysComa++ > 0 ? ", " : "") + "PRIMARY KEY (`" + fieldDesc.name + "`)" );
-				else if( fieldDesc.uniqueKey )
-					keys.append( (keysComa++ > 0 ? ", " : "") + "UNIQUE KEY `" + fieldDesc.name + "` (`" + fieldDesc.name + "`)" );
-				else if( fieldDesc.multipleIndex )
-					keys.append( (keysComa++ > 0 ? ", " : "") + "KEY `" + fieldDesc.name + "` (`" + fieldDesc.name + "`)" );
-			}
-
-			if( keys.length() > 0 )
-				sql.append( ", " + keys.toString() );
-			sql.append( " ) ENGINE=InnoDB  DEFAULT CHARSET=utf8" );
-
-			sqls.add( sql.toString() );
-
-			for( FieldDescription fieldDesc : desc.fields.values() )
-				checkReferences( newTableName, null, fieldDesc, sqlRefs );
+				checkReferences( fTableNameUpperCase, newTableName, null, fieldDesc, sqlRefs );
 		}
 
 		// removed tables
@@ -198,7 +200,10 @@ public class DatabaseDescriptionInspector
 			if( fDoDelete )
 			{
 				Trace.it( "Removed table " + removedTableName );
-				sqls.add( "DROP TABLE `" + removedTableName + "`" );
+
+				String sql = dialect.getSqlForDropTable( fTableNameUpperCase, removedTableName );
+
+				sqls.add( sql );
 			}
 			else
 			{
@@ -225,7 +230,10 @@ public class DatabaseDescriptionInspector
 				Trace.it( "New field " + newFieldName );
 
 				FieldDescription newField = tgt.fields.get( newFieldName );
-				sqls.add( "ALTER TABLE `" + maybeModifiedTable + "` ADD " + getColumnSql( newField ) );
+
+				String sql = dialect.getSqlForAddColumn( fTableNameUpperCase, maybeModifiedTable, newField );
+
+				sqls.add( sql );
 			}
 
 			// removed fields
@@ -235,7 +243,9 @@ public class DatabaseDescriptionInspector
 				{
 					Trace.it( "Removed field " + removedFieldName );
 
-					sqls.add( "ALTER TABLE `" + maybeModifiedTable + "` DROP `" + removedFieldName + "` " );
+					String sql = dialect.getSqlForDropColumn( fTableNameUpperCase, maybeModifiedTable, removedFieldName );
+
+					sqls.add( sql );
 				}
 				else
 				{
@@ -249,32 +259,88 @@ public class DatabaseDescriptionInspector
 				FieldDescription curField = cur.fields.get( fieldName );
 				FieldDescription tgtField = tgt.fields.get( fieldName );
 
-				// modified references
-				checkReferences( maybeModifiedTable, curField, tgtField, sqlRefs );
-
-				// modified comment
-				String curComment = curField.comment != null ? curField.comment : "";
-				String tgtComment = tgtField.comment != null ? tgtField.comment : "";
-				if( !tgtComment.equals( curComment ) )
+				// modified field
+				String targetColumnSql = dialect.getColumnSql( tgtField );
+				String curColumnSql = dialect.getColumnSql( curField );
+				if( !targetColumnSql.equalsIgnoreCase( curColumnSql ) )
 				{
-					Trace.it( "Modified comment to " + tgtComment );
-					sqls.add( "ALTER TABLE `" + maybeModifiedTable + "` CHANGE `" + fieldName + "` " + getColumnSql( tgtField ) );
+					Trace.it( "Modified field " + fieldName );
+
+					String sql = dialect.getSqlForChangeColumn( fTableNameUpperCase, maybeModifiedTable, fieldName, tgtField );
+
+					sqls.add( sql );
 				}
+
+				// modified references
+				checkReferences( fTableNameUpperCase, maybeModifiedTable, curField, tgtField, sqlRefs );
+			}
+
+			// unicity constraints
+			SetComparison constraintsComparison = new SetComparison();
+			constraintsComparison.compareSets( cur.unicityConstraints.keySet(), tgt.unicityConstraints.keySet() );
+			// new constraints
+			for( String constraintName : constraintsComparison.newItems )
+			{
+				List<String> constraintFields = tgt.unicityConstraints.get( constraintName );
+				String sql = dialect.getSqlForCreateConstraint( fTableNameUpperCase, tgt.name, constraintName, constraintFields );
+				if( sql == null )
+					continue;
+
+				sqlConstraints.add( sql );
+			}
+			// removed constraints
+			for( String constraintName : constraintsComparison.removedItems )
+			{
+				String sql = dialect.getSqlForDropIndex( fTableNameUpperCase, tgt.name, constraintName );
+				sqlConstraints.add( sql );
+			}
+			// maybe modified constraints
+			for( String constraintName : constraintsComparison.maybeModifiedItems )
+			{
+				// Test if constraints are equals
+				if( areConstraintsIdentical( cur.unicityConstraints.get( constraintName ), tgt.unicityConstraints.get( constraintName ) ) )
+					continue;
+
+				// Delete ...
+				String sql = dialect.getSqlForDropIndex( fTableNameUpperCase, tgt.name.toUpperCase(), constraintName );
+				sqlConstraints.add( sql );
+
+				// ... and recreate
+				List<String> constraintFields = tgt.unicityConstraints.get( constraintName );
+				sql = dialect.getSqlForCreateConstraint( fTableNameUpperCase, tgt.name, constraintName, constraintFields );
+
+				sqlConstraints.add( sql );
 			}
 		}
 
-		// merge sqls and sqlRefs
+		// merge sqls and sqlRefs and sqlConstraints
 		sqls.addAll( sqlRefs );
-
-		// String trace = Trace.peek();
-		// System.out.print( trace );
+		sqls.addAll( sqlConstraints );
 
 		Trace.pop();
 
 		return sqls;
 	}
 
-	private void checkReferences( String tableName, FieldDescription curField, FieldDescription tgtField, ArrayList<String> sqls )
+	private boolean areConstraintsIdentical( List<String> set1, List<String> set2 )
+	{
+		if( set1 == null && set2 == null )
+			return true;
+		if( set1 == null || set2 == null )
+			return false;
+
+		for( String entry1 : set1 )
+			if( !set2.contains( entry1 ) )
+				return false;
+
+		for( String entry2 : set2 )
+			if( !set1.contains( entry2 ) )
+				return false;
+
+		return true;
+	}
+
+	private void checkReferences( boolean fTableNameUpperCase, String tableName, FieldDescription curField, FieldDescription tgtField, ArrayList<String> sqls )
 	{
 		ArrayList<FieldReference> curRefs;
 		if( curField != null )
@@ -289,10 +355,11 @@ public class DatabaseDescriptionInspector
 			// if a similar ref is not found in $tgtRefs, that is this reference must be deleted
 			if( !tgtField.hasReference( ref.table, ref.field ) )
 			{
-				// echo "Deleted reference, field $fieldName references ".$ref['table'].".".$ref['field']."<br/>";
-
 				for( String constraintName : ref.constraintNames )
-					sqls.add( "ALTER TABLE `" + tableName + "` DROP FOREIGN KEY `" + constraintName + "`" );
+				{
+					String sql = dialect.getSqlForDropForeignKey( fTableNameUpperCase, tableName, constraintName );
+					sqls.add( sql );
+				}
 			}
 		}
 
@@ -301,37 +368,9 @@ public class DatabaseDescriptionInspector
 			// if a similar ref is not found in $curRefs, that is this reference is a new to be created
 			if( curField == null || !curField.hasReference( ref.table, ref.field ) )
 			{
-				// echo "New reference, field $fieldName references ".$ref['table'].".".$ref['field']."<br/>";
-
-				sqls.add( "ALTER TABLE `" + tableName + "` ADD FOREIGN KEY (`" + tgtField.name + "`) REFERENCES `" + ref.table + "`(`" + ref.field + "`)" );
+				String sql = dialect.getSqlForCreateForeignKey( fTableNameUpperCase, tableName, tgtField.name, ref.table, ref.field );
+				sqls.add( sql );
 			}
 		}
-	}
-
-	/* SQL formatting helpers */
-	private String getColumnSql( FieldDescription fieldDesc )
-	{
-		String defaultValue = "";
-		if( fieldDesc.defaultValue != null )
-		{
-			defaultValue = fieldDesc.defaultValue;
-
-			if( defaultValue.equalsIgnoreCase( "CURRENT_TIMESTAMP" ) )
-				defaultValue = "DEFAULT CURRENT_TIMESTAMP";
-			else if( defaultValue.equalsIgnoreCase( "NULL" ) )
-				defaultValue = "DEFAULT NULL";
-			else
-				defaultValue = "DEFAULT '" + defaultValue + "'";
-		}
-
-		String comment = "";
-		if( fieldDesc.comment != null )
-		{
-			// TODO : mysql_real_escape_string() sur le commentaire
-			comment = "COMMENT '" + fieldDesc.comment + "'";
-		}
-
-		return "`" + fieldDesc.name + "` " + fieldDesc.type + " " + (fieldDesc.canNull == "NO" ? "NOT NULL" : "") + " " + defaultValue + " " + fieldDesc.extra
-				+ " " + comment;
 	}
 }

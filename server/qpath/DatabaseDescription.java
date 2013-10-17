@@ -3,14 +3,17 @@ package com.hexa.server.qpath;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class DatabaseDescription
 {
 	public class TableDescription
 	{
+		public String name;
+
 		HashMap<String, FieldDescription> fields = new HashMap<String, FieldDescription>();
 
-		public String name;
+		HashMap<String, List<String>> unicityConstraints = new HashMap<String, List<String>>();
 
 		public TableDescription( String name )
 		{
@@ -22,6 +25,15 @@ public class DatabaseDescription
 			FieldDescription fieldDesc = new FieldDescription( name, type, canNull, defaultValue, extra, key );
 			fields.put( fieldDesc.name, fieldDesc );
 			return fieldDesc;
+		}
+
+		public List<String> addUnicityConstraint( String name )
+		{
+			List<String> columnNames = new ArrayList<String>();
+
+			unicityConstraints.put( name, columnNames );
+
+			return columnNames;
 		}
 	}
 
