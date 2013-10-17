@@ -53,25 +53,22 @@ public class PlaceController implements ValueChangeHandler<String>
 
 		String token = placeTokenizer.getToken( currentPlace );
 
-		// TODO Is this really the right way get our information ? Let's check
-		// sometime...
+		// TODO Is this really the right way get our information ? Let's check sometime...
 		Map<String, List<String>> curParams = new HashMap<String, List<String>>( Location.getParameterMap() );
 		ArrayList<String> value = new ArrayList<String>();
 		value.add( locale );
 		curParams.put( "locale", value );
 		String queryString = "?";
 		boolean fAddAnd = false;
-		for( Entry<String, List<String>> e : curParams.entrySet() )
+		for( Entry<String,List<String>> e : curParams.entrySet() )
 		{
 			if( fAddAnd )
 				queryString += "&";
 			fAddAnd = true;
-			queryString += URL.encodeQueryString( e.getKey() ) + "=" + URL.encodeQueryString( HexaTools.arrayToString( e.getValue() ) );
+			queryString += URL.encodeQueryString( e.getKey() ) + "=" + URL.encodeQueryString( HexaTools.arrayToString(e.getValue()) );
 		}
 
-		String url = Location.getProtocol() + "//" + Location.getHost() + Location.getPath() + queryString/*
-																										 * Location . getQueryString ( )
-																										 */+ "#" + token;
+		String url = Location.getProtocol() + "//" + Location.getHost() + /*Location.getPort() +*/ Location.getPath() + queryString + "#" + token;
 
 		Window.Location.replace( url );
 	}
@@ -79,13 +76,12 @@ public class PlaceController implements ValueChangeHandler<String>
 	public String getPlaceUrl( Place place )
 	{
 		String token = placeTokenizer.getToken( place );
-		// TODO Is this really the right way get our information ? Let's check
-		// sometime...
+		// TODO Is this really the right way get our information ? Let's check sometime...
 		return Location.getProtocol() + "//" + Location.getHost() + Location.getPort() + Location.getPath() + Location.getQueryString() + "#" + token;
 	}
 
 	@Override
-	public void onValueChange( ValueChangeEvent<String> event )
+	public void onValueChange(ValueChangeEvent<String> event)
 	{
 		GWT.log( "History : " + event.getValue() );
 		currentPlace = placeTokenizer.getPlace( event.getValue() );
