@@ -1,10 +1,9 @@
 package com.hexa.client.ui;
 
-import com.hexa.client.raphael.RaphaelWidget;
-import com.hexa.client.raphael.Element;
-import com.hexa.client.raphael.RaphaelJS.Set;
-import com.hexa.client.tools.HexaTools;
 import com.google.gwt.uibinder.client.UiConstructor;
+import com.hexa.client.tools.HexaTools;
+import com.hexa.client.ui.chart.raphael.RaphaelJS;
+import com.hexa.client.ui.chart.raphael.RaphaelWidget;
 
 public class GraphView extends RaphaelWidget
 {
@@ -14,8 +13,8 @@ public class GraphView extends RaphaelWidget
 	double max = 200.0;
 	int fadeDuration = 200;
 
-	Element[] elements;
-	Element[] elementsFill;
+	RaphaelJS.Element[] elements;
+	RaphaelJS.Element[] elementsFill;
 
 	@UiConstructor
 	public GraphView( int width, int height, int nbGraphs, int nbPoints )
@@ -27,10 +26,10 @@ public class GraphView extends RaphaelWidget
 
 		String path = "M0,0";
 
-		elements = new Element[nbGraphs];
-		elementsFill = new Element[nbGraphs];
+		elements = new RaphaelJS.Element[nbGraphs];
+		elementsFill = new RaphaelJS.Element[nbGraphs];
 
-		Set set = overlay.set();
+		RaphaelJS.Set set = overlay.set();
 
 		String[] colors = new String[] { "#ffe500", "red", "blue" };
 

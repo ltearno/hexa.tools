@@ -1,7 +1,7 @@
-package com.hexa.client.raphael;
+package com.hexa.client.ui.chart.raphael;
 
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
 public class RaphaelWidget extends Widget
@@ -15,12 +15,8 @@ public class RaphaelWidget extends Widget
 		overlay = RaphaelJS.create( raphaelDiv, width, height );
 	}
 
-	public static boolean isSupported()
-	{
-		return RaphaelJS.isDefined();
-	}
-
-	/*
-	 * public String getText() { return getElement().getInnerText(); }
-	 */
+//	public static boolean isSupported()
+//	{
+//		return RaphaelJS.isDefined();
+//	}
 }
