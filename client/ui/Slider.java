@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.JQuery;
 
 public class Slider extends Widget
 {
@@ -20,6 +21,8 @@ public class Slider extends Widget
 
 	public Slider( int min, int max, int step, String[] captions, Callback callback, Object cookie )
 	{
+		JQuery.ensureScriptsLoaded();
+
 		this.callback = callback;
 		this.cookie = cookie;
 

@@ -262,7 +262,7 @@ public class TreeTableBase extends Panel
 
 	public Item getItemForRef( int ref )
 	{
-		JsArray<Element> rows = JQuery.jqSelect( "tr[ref=\"" + ref + "\"]", m_body );
+		JsArray<Element> rows = JQuery.get().jqSelect( "tr[ref=\"" + ref + "\"]", m_body );
 		if( rows.length() != 1 )
 			return null;
 
@@ -313,7 +313,7 @@ public class TreeTableBase extends Panel
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			JQuery.jqHtml( newItem.m_tr, m_rowTemplate );
+			JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
 
 			// DOM add
 			Item lastParentLeaf = getLastLeaf();
@@ -338,7 +338,7 @@ public class TreeTableBase extends Panel
 			Element firstTd = DOM.getChild( newItem.m_tr, 0 );
 			firstTd.getStyle().setPaddingLeft( newItem.getLevel() * treePadding, Unit.PX );
 
-			// JQuery.jqEffect( "highlight", 250, newItem.m_tr, null );
+			// JQuery.get().jqEffect( "highlight", 250, newItem.m_tr, null );
 
 			return newItem;
 		}
@@ -399,7 +399,7 @@ public class TreeTableBase extends Panel
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			JQuery.jqHtml( newItem.m_tr, m_rowTemplate );
+			JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
 
 			// DOM add
 			DOM.insertBefore( m_body, newItem.m_tr, m_tr );
@@ -414,7 +414,7 @@ public class TreeTableBase extends Panel
 			Element firstTd = DOM.getChild( newItem.m_tr, 0 );
 			firstTd.getStyle().setPaddingLeft( newItem.getLevel() * treePadding, Unit.PX );
 
-			// JQuery.jqEffect( "highlight", 250, newItem.m_tr, null );
+			// JQuery.get().jqEffect( "highlight", 250, newItem.m_tr, null );
 
 			return newItem;
 		}
@@ -662,7 +662,7 @@ public class TreeTableBase extends Panel
 
 			clearCell( td );
 
-			JQuery.jqHtml( td, html );
+			JQuery.get().jqHtml( td, html );
 		}
 
 		public void setWidget( int column, Widget w )
@@ -690,7 +690,7 @@ public class TreeTableBase extends Panel
 
 		public void highLite()
 		{
-			JQuery.jqEffect( "highlight", 2000, m_tr, null );
+			JQuery.get().jqEffect( "highlight", 2000, m_tr, null );
 		}
 
 		public void addClassRow( String clazz )
@@ -813,7 +813,7 @@ public class TreeTableBase extends Panel
 				final Element tr = m_trToDelete;
 				m_trToDelete = null;
 
-				JQuery.jqFadeOut( tr, 250, new JQuery.Callback()
+				JQuery.get().jqFadeOut( tr, 250, new JQuery.Callback()
 				{
 					@Override
 					public void onFinished()
@@ -826,21 +826,21 @@ public class TreeTableBase extends Panel
 			}
 		}
 
-		public void removeOLD()
-		{
-			// logical delete
-			logicalRemove();
-
-			JQuery.jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
-			{
-				@Override
-				public void onFinished()
-				{
-					// physical remove
-					physicalRemove();
-				}
-			} );
-		}
+//		public void removeOLD()
+//		{
+//			// logical delete
+//			logicalRemove();
+//
+//			JQuery.get().jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
+//			{
+//				@Override
+//				public void onFinished()
+//				{
+//					// physical remove
+//					physicalRemove();
+//				}
+//			} );
+//		}
 
 		void logicalRemove()
 		{
@@ -966,7 +966,7 @@ public class TreeTableBase extends Panel
 			b.append( "<th>" + headers[i] + "</th>" );
 			bTemplate.append( "<td/>" );
 		}
-		JQuery.jqHtml( m_headerRow, b.toString() );
+		JQuery.get().jqHtml( m_headerRow, b.toString() );
 
 		if( oldHeaderRow != null )
 			m_head.replaceChild( m_headerRow, oldHeaderRow );

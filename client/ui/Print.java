@@ -35,9 +35,9 @@ import com.google.gwt.user.client.ui.UIObject;
 public class Print
 {
 
-	public static native void it() /*-{
-									$wnd.print();
-									}-*/;
+//	public static native void it() /*-{
+//									$wnd.print();
+//									}-*/;
 
 	private static void ensureFrame()
 	{
@@ -62,7 +62,7 @@ public class Print
 														var frame = $doc.getElementById('__printingFrame');
 														if (!frame) {
 														//<iframe src="javascript:''" id="__printingFrame" style="width:0;height:0;border:0"></iframe>
-														
+
 														$wnd.alert("Error: Can't find printing frame.");
 														return;
 														}

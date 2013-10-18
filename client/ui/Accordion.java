@@ -3,12 +3,12 @@ package com.hexa.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.hexa.client.tools.JQuery;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.JQuery;
 
 public class Accordion extends Panel
 {
@@ -30,6 +30,7 @@ public class Accordion extends Panel
 		return item;
 	}
 
+	@Override
 	public void clear()
 	{
 		while( items.size() > 0 )
@@ -79,13 +80,13 @@ public class Accordion extends Panel
 			String effect = "blind";
 
 			if( !fExpanded )
-				JQuery.jqHide( effect, itemContentDecorator, null );
+				JQuery.get().jqHide( effect, itemContentDecorator, null );
 			else
 			{
 				// for( Item item: items )
 				// if( item != this )
 				// item.setExpanded( false );
-				JQuery.jqShow( effect, itemContentDecorator );
+				JQuery.get().jqShow( effect, itemContentDecorator );
 			}
 		}
 
@@ -173,11 +174,13 @@ public class Accordion extends Panel
 			}
 		}
 
+		@Override
 		public boolean hasNext()
 		{
 			return idx < wList.size();
 		}
 
+		@Override
 		public Widget next()
 		{
 			Widget w = wList.get( idx );
@@ -186,6 +189,7 @@ public class Accordion extends Panel
 			return w;
 		}
 
+		@Override
 		public void remove()
 		{
 			Window.alert( "Error !!! Remove not implemented in Accordion.java" );

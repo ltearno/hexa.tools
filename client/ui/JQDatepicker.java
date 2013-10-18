@@ -1,9 +1,9 @@
 package com.hexa.client.ui;
 
-import com.hexa.client.tools.JQuery;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.JQuery;
 
 public class JQDatepicker extends Widget
 {
@@ -29,7 +29,7 @@ public class JQDatepicker extends Widget
 		else
 			input = DOM.createInputText();
 
-		JQuery.jqDatepicker( input );
+		JQuery.get().jqDatepicker( input );
 		setElement( input );
 	}
 

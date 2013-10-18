@@ -3,6 +3,7 @@ package com.hexa.client.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiConstructor;
@@ -57,6 +58,7 @@ public class HTreeTable extends ComplexPanel implements ClickHandler
 		m_callback = callback;
 	}
 
+	@Override
 	public void onClick( ClickEvent event )
 	{
 		if( m_callback == null )
@@ -389,23 +391,13 @@ public class HTreeTable extends ComplexPanel implements ClickHandler
 		public void setVisible( boolean fVisible )
 		{
 			if( fVisible )
-				show( m_row );
+				m_row.getStyle().clearDisplay();
 			else
-				hide( m_row );
+				m_row.getStyle().setDisplay( Display.NONE );
 
 			for( HTItem child : m_children )
 				child.setVisible( fVisible );
 		}
-
-		private native void hide( Element e )
-		/*-{
-			$wnd.$( e ).hide();
-		}-*/;
-
-		private native void show( Element e )
-		/*-{
-			$wnd.$( e ).show();
-		}-*/;
 
 		public void updateRowSpan()
 		{

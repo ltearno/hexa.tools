@@ -128,7 +128,7 @@ public class Pager
 
 		public void update()
 		{
-			JQuery.jqHtml( position, "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
+			JQuery.get().jqHtml( position, "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
 
 			if( fFirst )
 				first.getStyle().clearDisplay();
@@ -170,6 +170,7 @@ public class Pager
 
 	EventListener firstEvent = new EventListener()
 	{
+		@Override
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )
@@ -185,6 +186,7 @@ public class Pager
 
 	EventListener prevEvent = new EventListener()
 	{
+		@Override
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )
@@ -201,6 +203,7 @@ public class Pager
 
 	EventListener nextEvent = new EventListener()
 	{
+		@Override
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )
@@ -217,6 +220,7 @@ public class Pager
 
 	EventListener lastEvent = new EventListener()
 	{
+		@Override
 		public void onBrowserEvent( Event event )
 		{
 			if( event.getTypeInt() != Event.ONCLICK )

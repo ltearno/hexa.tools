@@ -6,7 +6,6 @@ import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -15,9 +14,11 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
+import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
 public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayManager<T>, HasColumns<T, H>
@@ -73,6 +74,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		columns.add( new ColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
 
+	@Override
 	public void printHeaders()
 	{
 		MiracleTable.HdrInFlexTablePrinter printer = table.getHdrPrinter( 0 );
@@ -121,6 +123,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
+	@Override
 	public void updateRow( T object )
 	{
 		// find the row associated with this object
@@ -181,6 +184,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return target;
 	}
 
+	@Override
 	public void deleteRow( int ref )
 	{
 		int row = getRow( ref );
@@ -195,6 +199,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		table.removeRow( row );
 	}
 
+	@Override
 	public void setComparator( Comparator<T> comparator )
 	{
 		userComparator = comparator;
@@ -230,6 +235,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		// sort them
 		Collections.sort( its, new Comparator<It>()
 		{
+			@Override
 			public int compare( It o1, It o2 )
 			{
 				return userComparator.compare( o1.object, o2.object );
@@ -263,7 +269,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	// returns -1 if the row is not found
 	private int getRow( int objectRef )
 	{
-		JsArray<Element> rows = jqSelect( "tr[ref=\"" + objectRef + "\"]", table.getBodyElement() );
+		JsArray<Element> rows = JQuery.get().jqSelect( "tr[ref=\"" + objectRef + "\"]", table.getBodyElement() );
 		if( rows.length() > 1 )
 			return -1; // an error actually
 		if( rows.length() == 0 )
@@ -273,10 +279,6 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 		return row;
 	}
-
-	private static native JsArray<Element> jqSelect( String selector, Element element ) /*-{
-																						return $wnd.$( selector, element ).get();
-																						}-*/;
 
 	// returns a printer that can be used for the next call. a new one can be
 	// created
@@ -470,7 +472,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 				return;
 
 			Element th = table.getEventTargetHeader( Event.as( event.getNativeEvent() ) );
-			DragDrop.initiate( (com.google.gwt.user.client.Element) th, onDragDrop, hdr, Event.as( event.getNativeEvent() ) );
+			DragDrop.initiate( th, onDragDrop, hdr, Event.as( event.getNativeEvent() ) );
 		}
 	};
 

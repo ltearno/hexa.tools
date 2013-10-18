@@ -73,7 +73,7 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 			elem = "<img src='" + resource.getSafeUri().asString() + "' style='width:" + width + "px; height:" + height + "px; position:relative; margin-right:2px;'/>";
 		else
 			elem = "";
-		JQuery.jqHtml( button, elem + text );
+		JQuery.get().jqHtml( button, elem + text );
 	}
 
 	@Override
