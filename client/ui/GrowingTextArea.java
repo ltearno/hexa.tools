@@ -56,16 +56,11 @@ public class GrowingTextArea extends TextArea implements KeyDownHandler, KeyUpHa
 
 		fakeDiv.setInnerText( getText() );
 
-		int height = getHeightImpl( getElement() );
-		int newHeight = getHeightImpl( fakeDiv ) + 25;
+		int height = getElement().getClientHeight();
+		int newHeight = fakeDiv.getClientHeight() + 25;
 		if( height < newHeight )
 			getElement().getStyle().setHeight( newHeight, Unit.PX );
 	}
-
-	private native int getHeightImpl( Element e )
-	/*-{
-		return $wnd.$( e ).height();
-	}-*/;
 
 	@Override
 	public void onKeyUp( KeyUpEvent event )
