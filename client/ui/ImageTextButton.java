@@ -9,7 +9,6 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.tools.JQuery;
 
 public class ImageTextButton extends Widget implements ClickHandler, HasClickHandlers
 {
@@ -73,7 +72,8 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 			elem = "<img src='" + resource.getSafeUri().asString() + "' style='width:" + width + "px; height:" + height + "px; position:relative; margin-right:2px;'/>";
 		else
 			elem = "";
-		JQuery.get().jqHtml( button, elem + text );
+		button.setInnerHTML( elem + text );
+		//JQuery.get().jqHtml( button, elem + text );
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package com.hexa.client.tools;
 
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Element;
@@ -35,8 +37,18 @@ public class JQuery
 		if( bundle != null )
 			return;
 
-		ScriptInjector.fromString( bundle.JQueryJS().getText() ).inject();
-		ScriptInjector.fromString( bundle.JQueryUIJS().getText() ).inject();
+		bundle = GWT.create( JQueryBundle.class );
+
+		Document doc = Document.get();
+		ScriptElement sqljs = doc.createScriptElement();
+		sqljs.setAttribute( "type", "text/javascript" );
+		sqljs.setInnerText( bundle.JQueryJS().getText() );
+		doc.getDocumentElement().getFirstChildElement().appendChild( sqljs );
+
+		sqljs = doc.createScriptElement();
+		sqljs.setAttribute( "type", "text/javascript" );
+		sqljs.setInnerText( bundle.JQueryUIJS().getText() );
+		doc.getDocumentElement().getFirstChildElement().appendChild( sqljs );
 	}
 
 	private static JQuery INSTANCE = null;
@@ -227,9 +239,9 @@ public class JQuery
 		$wnd.$(e).datepicker();
 	}-*/;
 
-	public native void jqHtml( Element e, String html ) /*-{
-		$wnd.$(e).html(html);
-	}-*/;
+//	public native void jqHtml( Element e, String html ) /*-{
+//		$wnd.$(e).html(html);
+//	}-*/;
 
 	public native void jqHtml( JsArray<Element> e, String html ) /*-{
 		$wnd.$(e).html(html);

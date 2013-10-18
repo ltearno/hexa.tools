@@ -128,7 +128,8 @@ public class Pager
 
 		public void update()
 		{
-			JQuery.get().jqHtml( position, "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
+			//JQuery.get().jqHtml( position, "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
+			position.setInnerHTML( "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
 
 			if( fFirst )
 				first.getStyle().clearDisplay();

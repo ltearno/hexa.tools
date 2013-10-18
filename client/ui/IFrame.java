@@ -4,7 +4,6 @@ import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.tools.JQuery;
 
 public class IFrame extends Widget
 {
@@ -30,8 +29,8 @@ public class IFrame extends Widget
 
 	public void setContent( String html )
 	{
-		JQuery.get().jqHtml( (Element) iFrame.cast(), html );
-		// iFrame.setInnerHTML( html );
+		//JQuery.get().jqHtml( (Element) iFrame.cast(), html );
+		iFrame.setInnerHTML( html );
 	}
 
 	public void setSrc( String url )

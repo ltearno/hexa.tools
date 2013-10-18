@@ -313,7 +313,8 @@ public class TreeTableBase extends Panel
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
+			//JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
+			newItem.m_tr.setInnerHTML( m_rowTemplate );
 
 			// DOM add
 			Item lastParentLeaf = getLastLeaf();
@@ -399,7 +400,8 @@ public class TreeTableBase extends Panel
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
+			//JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
+			newItem.m_tr.setInnerHTML( m_rowTemplate );
 
 			// DOM add
 			DOM.insertBefore( m_body, newItem.m_tr, m_tr );
@@ -662,7 +664,8 @@ public class TreeTableBase extends Panel
 
 			clearCell( td );
 
-			JQuery.get().jqHtml( td, html );
+			//JQuery.get().jqHtml( td, html );
+			td.setInnerHTML( html );
 		}
 
 		public void setWidget( int column, Widget w )
@@ -966,7 +969,8 @@ public class TreeTableBase extends Panel
 			b.append( "<th>" + headers[i] + "</th>" );
 			bTemplate.append( "<td/>" );
 		}
-		JQuery.get().jqHtml( m_headerRow, b.toString() );
+		//JQuery.get().jqHtml( m_headerRow, b.toString() );
+		m_headerRow.setInnerHTML( b.toString() );
 
 		if( oldHeaderRow != null )
 			m_head.replaceChild( m_headerRow, oldHeaderRow );
