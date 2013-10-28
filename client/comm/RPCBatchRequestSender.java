@@ -37,7 +37,7 @@ public class RPCBatchRequestSender
 		List<AfterNetworkRequestHandler> getAfterNetworkRequestHandlers();
 	}
 
-	private final int MAX_NB_REQUESTS = 10;
+	private final int MAX_NB_REQUESTS = 20;
 
 	XRPCBatchRequestSender callback = null;
 
