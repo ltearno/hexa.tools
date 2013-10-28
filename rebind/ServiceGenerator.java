@@ -769,6 +769,8 @@ public class ServiceGenerator extends Generator
 			}
 		}
 
+		sw.println( "assert response!=null : \"RESPONSE NULL (Callback Type="+callbackType.getParameterizedQualifiedSourceName()+") !\";" );
+
 		for( int i = 0; i < cbParamTypes.length; i++ )
 		{
 			String paramTypeName = cbParamTypes[i].getSimpleSourceName();
@@ -779,7 +781,7 @@ public class ServiceGenerator extends Generator
 			}
 			else if( paramTypeName.compareTo( "boolean" ) == 0 )
 			{
-				sw.println( "String param" + i + " = response.getBoolean(" + i + ");" );
+				sw.println( "boolean param" + i + " = response.getBoolean(" + i + ");" );
 			}
 			else if( paramTypeName.compareTo( "Integer" ) == 0 )
 			{

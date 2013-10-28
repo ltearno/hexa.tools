@@ -179,6 +179,9 @@ public class RPCProxy
 				if( info.msg.length() > 0 )
 					callback.signalServerCommMessage( info.msgLevel, info.msg );
 
+				if( info.msgLevel > 0 )
+					continue; // don't process replies that are in error...
+
 				if( info.hangout != null )
 				{
 					// the server tells us a hang out process is needed
