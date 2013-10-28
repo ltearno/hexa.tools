@@ -3,8 +3,6 @@ package com.hexa.rebind;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import com.hexa.client.comm.CustomMethod;
-import com.hexa.client.comm.FieldName;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -14,6 +12,8 @@ import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.hexa.client.comm.CustomMethod;
+import com.hexa.client.comm.FieldName;
 
 public class DataProxySerializedGenerator extends Generator
 {
@@ -113,7 +113,9 @@ public class DataProxySerializedGenerator extends Generator
 					String jsoType = method.getReturnType().getSimpleSourceName();
 					if( method.getReturnType().getSimpleSourceName().compareTo( "int" ) == 0 )
 						jsoType = "Int";
-					if( method.getReturnType().getSimpleSourceName().compareTo( "double" ) == 0 )
+					else if( method.getReturnType().getSimpleSourceName().compareTo( "Integer" ) == 0 )
+						jsoType = "Integer";
+					else if( method.getReturnType().getSimpleSourceName().compareTo( "double" ) == 0 )
 						jsoType = "Double";
 					sw.println( "return jso.get" + jsoType + "ByIdx( " + m + " );" );
 				}

@@ -3,8 +3,6 @@ package com.hexa.rebind;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-import com.hexa.client.comm.CustomMethod;
-import com.hexa.client.comm.FieldName;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -19,6 +17,8 @@ import com.google.gwt.core.ext.typeinfo.JTypeParameter;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.hexa.client.comm.CustomMethod;
+import com.hexa.client.comm.FieldName;
 
 public class DataProxyGenerator extends Generator
 {
@@ -250,14 +250,16 @@ public class DataProxyGenerator extends Generator
 				{
 					sw.println( "return jso.getGenericJSO( \"" + fnAnnotation.fieldName() + "\" ).cast();" );
 				}
-				else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
+				else if( ! method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
 				{
 					String jsoType = method.getReturnType().getSimpleSourceName();
 					if( method.getReturnType().getSimpleSourceName().compareTo( "int" ) == 0 )
 						jsoType = "Int";
-					if( method.getReturnType().getSimpleSourceName().compareTo( "boolean" ) == 0 )
+					else if( method.getReturnType().getSimpleSourceName().compareTo( "Integer" ) == 0 )
+						jsoType = "Integer";
+					else if( method.getReturnType().getSimpleSourceName().compareTo( "boolean" ) == 0 )
 						jsoType = "Boolean";
-					if( method.getReturnType().getSimpleSourceName().compareTo( "double" ) == 0 )
+					else if( method.getReturnType().getSimpleSourceName().compareTo( "double" ) == 0 )
 						jsoType = "Double";
 					sw.println( "return jso.get" + jsoType + "( \"" + fnAnnotation.fieldName() + "\" );" );
 				}

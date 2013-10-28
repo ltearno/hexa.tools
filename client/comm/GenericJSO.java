@@ -57,6 +57,34 @@ public class GenericJSO extends JavaScriptObject
 		return v;
 	}-*/;
 
+	private final native boolean isNull( String fieldName )
+	/*-{
+		if( this[fieldName] === null )
+			return true;
+		return false;
+	}-*/;
+
+	private final native boolean isNull( int idx )
+	/*-{
+		if( this[idx] === null )
+			return true;
+		return false;
+	}-*/;
+
+	public final Integer getInteger( String fieldName )
+	{
+		if( isNull( fieldName ) )
+			return null;
+		return getInt( fieldName );
+	}
+
+	public final Integer getIntegerByIdx( int idx )
+	{
+		if( isNull( idx ) )
+			return null;
+		return getIntByIdx( idx );
+	}
+
 	public final native void setDouble( String fieldName, double value ) /*-{ this[fieldName] = value; }-*/;
 
 	public final native double getDouble( String fieldName ) /*-{ return 1.0* (Math.round(100.0*this[fieldName])/100.0); }-*/;
