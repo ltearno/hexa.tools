@@ -300,8 +300,8 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 		int width = ResizablePanelImpl.this.getOffsetWidth();
 		int height = ResizablePanelImpl.this.getOffsetHeight();
 
-		double newLeft = Math.min( Math.max( 0, left ), RootLayoutPanel.get().getOffsetWidth() - width );
-		double newTop = Math.min( Math.max( 0, top ), RootLayoutPanel.get().getOffsetHeight() - height );
+		double newLeft = Math.max( 0, Math.min( Math.max( 0, left ), RootLayoutPanel.get().getOffsetWidth() - width ) );
+		double newTop = Math.max( 0, Math.min( Math.max( 0, top ), RootLayoutPanel.get().getOffsetHeight() - height ) );
 
 		if( newLeft != left || newTop != top )
 		{
