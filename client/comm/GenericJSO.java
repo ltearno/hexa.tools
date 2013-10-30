@@ -91,7 +91,7 @@ public class GenericJSO extends JavaScriptObject
 
 	public final native String getString( String fieldName ) /*-{ return ""+ this[fieldName]; }-*/;
 
-	public final native boolean getBoolean( String fieldName ) /*-{ return this[fieldName]?true:false; }-*/;
+	public final native boolean getBoolean( String fieldName ) /*-{ return this[fieldName]>0?true:false; }-*/;
 
 	public final native <T extends JavaScriptObject> JsArray<T> getArray( String fieldName ) /*-{ return this[fieldName]; }-*/;
 
