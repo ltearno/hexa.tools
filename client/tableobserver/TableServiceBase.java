@@ -1,8 +1,12 @@
 package com.hexa.client.tableobserver;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.hexa.client.interfaces.IAsyncCallback;
@@ -150,6 +154,15 @@ public abstract class TableServiceBase<T>
 				{
 					assert (fWholeTableLoaded);
 					return records.values();
+				}
+
+				@Override
+				public Iterable<T> getRecordsSorted( Comparator<T> comparator )
+				{
+					assert (fWholeTableLoaded);
+					List<T> sortedList = new ArrayList<T>( records.values() );
+					Collections.sort( sortedList, comparator );
+					return sortedList;
 				}
 
 				@Override
