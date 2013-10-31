@@ -17,7 +17,7 @@ public abstract class TableServiceBase<T>
 {
 	protected abstract void doDeleteRecord( int recordId, AsyncCallback<Integer> callback );
 
-	protected abstract void doUpdateField( int recordId, String fieldName, String wantedValue, AsyncCallback<String> callback );
+	protected abstract void doUpdateField( int recordId, String fieldName, String wantedValue, IAsyncCallback<String> callback );
 
 	protected abstract void doGetRecords( AsyncCallback<Iterable<T>> callback );
 
@@ -351,7 +351,7 @@ public abstract class TableServiceBase<T>
 				add();
 
 				add();
-				doUpdateField( recordId, fieldName, wantedValue, new SimpleAsyncCallback<String>()
+				doUpdateField( recordId, fieldName, wantedValue, new IAsyncCallback<String>()
 				{
 					@Override
 					public void onSuccess( String result )
