@@ -19,7 +19,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -27,6 +26,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.hexa.client.interfaces.IAsyncCallback;
 
 public class UploadForm extends Composite
 {
@@ -39,14 +39,14 @@ public class UploadForm extends Composite
 
 	Well tablePanel;
 
-	AsyncCallback<String> callback;
+	IAsyncCallback<String> callback;
 
 	boolean fMultiple;
 	String url;
 	String fieldName;
 	Map<String, String> parameters;
 
-	public UploadForm( String url, String fieldName, Map<String, String> parameters, boolean fMultiple, AsyncCallback<String> callback )
+	public UploadForm( String url, String fieldName, Map<String, String> parameters, boolean fMultiple, IAsyncCallback<String> callback )
 	{
 		this.url = url;
 		this.fieldName = fieldName;
