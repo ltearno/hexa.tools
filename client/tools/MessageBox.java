@@ -1,7 +1,7 @@
 package com.hexa.client.tools;
 
-import com.hexa.client.ui.MyDialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.hexa.client.ui.dialog.MyDialogBox;
 
 public class MessageBox
 {

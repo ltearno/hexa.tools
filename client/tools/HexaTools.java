@@ -6,7 +6,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.hexa.client.ui.MyDialogBox;
+import com.hexa.client.ui.dialog.MyDialogBox;
 
 public class HexaTools
 {

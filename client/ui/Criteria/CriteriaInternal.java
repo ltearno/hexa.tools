@@ -1,14 +1,10 @@
 /**
- * 
+ *
  */
 package com.hexa.client.ui.Criteria;
 
 import java.util.ArrayList;
 
-import com.hexa.client.comm.GenericJSO;
-import com.hexa.client.interfaces.ICriteriaFieldMng;
-import com.hexa.client.tools.HexaTools;
-import com.hexa.client.ui.ListBoxEx;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
@@ -30,6 +26,10 @@ import com.google.gwt.user.client.ui.InsertPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.comm.GenericJSO;
+import com.hexa.client.interfaces.ICriteriaFieldMng;
+import com.hexa.client.tools.HexaTools;
+import com.hexa.client.ui.widget.ListBoxEx;
 
 public class CriteriaInternal extends Composite
 {
@@ -142,6 +142,7 @@ public class CriteriaInternal extends Composite
 
 		andAnchor.addClickHandler( new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				op = "and";
@@ -151,6 +152,7 @@ public class CriteriaInternal extends Composite
 		} );
 		orAnchor.addClickHandler( new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				op = "or";
@@ -160,6 +162,7 @@ public class CriteriaInternal extends Composite
 		} );
 		compareAnchor.addClickHandler( new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				op = "eq";
@@ -229,6 +232,7 @@ public class CriteriaInternal extends Composite
 				delAnchor.setHref( "#" );
 				delAnchor.addClickHandler( new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent event )
 					{
 						ops.remove( criteria );
@@ -253,6 +257,7 @@ public class CriteriaInternal extends Composite
 			Button addButton = new Button( "..." );
 			addButton.addClickHandler( new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					ops.add( new CriteriaInternal( criteriaMngs ) );
@@ -314,6 +319,7 @@ public class CriteriaInternal extends Composite
 			{
 				Widget valueWidget = field.getValueWidget( value, new ICriteriaFieldMng.Callback()
 				{
+					@Override
 					public void onValueChange( String newValue )
 					{
 						value = newValue;

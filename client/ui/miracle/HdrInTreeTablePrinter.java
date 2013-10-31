@@ -1,7 +1,7 @@
 package com.hexa.client.ui.miracle;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.ui.TreeTable;
+import com.hexa.client.ui.treetable.TreeTable;
 
 public class HdrInTreeTablePrinter implements Printer
 {

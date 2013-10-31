@@ -2,7 +2,7 @@ package com.hexa.client.tools;
 
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.ui.ITreeTableEditorManager;
-import com.hexa.client.ui.TreeTable;
+import com.hexa.client.ui.treetable.TreeTable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class EmptyColumn<T> implements IColumnMng<T>

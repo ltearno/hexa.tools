@@ -17,9 +17,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.ui.TreeTable;
-import com.hexa.client.ui.TreeTableBase.Item;
-import com.hexa.client.ui.TreeTableHandler;
+import com.hexa.client.ui.treetable.TreeTable;
+import com.hexa.client.ui.treetable.TreeTableBase.Item;
+import com.hexa.client.ui.treetable.TreeTableHandler;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
 public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayManager<T>

@@ -3,7 +3,7 @@ package com.hexa.client.tools;
 import java.util.ArrayList;
 
 import com.hexa.client.ui.ITreeTableEditorManager;
-import com.hexa.client.ui.TreeTable;
+import com.hexa.client.ui.treetable.TreeTable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ColumnsSet<T>

@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.hexa.client.ui.ListBoxDiscrete;
+import com.hexa.client.ui.widget.ListBoxDiscrete;
 
 public class CriteriaSwitch extends Composite implements ICriteriaWidget
 {

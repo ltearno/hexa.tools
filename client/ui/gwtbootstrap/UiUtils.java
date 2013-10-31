@@ -1,5 +1,7 @@
 package com.hexa.client.ui.gwtbootstrap;
 
+import static com.hexa.client.ui.UiBuilder.addIn;
+
 import com.github.gwtbootstrap.client.ui.Brand;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonGroup;
@@ -35,7 +37,6 @@ import com.github.gwtbootstrap.client.ui.constants.FormType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public class UiUtils
@@ -247,13 +248,5 @@ public class UiUtils
 		navText.setAlignment( alignment );
 
 		return navText;
-	}
-
-	public static <T extends HasWidgets.ForIsWidget> T addIn( T parent, IsWidget... children )
-	{
-		for( IsWidget widget : children )
-			parent.add( widget );
-
-		return parent;
 	}
 }
