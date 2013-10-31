@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.resources.image.ImageResources;
 
-class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, MouseUpHandler, MouseDownHandler, RequiresResize, ProvidesResize
+class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHandler, MouseDownHandler, RequiresResize, ProvidesResize
 {
 	int resizeHandlerSize = 5;
 	int titleSize;
@@ -72,7 +72,7 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 			+ "<div class='close_button' style='position: absolute; width:#TITLE_SIZE#px; top:#HANDLER_SIZE#px; right:#HANDLER_SIZE#px; height:#TITLE_SIZE#px;'><img></img></div>"
 			+ "<div class='content' style='overflow:auto; position: absolute; left:#HANDLER_SIZE#px; top:#CONTENT_TOP#px; right:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>";
 
-	public ResizablePanelImpl()
+	public ResizablePanel()
 	{
 		Element main = DOM.createDiv();
 		setElement( main );
@@ -144,7 +144,7 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 
 						int screenWidth = RootLayoutPanel.get().getOffsetWidth();
 
-						RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanelImpl.this, (screenWidth - w) / 2, Unit.PX, w, Unit.PX );
+						RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, (screenWidth - w) / 2, Unit.PX, w, Unit.PX );
 
 						RootLayoutPanel.get().animate( 300 );
 					}
@@ -157,7 +157,7 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 
 						int screenHeight = RootLayoutPanel.get().getOffsetHeight();
 
-						RootLayoutPanel.get().setWidgetTopHeight( ResizablePanelImpl.this, (screenHeight - h) / 2, Unit.PX, h, Unit.PX );
+						RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, (screenHeight - h) / 2, Unit.PX, h, Unit.PX );
 
 						RootLayoutPanel.get().animate( 300 );
 					}
@@ -205,10 +205,10 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 		startX = event.getScreenX();
 		startY = event.getScreenY();
 
-		startLeft = ResizablePanelImpl.this.getAbsoluteLeft();
-		startTop = ResizablePanelImpl.this.getAbsoluteTop();
-		startWidth = ResizablePanelImpl.this.getOffsetWidth();
-		startHeight = ResizablePanelImpl.this.getOffsetHeight();
+		startLeft = ResizablePanel.this.getAbsoluteLeft();
+		startTop = ResizablePanel.this.getAbsoluteTop();
+		startWidth = ResizablePanel.this.getOffsetWidth();
+		startHeight = ResizablePanel.this.getOffsetHeight();
 
 		DOM.setCapture( getElement() );
 
@@ -274,31 +274,31 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 	{
 		if( direction == MOVE )
 		{
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanelImpl.this,
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this,
 					Math.min( Math.max( 0, startLeft + devX ), RootLayoutPanel.get().getOffsetWidth() - startWidth ), Unit.PX, startWidth, Unit.PX );
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanelImpl.this,
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this,
 					Math.min( Math.max( 0, startTop + devY ), RootLayoutPanel.get().getOffsetHeight() - startHeight ), Unit.PX, startHeight, Unit.PX );
 			return;
 		}
 
 		if( (direction & LEFT) == LEFT )
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanelImpl.this, startLeft + devX, Unit.PX, Math.max( minWidth, startWidth - devX ), Unit.PX );
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, startLeft + devX, Unit.PX, Math.max( minWidth, startWidth - devX ), Unit.PX );
 		if( (direction & TOP) == TOP )
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanelImpl.this, startTop + devY, Unit.PX, Math.max( minHeight, startHeight - devY ), Unit.PX );
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, startTop + devY, Unit.PX, Math.max( minHeight, startHeight - devY ), Unit.PX );
 
 		if( (direction & RIGHT) == RIGHT )
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanelImpl.this, startLeft, Unit.PX, Math.max( minWidth, startWidth + devX ), Unit.PX );
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, startLeft, Unit.PX, Math.max( minWidth, startWidth + devX ), Unit.PX );
 		if( (direction & BOTTOM) == BOTTOM )
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanelImpl.this, startTop, Unit.PX, Math.max( minHeight, startHeight + devY ), Unit.PX );
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, startTop, Unit.PX, Math.max( minHeight, startHeight + devY ), Unit.PX );
 	}
 
 	@Override
 	public void onResize()
 	{
-		int left = ResizablePanelImpl.this.getAbsoluteLeft();
-		int top = ResizablePanelImpl.this.getAbsoluteTop();
-		int width = ResizablePanelImpl.this.getOffsetWidth();
-		int height = ResizablePanelImpl.this.getOffsetHeight();
+		int left = ResizablePanel.this.getAbsoluteLeft();
+		int top = ResizablePanel.this.getAbsoluteTop();
+		int width = ResizablePanel.this.getOffsetWidth();
+		int height = ResizablePanel.this.getOffsetHeight();
 
 		double newLeft = Math.max( 0, Math.min( Math.max( 0, left ), RootLayoutPanel.get().getOffsetWidth() - width ) );
 		double newTop = Math.max( 0, Math.min( Math.max( 0, top ), RootLayoutPanel.get().getOffsetHeight() - height ) );
@@ -307,8 +307,8 @@ class ResizablePanelImpl extends ComplexPanel implements MouseMoveHandler, Mouse
 		{
 			GWT.log( "onResize => re-resize !" );
 
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanelImpl.this, newLeft, Unit.PX, width, Unit.PX );
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanelImpl.this, newTop, Unit.PX, height, Unit.PX );
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, newLeft, Unit.PX, width, Unit.PX );
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, newTop, Unit.PX, height, Unit.PX );
 
 			return;
 		}

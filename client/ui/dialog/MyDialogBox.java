@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class MyDialogBox
 {
-	ResizablePanelImpl impl = new ResizablePanelImpl();
+	ResizablePanel impl = new ResizablePanel();
 	boolean modal;
 
 	public MyDialogBox()
