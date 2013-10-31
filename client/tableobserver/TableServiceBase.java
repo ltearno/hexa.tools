@@ -8,20 +8,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.hexa.client.interfaces.IAsyncCallback;
-import com.hexa.client.interfaces.SimpleAsyncCallback;
 import com.hexa.client.tools.CallCounter;
 
 public abstract class TableServiceBase<T>
 {
-	protected abstract void doDeleteRecord( int recordId, AsyncCallback<Integer> callback );
+	protected abstract void doDeleteRecord( int recordId, IAsyncCallback<Integer> callback );
 
 	protected abstract void doUpdateField( int recordId, String fieldName, String wantedValue, IAsyncCallback<String> callback );
 
-	protected abstract void doGetRecords( AsyncCallback<Iterable<T>> callback );
+	protected abstract void doGetRecords( IAsyncCallback<Iterable<T>> callback );
 
-	protected abstract void doGetRecord( int recordId, AsyncCallback<T> callback );
+	protected abstract void doGetRecord( int recordId, IAsyncCallback<T> callback );
 
 	protected abstract int doGetRecordId( T record );
 
@@ -105,7 +103,7 @@ public abstract class TableServiceBase<T>
 						else
 						{
 							fFullLoadRequested = true;
-							doGetRecords( new SimpleAsyncCallback<Iterable<T>>()
+							doGetRecords( new IAsyncCallback<Iterable<T>>()
 							{
 								@Override
 								public void onSuccess( Iterable<T> result )
@@ -295,9 +293,9 @@ public abstract class TableServiceBase<T>
 		return client.command;
 	}
 
-	protected AsyncCallback<T> getAddInternalCallback( final IAsyncCallback<T> callback )
+	protected IAsyncCallback<T> getAddInternalCallback( final IAsyncCallback<T> callback )
 	{
-		return new SimpleAsyncCallback<T>()
+		return new IAsyncCallback<T>()
 		{
 			@Override
 			public void onSuccess( T result )
@@ -318,7 +316,7 @@ public abstract class TableServiceBase<T>
 
 	public void delete( final int recordId )
 	{
-		doDeleteRecord( recordId, new SimpleAsyncCallback<Integer>()
+		doDeleteRecord( recordId, new IAsyncCallback<Integer>()
 		{
 			@Override
 			public void onSuccess( Integer result )
@@ -361,7 +359,7 @@ public abstract class TableServiceBase<T>
 				} );
 
 				add();
-				doGetRecord( recordId, new SimpleAsyncCallback<T>()
+				doGetRecord( recordId, new IAsyncCallback<T>()
 				{
 					@Override
 					public void onSuccess( T result )
@@ -388,7 +386,7 @@ public abstract class TableServiceBase<T>
 		updater.launch( recordId, fieldName, newValue );
 	}
 
-	public void getRecord( int recordId, AsyncCallback<T> callback )
+	public void getRecord( int recordId, IAsyncCallback<T> callback )
 	{
 		if( fWholeTableLoaded )
 			callback.onSuccess( records.get( recordId ) );
@@ -396,7 +394,7 @@ public abstract class TableServiceBase<T>
 			doGetRecord( recordId, callback );
 	}
 
-	public void getRecords( AsyncCallback<Iterable<T>> callback )
+	public void getRecords( IAsyncCallback<Iterable<T>> callback )
 	{
 		if( fWholeTableLoaded )
 			callback.onSuccess( records.values() );
