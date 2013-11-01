@@ -16,6 +16,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -34,8 +35,8 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 	static final int BOTTOM = 8;
 	static final int MOVE = 16;
 
-	int minWidth = 50;
-	int minHeight = 50;
+	int minWidth = 250;
+	int minHeight = 250;
 
 	Element topLeft;
 	Element top;
@@ -133,34 +134,25 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 				@Override
 				public void execute()
 				{
-					int w = Math.max( contentWidget.getElement().getScrollWidth(), contentWidget.getElement().getOffsetWidth() );
-					int h = Math.max( contentWidget.getElement().getScrollHeight(), contentWidget.getElement().getOffsetHeight() );
+					// try to fit to the content size
 
-					if( w > RootLayoutPanel.get().getOffsetWidth() )
-					{
-						w += resizeHandlerSize * 2;
+					int maxWidth = Window.getClientWidth() - 20; // 20 pixels of margin
+					int w = Math.max( ResizablePanel.this.getOffsetWidth(), Math.max( contentWidget.getElement().getScrollWidth(), contentWidget.getElement().getOffsetWidth() ) ) + resizeHandlerSize * 2;
+					if( w > maxWidth )
+						w = maxWidth;
 
-						GWT.log( "Dialog width put to " + w );
+					int maxHeight = Window.getClientHeight() - 20;
+					int h = Math.max( ResizablePanel.this.getOffsetHeight(), Math.max( contentWidget.getElement().getScrollHeight(), contentWidget.getElement().getOffsetHeight() ) ) + resizeHandlerSize * 2 + titleSize;
+					if( h > maxHeight )
+						h = maxHeight;
 
-						int screenWidth = RootLayoutPanel.get().getOffsetWidth();
+					PositionAndSize posSize = new PositionAndSize( (Window.getClientWidth() - w) / 2, (Window.getClientHeight() - h) / 2, w, h );
+					posSize.limit();
 
-						RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, (screenWidth - w) / 2, Unit.PX, w, Unit.PX );
+					RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
+					RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
 
-						RootLayoutPanel.get().animate( 300 );
-					}
-
-					if( h > RootLayoutPanel.get().getOffsetHeight() )
-					{
-						h += resizeHandlerSize * 2 + titleSize;
-
-						GWT.log( "Dialog height put to " + h );
-
-						int screenHeight = RootLayoutPanel.get().getOffsetHeight();
-
-						RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, (screenHeight - h) / 2, Unit.PX, h, Unit.PX );
-
-						RootLayoutPanel.get().animate( 300 );
-					}
+					RootLayoutPanel.get().animate( 300 );
 				}
 			} );
 		}
@@ -178,8 +170,12 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 
 		int width = 400;
 		int height = 230;
-		RootLayoutPanel.get().setWidgetLeftWidth( this, (screenWidth - width) / 2, Unit.PX, width, Unit.PX );
-		RootLayoutPanel.get().setWidgetTopHeight( this, (screenHeight - height) / 2, Unit.PX, height, Unit.PX );
+
+		PositionAndSize posSize = new PositionAndSize( (screenWidth - width) / 2, (screenHeight - height) / 2, width, height );
+		posSize.limit();
+
+		RootLayoutPanel.get().setWidgetLeftWidth( this, posSize.left, Unit.PX, posSize.width, Unit.PX );
+		RootLayoutPanel.get().setWidgetTopHeight( this, posSize.top, Unit.PX, posSize.height, Unit.PX );
 
 		RootLayoutPanel.get().animate( 300 );
 	}
@@ -274,22 +270,46 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 	{
 		if( direction == MOVE )
 		{
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this,
-					Math.min( Math.max( 0, startLeft + devX ), RootLayoutPanel.get().getOffsetWidth() - startWidth ), Unit.PX, startWidth, Unit.PX );
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this,
-					Math.min( Math.max( 0, startTop + devY ), RootLayoutPanel.get().getOffsetHeight() - startHeight ), Unit.PX, startHeight, Unit.PX );
+			PositionAndSize posSize = new PositionAndSize( startLeft + devX, startTop + devY, startWidth, startHeight );
+			posSize.limit();
+
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
+
 			return;
 		}
 
 		if( (direction & LEFT) == LEFT )
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, startLeft + devX, Unit.PX, Math.max( minWidth, startWidth - devX ), Unit.PX );
-		if( (direction & TOP) == TOP )
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, startTop + devY, Unit.PX, Math.max( minHeight, startHeight - devY ), Unit.PX );
+		{
+			PositionAndSize posSize = new PositionAndSize( startLeft + devX, startTop, startWidth - devX, startHeight );
+			posSize.limit();
+
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
+		}
 
 		if( (direction & RIGHT) == RIGHT )
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, startLeft, Unit.PX, Math.max( minWidth, startWidth + devX ), Unit.PX );
+		{
+			PositionAndSize posSize = new PositionAndSize( startLeft, startTop, startWidth + devX, startHeight );
+			posSize.limit();
+
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
+		}
+
+		if( (direction & TOP) == TOP )
+		{
+			PositionAndSize posSize = new PositionAndSize( startLeft, startTop + devY, startWidth, startHeight - devY );
+			posSize.limit();
+
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
+		}
+
 		if( (direction & BOTTOM) == BOTTOM )
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, startTop, Unit.PX, Math.max( minHeight, startHeight + devY ), Unit.PX );
+		{
+			PositionAndSize posSize = new PositionAndSize( startLeft, startTop, startWidth, startHeight + devY );
+			posSize.limit();
+
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
+		}
 	}
 
 	@Override
@@ -300,15 +320,15 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 		int width = ResizablePanel.this.getOffsetWidth();
 		int height = ResizablePanel.this.getOffsetHeight();
 
-		double newLeft = Math.max( 0, Math.min( Math.max( 0, left ), RootLayoutPanel.get().getOffsetWidth() - width ) );
-		double newTop = Math.max( 0, Math.min( Math.max( 0, top ), RootLayoutPanel.get().getOffsetHeight() - height ) );
+		PositionAndSize posSize = new PositionAndSize( left, top, width, height );
 
-		if( newLeft != left || newTop != top )
+		boolean needAdjustment = posSize.limit();
+		if( needAdjustment )
 		{
 			GWT.log( "onResize => re-resize !" );
 
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, newLeft, Unit.PX, width, Unit.PX );
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, newTop, Unit.PX, height, Unit.PX );
+			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
+			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
 
 			return;
 		}
@@ -319,6 +339,91 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 			{
 				((RequiresResize) child).onResize();
 			}
+		}
+	}
+
+	private class PositionAndSize
+	{
+		int top;
+		int left;
+
+		int width;
+		int height;
+
+		public PositionAndSize( int left, int top, int width, int height )
+		{
+			this.top = top;
+			this.left = left;
+			this.width = width;
+			this.height = height;
+		}
+
+		// ensure that the position and size fits in the screen
+		// returns false if something has been changed
+		boolean limit()
+		{
+			boolean res = true;
+
+			int screenHeight = Window.getClientHeight(); //RootLayoutPanel.get().getOffsetHeight()
+			int screenWidth = Window.getClientWidth(); // RootLayoutPanel.get().getOffsetWidth()
+
+			// adjust horizontally
+
+			// limit left position
+			if( left < 0 )
+			{
+				left = 0;
+				res = false;
+			}
+			int maxLeft = screenWidth - minWidth;
+			if( left > maxLeft )
+			{
+				left = maxLeft;
+				res = false;
+			}
+
+			// limit width
+			if( width < minWidth )
+			{
+				width = minWidth;
+				res = false;
+			}
+			int maxWidth = screenWidth - width;
+			if( width > maxWidth )
+			{
+				width = maxWidth;
+				res = false;
+			}
+
+			// adjust vertically
+
+			// limit top position
+			if( top < 0 )
+			{
+				top = 0;
+				res = false;
+			}
+			int maxTop = screenHeight - minHeight;
+			if( top > maxTop )
+			{
+				top = maxTop;
+				res = false;
+			}
+
+			// limit height
+			if( height < minHeight )
+			{
+				height = minHeight;
+				res = false;
+			}
+			int maxHeight = screenHeight - top;
+			if( height > maxHeight )
+			{
+				height = maxHeight;
+				res = false;
+			}
+
+			return res;
 		}
 	}
 
