@@ -35,8 +35,8 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 	static final int BOTTOM = 8;
 	static final int MOVE = 16;
 
-	int minWidth = 250;
-	int minHeight = 250;
+	int minWidth = 800;
+	int minHeight = 500;
 
 	Element topLeft;
 	Element top;
