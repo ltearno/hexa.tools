@@ -31,6 +31,8 @@ public class ListBoxDiscrete<T> extends Composite implements ClickHandler
 
 	MyPopupPanel popup = null;
 
+	boolean fEnabled = true;
+
 	public ListBoxDiscrete( ImageResource up, ImageResource down )
 	{
 		this.up = up;
@@ -62,6 +64,11 @@ public class ListBoxDiscrete<T> extends Composite implements ClickHandler
 		} );
 	}
 
+	public void setEnabled( boolean fEnabled )
+	{
+		this.fEnabled = fEnabled;
+	}
+
 	public void addItem( String text, T object )
 	{
 		texts.put( object, text );
@@ -87,6 +94,9 @@ public class ListBoxDiscrete<T> extends Composite implements ClickHandler
 	@Override
 	public void onClick( ClickEvent event )
 	{
+		if( ! fEnabled )
+			return;
+
 		if( popup == null )
 		{
 			popup = new MyPopupPanel( true );
