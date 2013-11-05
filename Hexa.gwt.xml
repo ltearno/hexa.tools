@@ -11,6 +11,7 @@
   	
   	<super-source path="jre"/>
   	<source path="client"/>
+  	<source path="shared"/>
   	
   	<generate-with class="com.hexa.rebind.DataProxyGenerator">
 		<when-type-assignable class="com.hexa.client.comm.DataProxy"/>
