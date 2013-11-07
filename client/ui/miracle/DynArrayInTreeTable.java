@@ -14,10 +14,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.miracle.Edits.Editor;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTableBase.Row;
 import com.hexa.client.ui.treetable.TreeTableHandler;
-import com.hexa.client.ui.miracle.Edits.Editor;
 
 public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayManager<T>, HasColumns<T, H>
 {
