@@ -59,7 +59,7 @@ public class HierarchySet<T>
 			Object item = items.get( itemAddress );
 			if( item == null )
 			{
-				item = table.addItem( itemParent );
+				item = table.addRow( itemParent );
 
 				h.fillRow( table, item, element );
 
@@ -84,7 +84,7 @@ public class HierarchySet<T>
 	{
 		Object itemParent = getParentItem( table, element );
 
-		return table.addItem( itemParent );
+		return table.addRow( itemParent );
 	}
 
 	public void displayAccumulators( TreeTable table )

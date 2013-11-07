@@ -67,14 +67,14 @@ public class TreeTable extends TreeTableBase
 	public void setWidget( Object item, int column, Widget w )
 	{
 		if( column == 0 )
-			w = new ExpShrinkWidget( (TreeTableBase.Item) item, w );
+			w = new ExpShrinkWidget( (TreeTableBase.Row) item, w );
 
 		super.setWidget( item, column, w );
 	}
 
 	class ExpShrinkWidget extends Composite implements TreeTableBase.IItemStateCallback, ClickHandler
 	{
-		TreeTableBase.Item item;
+		TreeTableBase.Row item;
 
 		ImageResource treePlus = HexaFramework.images.treePlus();
 		ImageResource treeMinus = HexaFramework.images.treeMinus();
@@ -82,7 +82,7 @@ public class TreeTable extends TreeTableBase
 
 		ImageButton im = new ImageButton( blank, "Expand" );
 
-		public ExpShrinkWidget( Item item, Widget child )
+		public ExpShrinkWidget( Row item, Widget child )
 		{
 			this.item = item;
 

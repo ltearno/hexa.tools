@@ -18,7 +18,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.hexa.client.ui.treetable.TreeTableBase.Item;
+import com.hexa.client.ui.treetable.TreeTableBase.Row;
 import com.hexa.client.ui.treetable.TreeTableHandler;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
@@ -148,10 +148,10 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	class CellInTreeTablePrinter implements Printer
 	{
-		Item item;
+		Row item;
 		int col;
 
-		CellInTreeTablePrinter( Item item, int col )
+		CellInTreeTablePrinter( Row item, int col )
 		{
 			this.item = item;
 			this.col = col;
@@ -222,7 +222,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 	{
 		// find the row associated with this object
 		int objectRef = refMng.getRef( object );
-		Item item = getRow( objectRef );
+		Row item = getRow( objectRef );
 
 		if( edition != null && refMng.getRef( edition.editedObject ) == objectRef )
 			killCurrentEdit();
@@ -254,10 +254,10 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	class InsertPos
 	{
-		Item parent;
-		Item before;
+		Row parent;
+		Row before;
 
-		void move( Item item )
+		void move( Row item )
 		{
 			if( before != null )
 				item.moveBefore( before );
@@ -265,11 +265,11 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 				item.moveLastChild( parent );
 		}
 
-		Item insert()
+		Row insert()
 		{
 			if( before != null )
 				return before.addBefore();
-			Item item = table.addItem( parent );
+			Row item = table.addRow( parent );
 			if( parent != null )
 			{
 				int ref = getRefAtRow( parent );
@@ -295,13 +295,13 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 			assert (res.parent != null) : "Cannot add a child of the parent is not firt added";
 		}
 
-		ArrayList<Item> items = table.getItemChilds( res.parent );
+		ArrayList<Row> items = table.getItemChilds( res.parent );
 		int nbRows = items.size();
 		int objectRef = refMng.getRef( object );
 
 		if( userComparator != null )
 		{
-			for( Item item : items )
+			for( Row item : items )
 			{
 				int refAtRow = item.getRef();
 
@@ -343,7 +343,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 	{
 		GWT.log( "DELETE ROW " + ref );
 
-		Item item = getRow( ref );
+		Row item = getRow( ref );
 		if( item == null )
 			return;
 
@@ -352,7 +352,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		if( edition != null && refMng.getRef( edition.editedObject ) == ref )
 			killCurrentEdit();
 
-		Item parent = item.getParent();
+		Row parent = item.getParent();
 		GWT.log( "PARENT : " + parent );
 		GWT.log( "PARENT REF : " + (parent == null ? "-" : parent.getRef()) );
 
@@ -385,14 +385,14 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 	}
 
 	// sort all children of parent
-	public void sortAndPrint( final Comparator<T> userComparator, Item parent )
+	public void sortAndPrint( final Comparator<T> userComparator, Row parent )
 	{
 		class It
 		{
-			Item item;
+			Row item;
 			T object;
 
-			It( Item item, T object )
+			It( Row item, T object )
 			{
 				this.object = object;
 				this.item = item;
@@ -403,8 +403,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		ArrayList<It> its = new ArrayList<It>();
 
 		// get all objects from the table
-		ArrayList<Item> childs = table.getItemChilds( parent );
-		for( Item item : childs )
+		ArrayList<Row> childs = table.getItemChilds( parent );
+		for( Row item : childs )
 		{
 			int ref = getRefAtRow( item );
 
@@ -431,11 +431,11 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 		// proceed recursively for deeper level
 		childs = table.getItemChilds( parent );
-		for( Item item : childs )
+		for( Row item : childs )
 			sortAndPrint( userComparator, item );
 	}
 
-	private int getRefAtRow( Item item )
+	private int getRefAtRow( Row item )
 	{
 		return item.getRef();
 	}
@@ -443,7 +443,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 	// return the row index of the row associated to the object referenced as
 	// objectRef
 	// returns null if the row is not found
-	private Item getRow( int objectRef )
+	private Row getRow( int objectRef )
 	{
 		return table.getItemForRef( objectRef );
 	}
@@ -486,7 +486,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	class PrinterFirstCol implements Printer
 	{
-		Item item;
+		Row item;
 
 		@Override
 		public void setText( String text )
@@ -520,7 +520,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	}
 
-	private boolean beginEdit( Item item, int col )
+	private boolean beginEdit( Row item, int col )
 	{
 		int ref = getRefAtRow( item );
 
@@ -559,10 +559,10 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 	private static class CellPos
 	{
-		Item item;
+		Row item;
 		int col;
 
-		CellPos( Item item, int col )
+		CellPos( Row item, int col )
 		{
 			this.item = item;
 			this.col = col;
@@ -649,10 +649,10 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 	};
 
-	private CellInTreeTablePrinter redrawAll( Item parent, CellInTreeTablePrinter printer )
+	private CellInTreeTablePrinter redrawAll( Row parent, CellInTreeTablePrinter printer )
 	{
-		ArrayList<Item> items = table.getItemChilds( parent );
-		for( Item item : items )
+		ArrayList<Row> items = table.getItemChilds( parent );
+		for( Row item : items )
 		{
 			printer.item = item;
 			int ref = item.getRef();
@@ -703,7 +703,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		edition = null;
 	}
 
-	CellPos getNextPos( Item item, int col )
+	CellPos getNextPos( Row item, int col )
 	{
 
 		// either on the same row
@@ -724,7 +724,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		return null;
 	}
 
-	CellPos getPrevPos( Item item, int col )
+	CellPos getPrevPos( Row item, int col )
 	{
 		// either on the same row
 		for( int c = col - 1; c >= 0; c-- )
@@ -769,7 +769,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 				// find next cell to be edited
 
-				Item editionItem = getRow( refMng.getRef( edition.editedObject ) );
+				Row editionItem = getRow( refMng.getRef( edition.editedObject ) );
 				CellPos pos = null;
 				if( event.isShiftKeyDown() )
 					pos = getPrevPos( editionItem, edition.editedCol );
@@ -803,7 +803,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		}
 
 		@Override
-		public void onTableCellClick( Item item, int column, ClickEvent event )
+		public void onTableCellClick( Row item, int column, ClickEvent event )
 		{
 			int clickedRef = getRefAtRow( item );
 			// if clicking on a cell that is in editing mode, return

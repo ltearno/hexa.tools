@@ -62,9 +62,9 @@ public class TreeTableElemMng<T>
 			return item;
 		}
 
-		item = table.addItem( parentItem );
+		item = table.addRow( parentItem );
 		elements.put( identifier, item );
-		((TreeTableBase.Item) item).highLite();
+		((TreeTableBase.Row) item).highLite();
 
 		return item;
 	}
@@ -77,7 +77,7 @@ public class TreeTableElemMng<T>
 		Object item = elements.get( identifier );
 		if( item == null )
 			return;
-		((TreeTableBase.Item) item).remove();
+		((TreeTableBase.Row) item).remove();
 	}
 
 	public Object getItem( T element, TreeTable table, Object parentItem )
@@ -90,7 +90,7 @@ public class TreeTableElemMng<T>
 		if( item != null )
 			return item;
 
-		item = table.addItem( parentItem );
+		item = table.addRow( parentItem );
 		elements.put( identifier, item );
 		elementsAdded.add( item );
 
@@ -118,7 +118,7 @@ public class TreeTableElemMng<T>
 			return null;
 
 		elements.remove( identifier );
-		table.removeItem( item );
+		table.removeRow( item );
 
 		return item;
 	}

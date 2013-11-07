@@ -15,7 +15,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.hexa.client.ui.treetable.TreeTableBase.Item;
+import com.hexa.client.ui.treetable.TreeTableBase.Row;
 import com.hexa.client.ui.treetable.TreeTableHandler;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
@@ -110,7 +110,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		// each row
 		for( T d : data )
 		{
-			cp.item = table.addItem( null );
+			cp.item = table.addRow( null );
 			cp.item.setRef( refMng.getRef( d ) );
 
 			cp = printRow( d, cp );
@@ -122,21 +122,21 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	{
 		// find the row associated with this object
 		int objectRef = refMng.getRef( object );
-		Item item = getRow( objectRef );
+		Row item = getRow( objectRef );
 
 		if( edition != null && refMng.getRef( edition.editedObject ) == objectRef )
 			killCurrentEdit();
 
-		Item insPos = userComparator != null ? getInsertPoint( object ) : item;
+		Row insPos = userComparator != null ? getInsertPoint( object ) : item;
 
 		// insert or move the row to the right place and create a cell printer
 		if( item == null )
 		{
 			// new
 			if( insPos != null )
-				insPos = table.addItemBefore( insPos );
+				insPos = table.addRowBefore( insPos );
 			else
-				insPos = table.addItem( null );
+				insPos = table.addRow( null );
 
 			insPos.setRef( refMng.getRef( object ) );
 		}
@@ -156,15 +156,15 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		printRow( object, cp );
 	}
 
-	private Item getInsertPoint( T object )
+	private Row getInsertPoint( T object )
 	{
-		ArrayList<Item> items = table.getItemChilds( null );
+		ArrayList<Row> items = table.getItemChilds( null );
 		int nbRows = items.size();
 		int objectRef = refMng.getRef( object );
 
 		if( userComparator != null )
 		{
-			for( Item item : items )
+			for( Row item : items )
 			{
 				int refAtRow = item.getRef();
 
@@ -199,7 +199,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	@Override
 	public void deleteRow( int ref )
 	{
-		Item item = getRow( ref );
+		Row item = getRow( ref );
 		if( item == null )
 			return;
 
@@ -222,10 +222,10 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	{
 		class It
 		{
-			Item item;
+			Row item;
 			T object;
 
-			It( Item item, T object )
+			It( Row item, T object )
 			{
 				this.object = object;
 				this.item = item;
@@ -236,8 +236,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		ArrayList<It> its = new ArrayList<It>();
 
 		// get all objects from the table
-		ArrayList<Item> childs = table.getItemChilds( null );
-		for( Item item : childs )
+		ArrayList<Row> childs = table.getItemChilds( null );
+		for( Row item : childs )
 		{
 			int ref = getRefAtRow( item );
 
@@ -258,9 +258,9 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		for( int j = 0; j < its.size(); j++ )
 		{
 			// item at position j ?
-			Item atJ = table.getItemChilds( null ).get( j );
+			Row atJ = table.getItemChilds( null ).get( j );
 			// needed item is its[i].item
-			Item neededItem = its.get( j ).item;
+			Row neededItem = its.get( j ).item;
 
 			if( atJ != neededItem )
 			{
@@ -270,7 +270,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 	}
 
-	private int getRefAtRow( Item item )
+	private int getRefAtRow( Row item )
 	{
 		return item.getRef();
 	}
@@ -278,7 +278,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 	// return the row index of the row associated to the object referenced as
 	// objectRef
 	// returns null if the row is not found
-	private Item getRow( int objectRef )
+	private Row getRow( int objectRef )
 	{
 		return table.getItemForRef( objectRef );
 	}
@@ -313,7 +313,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return printer;
 	}
 
-	private boolean beginEdit( Item item, int col )
+	private boolean beginEdit( Row item, int col )
 	{
 		int ref = getRefAtRow( item );
 
@@ -352,10 +352,10 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 	private static class CellPos
 	{
-		Item item;
+		Row item;
 		int col;
 
-		CellPos( Item item, int col )
+		CellPos( Row item, int col )
 		{
 			this.item = item;
 			this.col = col;
@@ -438,8 +438,8 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 			// Redraw all objects in the table
 			CellInTreeTablePrinter printer = new CellInTreeTablePrinter( null, 0 );
-			ArrayList<Item> items = table.getItemChilds( null );
-			for( Item item : items )
+			ArrayList<Row> items = table.getItemChilds( null );
+			for( Row item : items )
 			{
 				printer.item = item;
 				int ref = item.getRef();
@@ -487,7 +487,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		edition = null;
 	}
 
-	CellPos getNextPos( Item item, int col )
+	CellPos getNextPos( Row item, int col )
 	{
 
 		// either on the same row
@@ -508,7 +508,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		return null;
 	}
 
-	CellPos getPrevPos( Item item, int col )
+	CellPos getPrevPos( Row item, int col )
 	{
 		// either on the same row
 		for( int c = col - 1; c >= 0; c-- )
@@ -553,7 +553,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 				// find next cell to be edited
 
-				Item editionItem = getRow( refMng.getRef( edition.editedObject ) );
+				Row editionItem = getRow( refMng.getRef( edition.editedObject ) );
 				CellPos pos = null;
 				if( event.isShiftKeyDown() )
 					pos = getPrevPos( editionItem, edition.editedCol );
@@ -584,7 +584,7 @@ public class DynArrayInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		}
 
 		@Override
-		public void onTableCellClick( Item item, int column, ClickEvent event )
+		public void onTableCellClick( Row item, int column, ClickEvent event )
 		{
 			int clickedRef = getRefAtRow( item );
 

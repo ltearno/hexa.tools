@@ -3,7 +3,7 @@ package com.hexa.client.ui.treetable;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.ITreeTableEditorManager;
-import com.hexa.client.ui.treetable.TreeTableBase.Item;
+import com.hexa.client.ui.treetable.TreeTableBase.Row;
 import com.hexa.client.ui.widget.Validator;
 import com.hexa.client.ui.widget.ValidatorCallback;
 
@@ -28,7 +28,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 	private TreeTable m_table = null;
 	private TreeTableEditorManagerCallback m_callback = null;
 
-	private Item m_currentEditedItem = null;
+	private Row m_currentEditedItem = null;
 	private int m_currentEditedColumn = -1;
 	private Widget m_currentEditor = null;
 
@@ -45,7 +45,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 	}
 
 	@Override
-	public void onTableCellClick( Item item, int column, ClickEvent event )
+	public void onTableCellClick( Row item, int column, ClickEvent event )
 	{
 		// forget edition if already opened at the same place
 		if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )

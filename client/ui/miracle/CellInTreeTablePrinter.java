@@ -1,11 +1,11 @@
 package com.hexa.client.ui.miracle;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.ui.treetable.TreeTableBase.Item;
+import com.hexa.client.ui.treetable.TreeTableBase.Row;
 
 public class CellInTreeTablePrinter implements Printer
 {
-	Item item;
+	Row item;
 	int col;
 
 	public CellInTreeTablePrinter()
@@ -13,13 +13,13 @@ public class CellInTreeTablePrinter implements Printer
 		this( null, -1 );
 	}
 
-	public CellInTreeTablePrinter( Item item, int col )
+	public CellInTreeTablePrinter( Row item, int col )
 	{
 		this.item = item;
 		this.col = col;
 	}
 
-	public void setItemAndColumn( Item item, int col )
+	public void setItemAndColumn( Row item, int col )
 	{
 		this.item = item;
 		this.col = col;

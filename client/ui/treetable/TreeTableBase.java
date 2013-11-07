@@ -35,7 +35,7 @@ public class TreeTableBase extends Panel
 	Element m_head;
 	Element m_body;
 	Element m_headerRow = null;
-	Item m_rootItem = new Item();
+	Row m_rootItem = new Row();
 
 	int m_nbColumns = 0;
 	String[] m_headers = null;
@@ -81,7 +81,7 @@ public class TreeTableBase extends Panel
 				Element tr = DOM.getParent( td );
 				int column = DOM.getChildIndex( tr, td );
 
-				Item item = (Item) tr.getPropertyObject( "linkedItem" );
+				Row item = (Row) tr.getPropertyObject( "linkedItem" );
 				if( item != null )
 					m_handler.onTableCellClick( item, column, event );
 			}
@@ -156,66 +156,77 @@ public class TreeTableBase extends Panel
 			removeWidget( entry.getKey(), entry.getValue(), false );
 		m_widgets.clear();
 
-		m_rootItem = new Item();
+		m_rootItem = new Row();
 
 		m_body.setInnerText( "" );
 	}
 
+	@Deprecated
 	public void setExpanded( Object item, boolean fExpanded )
 	{
 		if( item == null )
 			return;
-		((Item) item).setExpanded( fExpanded );
+		((Row) item).setExpanded( fExpanded );
 	}
 
+	@Deprecated
 	public void setDataObject( Object item, Object dataObject )
 	{
-		((Item) item).setDataObject( dataObject );
+		((Row) item).setDataObject( dataObject );
 	}
 
+	@Deprecated
 	public Object getDataObject( Object item )
 	{
-		return ((Item) item).getDataObject();
+		return ((Row) item).getDataObject();
 	}
 
+	@Deprecated
 	public void setText( Object item, int column, String text )
 	{
-		((Item) item).setText( column, text );
+		((Row) item).setText( column, text );
 	}
 
+	@Deprecated
 	public void setText( Object item, int column, int text )
 	{
-		((Item) item).setText( column, text );
+		((Row) item).setText( column, text );
 	}
 
+	@Deprecated
 	public void setText( Object item, int column, double text )
 	{
-		((Item) item).setText( column, text );
+		((Row) item).setText( column, text );
 	}
 
+	@Deprecated
 	public void setHTML( Object item, int column, String html )
 	{
-		((Item) item).setHTML( column, html );
+		((Row) item).setHTML( column, html );
 	}
 
+	@Deprecated
 	public void highLite( Object item )
 	{
-		((Item) item).highLite();
+		((Row) item).highLite();
 	}
 
+	@Deprecated
 	public void addClassRow( Object item, String clazz )
 	{
-		((Item) item).addClassRow( clazz );
+		((Row) item).addClassRow( clazz );
 	}
 
+	@Deprecated
 	public void removeClassRow( Object item, String clazz )
 	{
-		((Item) item).removeClassRow( clazz );
+		((Row) item).removeClassRow( clazz );
 	}
 
+	@Deprecated
 	public void setWidget( Object item, int column, Widget w )
 	{
-		((Item) item).setWidget( column, w );
+		((Row) item).setWidget( column, w );
 	}
 
 	private void clearCell( Element td )
@@ -260,7 +271,7 @@ public class TreeTableBase extends Panel
 		}
 	}
 
-	public Item getItemForRef( int ref )
+	public Row getItemForRef( int ref )
 	{
 		JsArray<Element> rows = JQuery.get().jqSelect( "tr[ref=\"" + ref + "\"]", m_body );
 		if( rows.length() != 1 )
@@ -272,22 +283,22 @@ public class TreeTableBase extends Panel
 
 		Object item = tr.getPropertyObject( "linkedItem" );
 
-		return (Item) item;
+		return (Row) item;
 	}
 
-	public ArrayList<Item> getItemChilds( Item item )
+	public ArrayList<Row> getItemChilds( Row item )
 	{
 		if( item == null )
 			item = m_rootItem;
 		return item.getChilds();
 	}
 
-	public class Item
+	public class Row
 	{
-		Item m_parent = null;
+		Row m_parent = null;
 		Element m_tr = null;
 		Element m_trToDelete = null;
-		ArrayList<Item> m_childs = new ArrayList<Item>();
+		ArrayList<Row> m_childs = new ArrayList<Row>();
 
 		ArrayList<IItemStateCallback> m_stateCallbacks = null;
 
@@ -297,27 +308,27 @@ public class TreeTableBase extends Panel
 						// m_tr's "ref" attribute
 		Object m_dataObject = null;
 
-		public Item getParent()
+		public Row getParent()
 		{
 			return m_parent == m_rootItem ? null : m_parent;
 		}
 
 		// adds an item at the end of the children of the parent
-		public Item addLastChild()
+		public Row addLastChild()
 		{
 			assert (m_nbColumns > 0) : "Table should have at least one column before adding items";
 
 			// Item parentItem = this;
 
-			Item newItem = new Item();
+			Row newItem = new Row();
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			//JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
+			// JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
 			newItem.m_tr.setInnerHTML( m_rowTemplate );
 
 			// DOM add
-			Item lastParentLeaf = getLastLeaf();
+			Row lastParentLeaf = getLastLeaf();
 			Element trToInsertAfter = lastParentLeaf.m_tr;
 			if( trToInsertAfter != null )
 			{
@@ -345,13 +356,13 @@ public class TreeTableBase extends Panel
 		}
 
 		// move to be the last item of parent
-		public void moveLastChild( Item newParent )
+		public void moveLastChild( Row newParent )
 		{
 			if( this == newParent )
 				return;
 
 			// remove from its current position
-			Item parentItem = m_parent;
+			Row parentItem = m_parent;
 			if( parentItem == null )
 				parentItem = m_rootItem;
 			parentItem.m_childs.remove( this );
@@ -363,7 +374,7 @@ public class TreeTableBase extends Panel
 			// insert at the end of the current parent
 
 			// DOM add
-			Item lastLeaf = newParent.getLastLeaf();
+			Row lastLeaf = newParent.getLastLeaf();
 			Element trToInsertAfter = lastLeaf.m_tr;
 			if( trToInsertAfter != null )
 			{
@@ -387,20 +398,20 @@ public class TreeTableBase extends Panel
 		}
 
 		// adds a new sibling item, just below (with same parent)
-		public Item addBefore()
+		public Row addBefore()
 		{
 			assert (m_nbColumns > 0);
 
 			// which is the parent ? => same parent as item
-			Item parentItem = m_parent;
+			Row parentItem = m_parent;
 			if( parentItem == null )
 				parentItem = m_rootItem;
 
-			Item newItem = new Item();
+			Row newItem = new Row();
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			//JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
+			// JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
 			newItem.m_tr.setInnerHTML( m_rowTemplate );
 
 			// DOM add
@@ -422,7 +433,7 @@ public class TreeTableBase extends Panel
 		}
 
 		// move to position just before "item"
-		public void moveBefore( Item item )
+		public void moveBefore( Row item )
 		{
 			if( this == item )
 				return;
@@ -431,7 +442,7 @@ public class TreeTableBase extends Panel
 			Element firstChildRow = DOM.getNextSibling( m_tr );
 
 			// remove from its current position
-			Item parentItem = m_parent;
+			Row parentItem = m_parent;
 			if( parentItem == null )
 				parentItem = m_rootItem;
 			parentItem.m_childs.remove( this );
@@ -443,7 +454,7 @@ public class TreeTableBase extends Panel
 				// insert at the end of the current parent
 
 				// DOM add
-				Item lastLeaf = parentItem.getLastLeaf();
+				Row lastLeaf = parentItem.getLastLeaf();
 				Element trToInsertAfter = lastLeaf.m_tr;
 				if( trToInsertAfter != null )
 				{
@@ -461,7 +472,7 @@ public class TreeTableBase extends Panel
 			}
 			else
 			{
-				Item newParentItem = item.m_parent;
+				Row newParentItem = item.m_parent;
 				if( newParentItem == null )
 					newParentItem = m_rootItem;
 				int itemPos = item.m_parent.m_childs.indexOf( item );
@@ -497,23 +508,23 @@ public class TreeTableBase extends Panel
 
 		// returns true if the item is the last of its parent
 		/*
-		 * private boolean isLastChild() { Item parent = m_parent; if( parent == null ) parent = m_rootItem;
-<<<<<<< HEAD
+		 * private boolean isLastChild() { Item parent = m_parent; if( parent ==
+		 * null ) parent = m_rootItem; <<<<<<< HEAD
 		 *
-=======
+		 * =======
 		 *
->>>>>>> origin/regsys
-		 * return parent.m_childs.get(parent.m_childs.size()-1) == this; }
+		 * >>>>>>> origin/regsys return
+		 * parent.m_childs.get(parent.m_childs.size()-1) == this; }
 		 */
 
-		public Item getNextTraversalItem()
+		public Row getNextTraversalItem()
 		{
 			// if has child, return first child
 			if( !m_childs.isEmpty() )
 				return m_childs.get( 0 );
 
 			// return next sibling if any
-			Item parent = m_parent;
+			Row parent = m_parent;
 			if( parent == null )
 				parent = m_rootItem;
 			int me = parent.m_childs.indexOf( this );
@@ -521,7 +532,7 @@ public class TreeTableBase extends Panel
 				return parent.m_childs.get( me + 1 );
 
 			// return the next sibling of our parent
-			Item parentNext = null;
+			Row parentNext = null;
 			parent = m_parent;
 			while( parentNext == null && parent != null )
 			{
@@ -533,24 +544,28 @@ public class TreeTableBase extends Panel
 
 			return m_rootItem.m_childs.get( 0 );
 			/*
-			 * // while our parent if the last of its siblings, go up one level Item ancestor = parent; while( ancestor!=null && ancestor.isLastChild() )
-			 * ancestor = ancestor.m_parent;
-<<<<<<< HEAD
+			 * // while our parent if the last of its siblings, go up one level
+			 * Item ancestor = parent; while( ancestor!=null &&
+			 * ancestor.isLastChild() ) ancestor = ancestor.m_parent; <<<<<<<
+			 * HEAD
 			 *
-			 * // return the next sibling of this ancestor if( ancestor == null ) return m_rootItem.m_childs.get(0);
+			 * // return the next sibling of this ancestor if( ancestor == null
+			 * ) return m_rootItem.m_childs.get(0);
 			 *
-=======
+			 * =======
 			 *
-			 * // return the next sibling of this ancestor if( ancestor == null ) return m_rootItem.m_childs.get(0);
+			 * // return the next sibling of this ancestor if( ancestor == null
+			 * ) return m_rootItem.m_childs.get(0);
 			 *
->>>>>>> origin/regsys
-			 * if( me == parent.m_childs.size() - 1 ) return parent.m_childs.get( 0 ); return parent.m_childs.get( me + 1 );
+			 * >>>>>>> origin/regsys if( me == parent.m_childs.size() - 1 )
+			 * return parent.m_childs.get( 0 ); return parent.m_childs.get( me +
+			 * 1 );
 			 */
 		}
 
-		private Item getNextSiblingNoBack()
+		private Row getNextSiblingNoBack()
 		{
-			Item parent = m_parent;
+			Row parent = m_parent;
 			if( parent == null )
 				parent = m_rootItem;
 			int me = parent.m_childs.indexOf( this );
@@ -559,9 +574,9 @@ public class TreeTableBase extends Panel
 			return parent.m_childs.get( me + 1 );
 		}
 
-		public Item getPrevTraversalItem()
+		public Row getPrevTraversalItem()
 		{
-			Item parent = m_parent;
+			Row parent = m_parent;
 			if( parent == null )
 				parent = m_rootItem;
 			int me = parent.m_childs.indexOf( this );
@@ -570,9 +585,9 @@ public class TreeTableBase extends Panel
 			return parent.m_childs.get( me - 1 );
 		}
 
-		public Item getNextSiblingItem()
+		public Row getNextSiblingItem()
 		{
-			Item parent = m_parent;
+			Row parent = m_parent;
 			if( parent == null )
 				parent = m_rootItem;
 			int me = parent.m_childs.indexOf( this );
@@ -581,9 +596,9 @@ public class TreeTableBase extends Panel
 			return parent.m_childs.get( me + 1 );
 		}
 
-		public Item getPrevSiblingItem()
+		public Row getPrevSiblingItem()
 		{
-			Item parent = m_parent;
+			Row parent = m_parent;
 			if( parent == null )
 				parent = m_rootItem;
 			int me = parent.m_childs.indexOf( this );
@@ -664,7 +679,7 @@ public class TreeTableBase extends Panel
 
 			clearCell( td );
 
-			//JQuery.get().jqHtml( td, html );
+			// JQuery.get().jqHtml( td, html );
 			td.setInnerHTML( html );
 		}
 
@@ -711,7 +726,7 @@ public class TreeTableBase extends Panel
 			return !m_childs.isEmpty();
 		}
 
-		public ArrayList<Item> getChilds()
+		public ArrayList<Row> getChilds()
 		{
 			return m_childs;
 		}
@@ -749,7 +764,7 @@ public class TreeTableBase extends Panel
 		void ensureAllChildRespectExpand()
 		{
 			boolean fOneParentAboveShrinked = false;
-			Item parent = this;
+			Row parent = this;
 			while( parent != null )
 			{
 				if( !parent.m_fExpanded )
@@ -765,7 +780,7 @@ public class TreeTableBase extends Panel
 
 		void ensureAllChildRespectExpand( boolean fOneParentAboveShrinked )
 		{
-			for( Item child : m_childs )
+			for( Row child : m_childs )
 			{
 				if( m_fExpanded && (!fOneParentAboveShrinked) )
 					child.m_tr.getStyle().clearDisplay();
@@ -775,7 +790,7 @@ public class TreeTableBase extends Panel
 			}
 		}
 
-		Item getLastLeaf()
+		Row getLastLeaf()
 		{
 			int nbChilds = m_childs.size();
 			if( nbChilds == 0 )
@@ -829,21 +844,21 @@ public class TreeTableBase extends Panel
 			}
 		}
 
-//		public void removeOLD()
-//		{
-//			// logical delete
-//			logicalRemove();
-//
-//			JQuery.get().jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
-//			{
-//				@Override
-//				public void onFinished()
-//				{
-//					// physical remove
-//					physicalRemove();
-//				}
-//			} );
-//		}
+		// public void removeOLD()
+		// {
+		// // logical delete
+		// logicalRemove();
+		//
+		// JQuery.get().jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
+		// {
+		// @Override
+		// public void onFinished()
+		// {
+		// // physical remove
+		// physicalRemove();
+		// }
+		// } );
+		// }
 
 		void logicalRemove()
 		{
@@ -860,7 +875,7 @@ public class TreeTableBase extends Panel
 			m_tr = null;
 
 			//
-			for( Item child : m_childs )
+			for( Row child : m_childs )
 				child.logicalRemove();
 		}
 
@@ -887,7 +902,7 @@ public class TreeTableBase extends Panel
 				DOM.removeChild( m_body, m_trToDelete );
 
 			// ...and all my children
-			for( Item child : m_childs )
+			for( Row child : m_childs )
 				child.physicalRemove();
 		}
 
@@ -969,7 +984,7 @@ public class TreeTableBase extends Panel
 			b.append( "<th>" + headers[i] + "</th>" );
 			bTemplate.append( "<td/>" );
 		}
-		//JQuery.get().jqHtml( m_headerRow, b.toString() );
+		// JQuery.get().jqHtml( m_headerRow, b.toString() );
 		m_headerRow.setInnerHTML( b.toString() );
 
 		if( oldHeaderRow != null )
@@ -980,29 +995,31 @@ public class TreeTableBase extends Panel
 		m_rowTemplate = bTemplate.toString();
 	}
 
-	public Item addItem()
+	public Row addRow()
 	{
-		return addItem( null );
+		return addRow( null );
 	}
 
 	// adds an item at the end of the children of the parent
-	public Item addItem( Object parent )
+	public Row addRow( Object parent )
 	{
-		Item parentItem = (Item) parent;
+		Row parentItem = (Row) parent;
 		if( parentItem == null )
 			parentItem = m_rootItem;
 
 		return parentItem.addLastChild();
 	}
 
-	public Item addItemBefore( Object item )
+	@Deprecated
+	public Row addRowBefore( Object item )
 	{
-		return ((Item) item).addBefore();
+		return ((Row) item).addBefore();
 	}
 
-	public void removeItem( Object item )
+	@Deprecated
+	public void removeRow( Object item )
 	{
-		((Item) item).remove();
+		((Row) item).remove();
 	}
 
 	@Override
