@@ -93,7 +93,10 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			for( T t : data )
 			{
 				int ins = Collections.binarySearch( tmp, t, userComparator );
-				tmp.add( -ins - 1, t );
+				if( ins >= 0 )
+					tmp.add( ins, t );
+				else
+					tmp.add( -ins - 1, t );
 			}
 			data = tmp;
 		}

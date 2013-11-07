@@ -127,15 +127,11 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 	@Override
 	public void onDateSelected( String text )
 	{
-		HexaDate date = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( text );// getDate();//new
-																							// HexaDate(
-																							// text
-																							// );
-
+		HexaDate date = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( text );
 		textBox.setText( date.getDisplayString() );
 
 		hidePopup();
-		// setDate( date, true );
+		setDate( date, true );
 	}
 
 	private void fire( HexaDate date )
