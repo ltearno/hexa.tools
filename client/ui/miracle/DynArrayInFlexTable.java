@@ -21,14 +21,12 @@ import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.Edits.Editor;
 
-public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayManager<T>, HasColumns<T, H>
+public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayManager<T>, HasColumns<T>
 {
 	MiracleTable table;
 	RefMng<T> refMng;
 
-	H headerData = null;
-
-	ArrayList<ColumnMng<T, H>> columns = new ArrayList<ColumnMng<T, H>>();
+	ArrayList<ColumnMng<T>> columns = new ArrayList<ColumnMng<T>>();
 
 	Comparator<T> userComparator = null;
 
@@ -63,15 +61,10 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		table.addMouseDownHandler( onTableMouseDown );
 	}
 
-	public void setHeaderData( H headerData )
-	{
-		this.headerData = headerData;
-	}
-
 	@Override
-	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
+	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<Void> hdrPrintsOn, CellClickMng<Void> hdrClickMng )
 	{
-		columns.add( new ColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
+		columns.add( new ColumnMng<T>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
 
 	@Override
@@ -83,8 +76,8 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 		{
 			printer.col = i;
 
-			ColumnMng<T, H> c = columns.get( i );
-			if( c.hdrPrintsOn.print( headerData, printer ) )
+			ColumnMng<T> c = columns.get( i );
+			if( c.hdrPrintsOn.print( null, printer ) )
 				printer = table.getHdrPrinter( 0 );
 		}
 	}
@@ -424,13 +417,13 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 				if( hdr < 0 )
 					return;
 
-				CellClickMng<H> clickMng = columns.get( hdr ).hdrClickMng;
+				CellClickMng<Void> clickMng = columns.get( hdr ).hdrClickMng;
 				if( clickMng == null )
 					return;
 
 				// get the printer, and go
 				Printer printer = table.getHdrPrinter( hdr );
-				clickMng.onTableClick( headerData, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), printer );
+				clickMng.onTableClick( null, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), printer );
 
 				return;
 			}
@@ -494,7 +487,7 @@ public class DynArrayInFlexTable<T, H> implements Prints<Iterable<T>>, DynArrayM
 
 			int newPos = DOM.getChildIndex( DOM.getParent( th ), th );
 
-			ColumnMng<T, H> dum = columns.get( cookie );
+			ColumnMng<T> dum = columns.get( cookie );
 			columns.set( cookie, columns.get( newPos ) );
 			columns.set( newPos, dum );
 

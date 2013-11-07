@@ -1,15 +1,15 @@
 package com.hexa.client.ui.miracle;
 
-public class ColumnMng<T, H> implements IColumnMng<T, H>
+public class ColumnMng<T> implements IColumnMng<T>
 {
 	PrintsOn<T> prints;
 	Edits<T> edits;
 	CellClickMng<T> clicks;
 
-	PrintsOn<H> hdrPrintsOn;
-	CellClickMng<H> hdrClickMng;
+	PrintsOn<Void> hdrPrintsOn;
+	CellClickMng<Void> hdrClickMng;
 
-	public ColumnMng( PrintsOn<T> prints, Edits<T> edits, CellClickMng<T> clicks, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
+	public ColumnMng( PrintsOn<T> prints, Edits<T> edits, CellClickMng<T> clicks, PrintsOn<Void> hdrPrintsOn, CellClickMng<Void> hdrClickMng )
 	{
 		this.prints = prints;
 		this.edits = edits;
@@ -20,7 +20,7 @@ public class ColumnMng<T, H> implements IColumnMng<T, H>
 	}
 
 	@Override
-	public PrintsOn<H> getHdrPrintsOn()
+	public PrintsOn<Void> getHdrPrintsOn()
 	{
 		return hdrPrintsOn;
 	}
@@ -44,7 +44,7 @@ public class ColumnMng<T, H> implements IColumnMng<T, H>
 	}
 
 	@Override
-	public CellClickMng<H> getHdrClickMng()
+	public CellClickMng<Void> getHdrClickMng()
 	{
 		return hdrClickMng;
 	}

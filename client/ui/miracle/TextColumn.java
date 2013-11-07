@@ -1,6 +1,6 @@
 package com.hexa.client.ui.miracle;
 
-public abstract class TextColumn<T> implements IColumnMng<T, Void>
+public abstract class TextColumn<T> implements IColumnMng<T>
 {
 	protected abstract String getText( T data );
 

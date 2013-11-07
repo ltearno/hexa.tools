@@ -17,12 +17,12 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.miracle.Edits.Editor;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTableBase.Row;
 import com.hexa.client.ui.treetable.TreeTableHandler;
-import com.hexa.client.ui.miracle.Edits.Editor;
 
-public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayManager<T>
+public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManager<T>
 {
 	public interface Resources
 	{
@@ -54,9 +54,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 	TreeTable table;
 	TreeRefMng<T> refMng;
 
-	H headerData = null;
-
-	ArrayList<ColumnMng<T, H>> columns = new ArrayList<ColumnMng<T, H>>();
+	ArrayList<ColumnMng<T>> columns = new ArrayList<ColumnMng<T>>();
 
 	Comparator<T> userComparator = null;
 
@@ -105,14 +103,9 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		this( table, refMng, null );
 	}
 
-	public void setHeaderData( H headerData )
+	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<Void> hdrPrintsOn, CellClickMng<Void> hdrClickMng )
 	{
-		this.headerData = headerData;
-	}
-
-	public void addColumn( PrintsOn<T> column, Edits<T> editMng, CellClickMng<T> clickMng, PrintsOn<H> hdrPrintsOn, CellClickMng<H> hdrClickMng )
-	{
-		columns.add( new ColumnMng<T, H>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
+		columns.add( new ColumnMng<T>( column, editMng, clickMng, hdrPrintsOn, hdrClickMng ) );
 	}
 
 	class HdrInTreeTablePrinter implements Printer
@@ -187,8 +180,8 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 		{
 			printer.col = i;
 
-			ColumnMng<T, H> c = columns.get( i );
-			if( c.hdrPrintsOn.print( headerData, printer ) )
+			ColumnMng<T> c = columns.get( i );
+			if( c.hdrPrintsOn.print( null, printer ) )
 				printer = new HdrInTreeTablePrinter( table, 0 );
 		}
 
@@ -618,7 +611,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 
 			TempPrinter printer = new TempPrinter();
 
-			columns.get( cookie ).hdrPrintsOn.print( headerData, printer );
+			columns.get( cookie ).hdrPrintsOn.print( null, printer );
 
 			// Due to asynchronism, it may be possible that the printer did not
 			// yet print anything, well... Too late, we use the source element
@@ -636,7 +629,7 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 			if( newPos < 0 )
 				return;
 
-			ColumnMng<T, H> dum = columns.get( cookie );
+			ColumnMng<T> dum = columns.get( cookie );
 			columns.set( cookie, columns.get( newPos ) );
 			columns.set( newPos, dum );
 
@@ -793,13 +786,13 @@ public class DynTreeInTreeTable<T, H> implements Prints<Iterable<T>>, DynArrayMa
 			if( column < 0 )
 				return;
 
-			CellClickMng<H> clickMng = columns.get( column ).hdrClickMng;
+			CellClickMng<Void> clickMng = columns.get( column ).hdrClickMng;
 			if( clickMng == null )
 				return;
 
 			// get the printer, and go
 			Printer printer = table.getHeaderPrinter( column );
-			clickMng.onTableClick( headerData, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), printer );
+			clickMng.onTableClick( null, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), printer );
 		}
 
 		@Override
