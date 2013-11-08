@@ -71,4 +71,9 @@ public abstract class CollectionOf<T> implements RefMng<T>
 
 		deleted( ref, object );
 	}
+
+	final public Iterable<T> getList()
+	{
+		return map.values();
+	}
 }
