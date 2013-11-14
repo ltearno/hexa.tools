@@ -76,4 +76,9 @@ public abstract class CollectionOf<T> implements RefMng<T>
 	{
 		return map.values();
 	}
+
+	final public int size()
+	{
+		return map.size();
+	}
 }
