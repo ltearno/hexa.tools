@@ -2,6 +2,7 @@ package com.hexa.client.ui.dialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MyDialogBox
@@ -29,6 +30,11 @@ public class MyDialogBox
 				}
 			} );
 		}
+	}
+
+	public HandlerRegistration addCloseClickHandler( ClickHandler handler )
+	{
+		return impl.addCloseClickHandler( handler );
 	}
 
 	public void setText( String text )

@@ -53,6 +53,7 @@ public class Delayer
 		public void run()
 		{
 			fTriggered = false;
+			reallyDoTimer.cancel();
 
 			callback.onDelayedEvent();
 		}
