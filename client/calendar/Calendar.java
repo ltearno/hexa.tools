@@ -1,9 +1,7 @@
 package com.hexa.client.calendar;
 
+import java.util.List;
 import java.util.Stack;
-
-import com.hexa.client.calendar.CalendarPeriodAssociative.PeriodAssociative;
-import com.hexa.client.calendar.CalendarPeriodAssociative.PeriodsAssociative;
 
 /**
  * Top Level Class parsing complex period expression and building CalendarPeriod objects<br>
@@ -37,22 +35,9 @@ public class Calendar
 		return _Parse( pExpression );
 	}
 
-	// public boolean ParseParam( String expression, String dateParam )
-	// {
-	// // calculates the day of week from the given date
-	// // int dayParam = Date( 'w', strtotime($dateParam) );
-	//
-	// int dayParam = CalendarFunctions.string_date_to_day_of_week( dateParam );
-	//
-	// boolean value = _ParseParam( expression, dateParam, dayParam );
-	//
-	// return value;
-	// }
-
 	// takes as a parameter an array of period expressions and their initial values
 	// returns an associative calendar that is the merge of all these
 	// $addFunction is a callback that can combine two period values
-	// TODO : firstPeriodAndValue might be wrong type
 	/**
 	 * Create CalendarPeriodAssociative using an adding function.<br>
 	 * PeriodAssociative are periods associated with an integer, result of the add function.
@@ -61,31 +46,39 @@ public class Calendar
 	 * @param addFunction
 	 * @return CalendarPeriodAssociative
 	 */
-	public CalendarPeriodAssociative MakeUpCalendarPeriodAssociative( PeriodsAssociative periodsAndValues, CalendarPeriodAssociative.AddFunction addFunction )
+	public <T> CalendarPeriodAssociative<T> MakeUpCalendarPeriodAssociative( List<Tree> trees, List<T> values, CalendarPeriodAssociative.AddFunction<T> addFunction )
 	{
-		int nbPeriod = periodsAndValues.size();
+		if( trees.size() != values.size() )
+		{
+			assert false : "Calendar.MakeUpCalendarPeriodAssociative : trees and values should have the same size !";
+			return null;
+		}
+
+		int nbPeriod = trees.size();
 		if( nbPeriod == 0 )
-			return new CalendarPeriodAssociative();
+			return new CalendarPeriodAssociative<T>();
 
 		// get the first non empty period
-		CalendarPeriodAssociative res = null;
+		CalendarPeriodAssociative<T> res = null;
 		int first = 0;
 		do
 		{
-			PeriodAssociative firstPeriodAndValue = periodsAndValues.get( first );
-			Tree tree = Parse( firstPeriodAndValue.getFrom() );
+			Tree tree = trees.get( first );
+			T value = values.get( first );
+
+//			PeriodAssociative firstPeriodAndValue = periodsAndValues.get( first );
+//			Tree tree = Parse( firstPeriodAndValue.getFrom() );
 			if( tree.getNbDays() == 0 )
 			{
-				// echo "IGNORING F PERIOD $first (" . $firstPeriodAndValue[0] . ") BECAUSE EMPTY<br>";
 				first++;
 				if( first >= nbPeriod )
-					return new CalendarPeriodAssociative();
+					return new CalendarPeriodAssociative<T>();
 				continue;
 			}
 
 			CalendarPeriod flat = tree.getFlat();
-			res = new CalendarPeriodAssociative();
-			res.Init( flat, firstPeriodAndValue.getValue() ); // TODO : firstPeriodAndValue might be wrong type
+			res = new CalendarPeriodAssociative<T>();
+			res.Init( flat, value );
 
 			break;
 		}
@@ -96,7 +89,9 @@ public class Calendar
 
 		for( int i = first + 1; i < nbPeriod; i++ )
 		{
-			Tree tree = Parse( periodsAndValues.get( i ).getFrom() );
+			Tree tree = trees.get( i );
+			T value = values.get( i );
+
 			if( tree.getNbDays() == 0 )
 			{
 				// echo "IGNORING N PERIOD $i (" . $periodsAndValues[$i][0] . ") BECAUSE EMPTY<br>";
@@ -104,8 +99,8 @@ public class Calendar
 			}
 
 			CalendarPeriod flat = tree.getFlat();
-			CalendarPeriodAssociative assoc = new CalendarPeriodAssociative();
-			assoc.Init( flat, periodsAndValues.get( i ).getValue() ); // TODO : firstPeriodAndValue might be wrong type
+			CalendarPeriodAssociative<T> assoc = new CalendarPeriodAssociative<T>();
+			assoc.Init( flat, value );
 
 			if( res.Add( assoc, addFunction ) == null )
 				return null;
@@ -113,6 +108,59 @@ public class Calendar
 
 		return res;
 	}
+
+//	public CalendarPeriodAssociative MakeUpCalendarPeriodAssociative( PeriodsAssociative periodsAndValues, CalendarPeriodAssociative.AddFunction addFunction )
+//	{
+//		int nbPeriod = periodsAndValues.size();
+//		if( nbPeriod == 0 )
+//			return new CalendarPeriodAssociative();
+//
+//		// get the first non empty period
+//		CalendarPeriodAssociative res = null;
+//		int first = 0;
+//		do
+//		{
+//			PeriodAssociative firstPeriodAndValue = periodsAndValues.get( first );
+//			Tree tree = Parse( firstPeriodAndValue.getFrom() );
+//			if( tree.getNbDays() == 0 )
+//			{
+//				// echo "IGNORING F PERIOD $first (" . $firstPeriodAndValue[0] . ") BECAUSE EMPTY<br>";
+//				first++;
+//				if( first >= nbPeriod )
+//					return new CalendarPeriodAssociative();
+//				continue;
+//			}
+//
+//			CalendarPeriod flat = tree.getFlat();
+//			res = new CalendarPeriodAssociative();
+//			res.Init( flat, firstPeriodAndValue.getValue() ); // TODO : firstPeriodAndValue might be wrong type
+//
+//			break;
+//		}
+//		while( true );
+//
+//		if( res == null )
+//			return null; // no non-empty period
+//
+//		for( int i = first + 1; i < nbPeriod; i++ )
+//		{
+//			Tree tree = Parse( periodsAndValues.get( i ).getFrom() );
+//			if( tree.getNbDays() == 0 )
+//			{
+//				// echo "IGNORING N PERIOD $i (" . $periodsAndValues[$i][0] . ") BECAUSE EMPTY<br>";
+//				continue;
+//			}
+//
+//			CalendarPeriod flat = tree.getFlat();
+//			CalendarPeriodAssociative assoc = new CalendarPeriodAssociative();
+//			assoc.Init( flat, periodsAndValues.get( i ).getValue() ); // TODO : firstPeriodAndValue might be wrong type
+//
+//			if( res.Add( assoc, addFunction ) == null )
+//				return null;
+//		}
+//
+//		return res;
+//	}
 
 	/**
 	 *

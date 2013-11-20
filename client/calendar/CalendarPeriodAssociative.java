@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.hexa.client.calendar.CalendarPeriod.Period;
 
-public class CalendarPeriodAssociative
+public class CalendarPeriodAssociative<T>
 {
 	// Attributes
 	// list of untouching periods in chronological order
-	private PeriodsAssociative periods = new PeriodsAssociative(); // 0:from, 1:to, 2:value
+	private List<PeriodAssociative<T>> periods = new ArrayList<PeriodAssociative<T>>(); // 0:from, 1:to, 2:value
 
 	// Constructors
 	public CalendarPeriodAssociative()
@@ -18,31 +18,30 @@ public class CalendarPeriodAssociative
 	}
 
 	// Laurent : Constructors added for commodity
-	public CalendarPeriodAssociative( CalendarPeriod period, int value )
+	public CalendarPeriodAssociative( CalendarPeriod period, T value )
 	{
 		Init( period, value );
 	}
 
 	// Getters
-	public PeriodsAssociative getPeriods()
+	public List<PeriodAssociative<T>> getPeriods()
 	{
 		return periods;
 	}
 
 	// Setters
-	public boolean setPeriods( PeriodsAssociative p )
+	public void setPeriods( List<PeriodAssociative<T>> p )
 	{
 		periods = p;
-		return true;
 	}
 
 	// init from a CalendarPeriod with a value
-	public void Init( CalendarPeriod period, int value )
+	public void Init( CalendarPeriod period, T value )
 	{
 		for( int i = 0; i < period.getPeriods().size(); i++ )
 		{
 			Period p = period.getPeriods().get( i );
-			periods.add( new PeriodAssociative( p.getFrom(), p.getTo(), value ) );
+			periods.add( new PeriodAssociative<T>( p.getFrom(), p.getTo(), value ) );
 		}
 	}
 
@@ -52,32 +51,32 @@ public class CalendarPeriodAssociative
 		String out = "";
 		for( int i = 0; i < periods.size(); i++ )
 		{
-			PeriodAssociative period = periods.get( i );
-			out += "[" + period.getFrom() + "->" + period.getTo() + "] => " + period.getValue() + "<br>";
+			PeriodAssociative<T> period = periods.get( i );
+			out += "[" + period.getFrom() + ";" + period.getTo() + "] => " + period.getValue() + "<br>";
 		}
 		return out;
 	}
 
 	// print string
-	public String OutEx( Printer printer )
+	public String OutEx( Printer<T> printer )
 	{
 		String out = "";
 		for( int i = 0; i < periods.size(); i++ )
 		{
-			PeriodAssociative period = periods.get( i );
+			PeriodAssociative<T> period = periods.get( i );
 			out += "[" + period.getFrom() + "->" + period.getTo() + "] => " + printer.print( period.getValue() ) + "<br>";
 		}
 		return out;
 	}
 
 	// adding two associative periods
-	public Boolean Add( CalendarPeriodAssociative period, AddFunction addFunction )
+	public Boolean Add( CalendarPeriodAssociative<T> period, AddFunction<T> addFunction )
 	{
 		// combine les deux tableaux dans ordre croissant
-		PeriodsAssociative combined = _Combine( periods, period.getPeriods() );
+		List<PeriodAssociative<T>> combined = _Combine( periods, period.getPeriods() );
 
 		// merge overlapping periods
-		PeriodsAssociative result = _Merge( combined, addFunction );
+		List<PeriodAssociative<T>> result = _Merge( combined, addFunction );
 		if( result == null )
 			return null; // we should stop the MakeUpCalendarAssociative process
 
@@ -94,7 +93,7 @@ public class CalendarPeriodAssociative
 		List<Period> periods = new ArrayList<Period>();
 		for( int i = 0; i < this.periods.size(); i++ )
 		{
-			PeriodAssociative p = this.periods.get( i );
+			PeriodAssociative<T> p = this.periods.get( i );
 			periods.add( new Period( p.getFrom(), p.getTo() ) );
 		}
 		// use merge to merge jointed periods...
@@ -104,29 +103,27 @@ public class CalendarPeriodAssociative
 	}
 
 	// returns a CalendarPeriodAssociative objet corresponding to the periods where $testFunction returned true
-	public CalendarPeriodAssociative Extract( TestFunction testFunction )
+	public CalendarPeriodAssociative<T> Extract( TestFunction<T> testFunction )
 	{
-		PeriodsAssociative _periods = new PeriodsAssociative();
+		List<PeriodAssociative<T>> _periods = new ArrayList<PeriodAssociative<T>>();
 		for( int i = 0; i < periods.size(); i++ )
 		{
-			PeriodAssociative test = periods.get( i );
+			PeriodAssociative<T> test = periods.get( i );
 
-			if( testFunction.function( test.getValue() ) == true )
-			{
+			if( testFunction.function( test.getValue() ) )
 				_periods.add( test );
-			}
 		}
 
-		CalendarPeriodAssociative res = new CalendarPeriodAssociative();
+		CalendarPeriodAssociative<T> res = new CalendarPeriodAssociative<T>();
 		res.setPeriods( _periods );
 
 		return res;
 	}
 
 	// returns a new object that is the current object trimmed by the given $calendarPeriod
-	public CalendarPeriodAssociative Trim( CalendarPeriodAssociative calendarPeriod )
+	public CalendarPeriodAssociative<T> Trim( CalendarPeriodAssociative<T> calendarPeriod )
 	{
-		PeriodsAssociative result = new PeriodsAssociative();
+		List<PeriodAssociative<T>> result = new ArrayList<PeriodAssociative<T>>();
 
 		int count1 = periods.size();
 		int count2 = calendarPeriod.getPeriods().size();
@@ -149,7 +146,7 @@ public class CalendarPeriodAssociative
 			// after that test, we can assume there is a non-void intersection
 			else
 			{
-				result.add( new PeriodAssociative( CalendarFunctions.max_date( periods.get( i ).getFrom(), calendarPeriod.getPeriods().get( j ).getFrom() ),
+				result.add( new PeriodAssociative<T>( CalendarFunctions.max_date( periods.get( i ).getFrom(), calendarPeriod.getPeriods().get( j ).getFrom() ),
 						CalendarFunctions.min_date( periods.get( i ).getTo(), calendarPeriod.getPeriods().get( j ).getTo() ), periods.get( i ).getValue() ) );
 
 				if( periods.get( i ).getTo().compareTo( calendarPeriod.getPeriods().get( j ).getTo() ) > 0 )
@@ -159,16 +156,16 @@ public class CalendarPeriodAssociative
 			}
 		}
 
-		CalendarPeriodAssociative res = new CalendarPeriodAssociative();
+		CalendarPeriodAssociative<T> res = new CalendarPeriodAssociative<T>();
 		res.setPeriods( result );
 
 		return res;
 	}
 
 	// combine two period arrays ordered by from date
-	private PeriodsAssociative _Combine( PeriodsAssociative periods1, PeriodsAssociative periods2 )
+	private List<PeriodAssociative<T>> _Combine( List<PeriodAssociative<T>> periods1, List<PeriodAssociative<T>> periods2 )
 	{
-		PeriodsAssociative result = new PeriodsAssociative();
+		List<PeriodAssociative<T>> result = new ArrayList<PeriodAssociative<T>>();
 
 		int count1 = periods1.size();
 		int count2 = periods2.size();
@@ -203,76 +200,75 @@ public class CalendarPeriodAssociative
 	}
 
 	// merge, that is combine overlapping periods
-	private PeriodsAssociative _Merge( PeriodsAssociative periods, AddFunction addFunction )
+	private List<PeriodAssociative<T>> _Merge( List<PeriodAssociative<T>> periods, AddFunction<T> addFunction )
 	{
 		int count = periods.size();
 		if( count == 0 )
-			return new PeriodsAssociative();
+			return new ArrayList<PeriodAssociative<T>>();
 		if( count == 1 )
 			return periods;
 
-		PeriodsAssociative result = new PeriodsAssociative();
+		List<PeriodAssociative<T>> result = new ArrayList<PeriodAssociative<T>>();
 
 		while( periods.size() > 1 )
 		{
 			if( periods.get( 1 ).getFrom().compareTo( periods.get( 0 ).getTo() ) > 0 )
 			{
 				// period is disjointed, so forget the first period, add it directly into the results
-				result.add( periods.shift() );
+				result.add( periods.remove( 0 ) );
 			}
 			else
 			{
-				PeriodsAssociative toAdd = new PeriodsAssociative();
+				List<PeriodAssociative<T>> toAdd = new ArrayList<PeriodAssociative<T>>();
 
 				if( periods.get( 0 ).getFrom().compareTo( periods.get( 1 ).getFrom() ) < 0 )
 				{
-					PeriodAssociative created = new PeriodAssociative( periods.get( 0 ).getFrom(), CalendarFunctions.date_add_day( periods.get( 1 ).getFrom(),
+					PeriodAssociative<T> created = new PeriodAssociative<T>( periods.get( 0 ).getFrom(), CalendarFunctions.date_add_day( periods.get( 1 ).getFrom(),
 							-1 ), periods.get( 0 ).getValue() );
 					toAdd.add( created );
 				}
 
 				if( periods.get( 1 ).getTo().compareTo( periods.get( 0 ).getTo() ) < 0 )
 				{
-					Integer r = addFunction.function( periods.get( 0 ).getValue(), periods.get( 1 ).getValue() );
+					T r = addFunction.function( periods.get( 0 ).getValue(), periods.get( 1 ).getValue() );
 					if( r == null )
 						return null;
 
-					toAdd.add( new PeriodAssociative( periods.get( 1 ).getFrom(), periods.get( 1 ).getTo(), r ) );
-					toAdd.add( new PeriodAssociative( CalendarFunctions.date_add_day( periods.get( 1 ).getTo(), 1 ), periods.get( 0 ).getTo(), periods.get( 0 )
+					toAdd.add( new PeriodAssociative<T>( periods.get( 1 ).getFrom(), periods.get( 1 ).getTo(), r ) );
+					toAdd.add( new PeriodAssociative<T>( CalendarFunctions.date_add_day( periods.get( 1 ).getTo(), 1 ), periods.get( 0 ).getTo(), periods.get( 0 )
 							.getValue() ) );
 				}
 				else if( periods.get( 1 ).getTo().equals( periods.get( 0 ).getTo() ) )
 				{
-					Integer r = addFunction.function( periods.get( 0 ).getValue(), periods.get( 1 ).getValue() );
+					T r = addFunction.function( periods.get( 0 ).getValue(), periods.get( 1 ).getValue() );
 					if( r == null )
 						return null;
 
-					toAdd.add( new PeriodAssociative( periods.get( 1 ).getFrom(), periods.get( 1 ).getTo(), r ) );
+					toAdd.add( new PeriodAssociative<T>( periods.get( 1 ).getFrom(), periods.get( 1 ).getTo(), r ) );
 				}
 				else
 				// $periods[1][1] > $periods[0][1]
 				{
-					Integer r = addFunction.function( periods.get( 0 ).getValue(), periods.get( 1 ).getValue() );
+					T r = addFunction.function( periods.get( 0 ).getValue(), periods.get( 1 ).getValue() );
 					if( r == null )
 						return null;
 
-					toAdd.add( new PeriodAssociative( periods.get( 1 ).getFrom(), periods.get( 0 ).getTo(), r ) );
-					toAdd.add( new PeriodAssociative( CalendarFunctions.date_add_day( periods.get( 0 ).getTo(), 1 ), periods.get( 1 ).getTo(), periods.get( 1 )
-							.getValue() ) );
+					toAdd.add( new PeriodAssociative<T>( periods.get( 1 ).getFrom(), periods.get( 0 ).getTo(), r ) );
+					toAdd.add( new PeriodAssociative<T>( CalendarFunctions.date_add_day( periods.get( 0 ).getTo(), 1 ), periods.get( 1 ).getTo(), periods.get( 1 ).getValue() ) );
 				}
 
 				// periods 0 and 1 should be replaced by the newly calculated $toAdd periods
 
 				// remove periods 0 and 1
-				periods.shift();
-				periods.shift();
+				periods.remove( 0 );
+				periods.remove( 0 );
 
 				periods = _Combine( periods, toAdd );
 			}
 		}
 
 		if( periods.size() > 0 )
-			result.add( periods.shift() );
+			result.add( periods.remove( 0 ) );
 
 		return result;
 	}
@@ -285,78 +281,27 @@ public class CalendarPeriodAssociative
 	}
 
 	// Interfaces
-	public interface Printer
+	public interface Printer<T>
 	{
-		public String print( Integer value );
+		public String print( T value );
 	}
 
-	public interface AddFunction
+	public interface AddFunction<T>
 	{
-		public Integer function( Integer a, Integer b );
+		public T function( T a, T b );
 	}
 
-	public interface TestFunction
+	public interface TestFunction<T>
 	{
-		public Boolean function( Integer a );
+		public Boolean function( T a );
 	}
 
-	// Inner Classes
-	public class PeriodsAssociative
-	{
-		// Attributes
-		private ArrayList<PeriodAssociative> periods = null;
-
-		// Constructors
-		PeriodsAssociative()
-		{
-			periods = new ArrayList<PeriodAssociative>();
-			periods.trimToSize();
-		}
-
-		// Getters
-		public PeriodAssociative get( int index )
-		{
-			return periods.get( index );
-		}
-
-		// Public methods
-		public boolean add( PeriodAssociative p )
-		{
-			return periods.add( p );
-		}
-
-		public int size()
-		{
-			return periods.size();
-		}
-
-		public PeriodAssociative shift()
-		{
-			PeriodAssociative p = periods.get( 0 );
-			periods.remove( 0 );
-			return p;
-		}
-
-		@Override
-		public String toString()
-		{
-			String res = "[";
-			for( int i = 0; i < periods.size(); i++ )
-			{
-				res += "{" + periods.get( i ).toString() + "}";
-			}
-			res += "]";
-			return res;
-		}
-
-	}
-
-	public class PeriodAssociative
+	public static class PeriodAssociative<T>
 	{
 		// Attributes
 		private String from = null;
 		private String to = null;
-		private Integer value = null;
+		private T value = null;
 
 		// Constructors
 		PeriodAssociative()
@@ -369,7 +314,7 @@ public class CalendarPeriodAssociative
 			to = pTo;
 		}
 
-		PeriodAssociative( String pFrom, String pTo, int pV )
+		PeriodAssociative( String pFrom, String pTo, T pV )
 		{
 			from = pFrom;
 			to = pTo;
@@ -385,19 +330,17 @@ public class CalendarPeriodAssociative
 		public String getTo()
 		{
 			return to;
-
 		}
 
-		public Integer getValue()
+		public T getValue()
 		{
 			return value;
 		}
 
 		// Setters
-		public boolean setValue( int v )
+		public void setValue( T v )
 		{
 			value = v;
-			return true;
 		}
 
 		// Public methods
