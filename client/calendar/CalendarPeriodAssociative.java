@@ -407,7 +407,5 @@ public class CalendarPeriodAssociative
 			String res = "[" + from + ":" + to + "] = " + value;
 			return res;
 		}
-
 	}
-
 }

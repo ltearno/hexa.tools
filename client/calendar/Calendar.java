@@ -13,20 +13,12 @@ import com.hexa.client.calendar.CalendarPeriodAssociative.PeriodsAssociative;
  * Expression is built in Reverse Polish Notation format. <br>
  * <b>Example:</b> Period from the 12 june 2013 to the 21 june 2013 except Sunday<br>
  * String expression = "[2013-06-12;2013-06-21] d0 ~ &";<br>
- * Calendar cal = new Calendar(expression);<br>
- * <br>
- * This code creates an internal Tree expression representation and a flat CalendarPeriod object<br>
- * Those objects are available via the : getTree() and getCalendarPeriod() accessors.<br>
- * <br>
- * <b>Public methods</b> allow to directly read information:<br>
- * GetBeautifull(Tree) for String representation<br>
- * GetBoundaries(Tree) for getting from and to dates<br>
- * GetNbDays(Tree) and GetNbNights<br>
+ * Tree tree = Calendar.get().Parse(expression);<br>
  * <br>
  * <b>Special:</b> MakupCalendarPeriodAssociative() see method description<br>
- * 
+ *
  * @author Arnaud, traduction Java Laurent
- * 
+ *
  */
 public class Calendar
 {
@@ -64,7 +56,7 @@ public class Calendar
 	/**
 	 * Create CalendarPeriodAssociative using an adding function.<br>
 	 * PeriodAssociative are periods associated with an integer, result of the add function.
-	 * 
+	 *
 	 * @param periodsAndValues
 	 * @param addFunction
 	 * @return CalendarPeriodAssociative
@@ -123,7 +115,7 @@ public class Calendar
 	}
 
 	/**
-	 * 
+	 *
 	 * @author Arnaud, Laurent
 	 */
 	private Tree _Parse( String pExpression )
@@ -233,10 +225,10 @@ public class Calendar
 	// }
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return boolean
-	 * 
+	 *
 	 * @author Arnaud, Laurent
 	 */
 	private Tree _NextToken( ParsingExpression exp )
