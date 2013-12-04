@@ -846,4 +846,12 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 			}
 		}
 	};
+
+	@Override
+	public void clearAllRows()
+	{
+		killCurrentEdit();
+
+		table.clear();
+	}
 }

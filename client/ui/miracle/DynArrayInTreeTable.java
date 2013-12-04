@@ -614,4 +614,12 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			}
 		}
 	};
+
+	@Override
+	public void clearAllRows()
+	{
+		killCurrentEdit();
+
+		table.clear();
+	}
 }

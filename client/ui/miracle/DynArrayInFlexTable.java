@@ -668,4 +668,13 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			}
 		}
 	};
+
+	@Override
+	public void clearAllRows()
+	{
+		// to reset the edition state, just in case...
+		killCurrentEdit();
+
+		table.clear( true );
+	}
 }

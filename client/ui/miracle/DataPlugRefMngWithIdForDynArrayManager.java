@@ -26,6 +26,7 @@ public final class DataPlugRefMngWithIdForDynArrayManager<T extends IHasIntegerI
 	@Override
 	protected void refreshed( Iterable<T> objects )
 	{
+		mng.clearAllRows();
 		mng.print( objects );
 	}
 }

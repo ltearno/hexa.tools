@@ -13,4 +13,6 @@ public interface DynArrayManager<T>
 	void printHeaders();
 
 	void setComparator( Comparator<T> comparator );
+
+	void clearAllRows();
 }
