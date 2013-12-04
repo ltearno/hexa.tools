@@ -35,7 +35,7 @@ public class TextEditor extends Composite
 
 	public void edit( String currentText, final IAsyncCallback<String> callback, int width, int height )
 	{
-		tb.setPixelSize( width, height );
+		tb.setWidth( width + "px" );
 
 		tb.setText( currentText );
 
