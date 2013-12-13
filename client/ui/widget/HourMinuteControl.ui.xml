@@ -2,11 +2,19 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-		
+
 	</ui:style>
 	<g:HTMLPanel>
 		<table>
-			<tr><td><g:ListBox ui:field='hour'/></td><td>:</td><td><g:ListBox ui:field='minute'/></td></tr>
+			<tr>
+				<td>
+					<g:ListBox ui:field='hour' />
+				</td>
+				<td>:</td>
+				<td>
+					<g:ListBox ui:field='minute' />
+				</td>
+			</tr>
 		</table>
 	</g:HTMLPanel>
 </ui:UiBinder> 
