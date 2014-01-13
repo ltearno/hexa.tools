@@ -48,7 +48,6 @@ import com.google.gwt.core.ext.linker.impl.SelectionInformation;
 @LinkerOrder( Order.POST )
 public class AppCacheLinker extends AbstractLinker
 {
-
 	private static String MANIFEST;
 
 	@Override
