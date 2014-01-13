@@ -1,6 +1,8 @@
 package com.hexa.client.tools;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
@@ -90,6 +92,20 @@ public class HexaTools
 		int[] res = new int[ss.length];
 		for( int i = 0; i < ss.length; i++ )
 			res[i] = Integer.parseInt( ss[i] );
+		return res;
+	}
+
+	public static List<Integer> stringToList( String s )
+	{
+		List<Integer> res = new ArrayList<Integer>();
+
+		if( s.length() == 0 )
+			return res;
+
+		String[] ss = s.split( "," );
+		for( int i = 0; i < ss.length; i++ )
+			res.add( Integer.parseInt( ss[i] ) );
+
 		return res;
 	}
 
