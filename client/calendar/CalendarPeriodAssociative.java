@@ -9,7 +9,9 @@ public class CalendarPeriodAssociative<T>
 {
 	// Attributes
 	// list of untouching periods in chronological order
-	private List<PeriodAssociative<T>> periods = new ArrayList<PeriodAssociative<T>>(); // 0:from, 1:to, 2:value
+	private List<PeriodAssociative<T>> periods = new ArrayList<PeriodAssociative<T>>(); // 0:from,
+																						// 1:to,
+																						// 2:value
 
 	// Constructors
 	public CalendarPeriodAssociative()
@@ -102,7 +104,8 @@ public class CalendarPeriodAssociative<T>
 		return res;
 	}
 
-	// returns a CalendarPeriodAssociative objet corresponding to the periods where $testFunction returned true
+	// returns a CalendarPeriodAssociative objet corresponding to the periods
+	// where $testFunction returned true
 	public CalendarPeriodAssociative<T> Extract( TestFunction<T> testFunction )
 	{
 		List<PeriodAssociative<T>> _periods = new ArrayList<PeriodAssociative<T>>();
@@ -120,7 +123,8 @@ public class CalendarPeriodAssociative<T>
 		return res;
 	}
 
-	// returns a new object that is the current object trimmed by the given $calendarPeriod
+	// returns a new object that is the current object trimmed by the given
+	// $calendarPeriod
 	public CalendarPeriodAssociative<T> Trim( CalendarPeriodAssociative<T> calendarPeriod )
 	{
 		List<PeriodAssociative<T>> result = new ArrayList<PeriodAssociative<T>>();
@@ -135,19 +139,21 @@ public class CalendarPeriodAssociative<T>
 		{
 			// one of the periods begins after the end of the other
 			if( periods.get( i ).getFrom().compareTo( calendarPeriod.getPeriods().get( j ).getTo() ) > 0 )
-			{ // period 1 begins after period 2 finishes => period2 is eliminated !
+			{ // period 1 begins after period 2 finishes => period2 is
+				// eliminated !
 				j++;
 			}
 			else if( calendarPeriod.getPeriods().get( j ).getFrom().compareTo( periods.get( i ).getTo() ) > 0 )
-			{ // period 2 begins after end of period 1 => period 1 is eliminated !
+			{ // period 2 begins after end of period 1 => period 1 is eliminated
+				// !
 				i++;
 			}
 
 			// after that test, we can assume there is a non-void intersection
 			else
 			{
-				result.add( new PeriodAssociative<T>( CalendarFunctions.max_date( periods.get( i ).getFrom(), calendarPeriod.getPeriods().get( j ).getFrom() ),
-						CalendarFunctions.min_date( periods.get( i ).getTo(), calendarPeriod.getPeriods().get( j ).getTo() ), periods.get( i ).getValue() ) );
+				result.add( new PeriodAssociative<T>( CalendarFunctions.max_date( periods.get( i ).getFrom(), calendarPeriod.getPeriods().get( j ).getFrom() ), CalendarFunctions.min_date( periods.get( i ).getTo(), calendarPeriod.getPeriods().get( j ).getTo() ), periods.get( i )
+						.getValue() ) );
 
 				if( periods.get( i ).getTo().compareTo( calendarPeriod.getPeriods().get( j ).getTo() ) > 0 )
 					j++;
@@ -214,7 +220,8 @@ public class CalendarPeriodAssociative<T>
 		{
 			if( periods.get( 1 ).getFrom().compareTo( periods.get( 0 ).getTo() ) > 0 )
 			{
-				// period is disjointed, so forget the first period, add it directly into the results
+				// period is disjointed, so forget the first period, add it
+				// directly into the results
 				result.add( periods.remove( 0 ) );
 			}
 			else
@@ -223,8 +230,7 @@ public class CalendarPeriodAssociative<T>
 
 				if( periods.get( 0 ).getFrom().compareTo( periods.get( 1 ).getFrom() ) < 0 )
 				{
-					PeriodAssociative<T> created = new PeriodAssociative<T>( periods.get( 0 ).getFrom(), CalendarFunctions.date_add_day( periods.get( 1 ).getFrom(),
-							-1 ), periods.get( 0 ).getValue() );
+					PeriodAssociative<T> created = new PeriodAssociative<T>( periods.get( 0 ).getFrom(), CalendarFunctions.date_add_day( periods.get( 1 ).getFrom(), -1 ), periods.get( 0 ).getValue() );
 					toAdd.add( created );
 				}
 
@@ -235,8 +241,7 @@ public class CalendarPeriodAssociative<T>
 						return null;
 
 					toAdd.add( new PeriodAssociative<T>( periods.get( 1 ).getFrom(), periods.get( 1 ).getTo(), r ) );
-					toAdd.add( new PeriodAssociative<T>( CalendarFunctions.date_add_day( periods.get( 1 ).getTo(), 1 ), periods.get( 0 ).getTo(), periods.get( 0 )
-							.getValue() ) );
+					toAdd.add( new PeriodAssociative<T>( CalendarFunctions.date_add_day( periods.get( 1 ).getTo(), 1 ), periods.get( 0 ).getTo(), periods.get( 0 ).getValue() ) );
 				}
 				else if( periods.get( 1 ).getTo().equals( periods.get( 0 ).getTo() ) )
 				{
@@ -257,7 +262,8 @@ public class CalendarPeriodAssociative<T>
 					toAdd.add( new PeriodAssociative<T>( CalendarFunctions.date_add_day( periods.get( 0 ).getTo(), 1 ), periods.get( 1 ).getTo(), periods.get( 1 ).getValue() ) );
 				}
 
-				// periods 0 and 1 should be replaced by the newly calculated $toAdd periods
+				// periods 0 and 1 should be replaced by the newly calculated
+				// $toAdd periods
 
 				// remove periods 0 and 1
 				periods.remove( 0 );

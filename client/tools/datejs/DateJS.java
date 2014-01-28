@@ -29,11 +29,12 @@ public class DateJS
 	private static boolean loaded;
 
 	// tries to parse a textual represented date and
-	// returns a String in the "yyyy-MM-dd" format if successfull, or null if not
+	// returns a String in the "yyyy-MM-dd" format if successfull, or null if
+	// not
 	public static String parseDate( String text )
 	{
 		// loads the script if not loaded yet
-		if( ! loaded )
+		if( !loaded )
 		{
 			loaded = true;
 

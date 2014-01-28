@@ -9,7 +9,7 @@ import com.hexa.client.ui.widget.ValidatorCallback;
 
 /**
  * @author Arnaud
- *
+ * 
  */
 public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallback, ITreeTableEditorManager
 {

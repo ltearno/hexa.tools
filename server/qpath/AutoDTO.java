@@ -20,9 +20,11 @@ public class AutoDTO<T>
 		this.target = target;
 
 		/*
-		 * Proxy.newProxyInstance(target.getClassLoader(), new Class<?>[] {target}, new InvocationHandler() {
+		 * Proxy.newProxyInstance(target.getClassLoader(), new Class<?>[]
+		 * {target}, new InvocationHandler() {
 		 * 
-		 * @Override public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable { return null; } });
+		 * @Override public Object invoke(Object arg0, Method arg1, Object[]
+		 * arg2) throws Throwable { return null; } });
 		 */
 
 		tablePrefix = qpath.pluralize( JavaDBNames.javaToDBName( target.getSimpleName() ) );

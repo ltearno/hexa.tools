@@ -2,5 +2,7 @@ package com.hexa.client.databinding;
 
 public enum Mode
 {
-	OneWay, TwoWay, OneWayToSource
+	OneWay,
+	TwoWay,
+	OneWayToSource
 }

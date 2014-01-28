@@ -83,8 +83,7 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 		ImageResource closeImage = ImageResources.INSTANCE.close();
 		titleSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
 
-		String html = template.replaceAll( "#HANDLER_SIZE#", "" + resizeHandlerSize ).replaceAll( "#TITLE_SIZE#", "" + titleSize )
-				.replaceAll( "#CONTENT_TOP#", "" + (resizeHandlerSize + titleSize) ).replaceAll( "#TITLE_RIGHT#", "" + (resizeHandlerSize + titleSize) );
+		String html = template.replaceAll( "#HANDLER_SIZE#", "" + resizeHandlerSize ).replaceAll( "#TITLE_SIZE#", "" + titleSize ).replaceAll( "#CONTENT_TOP#", "" + (resizeHandlerSize + titleSize) ).replaceAll( "#TITLE_RIGHT#", "" + (resizeHandlerSize + titleSize) );
 		main.setInnerHTML( html );
 
 		topLeft = (Element) main.getChild( 0 );
@@ -126,7 +125,8 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 
 	public void show( boolean modal )
 	{
-		// try to auto size the dialog, based on the content size, mais ca marche pas ... :(
+		// try to auto size the dialog, based on the content size, mais ca
+		// marche pas ... :(
 		if( contentWidget != null )
 		{
 			Scheduler.get().scheduleDeferred( new ScheduledCommand()
@@ -136,7 +136,8 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 				{
 					// try to fit to the content size
 
-					int maxWidth = Window.getClientWidth() - 20; // 20 pixels of margin
+					int maxWidth = Window.getClientWidth() - 20; // 20 pixels of
+																	// margin
 					int w = Math.max( ResizablePanel.this.getOffsetWidth(), Math.max( contentWidget.getElement().getScrollWidth(), contentWidget.getElement().getOffsetWidth() ) ) + resizeHandlerSize * 2;
 					if( w > maxWidth )
 						w = maxWidth;
@@ -364,7 +365,7 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 		{
 			boolean res = true;
 
-			int screenHeight = Window.getClientHeight(); //RootLayoutPanel.get().getOffsetHeight()
+			int screenHeight = Window.getClientHeight(); // RootLayoutPanel.get().getOffsetHeight()
 			int screenWidth = Window.getClientWidth(); // RootLayoutPanel.get().getOffsetWidth()
 
 			// adjust horizontally

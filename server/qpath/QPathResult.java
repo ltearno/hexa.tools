@@ -139,7 +139,9 @@ public class QPathResult implements Iterable<QPathResult.QPathResultRow>
 		/*
 		 * Implementation of QPathResultRow
 		 * 
-		 * @see com.hexa.server.qpath.QPathResult.QPathResultRow#get(java.lang.String)
+		 * @see
+		 * com.hexa.server.qpath.QPathResult.QPathResultRow#get(java.lang.String
+		 * )
 		 */
 
 		@Override
@@ -151,6 +153,7 @@ public class QPathResult implements Iterable<QPathResult.QPathResultRow>
 	}
 
 	/*
-	 * public <I, T> T getValueIndexed( String indexField, I indexedValue, String field ) { return null; }
+	 * public <I, T> T getValueIndexed( String indexField, I indexedValue,
+	 * String field ) { return null; }
 	 */
 }

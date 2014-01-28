@@ -93,10 +93,12 @@ public class Raphael extends Panel
 			setElement( obj.node() );
 			el = obj;
 
-			// the DOM element has already been physically attached to the DOM (by RaphaelJS)
+			// the DOM element has already been physically attached to the DOM
+			// (by RaphaelJS)
 			// so we only need to do the logical attach
 
-			// just to be clean and framework friendly. In fact since in the constructor, we already know that parent is null !
+			// just to be clean and framework friendly. In fact since in the
+			// constructor, we already know that parent is null !
 			removeFromParent();
 
 			shapes.add( this );
@@ -446,8 +448,9 @@ public class Raphael extends Panel
 		}
 		/**
 		 * doesn't seem to work
-		 *
-		 * public String getSubpath(int from, int to) { return ((RaphaelJS.Path)el).getSubpath(from, to); }
+		 * 
+		 * public String getSubpath(int from, int to) { return
+		 * ((RaphaelJS.Path)el).getSubpath(from, to); }
 		 */
 	}
 

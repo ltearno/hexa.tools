@@ -30,7 +30,7 @@ public class ClazzGenerator extends Generator
 	String askedTypeName = null;
 
 	// type info on the asked class
-	//JClassType askedType = null;
+	// JClassType askedType = null;
 
 	// type for which we provide informations
 	JClassType reflectedType = null;
@@ -57,7 +57,7 @@ public class ClazzGenerator extends Generator
 		JClassType[] interfaces = askedType.getImplementedInterfaces();
 		for( int i = 0; i < interfaces.length; i++ )
 		{
-			if( ! interfaces[i].getQualifiedSourceName().equals( "com.hexa.client.classinfo.Clazz" ) )
+			if( !interfaces[i].getQualifiedSourceName().equals( "com.hexa.client.classinfo.Clazz" ) )
 				continue;
 
 			JParameterizedType parametrized = interfaces[i].isParameterized();
@@ -198,7 +198,7 @@ class OneClazzGenerator
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
 		if( superclassGeneratedClazz != null )
-			sourceWriter.println( "com.hexa.client.classinfo.ClassInfo.RegisterClazz( new "+superclassGeneratedClazz+"() );" );
+			sourceWriter.println( "com.hexa.client.classinfo.ClassInfo.RegisterClazz( new " + superclassGeneratedClazz + "() );" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -424,8 +424,7 @@ class OneClazzGenerator
 		sourceWriter.println( "public " + methodClassName + "()" );
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
-		sourceWriter.println( "super(" + method.getReturnType().getErasedType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", "
-				+ sb.toString() + ");" );
+		sourceWriter.println( "super(" + method.getReturnType().getErasedType().getQualifiedSourceName() + ".class, \"" + method.getName() + "\", " + sb.toString() + ");" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );

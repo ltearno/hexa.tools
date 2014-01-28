@@ -58,7 +58,7 @@ class ParsingExpression
 	{
 		if( !isEndOfText() )
 		{
-			return (text.charAt( pos ) == c);
+			return(text.charAt( pos ) == c);
 		}
 		return false;
 	}

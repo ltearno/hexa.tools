@@ -15,8 +15,8 @@ public class RaphaelWidget extends Widget
 		overlay = RaphaelJS.create( raphaelDiv, width, height );
 	}
 
-//	public static boolean isSupported()
-//	{
-//		return RaphaelJS.isDefined();
-//	}
+	// public static boolean isSupported()
+	// {
+	// return RaphaelJS.isDefined();
+	// }
 }

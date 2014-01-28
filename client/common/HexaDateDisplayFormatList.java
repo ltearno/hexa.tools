@@ -5,8 +5,7 @@ import com.hexa.client.common.hexadatedisplayformatfactory.HexaDateDisplayFormat
 
 public class HexaDateDisplayFormatList
 {
-	private static HexaDateDisplayFormat[] s_formats = new HexaDateDisplayFormat[] { HexaDateDisplayFormatFactory.get( Format.FORMAT_1 ),
-			HexaDateDisplayFormatFactory.get( Format.FORMAT_2 ), HexaDateDisplayFormatFactory.get( Format.FORMAT_3 ) };
+	private static HexaDateDisplayFormat[] s_formats = new HexaDateDisplayFormat[] { HexaDateDisplayFormatFactory.get( Format.FORMAT_1 ), HexaDateDisplayFormatFactory.get( Format.FORMAT_2 ), HexaDateDisplayFormatFactory.get( Format.FORMAT_3 ) };
 
 	private static String[] s_possibleFormats = null;
 
@@ -42,12 +41,12 @@ public class HexaDateDisplayFormatList
 	{
 		switch( format )
 		{
-		case FORMAT_1:
-			return s_formats[0];
-		case FORMAT_2:
-			return s_formats[1];
-		case FORMAT_3:
-			return s_formats[2];
+			case FORMAT_1:
+				return s_formats[0];
+			case FORMAT_2:
+				return s_formats[1];
+			case FORMAT_3:
+				return s_formats[2];
 		}
 
 		return null;

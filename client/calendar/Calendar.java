@@ -4,19 +4,22 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Top Level Class parsing complex period expression and building CalendarPeriod objects<br>
+ * Top Level Class parsing complex period expression and building CalendarPeriod
+ * objects<br>
  * <b>Usage :</b><br>
  * Expression operators: '|' => union, '&' => intersection, '~' => not<br>
- * Expression operands : '[2013-06-12;2013-06-21]' period, 'd0' => day : 0 = Sunday, 6 = Saturday<br>
+ * Expression operands : '[2013-06-12;2013-06-21]' period, 'd0' => day : 0 =
+ * Sunday, 6 = Saturday<br>
  * Expression is built in Reverse Polish Notation format. <br>
- * <b>Example:</b> Period from the 12 june 2013 to the 21 june 2013 except Sunday<br>
+ * <b>Example:</b> Period from the 12 june 2013 to the 21 june 2013 except
+ * Sunday<br>
  * String expression = "[2013-06-12;2013-06-21] d0 ~ &";<br>
  * Tree tree = Calendar.get().Parse(expression);<br>
  * <br>
  * <b>Special:</b> MakupCalendarPeriodAssociative() see method description<br>
- *
+ * 
  * @author Arnaud, traduction Java Laurent
- *
+ * 
  */
 public class Calendar
 {
@@ -35,13 +38,15 @@ public class Calendar
 		return _Parse( pExpression );
 	}
 
-	// takes as a parameter an array of period expressions and their initial values
+	// takes as a parameter an array of period expressions and their initial
+	// values
 	// returns an associative calendar that is the merge of all these
 	// $addFunction is a callback that can combine two period values
 	/**
 	 * Create CalendarPeriodAssociative using an adding function.<br>
-	 * PeriodAssociative are periods associated with an integer, result of the add function.
-	 *
+	 * PeriodAssociative are periods associated with an integer, result of the
+	 * add function.
+	 * 
 	 * @param periodsAndValues
 	 * @param addFunction
 	 * @return CalendarPeriodAssociative
@@ -66,8 +71,9 @@ public class Calendar
 			Tree tree = trees.get( first );
 			T value = values.get( first );
 
-//			PeriodAssociative firstPeriodAndValue = periodsAndValues.get( first );
-//			Tree tree = Parse( firstPeriodAndValue.getFrom() );
+			// PeriodAssociative firstPeriodAndValue = periodsAndValues.get(
+			// first );
+			// Tree tree = Parse( firstPeriodAndValue.getFrom() );
 			if( tree.getNbDays() == 0 )
 			{
 				first++;
@@ -94,7 +100,8 @@ public class Calendar
 
 			if( tree.getNbDays() == 0 )
 			{
-				// echo "IGNORING N PERIOD $i (" . $periodsAndValues[$i][0] . ") BECAUSE EMPTY<br>";
+				// echo "IGNORING N PERIOD $i (" . $periodsAndValues[$i][0] .
+				// ") BECAUSE EMPTY<br>";
 				continue;
 			}
 
@@ -109,61 +116,67 @@ public class Calendar
 		return res;
 	}
 
-//	public CalendarPeriodAssociative MakeUpCalendarPeriodAssociative( PeriodsAssociative periodsAndValues, CalendarPeriodAssociative.AddFunction addFunction )
-//	{
-//		int nbPeriod = periodsAndValues.size();
-//		if( nbPeriod == 0 )
-//			return new CalendarPeriodAssociative();
-//
-//		// get the first non empty period
-//		CalendarPeriodAssociative res = null;
-//		int first = 0;
-//		do
-//		{
-//			PeriodAssociative firstPeriodAndValue = periodsAndValues.get( first );
-//			Tree tree = Parse( firstPeriodAndValue.getFrom() );
-//			if( tree.getNbDays() == 0 )
-//			{
-//				// echo "IGNORING F PERIOD $first (" . $firstPeriodAndValue[0] . ") BECAUSE EMPTY<br>";
-//				first++;
-//				if( first >= nbPeriod )
-//					return new CalendarPeriodAssociative();
-//				continue;
-//			}
-//
-//			CalendarPeriod flat = tree.getFlat();
-//			res = new CalendarPeriodAssociative();
-//			res.Init( flat, firstPeriodAndValue.getValue() ); // TODO : firstPeriodAndValue might be wrong type
-//
-//			break;
-//		}
-//		while( true );
-//
-//		if( res == null )
-//			return null; // no non-empty period
-//
-//		for( int i = first + 1; i < nbPeriod; i++ )
-//		{
-//			Tree tree = Parse( periodsAndValues.get( i ).getFrom() );
-//			if( tree.getNbDays() == 0 )
-//			{
-//				// echo "IGNORING N PERIOD $i (" . $periodsAndValues[$i][0] . ") BECAUSE EMPTY<br>";
-//				continue;
-//			}
-//
-//			CalendarPeriod flat = tree.getFlat();
-//			CalendarPeriodAssociative assoc = new CalendarPeriodAssociative();
-//			assoc.Init( flat, periodsAndValues.get( i ).getValue() ); // TODO : firstPeriodAndValue might be wrong type
-//
-//			if( res.Add( assoc, addFunction ) == null )
-//				return null;
-//		}
-//
-//		return res;
-//	}
+	// public CalendarPeriodAssociative MakeUpCalendarPeriodAssociative(
+	// PeriodsAssociative periodsAndValues,
+	// CalendarPeriodAssociative.AddFunction addFunction )
+	// {
+	// int nbPeriod = periodsAndValues.size();
+	// if( nbPeriod == 0 )
+	// return new CalendarPeriodAssociative();
+	//
+	// // get the first non empty period
+	// CalendarPeriodAssociative res = null;
+	// int first = 0;
+	// do
+	// {
+	// PeriodAssociative firstPeriodAndValue = periodsAndValues.get( first );
+	// Tree tree = Parse( firstPeriodAndValue.getFrom() );
+	// if( tree.getNbDays() == 0 )
+	// {
+	// // echo "IGNORING F PERIOD $first (" . $firstPeriodAndValue[0] .
+	// ") BECAUSE EMPTY<br>";
+	// first++;
+	// if( first >= nbPeriod )
+	// return new CalendarPeriodAssociative();
+	// continue;
+	// }
+	//
+	// CalendarPeriod flat = tree.getFlat();
+	// res = new CalendarPeriodAssociative();
+	// res.Init( flat, firstPeriodAndValue.getValue() ); // TODO :
+	// firstPeriodAndValue might be wrong type
+	//
+	// break;
+	// }
+	// while( true );
+	//
+	// if( res == null )
+	// return null; // no non-empty period
+	//
+	// for( int i = first + 1; i < nbPeriod; i++ )
+	// {
+	// Tree tree = Parse( periodsAndValues.get( i ).getFrom() );
+	// if( tree.getNbDays() == 0 )
+	// {
+	// // echo "IGNORING N PERIOD $i (" . $periodsAndValues[$i][0] .
+	// ") BECAUSE EMPTY<br>";
+	// continue;
+	// }
+	//
+	// CalendarPeriod flat = tree.getFlat();
+	// CalendarPeriodAssociative assoc = new CalendarPeriodAssociative();
+	// assoc.Init( flat, periodsAndValues.get( i ).getValue() ); // TODO :
+	// firstPeriodAndValue might be wrong type
+	//
+	// if( res.Add( assoc, addFunction ) == null )
+	// return null;
+	// }
+	//
+	// return res;
+	// }
 
 	/**
-	 *
+	 * 
 	 * @author Arnaud, Laurent
 	 */
 	private Tree _Parse( String pExpression )
@@ -216,7 +229,8 @@ public class Calendar
 
 	}
 
-	// public Boolean _ParseParam( String expression, String dateParam, int dayParam )
+	// public Boolean _ParseParam( String expression, String dateParam, int
+	// dayParam )
 	// {
 	// exp = new Expression( expression );
 	//
@@ -243,7 +257,8 @@ public class Calendar
 	// }
 	// else if( token.getType().equals( "p" ) )
 	// {
-	// if( (token.getFrom().compareTo( dateParam ) <= 0) && (token.getTo().compareTo( dateParam ) >= 0) )
+	// if( (token.getFrom().compareTo( dateParam ) <= 0) &&
+	// (token.getTo().compareTo( dateParam ) >= 0) )
 	// stack.push( new Tree( true ) );
 	// else
 	// stack.push( new Tree( false ) );
@@ -273,10 +288,10 @@ public class Calendar
 	// }
 
 	/**
-	 *
-	 *
+	 * 
+	 * 
 	 * @return boolean
-	 *
+	 * 
 	 * @author Arnaud, Laurent
 	 */
 	private Tree _NextToken( ParsingExpression exp )
@@ -387,7 +402,8 @@ public class Calendar
 			return token;
 		}
 
-		// last try a date only, which is shortcut for [from;to] with from and to equal...
+		// last try a date only, which is shortcut for [from;to] with from and
+		// to equal...
 		if( exp.readDate() )
 		{
 			Tree token = Tree.CreatePeriod( exp.getDate() );

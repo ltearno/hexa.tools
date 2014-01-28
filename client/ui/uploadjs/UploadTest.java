@@ -20,20 +20,24 @@ public class UploadTest implements EntryPoint
 		Label text = new Label( "Drop files here..." );
 		deco.setWidget( text );
 
-		DropTarget target = DropTarget.create( deco, new DropTarget.Callback() {
+		DropTarget target = DropTarget.create( deco, new DropTarget.Callback()
+		{
 			@Override
-			public void onDropFiles(FilesList files) {
+			public void onDropFiles( FilesList files )
+			{
 				deco.getElement().getStyle().clearBackgroundColor();
 				sendFiles( files );
 			}
 
 			@Override
-			public void onDragLeave() {
+			public void onDragLeave()
+			{
 				deco.getElement().getStyle().clearBackgroundColor();
 			}
 
 			@Override
-			public void onDragEnter() {
+			public void onDragEnter()
+			{
 				deco.getElement().getStyle().setBackgroundColor( "grey" );
 			}
 		} );
@@ -59,7 +63,7 @@ public class UploadTest implements EntryPoint
 
 		FileUploader uploader = new FileUploader();
 
-		for( int i=0; i<nb; i++ )
+		for( int i = 0; i < nb; i++ )
 		{
 			final File file = files.getFile( i );
 
@@ -72,32 +76,33 @@ public class UploadTest implements EntryPoint
 			table.setText( row, 1, title );
 
 			String mime = file.getMimeType();
-			if( mime!=null && ( mime.equalsIgnoreCase("image/png") || mime.equalsIgnoreCase("image/jpeg") ) )
+			if( mime != null && (mime.equalsIgnoreCase( "image/png" ) || mime.equalsIgnoreCase( "image/jpeg" )) )
 			{
 				final Image img = new Image();
-				file.getAsDataUrl( new File.Callback() {
+				file.getAsDataUrl( new File.Callback()
+				{
 					@Override
 					public void onDataReady( String data )
 					{
 						img.setUrl( data );
 					}
-				});
+				} );
 
 				int w = img.getWidth();
 				int h = img.getHeight();
-				if( w==0 || h==0 )
+				if( w == 0 || h == 0 )
 				{
 					w = 30;
 					h = 30;
 				}
 				else if( w > h )
 				{
-					h = (int)( (h*30.0f) / w );
+					h = (int) ((h * 30.0f) / w);
 					w = 30;
 				}
 				else
 				{
-					w = (int)( (w*30.0f) / h );
+					w = (int) ((w * 30.0f) / h);
 					h = 30;
 				}
 				img.setPixelSize( w, h );
@@ -122,7 +127,7 @@ public class UploadTest implements EntryPoint
 					else
 						table.setText( row, 1, "Uploaded " + title + " " + percentage + "% speed:" + speed );
 				}
-			});
+			} );
 		}
 	}
 }

@@ -195,16 +195,9 @@ public class SqlHelper2
 
 		public Boolean localRecordDeletedCreateTriggerSql()
 		{
-			 String triggerSql = "CREATE TRIGGER IF NOT EXISTS "
-				 + tableName
-				 + "_deleted AFTER DELETE ON "
-				 + tableName
-				 + " FOR EACH ROW "
-				 + "BEGIN "
-				 + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '"
-				 + tableName + "'); END";
+			String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_deleted AFTER DELETE ON " + tableName + " FOR EACH ROW " + "BEGIN " + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '" + tableName + "'); END";
 
-			 db.execute(triggerSql);
+			db.execute( triggerSql );
 
 			return true;
 		}

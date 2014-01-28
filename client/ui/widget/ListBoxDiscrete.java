@@ -94,7 +94,7 @@ public class ListBoxDiscrete<T> extends Composite implements ClickHandler
 	@Override
 	public void onClick( ClickEvent event )
 	{
-		if( ! fEnabled )
+		if( !fEnabled )
 			return;
 
 		if( popup == null )

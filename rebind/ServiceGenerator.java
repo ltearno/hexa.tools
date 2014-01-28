@@ -432,8 +432,7 @@ public class ServiceGenerator extends Generator
 				JType valueType = paramType[1];
 				String valueMarshallName = getParamMarshall( valueType );
 
-				sw.println( "MapMarshall<" + keyTypeName + "," + valueType.getParameterizedQualifiedSourceName() + "> " + marshallName + " = new MapMarshall<"
-						+ keyTypeName + "," + valueType.getParameterizedQualifiedSourceName() + ">( " + valueMarshallName + " );" );
+				sw.println( "MapMarshall<" + keyTypeName + "," + valueType.getParameterizedQualifiedSourceName() + "> " + marshallName + " = new MapMarshall<" + keyTypeName + "," + valueType.getParameterizedQualifiedSourceName() + ">( " + valueMarshallName + " );" );
 			}
 			else if( implementsInterface( type, "java.util.List" ) )
 			{
@@ -443,8 +442,7 @@ public class ServiceGenerator extends Generator
 				JType subType = paramType[0];
 				String subMarshallName = getParamMarshall( subType );
 
-				sw.println( "ListMarshall<" + subType.getParameterizedQualifiedSourceName() + "> " + marshallName + " = new ListMarshall<"
-						+ subType.getParameterizedQualifiedSourceName() + ">( " + subMarshallName + " );" );
+				sw.println( "ListMarshall<" + subType.getParameterizedQualifiedSourceName() + "> " + marshallName + " = new ListMarshall<" + subType.getParameterizedQualifiedSourceName() + ">( " + subMarshallName + " );" );
 			}
 			else if( implementsInterface( type, "java.util.Set" ) )
 			{
@@ -454,8 +452,7 @@ public class ServiceGenerator extends Generator
 				JType subType = paramType[0];
 				String subMarshallName = getParamMarshall( subType );
 
-				sw.println( "SetMarshall<" + subType.getParameterizedQualifiedSourceName() + "> " + marshallName + " = new SetMarshall<"
-						+ subType.getParameterizedQualifiedSourceName() + ">( " + subMarshallName + " );" );
+				sw.println( "SetMarshall<" + subType.getParameterizedQualifiedSourceName() + "> " + marshallName + " = new SetMarshall<" + subType.getParameterizedQualifiedSourceName() + ">( " + subMarshallName + " );" );
 			}
 			else
 			{
@@ -638,14 +635,16 @@ public class ServiceGenerator extends Generator
 	}
 
 	/*
-	 *
-	 *
-	 * class DaatDataProxyFastFactory implements DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends GenericJSO implements Daat { protected
-	 * DaatImpl() {}
-	 *
+	 * 
+	 * 
+	 * class DaatDataProxyFastFactory implements
+	 * DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends
+	 * GenericJSO implements Daat { protected DaatImpl() {}
+	 * 
 	 * public final int getId() { return getInt( "field_name" ); } }
-	 *
-	 * @Override public <T> T getData( JavaScriptObject obj ) { return (T)((DaatImpl)obj); } }
+	 * 
+	 * @Override public <T> T getData( JavaScriptObject obj ) { return
+	 * (T)((DaatImpl)obj); } }
 	 */
 
 	String registerOnResponseCallback( JType callbackType )
@@ -769,7 +768,7 @@ public class ServiceGenerator extends Generator
 			}
 		}
 
-		sw.println( "assert response!=null : \"RESPONSE NULL (Callback Type="+callbackType.getParameterizedQualifiedSourceName()+") !\";" );
+		sw.println( "assert response!=null : \"RESPONSE NULL (Callback Type=" + callbackType.getParameterizedQualifiedSourceName() + ") !\";" );
 
 		for( int i = 0; i < cbParamTypes.length; i++ )
 		{
@@ -797,7 +796,8 @@ public class ServiceGenerator extends Generator
 			}
 			else if( implementsInterface( cbParamTypes[i], "DataProxyFast" ) )
 			{
-				// TODO register the factory for this type for generating them later
+				// TODO register the factory for this type for generating them
+				// later
 				String jsoTypeName = registeredDataFastJSOType( cbParamTypes[i] );
 
 				// write code to call the factory
@@ -805,8 +805,10 @@ public class ServiceGenerator extends Generator
 				String elementType = cbParamTypes[i].getQualifiedSourceName();
 
 				sw.println( elementType + " param" + i + " = (" + jsoTypeName + ") response.getJSO(" + i + ").cast();" );
-				// sw.println( getDataProxyFastImplName( cbParamTypes[i] ) + " tmpObj" + i + " = response.getJSO(" + i + ").cast();" );
-				// sw.println( elementType + " param" + i + " = tmpObj" + i + ";" );
+				// sw.println( getDataProxyFastImplName( cbParamTypes[i] ) +
+				// " tmpObj" + i + " = response.getJSO(" + i + ").cast();" );
+				// sw.println( elementType + " param" + i + " = tmpObj" + i +
+				// ";" );
 			}
 			else if( paramTypeName.equals( "Iterable" ) )
 			{
@@ -820,11 +822,13 @@ public class ServiceGenerator extends Generator
 
 				sw.println( "// FactoryCall" );
 				// String elementType = typeArgs[0].getQualifiedSourceName();
-				sw.println( "Iterable<" + jsoTypeName + "> param" + i + " = new JSArrayIterator<" + jsoTypeName + ">( (JsArray<" + jsoTypeName
-						+ ">) (response.getJSO(" + i + ").cast()) );" );
+				sw.println( "Iterable<" + jsoTypeName + "> param" + i + " = new JSArrayIterator<" + jsoTypeName + ">( (JsArray<" + jsoTypeName + ">) (response.getJSO(" + i + ").cast()) );" );
 
-				// sw.println( "JsArray<JavaScriptObject> objTmp" + i + " = response.getJSO(" + i + ").cast();" );
-				// sw.println( "Iterable<" + elementType + "> param" + i + " = factory.getList( " + elementType + ".class, objTmp" + i + " );" );
+				// sw.println( "JsArray<JavaScriptObject> objTmp" + i +
+				// " = response.getJSO(" + i + ").cast();" );
+				// sw.println( "Iterable<" + elementType + "> param" + i +
+				// " = factory.getList( " + elementType + ".class, objTmp" + i +
+				// " );" );
 			}
 			else if( implementsInterface( cbParamTypes[i], "java.util.List" ) )
 			{

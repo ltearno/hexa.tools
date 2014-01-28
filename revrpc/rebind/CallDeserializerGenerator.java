@@ -191,13 +191,11 @@ public class CallDeserializerGenerator extends Generator
 				JParameter prm = parameters[p];
 				pNames.add( prm.getName() );
 
-				sourceWriter.println( "JSONValue " + prm.getName() + "Json = CallDeserializerUtil.getParam( json, " + p + ", \""
-						+ prm.getType().getParameterizedQualifiedSourceName() + "\" );" );
+				sourceWriter.println( "JSONValue " + prm.getName() + "Json = CallDeserializerUtil.getParam( json, " + p + ", \"" + prm.getType().getParameterizedQualifiedSourceName() + "\" );" );
 
 				String deserializerMethodName = getDeserializerMethodName( prm.getType() );
 
-				sourceWriter.println( prm.getType().getParameterizedQualifiedSourceName() + " " + prm.getName() + " = " + deserializerMethodName + "( "
-						+ prm.getName() + "Json.isObject().get( \"value\" ) );" );
+				sourceWriter.println( prm.getType().getParameterizedQualifiedSourceName() + " " + prm.getName() + " = " + deserializerMethodName + "( " + prm.getName() + "Json.isObject().get( \"value\" ) );" );
 			}
 
 			// make the call
@@ -301,8 +299,7 @@ public class CallDeserializerGenerator extends Generator
 
 				String deserializerMethodName = getDeserializerMethodName( field.getType() );
 
-				sourceWriter.println( field.getType().getParameterizedQualifiedSourceName() + " " + field.getName() + " = " + deserializerMethodName
-						+ "( json.isObject().get( \"" + field.getName() + "\" ) );" );
+				sourceWriter.println( field.getType().getParameterizedQualifiedSourceName() + " " + field.getName() + " = " + deserializerMethodName + "( json.isObject().get( \"" + field.getName() + "\" ) );" );
 				sourceWriter.println( "res." + field.getName() + " = " + field.getName() + ";" );
 			}
 
@@ -326,14 +323,21 @@ public class CallDeserializerGenerator extends Generator
 	}
 
 	/*
-	 * private void generateGetMethods( SourceWriter sourceWriter ) { // check what are the methods of "typeName" JMethod[] methods = classType.getMethods();
+	 * private void generateGetMethods( SourceWriter sourceWriter ) { // check
+	 * what are the methods of "typeName" JMethod[] methods =
+	 * classType.getMethods();
 	 * 
-	 * // maybe should use a better name so that it cannot possibly conflict with the extended class
-	 * sourceWriter.println("private ArrayList<String> _methods = null;"); sourceWriter.println("public List<String> getMethods()"); sourceWriter.println("{");
-	 * sourceWriter.indent();
+	 * // maybe should use a better name so that it cannot possibly conflict
+	 * with the extended class
+	 * sourceWriter.println("private ArrayList<String> _methods = null;");
+	 * sourceWriter.println("public List<String> getMethods()");
+	 * sourceWriter.println("{"); sourceWriter.indent();
 	 * 
-	 * sourceWriter.println("if( _methods != null ) return _methods;"); sourceWriter.println("_methods = new ArrayList<String>();"); for( int i=0; i<
-	 * methods.length; i++ ) { sourceWriter.println("_methods.add( \""+methods[i].getName()+"\" );"); } sourceWriter.outdent();
-	 * sourceWriter.println("return _methods;"); sourceWriter.println("}"); }
+	 * sourceWriter.println("if( _methods != null ) return _methods;");
+	 * sourceWriter.println("_methods = new ArrayList<String>();"); for( int
+	 * i=0; i< methods.length; i++ ) {
+	 * sourceWriter.println("_methods.add( \""+methods[i].getName()+"\" );"); }
+	 * sourceWriter.outdent(); sourceWriter.println("return _methods;");
+	 * sourceWriter.println("}"); }
 	 */
 }

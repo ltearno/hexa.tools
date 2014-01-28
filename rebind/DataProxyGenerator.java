@@ -222,15 +222,13 @@ public class DataProxyGenerator extends Generator
 				if( method.getReturnType().getSimpleSourceName().compareTo( "HexaDate" ) == 0 )
 				{
 					String variableName = registerHexaDateVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDate( jso.getString( \"" + fnAnnotation.fieldName()
-							+ "\" ) );" );
+					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDate( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
 					sw.println( "return " + variableName + ";" );
 				}
 				else if( method.getReturnType().getSimpleSourceName().compareTo( "HexaTime" ) == 0 )
 				{
 					String variableName = registerHexaTimeVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaTime( jso.getString( \"" + fnAnnotation.fieldName()
-							+ "\" ) );" );
+					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
 					sw.println( "return " + variableName + ";" );
 
 					// sw.println( "return new HexaTime( jso.getString( \"" +
@@ -239,8 +237,7 @@ public class DataProxyGenerator extends Generator
 				else if( method.getReturnType().getSimpleSourceName().compareTo( "HexaDateTime" ) == 0 )
 				{
 					String variableName = registerHexaDateTimeVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName()
-							+ "\" ) );" );
+					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
 					sw.println( "return " + variableName + ";" );
 
 					// sw.println( "return new HexaDateTime( jso.getString( \""
@@ -250,7 +247,7 @@ public class DataProxyGenerator extends Generator
 				{
 					sw.println( "return jso.getGenericJSO( \"" + fnAnnotation.fieldName() + "\" ).cast();" );
 				}
-				else if( ! method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
+				else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
 				{
 					String jsoType = method.getReturnType().getSimpleSourceName();
 					if( method.getReturnType().getSimpleSourceName().compareTo( "int" ) == 0 )

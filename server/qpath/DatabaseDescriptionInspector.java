@@ -46,8 +46,7 @@ public class DatabaseDescriptionInspector
 
 				FieldDescription fieldDesc = tableDesc.addField( fieldName, type, canNull, defaultValue, extra, key );
 
-				DBResults info = db.sql( "SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='" + dbDesc.name + "' AND TABLE_NAME='" + table
-						+ "' AND COLUMN_NAME='" + fieldName + "'" );
+				DBResults info = db.sql( "SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='" + dbDesc.name + "' AND TABLE_NAME='" + table + "' AND COLUMN_NAME='" + fieldName + "'" );
 				if( info.getRowCount() != 1 )
 				{
 					System.out.println( "BIG PROBLEM, column has no or multiple definitions !!!" );
@@ -62,8 +61,7 @@ public class DatabaseDescriptionInspector
 			}
 
 			// Inspect unicity constraints
-			String sql = "select CONSTRAINT_NAME, COLUMN_NAME from information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='" + dbDesc.name
-					+ "' AND TABLE_NAME='" + table
+			String sql = "select CONSTRAINT_NAME, COLUMN_NAME from information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='" + dbDesc.name + "' AND TABLE_NAME='" + table
 					+ "' AND REFERENCED_TABLE_NAME IS NULL AND CONSTRAINT_NAME != 'PRIMARY' ORDER BY CONSTRAINT_NAME, ORDINAL_POSITION";
 			DBResults constraintsRecords = db.sql( sql );
 			int constraintNameColumn = constraintsRecords.getColumnIndex( "CONSTRAINT_NAME" );
@@ -148,10 +146,11 @@ public class DatabaseDescriptionInspector
 	}
 
 	// returns the array of sql statements to be executed to update the db
-	// currentDB is a kind of a hack : for the deletion of a constraint in the target database, we need to query the db for all the constraint names to delete
+	// currentDB is a kind of a hack : for the deletion of a constraint in the
+	// target database, we need to query the db for all the constraint names to
+	// delete
 	// them
-	public ArrayList<String> getSqlForUpdateDb( DatabaseDescription currentDbDesc, DatabaseDescription targetDbDesc, boolean fDoDelete,
-			boolean fTableNameUpperCase )
+	public ArrayList<String> getSqlForUpdateDb( DatabaseDescription currentDbDesc, DatabaseDescription targetDbDesc, boolean fDoDelete, boolean fTableNameUpperCase )
 	{
 		Trace.push();
 		Trace.it( "Database comparison" );
@@ -352,7 +351,8 @@ public class DatabaseDescriptionInspector
 
 		for( FieldReference ref : curRefs )
 		{
-			// if a similar ref is not found in $tgtRefs, that is this reference must be deleted
+			// if a similar ref is not found in $tgtRefs, that is this reference
+			// must be deleted
 			if( !tgtField.hasReference( ref.table, ref.field ) )
 			{
 				for( String constraintName : ref.constraintNames )
@@ -365,7 +365,8 @@ public class DatabaseDescriptionInspector
 
 		for( FieldReference ref : tgtRefs )
 		{
-			// if a similar ref is not found in $curRefs, that is this reference is a new to be created
+			// if a similar ref is not found in $curRefs, that is this reference
+			// is a new to be created
 			if( curField == null || !curField.hasReference( ref.table, ref.field ) )
 			{
 				String sql = dialect.getSqlForCreateForeignKey( fTableNameUpperCase, tableName, tgtField.name, ref.table, ref.field );

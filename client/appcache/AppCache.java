@@ -32,20 +32,20 @@ public final class AppCache extends JavaScriptObject
 		int s = getStatusImpl();
 		switch( s )
 		{
-		case UNCACHED:
-			return AppCacheStatus.UNCACHED;
-		case IDLE:
-			return AppCacheStatus.IDLE;
-		case CHECKING:
-			return AppCacheStatus.CHECKING;
-		case DOWNLOADING:
-			return AppCacheStatus.DOWNLOADING;
-		case UPDATEREADY:
-			return AppCacheStatus.UPDATEREADY;
-		case OBSOLETE:
-			return AppCacheStatus.OBSOLETE;
-		default:
-			return AppCacheStatus.UNKNOWN;
+			case UNCACHED:
+				return AppCacheStatus.UNCACHED;
+			case IDLE:
+				return AppCacheStatus.IDLE;
+			case CHECKING:
+				return AppCacheStatus.CHECKING;
+			case DOWNLOADING:
+				return AppCacheStatus.DOWNLOADING;
+			case UPDATEREADY:
+				return AppCacheStatus.UPDATEREADY;
+			case OBSOLETE:
+				return AppCacheStatus.OBSOLETE;
+			default:
+				return AppCacheStatus.UNKNOWN;
 		}
 	}
 

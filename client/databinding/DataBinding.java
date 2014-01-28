@@ -22,7 +22,7 @@ public class DataBinding
 	private boolean fSettingDestination;
 
 	private Converter converter;
-	
+
 	private final String logPrefix;
 
 	public DataBinding( Object source, String sourceProperty, Object destination, String destinationProperty, Mode bindingMode )
@@ -44,31 +44,31 @@ public class DataBinding
 
 		switch( bindingMode )
 		{
-		case OneWay:
-			sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
-			break;
-		case OneWayToSource:
-			destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
-			break;
-		case TwoWay:
-			sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
-			destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
-			break;
+			case OneWay:
+				sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
+				break;
+			case OneWayToSource:
+				destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
+				break;
+			case TwoWay:
+				sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
+				destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
+				break;
 		}
 	}
-	
+
 	private void log( String text )
 	{
 		if( logPrefix == null )
 			return;
-		
+
 		GWT.log( "DATABINDING " + logPrefix + " : " + text );
 	}
 
 	public void activate()
 	{
 		fActivated = true;
-		
+
 		log( "activation" );
 
 		onSourceChanged.exec( null, null );
@@ -77,7 +77,7 @@ public class DataBinding
 	public void deferActivate()
 	{
 		log( "deferred activation..." );
-		
+
 		Scheduler.get().scheduleDeferred( new ScheduledCommand()
 		{
 			@Override
@@ -91,7 +91,7 @@ public class DataBinding
 	public void term()
 	{
 		log( "term" );
-		
+
 		fActivated = false;
 		converter = null;
 
@@ -113,9 +113,9 @@ public class DataBinding
 			// prevent us to wake up ourselves
 			if( fSettingSource )
 				return;
-			
+
 			log( "source changed, propagating to destination ..." );
-			
+
 			if( !fActivated )
 				return;
 
@@ -130,7 +130,7 @@ public class DataBinding
 			fSettingDestination = true;
 			destination.setValue( value );
 			fSettingDestination = false;
-			
+
 			log( "done setting source to " + value );
 		}
 	};
@@ -143,9 +143,9 @@ public class DataBinding
 			// prevent us to wake up ourselves
 			if( fSettingDestination )
 				return;
-			
+
 			log( "destination changed, propagating to source ..." );
-			
+
 			if( !fActivated )
 				return;
 
@@ -160,7 +160,7 @@ public class DataBinding
 			fSettingSource = true;
 			source.setValue( value );
 			fSettingSource = false;
-			
+
 			log( "done setting destination to " + value );
 		}
 	};

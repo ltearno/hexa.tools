@@ -15,12 +15,26 @@ public class File extends JavaScriptObject
 		void onDataReady( ArrayBuffer data );
 	}
 
-	protected File() {}
+	protected File()
+	{
+	}
 
-	public final native String getFileName() /*-{ return this.name; }-*/; // || this.fileName; }-*/;public final native int getFileSize() /*-{ return this.size; }-*/;
+	public final native String getFileName() /*-{ return this.name; }-*/; // ||
+																			// this.fileName;
+																			// }-*/;public
+																			// final
+																			// native
+																			// int
+																			// getFileSize()
+																			// /*-{
+																			// return
+																			// this.size;
+																			// }-*/;
+
 	public final native String getMimeType() /*-{ return this.type; }-*/;
 
-	//public final native Object getAsBinary() /*-{ return this.getAsBinary && this.getAsBinary(); }-*/;
+	// public final native Object getAsBinary() /*-{ return this.getAsBinary &&
+	// this.getAsBinary(); }-*/;
 	public final native String getAsText() /*-{ return this.getAsText && this.getAsText(); }-*/;
 
 	public final native void getAsBinary( Callback callback )

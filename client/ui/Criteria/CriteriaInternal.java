@@ -95,7 +95,12 @@ public class CriteriaInternal extends Composite
 
 	public enum CriteriaOp
 	{
-		eq( "=" ), ne( "<>" ), gt( ">" ), gte( ">=" ), lt( "<" ), lte( "<=" );
+		eq( "=" ),
+		ne( "<>" ),
+		gt( ">" ),
+		gte( ">=" ),
+		lt( "<" ),
+		lte( "<=" );
 
 		String display;
 

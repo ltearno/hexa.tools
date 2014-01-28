@@ -55,16 +55,20 @@ class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
 	}
 
 	/*
-	 * Créee un trigger qui permet la maj automatique d'un champ de statut (INTEGER) dont la valeur signifiera : - 0 : enregistrement créé localement - 1 :
-	 * enregistrement copie conforme du serveur - 2 : enregistrement modifié localement
-	 *
-	 * @see com.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager #localRecordStateCreateTriggerSql(java.lang.String, java.lang.String)
+	 * Créee un trigger qui permet la maj automatique d'un champ de statut
+	 * (INTEGER) dont la valeur signifiera : - 0 : enregistrement créé
+	 * localement - 1 : enregistrement copie conforme du serveur - 2 :
+	 * enregistrement modifié localement
+	 * 
+	 * @see com.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager
+	 * #localRecordStateCreateTriggerSql(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public Boolean localRecordStateCreateTriggerSql( SQLite db, String tableName, String fieldName )
 	{
 		String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_localstate_update BEFORE UPDATE ON " + tableName
-		// + " FOR EACH ROW " + "WHEN NEW." + fieldName + " IS NULL OR NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET "
+		// + " FOR EACH ROW " + "WHEN NEW." + fieldName + " IS NULL OR NEW." +
+		// fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET "
 				+ " FOR EACH ROW " + "WHEN NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = 2 WHERE id=NEW.id; END";
 
 		db.execute( triggerSql );
@@ -121,8 +125,7 @@ class SQLiteTypeManager_Date extends SQLiteTypeManagerManager.SQLiteTypeManager
 	@Override
 	public String autoUpdateTimestampCreateTriggerSql( String tableName, String fieldName )
 	{
-		String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_timestamp_update AFTER UPDATE ON " + tableName
-				+ " FOR EACH ROW BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = CURRENT_TIMESTAMP WHERE id=old.id; END";
+		String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_timestamp_update AFTER UPDATE ON " + tableName + " FOR EACH ROW BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = CURRENT_TIMESTAMP WHERE id=old.id; END";
 
 		return triggerSql;
 	}

@@ -10,7 +10,8 @@ public interface Edits<T>
 	{
 		void cancelEdition();
 
-		// necessary to call for the editing host to jump on to the next editing place
+		// necessary to call for the editing host to jump on to the next editing
+		// place
 		void validateEdition( boolean fJumpNext );
 	}
 

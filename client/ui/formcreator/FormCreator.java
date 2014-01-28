@@ -91,8 +91,7 @@ class FormCreator
 	{
 		manageSpace();
 
-		sb.append( "<div class='" + FormCreatorBundle.CSS.fl() + " " + FormCreatorBundle.CSS.b() + " " + FormCreatorBundle.CSS.section() + "' style='width:"
-				+ totalWidth + "px;'>" + title + "</div>" );
+		sb.append( "<div class='" + FormCreatorBundle.CSS.fl() + " " + FormCreatorBundle.CSS.b() + " " + FormCreatorBundle.CSS.section() + "' style='width:" + totalWidth + "px;'>" + title + "</div>" );
 		br();
 
 		return this;

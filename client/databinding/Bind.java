@@ -36,7 +36,7 @@ public class Bind
 		this.mode = mode;
 		return this;
 	}
-	
+
 	public Bind Log( String prefix )
 	{
 		this.logPrefix = prefix;

@@ -404,8 +404,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			Cell cell = DynArrayInFlexTable.this.table.getCellForEvent( event );
 
 			// if clicking on a cell that is in editing mode, return
-			if( cell != null && edition != null
-					&& (refMng.getRef( edition.editedObject ) == getRefAtRow( cell.getRowIndex() ) && edition.editedCol == cell.getCellIndex()) )
+			if( cell != null && edition != null && (refMng.getRef( edition.editedObject ) == getRefAtRow( cell.getRowIndex() ) && edition.editedCol == cell.getCellIndex()) )
 				return;
 
 			killCurrentEdit();

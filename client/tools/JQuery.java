@@ -65,98 +65,98 @@ public class JQuery
 	}
 
 	public native JsArray<Element> jqSelect( String selector ) /*-{
-		return $wnd.$(selector).get();
-	}-*/;
+																return $wnd.$(selector).get();
+																}-*/;
 
 	public native JsArray<Element> jqSelect( String selector, Element element ) /*-{
-		return $wnd.$(selector, element).get();
-	}-*/;
+																				return $wnd.$(selector, element).get();
+																				}-*/;
 
 	public native JsArray<Element> jqChildren( Element e, String selector ) /*-{
-		return $wnd.$(e).children(selector).get();
-	}-*/;
+																			return $wnd.$(e).children(selector).get();
+																			}-*/;
 
 	public native JsArray<Element> jqChildren( JsArray<Element> e, String selector ) /*-{
-		return $wnd.$(e).children(selector).get();
-	}-*/;
+																						return $wnd.$(e).children(selector).get();
+																						}-*/;
 
 	public native void jqClick( Element element, EventFunction callback ) /*-{
-		$wnd
-				.$(element)
-				.click(
-						function(eventObject) {
-							if (callback != null) {
-								var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
-								if (!res)
-									eventObject.preventDefault();
-							}
-						});
-	}-*/;
+																			$wnd
+																			.$(element)
+																			.click(
+																			function(eventObject) {
+																			if (callback != null) {
+																			var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
+																			if (!res)
+																			eventObject.preventDefault();
+																			}
+																			});
+																			}-*/;
 
 	public native void jqClick( JsArray<Element> element, EventFunction callback ) /*-{
-		$wnd
-				.$(element)
-				.click(
-						function(eventObject) {
-							if (callback != null) {
-								var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
-								if (!res)
-									eventObject.preventDefault();
-							}
-						});
-	}-*/;
+																					$wnd
+																					.$(element)
+																					.click(
+																					function(eventObject) {
+																					if (callback != null) {
+																					var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
+																					if (!res)
+																					eventObject.preventDefault();
+																					}
+																					});
+																					}-*/;
 
 	public native void jqMouseDown( JsArray<Element> element, EventFunction callback ) /*-{
-		$wnd
-				.$(element)
-				.mousedown(
-						function(eventObject) {
-							if (callback != null) {
-								var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
-								if (!res)
-									eventObject.preventDefault();
-							}
-						});
-	}-*/;
+																						$wnd
+																						.$(element)
+																						.mousedown(
+																						function(eventObject) {
+																						if (callback != null) {
+																						var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
+																						if (!res)
+																						eventObject.preventDefault();
+																						}
+																						});
+																						}-*/;
 
 	public native void jqMouseUp( JsArray<Element> element, EventFunction callback ) /*-{
-		$wnd
-				.$(element)
-				.mouseup(
-						function(eventObject) {
-							if (callback != null) {
-								var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
-								if (!res)
-									eventObject.preventDefault();
-							}
-						});
-	}-*/;
+																						$wnd
+																						.$(element)
+																						.mouseup(
+																						function(eventObject) {
+																						if (callback != null) {
+																						var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
+																						if (!res)
+																						eventObject.preventDefault();
+																						}
+																						});
+																						}-*/;
 
 	public native void jqMouseMove( JsArray<Element> element, EventFunction callback ) /*-{
-		$wnd
-				.$(element)
-				.mousemove(
-						function(eventObject) {
-							if (callback != null) {
-								var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
-								if (!res)
-									eventObject.preventDefault();
-							}
-						});
-	}-*/;
+																						$wnd
+																						.$(element)
+																						.mousemove(
+																						function(eventObject) {
+																						if (callback != null) {
+																						var res = callback.@com.hexa.client.tools.JQuery.EventFunction::onEvent(Lcom/google/gwt/user/client/Event;)( eventObject );
+																						if (!res)
+																						eventObject.preventDefault();
+																						}
+																						});
+																						}-*/;
 
 	public native void jqAppend( JsArray<Element> elements, String html ) /*-{
-		//for( e in elements )
-		$wnd.$(elements).append(html);
-	}-*/;
+																			//for( e in elements )
+																			$wnd.$(elements).append(html);
+																			}-*/;
 
 	public native void jqAppend( Element element, String html ) /*-{
-		$wnd.$(element).append(html);
-	}-*/;
+																$wnd.$(element).append(html);
+																}-*/;
 
 	public native void jqAttr( JsArray<Element> elements, String name, String value ) /*-{
-		$wnd.$(elements).attr(name, value);
-	}-*/;
+																						$wnd.$(elements).attr(name, value);
+																						}-*/;
 
 	public void jqEffect( String effect, int ms, Element e, Callback callback )
 	{
@@ -174,52 +174,52 @@ public class JQuery
 	}
 
 	public native void jqEffectImpl( String effect, int ms, Element e, Callback callback ) /*-{
-		$wnd
-				.$(e)
-				.effect(
-						effect,
-						null,
-						ms,
-						function() {
-							if (callback != null)
-								callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
-						});
-	}-*/;
+																							$wnd
+																							.$(e)
+																							.effect(
+																							effect,
+																							null,
+																							ms,
+																							function() {
+																							if (callback != null)
+																							callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
+																							});
+																							}-*/;
 
 	public native void jqFadeIn( Element e, int ms, Callback callback ) /*-{
-		$wnd
-				.$(e)
-				.fadeIn(
-						ms,
-						function() {
-							if (callback != null)
-								callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
-						});
-	}-*/;
+																		$wnd
+																		.$(e)
+																		.fadeIn(
+																		ms,
+																		function() {
+																		if (callback != null)
+																		callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
+																		});
+																		}-*/;
 
 	public native void jqFadeOut( Element e, int ms, Callback callback ) /*-{
-		$wnd
-				.$(e)
-				.fadeOut(
-						ms,
-						function() {
-							if (callback != null)
-								callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
-						});
-	}-*/;
+																			$wnd
+																			.$(e)
+																			.fadeOut(
+																			ms,
+																			function() {
+																			if (callback != null)
+																			callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
+																			});
+																			}-*/;
 
 	public native void jqHide( String effect, Element e, Callback callback ) /*-{
-		$wnd
-				.$(e)
-				.hide(
-						effect,
-						null,
-						1000,
-						function() {
-							if (callback != null)
-								callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
-						});
-	}-*/;
+																				$wnd
+																				.$(e)
+																				.hide(
+																				effect,
+																				null,
+																				1000,
+																				function() {
+																				if (callback != null)
+																				callback.@com.hexa.client.tools.JQuery.Callback::onFinished()();
+																				});
+																				}-*/;
 
 	public native void jqHide( Element e )
 	/*-{
@@ -227,8 +227,8 @@ public class JQuery
 	}-*/;
 
 	public native void jqShow( String effect, Element e ) /*-{
-		$wnd.$(e).show(effect, null, 1000);
-	}-*/;
+															$wnd.$(e).show(effect, null, 1000);
+															}-*/;
 
 	public native void jqShow( Element e )
 	/*-{
@@ -236,54 +236,54 @@ public class JQuery
 	}-*/;
 
 	public native void jqDatepicker( Element e ) /*-{
-		$wnd.$(e).datepicker();
-	}-*/;
+													$wnd.$(e).datepicker();
+													}-*/;
 
-//	public native void jqHtml( Element e, String html ) /*-{
-//		$wnd.$(e).html(html);
-//	}-*/;
+	// public native void jqHtml( Element e, String html ) /*-{
+	// $wnd.$(e).html(html);
+	// }-*/;
 
 	public native void jqHtml( JsArray<Element> e, String html ) /*-{
-		$wnd.$(e).html(html);
-	}-*/;
+																	$wnd.$(e).html(html);
+																	}-*/;
 
 	public native void jqText( JsArray<Element> e, String text ) /*-{
-		$wnd.$(e).text(text);
-	}-*/;
+																	$wnd.$(e).text(text);
+																	}-*/;
 
 	public native void jqCss( JsArray<Element> e, String property, String value ) /*-{
-		$wnd.$(e).css(property, value);
-	}-*/;
+																					$wnd.$(e).css(property, value);
+																					}-*/;
 
 	public native void jqHeight( Element e, String height ) /*-{
-		$wnd.$(e).height(height);
-	}-*/;
+															$wnd.$(e).height(height);
+															}-*/;
 
 	public native boolean jqHasClass( Element e, String className ) /*-{
-		return $wnd.$(e).hasClass(className);
-	}-*/;
+																	return $wnd.$(e).hasClass(className);
+																	}-*/;
 
 	public native void addClass( Element e, String className ) /*-{
-		$wnd.$(e).addClass(className);
-	}-*/;
+																$wnd.$(e).addClass(className);
+																}-*/;
 
 	public native void addClass( JsArray<Element> e, String className ) /*-{
-		$wnd.$(e).addClass(className);
-	}-*/;
+																		$wnd.$(e).addClass(className);
+																		}-*/;
 
 	public native void removeClass( Element e, String className ) /*-{
-		$wnd.$(e).removeClass(className);
-	}-*/;
+																	$wnd.$(e).removeClass(className);
+																	}-*/;
 
 	public native void removeClass( JsArray<Element> e, String className ) /*-{
-		$wnd.$(e).removeClass(className);
-	}-*/;
+																			$wnd.$(e).removeClass(className);
+																			}-*/;
 
 	public native void toggleClass( Element e, String className ) /*-{
-		$wnd.$(e).toggleClass(className);
-	}-*/;
+																	$wnd.$(e).toggleClass(className);
+																	}-*/;
 
 	public native void toggleClass( JsArray<Element> e, String className ) /*-{
-		$wnd.$(e).toggleClass(className);
-	}-*/;
+																			$wnd.$(e).toggleClass(className);
+																			}-*/;
 }

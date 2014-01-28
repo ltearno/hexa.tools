@@ -9,20 +9,20 @@ public class Chart extends Raphael
 	int marginTop = 0;
 	int marginRight = 0;
 	int marginBottom = 0;
-	
+
 	int width;
 	int height;
-	
+
 	public Chart( int width, int height )
 	{
-		super(width, height);
-		
+		super( width, height );
+
 		getElement().getStyle().setOverflow( Overflow.HIDDEN );
-		
+
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	public void setMargins( int left, int top, int right, int bottom )
 	{
 		marginLeft = left;
@@ -30,22 +30,22 @@ public class Chart extends Raphael
 		marginTop = top;
 		marginBottom = bottom;
 	}
-	
+
 	public int getMarginLeft()
 	{
 		return marginLeft;
 	}
-	
+
 	public int getMarginTop()
 	{
 		return marginTop;
 	}
-	
+
 	public int getInsideWidth()
 	{
 		return width - marginLeft - marginRight;
 	}
-	
+
 	public Layer createLayer()
 	{
 		return new Layer( this );

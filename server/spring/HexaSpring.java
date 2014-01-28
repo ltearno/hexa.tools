@@ -21,7 +21,7 @@ public class HexaSpring
 	private static Logger log = Logger.getLogger( HexaSpring.class );
 
 	private static HexaSpring instance = null;
-	
+
 	private static DatabaseContextFactory databaseContextFactory;
 
 	public static final String LOGGED_USER_ID = "LOGGED_USER_ID";
@@ -50,7 +50,7 @@ public class HexaSpring
 
 		log.log( " ... DatabaseContext pool" );
 		databaseContextFactory = new DatabaseContextFactory();
-		if( ! databaseContextFactory.init( databaseUri ) )
+		if( !databaseContextFactory.init( databaseUri ) )
 		{
 			log.err( "**********************************************************************************" );
 			log.err( "Cannot initialize database connection pool, it won't be available to the program !" );
@@ -112,7 +112,7 @@ public class HexaSpring
 	{
 		return serverRootUrl;
 	}
-	
+
 	//
 
 	public void onBeginServletRequestProcessing( HttpServletRequest request, HttpServletResponse response )
@@ -159,18 +159,19 @@ public class HexaSpring
 
 		thread.start();
 	}
-	
+
 	public interface TransactionManagedAction<T>
 	{
 		T execute( DatabaseContext ctx );
 	}
-	
+
 	public <T> T manageTransaction( TransactionManagedAction<T> action )
 	{
 		return manageTransaction( db(), action );
 	}
-	
-	// do a transaction management : prepare tx, and watch for any exception, then rollback it.
+
+	// do a transaction management : prepare tx, and watch for any exception,
+	// then rollback it.
 	// it everything goes fine, commit
 	public <T> T manageTransaction( DatabaseContext ctx, TransactionManagedAction<T> action )
 	{
@@ -178,29 +179,29 @@ public class HexaSpring
 		try
 		{
 			T result = action.execute( ctx );
-			
+
 			ctx.db.commit();
-			
+
 			return result;
 		}
 		catch( Exception exception )
 		{
 			ctx.db.rollback();
-			
+
 			throw new ManagedTransactionException( "Exception during managed transaction, see cause for details", exception );
 		}
 	}
-	
+
 	private void cleanThread()
 	{
 		HexaThreadInfo info = HexaThreadInfo.getIfPresent();
-		
+
 		if( info == null )
 			return;
-		
+
 		if( info.request != null )
 			info.request = null;
-		
+
 		// release current thread database context
 		if( info.databaseContext != null )
 		{

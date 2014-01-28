@@ -86,12 +86,17 @@ public class StackGenerator extends Generator
 
 		// simple version : each stack instance has its own objects
 		/*
-		 * sw.println( "public "+className+"() {" ); sw.println( "for( int i=0;i<Stack.NB_OBJS;i++ )" ); sw.indent(); sw.println(
-		 * "objs[i] = new "+typeFactored+"();" ); sw.outdent(); sw.println( "}" );
-		 * 
-		 * sw.println( "private "+typeFactored+"[] objs = new "+typeFactored+"[Stack.NB_OBJS];" ); sw.println( "private int next = 0;" ); sw.println(
-		 * "public "+typeFactored+" alloc()" ); sw.println( "{" ); sw.println( "next %= Stack.NB_OBJS;" ); sw.println( "return objs[next++];" ); sw.println( "}"
+		 * sw.println( "public "+className+"() {" ); sw.println(
+		 * "for( int i=0;i<Stack.NB_OBJS;i++ )" ); sw.indent(); sw.println(
+		 * "objs[i] = new "+typeFactored+"();" ); sw.outdent(); sw.println( "}"
 		 * );
+		 * 
+		 * sw.println(
+		 * "private "+typeFactored+"[] objs = new "+typeFactored+"[Stack.NB_OBJS];"
+		 * ); sw.println( "private int next = 0;" ); sw.println(
+		 * "public "+typeFactored+" alloc()" ); sw.println( "{" ); sw.println(
+		 * "next %= Stack.NB_OBJS;" ); sw.println( "return objs[next++];" );
+		 * sw.println( "}" );
 		 */
 		sw.commit( logger );
 

@@ -50,8 +50,9 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 		} );
 
 		/*
-		 * textBox.addClickHandler( new ClickHandler() { public void onClick(ClickEvent event) { if( popup!=null && popup.isShowing() ) hidePopup(); else
-		 * showPopup(); } });
+		 * textBox.addClickHandler( new ClickHandler() { public void
+		 * onClick(ClickEvent event) { if( popup!=null && popup.isShowing() )
+		 * hidePopup(); else showPopup(); } });
 		 */
 	}
 

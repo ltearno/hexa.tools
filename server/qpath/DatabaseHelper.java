@@ -88,8 +88,7 @@ public class DatabaseHelper
 	// TODO : this one works only on MySQL server
 	public boolean hasTrigger( String triggerName )
 	{
-		DBResults res = db.sql( "SELECT * FROM information_schema.TRIGGERS WHERE TRIGGER_NAME='$triggerName' AND TRIGGER_SCHEMA='" + db.getCurrentDatabase()
-				+ "'" );
+		DBResults res = db.sql( "SELECT * FROM information_schema.TRIGGERS WHERE TRIGGER_NAME='$triggerName' AND TRIGGER_SCHEMA='" + db.getCurrentDatabase() + "'" );
 		if( res.getRowCount() == 0 )
 			return false;
 		return true;
@@ -147,7 +146,8 @@ public class DatabaseHelper
 		return "'" + o.toString() + "'";
 	}
 
-	// TODO : return the T item. for this have to prepare for the clazz some data, to be optimized a bit
+	// TODO : return the T item. for this have to prepare for the clazz some
+	// data, to be optimized a bit
 	public <T extends IdDTO> T insert( String table, Class<T> clazz, T item, FieldsMap toAppendFieldsMap )
 	{
 		try

@@ -19,8 +19,7 @@ public class HexaDate
 	public static int TIME_END = 758145;// 930000;
 
 	public static final String[] DayNames = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thirsday", "Friday", "Saturday" };
-	public static final String[] MonthNames = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November",
-			"December" };
+	public static final String[] MonthNames = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
 	static public HexaDateDisplayFormat getDisplayFormat()
 	{
@@ -32,7 +31,8 @@ public class HexaDate
 		s_displayFormat = format;
 	}
 
-	static private HexaDateDisplayFormat s_displayFormat = HexaDateDisplayFormatList.getFormat( Format.FORMAT_2 );// new HexaDateDisplayFormat2();
+	static private HexaDateDisplayFormat s_displayFormat = HexaDateDisplayFormatList.getFormat( Format.FORMAT_2 );// new
+																													// HexaDateDisplayFormat2();
 
 	// static private DateTimeFormat dateFormat =
 	// DateTimeFormat.getFormat("yyyy-MM-dd");
@@ -329,17 +329,17 @@ public class HexaDate
 	{
 		switch( month )
 		{
-		case 1:
-			return (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0) ? 29 : 28;
+			case 1:
+				return (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0) ? 29 : 28;
 
-		case 3:
-		case 5:
-		case 8:
-		case 10:
-			return 30;
+			case 3:
+			case 5:
+			case 8:
+			case 10:
+				return 30;
 
-		default:
-			return 31;
+			default:
+				return 31;
 		}
 	}
 }

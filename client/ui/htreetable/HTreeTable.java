@@ -326,7 +326,8 @@ public class HTreeTable extends ComplexPanel implements ClickHandler
 
 	public enum HTItemType
 	{
-		Splitter, Item;
+		Splitter,
+		Item;
 	}
 
 	class HTItem

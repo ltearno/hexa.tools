@@ -17,8 +17,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class EditableWidget<WIDGET extends Widget & HasText & HasClickHandlers, COOKIE> extends Composite implements ClickHandler, KeyUpHandler,
-		BlurHandler
+public abstract class EditableWidget<WIDGET extends Widget & HasText & HasClickHandlers, COOKIE> extends Composite implements ClickHandler, KeyUpHandler, BlurHandler
 {
 	public interface Callback<WIDGET extends Widget & HasText & HasClickHandlers, COOKIE>
 	{

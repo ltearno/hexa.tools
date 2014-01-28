@@ -19,7 +19,12 @@ public interface ITableCommand<T>
 	T getRecord( int recordId ); // only works after the first "wholeTable"
 									// callback call
 
-	Iterable<T> getRecords(); // only works after the first "wholeTable" callback call
+	Iterable<T> getRecords(); // only works after the first "wholeTable"
+								// callback call
 
-	Iterable<T> getRecordsSorted( Comparator<T> comparator ); // only works after the first "wholeTable" callback call
+	Iterable<T> getRecordsSorted( Comparator<T> comparator ); // only works
+																// after the
+																// first
+																// "wholeTable"
+																// callback call
 }

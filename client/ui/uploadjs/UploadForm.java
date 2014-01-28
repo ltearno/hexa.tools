@@ -54,9 +54,10 @@ public class UploadForm extends Composite
 		this.callback = callback;
 		this.fMultiple = fMultiple;
 
-		DropTarget target = DropTarget.create( dropZone, new DropTarget.Callback() {
+		DropTarget target = DropTarget.create( dropZone, new DropTarget.Callback()
+		{
 			@Override
-			public void onDropFiles(FilesList files)
+			public void onDropFiles( FilesList files )
 			{
 				dropZone.getElement().getStyle().setBackgroundColor( "#efefef" );
 
@@ -75,7 +76,7 @@ public class UploadForm extends Composite
 			{
 				dropZone.getElement().getStyle().setBackgroundColor( "grey" );
 			}
-		});
+		} );
 
 		VerticalPanel panel = new VerticalPanel();
 		panel.add( target );
@@ -94,8 +95,8 @@ public class UploadForm extends Composite
 	private WellForm createManualUploadPart()
 	{
 		final WellForm form = new WellForm();
-		//form.setType( FormType.HORIZONTAL );
-		form.setMethod("POST");
+		// form.setType( FormType.HORIZONTAL );
+		form.setMethod( "POST" );
 		form.setAction( url );
 		form.setEncoding( FormPanel.ENCODING_MULTIPART );
 
@@ -115,10 +116,11 @@ public class UploadForm extends Composite
 		button.setName( fieldName );
 		fs.add( button );
 
-		//SubmitButton submit = new SubmitButton( "Envoyer" );
+		// SubmitButton submit = new SubmitButton( "Envoyer" );
 		Button submit = new Button( "Envoyer" );
 		submit.setType( ButtonType.SUCCESS );
-		submit.addClickHandler( new ClickHandler() {
+		submit.addClickHandler( new ClickHandler()
+		{
 			@Override
 			public void onClick( ClickEvent event )
 			{
@@ -136,14 +138,15 @@ public class UploadForm extends Composite
 			fs.add( hidden );
 		}
 
-		form.addSubmitCompleteHandler( new SubmitCompleteHandler() {
+		form.addSubmitCompleteHandler( new SubmitCompleteHandler()
+		{
 
 			@Override
-			public void onSubmitComplete(SubmitCompleteEvent event)
+			public void onSubmitComplete( SubmitCompleteEvent event )
 			{
 				callback.onSuccess( event.getResults() );
 			}
-		});
+		} );
 
 		return form;
 	}
@@ -154,7 +157,7 @@ public class UploadForm extends Composite
 		if( nb == 0 )
 			return;
 
-		if( nb>1 && !fMultiple )
+		if( nb > 1 && !fMultiple )
 		{
 			Window.alert( "Vous ne pouvez envoyer qu'un seul fichier à la fois" );
 			return;
@@ -165,7 +168,7 @@ public class UploadForm extends Composite
 
 		FileUploader uploader = new FileUploader();
 
-		for( int i=0; i<nb; i++ )
+		for( int i = 0; i < nb; i++ )
 		{
 			final File file = files.getFile( i );
 
@@ -180,39 +183,41 @@ public class UploadForm extends Composite
 			table.setText( row, 1, title );
 
 			String mime = file.getMimeType();
-			if( mime!=null && ( mime.equalsIgnoreCase("image/png") || mime.equalsIgnoreCase("image/jpeg") ) )
+			if( mime != null && (mime.equalsIgnoreCase( "image/png" ) || mime.equalsIgnoreCase( "image/jpeg" )) )
 			{
 				final Image img = new Image();
-				file.getAsDataUrl( new File.Callback() {
+				file.getAsDataUrl( new File.Callback()
+				{
 					@Override
-					public void onDataReady(String data)
+					public void onDataReady( String data )
 					{
 						img.setUrl( data );
 					}
-				});
+				} );
 
 				int w = img.getWidth();
 				int h = img.getHeight();
-				if( w==0 || h==0 )
+				if( w == 0 || h == 0 )
 				{
 					w = 30;
 					h = 30;
 				}
 				else if( w > h )
 				{
-					h = (int)( (h*30.0f) / w );
+					h = (int) ((h * 30.0f) / w);
 					w = 30;
 				}
 				else
 				{
-					w = (int)( (w*30.0f) / h );
+					w = (int) ((w * 30.0f) / h);
 					h = 30;
 				}
 				img.setPixelSize( w, h );
 				table.setWidget( row, 2, img );
 			}
 
-			uploader.uploadFile( url, parameters, fieldName, file, new FileUploader.Callback() {
+			uploader.uploadFile( url, parameters, fieldName, file, new FileUploader.Callback()
+			{
 				@Override
 				public void onProgress( int percentage, float speed, String response )
 				{
@@ -240,7 +245,7 @@ public class UploadForm extends Composite
 				{
 					table.setText( row, 1, "Upload started " + title );
 				}
-			});
+			} );
 		}
 	}
 }

@@ -13,12 +13,12 @@ public abstract class WriteOnlyPropertyAdapter implements PropertyAdapter
 	@Override
 	public final void removePropertyChangedHandler( Object handler )
 	{
-		throw new RuntimeException("Not implemented in WriteOnlyDataAdapter");
+		throw new RuntimeException( "Not implemented in WriteOnlyDataAdapter" );
 	}
 
 	@Override
 	public final Object getValue()
 	{
-		throw new RuntimeException("Not implemented in WriteOnlyDataAdapter");
+		throw new RuntimeException( "Not implemented in WriteOnlyDataAdapter" );
 	}
 }

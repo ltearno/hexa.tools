@@ -197,16 +197,23 @@ public class ServiceBase
 			return new ArrayJSOProxy<T>( jso, proxy );
 
 			/*
-			 * GenericJSO fields = jso.getGenericJSO( "fields" ); int nbFields = fields.length();
+			 * GenericJSO fields = jso.getGenericJSO( "fields" ); int nbFields =
+			 * fields.length();
 			 * 
 			 * ArrayList<T> result = new ArrayList<T>();
 			 * 
-			 * JsArray<GenericJSO> rows = jso.getArray( "rows" ); int lenght = rows.length(); for( int i=0; i<lenght; i++ ) { GenericJSO row = rows.get( i );
+			 * JsArray<GenericJSO> rows = jso.getArray( "rows" ); int lenght =
+			 * rows.length(); for( int i=0; i<lenght; i++ ) { GenericJSO row =
+			 * rows.get( i );
 			 * 
-			 * // make up a jso ok for the proxy // it is an object with values indexed by field names GenericJSO item = JavaScriptObject.createObject().cast();
+			 * // make up a jso ok for the proxy // it is an object with values
+			 * indexed by field names GenericJSO item =
+			 * JavaScriptObject.createObject().cast();
 			 * 
-			 * for( int f=0; f<nbFields; f++ ) //item.setObject( fields.getStringByIdx( f ), row.getGenericJSOByIdx( f ) ); set( (JavaScriptObject) item.cast(),
-			 * (JsArrayString) fields.cast(), (JavaScriptObject) row.cast() );
+			 * for( int f=0; f<nbFields; f++ ) //item.setObject(
+			 * fields.getStringByIdx( f ), row.getGenericJSOByIdx( f ) ); set(
+			 * (JavaScriptObject) item.cast(), (JsArrayString) fields.cast(),
+			 * (JavaScriptObject) row.cast() );
 			 * 
 			 * result.add( proxy.create( item ) ); }
 			 * 

@@ -45,7 +45,11 @@ public class DatabaseSchema
 			DatabaseDescriptionInspector inspector = new DatabaseDescriptionInspector();
 			DatabaseDescription dbDesc = inspector.getDatabaseDescription( ctx.db, ctx.dbh );
 
-			ArrayList<String> sqls = inspector.getSqlForUpdateDb( dbDesc, targetDatabase, fDoDelete, true/* table upper case */);
+			ArrayList<String> sqls = inspector.getSqlForUpdateDb( dbDesc, targetDatabase, fDoDelete, true/*
+																										 * table
+																										 * upper
+																										 * case
+																										 */);
 			if( sqls != null && !sqls.isEmpty() )
 			{
 				log.log( " ... Needed to update database schema:" );

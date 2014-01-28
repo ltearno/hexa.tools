@@ -7,11 +7,11 @@ import com.hexa.server.database.DatabaseContext;
 public class HexaThreadInfo
 {
 	private static final ThreadLocal<HexaThreadInfo> perThreadInfo = new ThreadLocal<HexaThreadInfo>();
-	
+
 	public static HexaThreadInfo get()
 	{
 		HexaThreadInfo info = perThreadInfo.get();
-		
+
 		if( info == null )
 		{
 			info = new HexaThreadInfo();
@@ -20,13 +20,13 @@ public class HexaThreadInfo
 
 		return info;
 	}
-	
+
 	public static HexaThreadInfo getIfPresent()
 	{
 		return perThreadInfo.get();
 	}
-	
+
 	public HttpServletRequest request;
-	
+
 	public DatabaseContext databaseContext;
 }

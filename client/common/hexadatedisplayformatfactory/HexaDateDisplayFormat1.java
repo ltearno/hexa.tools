@@ -29,7 +29,9 @@ class HexaDateDisplayFormat1 implements HexaDateDisplayFormat
 
 		// other formatting
 		/*
-		 * if( fInvalid ) return "0000-00-00"; return yearFormat.format(year+1900) + "-" + monthFormat.format(month+1) + "-" + dayFormat.format(date);
+		 * if( fInvalid ) return "0000-00-00"; return
+		 * yearFormat.format(year+1900) + "-" + monthFormat.format(month+1) +
+		 * "-" + dayFormat.format(date);
 		 */
 	}
 

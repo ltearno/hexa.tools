@@ -77,7 +77,6 @@ public class GraphView extends RaphaelWidget
 		}
 
 		elements[graphNo].animate( HexaTools.evalJSO( "{path:'" + path.toString() + "'}" ), fadeDuration );
-		elementsFill[graphNo].animate( HexaTools.evalJSO( "{path:'" + path.toString() + "L" + width + "," + height + "L0," + height + "Z" + "'}" ),
-				fadeDuration );
+		elementsFill[graphNo].animate( HexaTools.evalJSO( "{path:'" + path.toString() + "L" + width + "," + height + "L0," + height + "Z" + "'}" ), fadeDuration );
 	}
 }

@@ -4,7 +4,13 @@ public abstract class Tree
 {
 	public enum Type
 	{
-		ALWAYS, NEVER, DAY, PERIOD, NOT, AND, OR;
+		ALWAYS,
+		NEVER,
+		DAY,
+		PERIOD,
+		NOT,
+		AND,
+		OR;
 	}
 
 	protected final Type type;

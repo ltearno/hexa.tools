@@ -9,30 +9,32 @@ public class DropTarget extends Composite
 	public interface Callback
 	{
 		void onDragEnter();
+
 		void onDragLeave();
+
 		void onDropFiles( FilesList files );
 	}
-	
+
 	public static DropTarget create( Widget w, Callback callback )
 	{
-		if( ! canDropZone( w.getElement() ) )
+		if( !canDropZone( w.getElement() ) )
 			return null;
-		
+
 		return new DropTarget( w, callback );
 	}
-	
+
 	private DropTarget( Widget w, Callback callback )
 	{
 		initWidget( w );
-		
+
 		initDropZone( getElement(), callback );
 	}
-	
+
 	private static native boolean canDropZone( Element test )
 	/*-{
 		return !! test.addEventListener;
 	}-*/;
-	
+
 	private native void initDropZone( Element dropzone, Callback callback )
 	/*-{
 		if( ! dropzone.addEventListener )

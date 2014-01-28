@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Arnaud
- *
+ * 
  */
 public class Ribbon extends ResizeComposite implements RibbonView
 {
@@ -88,18 +88,24 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			m_tabs.add( bar );
 
 			/*
-			 * FlexTable table = new FlexTable(); for( int j=0; j<conf.tabs.get(i).buttons.size(); j++ ) { final Object obj =
-			 * conf.tabs.get(i).buttons.get(j).obj; Button button = new Button( conf.tabs.get(i).buttons.get(j).name, new ClickHandler() { public void onClick(
-			 * ClickEvent event ) { callback.onRibbonChange( obj ); } } );
-			 *
+			 * FlexTable table = new FlexTable(); for( int j=0;
+			 * j<conf.tabs.get(i).buttons.size(); j++ ) { final Object obj =
+			 * conf.tabs.get(i).buttons.get(j).obj; Button button = new Button(
+			 * conf.tabs.get(i).buttons.get(j).name, new ClickHandler() { public
+			 * void onClick( ClickEvent event ) { callback.onRibbonChange( obj
+			 * ); } } );
+			 * 
 			 * table.setWidget( 0, j, button ); } m_tabs.add( table );
 			 */
 		}
 
 		// listeners for TabBar
 		/*
-		 * m_tabBar.addSelectionHandler( new SelectionHandler<java.lang.Integer>() { public void onSelection( SelectionEvent<java.lang.Integer> event ) { int
-		 * tabIndex = event.getSelectedItem(); m_tabPanel.setWidget( m_tabs.get( tabIndex ) ); } } );
+		 * m_tabBar.addSelectionHandler( new
+		 * SelectionHandler<java.lang.Integer>() { public void onSelection(
+		 * SelectionEvent<java.lang.Integer> event ) { int tabIndex =
+		 * event.getSelectedItem(); m_tabPanel.setWidget( m_tabs.get( tabIndex )
+		 * ); } } );
 		 */
 
 		DockLayoutPanel me = new DockLayoutPanel( Unit.PX );
@@ -129,14 +135,14 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			bar.setEnabled( obj, fEnabled );
 
 			/*
-			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button = (Button)table.getWidget(
-			 * 0, j );
-<<<<<<< HEAD
-			 *
-=======
-			 *
->>>>>>> origin/regsys
-			 * if( m_conf.tabs.get(i).buttons.get(j).obj == obj ) { button.setEnabled( fEnabled ); return; } }
+			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
+			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
+			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
+			 * 
+			 * =======
+			 * 
+			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
+			 * == obj ) { button.setEnabled( fEnabled ); return; } }
 			 */
 		}
 	}
@@ -158,15 +164,16 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			}
 
 			/*
-			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button = (Button)table.getWidget(
-			 * 0, j );
-<<<<<<< HEAD
-			 *
-=======
-			 *
->>>>>>> origin/regsys
-			 * if( m_conf.tabs.get(i).buttons.get(j).obj == obj ) { m_tabBar.selectTab( i ); button.addStyleName( "Ribbon-selected" ); } else {
-			 * button.removeStyleName( "Ribbon-selected" ); } }
+			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
+			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
+			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
+			 * 
+			 * =======
+			 * 
+			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
+			 * == obj ) { m_tabBar.selectTab( i ); button.addStyleName(
+			 * "Ribbon-selected" ); } else { button.removeStyleName(
+			 * "Ribbon-selected" ); } }
 			 */
 		}
 	}
@@ -196,14 +203,14 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			bar.setButtonText( obj, text );
 
 			/*
-			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0; j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button = (Button)table.getWidget(
-			 * 0, j );
-<<<<<<< HEAD
-			 *
-=======
-			 *
->>>>>>> origin/regsys
-			 * if( m_conf.tabs.get(i).buttons.get(j).obj == obj ) { button.setText( text ); return; } }
+			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
+			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
+			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
+			 * 
+			 * =======
+			 * 
+			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
+			 * == obj ) { button.setText( text ); return; } }
 			 */
 		}
 	}

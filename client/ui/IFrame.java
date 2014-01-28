@@ -29,7 +29,7 @@ public class IFrame extends Widget
 
 	public void setContent( String html )
 	{
-		//JQuery.get().jqHtml( (Element) iFrame.cast(), html );
+		// JQuery.get().jqHtml( (Element) iFrame.cast(), html );
 		iFrame.setInnerHTML( html );
 	}
 

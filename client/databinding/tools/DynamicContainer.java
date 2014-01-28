@@ -22,7 +22,7 @@ public class DynamicContainer<T> implements INotifyPropertyChanged
 	{
 		return NotifyPropertyChangedEvent.registerPropertyChangedEvent( this, propertyName, handler );
 	}
-	
+
 	@Override
 	public void removePropertyChangedHandler( Object handlerRegistration )
 	{

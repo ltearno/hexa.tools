@@ -18,7 +18,7 @@ import com.hexa.client.ui.widget.ImageButton;
 
 /**
  * @author Arnaud
- *
+ * 
  */
 public class TreeTable extends TreeTableBase
 {

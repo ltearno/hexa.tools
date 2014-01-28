@@ -81,8 +81,7 @@ public class Trace
 		{
 			StackTraceElement trace = stackTrace[i];
 
-			sb.append( "       - " + trace.getFileName() + ", line " + trace.getLineNumber() + " in " + trace.getClassName() + "." + trace.getMethodName()
-					+ "\r\n" );
+			sb.append( "       - " + trace.getFileName() + ", line " + trace.getLineNumber() + " in " + trace.getClassName() + "." + trace.getMethodName() + "\r\n" );
 		}
 	}
 }

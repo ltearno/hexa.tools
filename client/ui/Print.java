@@ -35,9 +35,9 @@ import com.google.gwt.user.client.ui.UIObject;
 public class Print
 {
 
-//	public static native void it() /*-{
-//									$wnd.print();
-//									}-*/;
+	// public static native void it() /*-{
+	// $wnd.print();
+	// }-*/;
 
 	private static void ensureFrame()
 	{

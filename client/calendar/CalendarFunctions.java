@@ -8,7 +8,10 @@ public class CalendarFunctions
 {
 	// Constants
 	public static final String TIME_BEGIN = "1970-01-01";
-	public static final String TIME_END = "2038-01-10"; // the 19th jan 2038 is the last day that strtotime can handle...
+	public static final String TIME_END = "2038-01-10"; // the 19th jan 2038 is
+														// the last day that
+														// strtotime can
+														// handle...
 
 	public static String date2Display( String pDate )
 	{

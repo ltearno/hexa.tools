@@ -31,11 +31,13 @@ public class ServerImpl
 	}
 
 	/*
-	 * class DaatDataProxyFastFactory implements DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends GenericJSO implements Daat { protected
-	 * DaatImpl() {}
+	 * class DaatDataProxyFastFactory implements
+	 * DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends
+	 * GenericJSO implements Daat { protected DaatImpl() {}
 	 * 
 	 * public final int getId() { return getInt( "field_name" ); } }
 	 * 
-	 * @Override public <T> T getData( JavaScriptObject obj ) { return (T)((DaatImpl)obj); } }
+	 * @Override public <T> T getData( JavaScriptObject obj ) { return
+	 * (T)((DaatImpl)obj); } }
 	 */
 }

@@ -89,20 +89,31 @@ public class DataProxyFastFactoryGenerator extends Generator
 		String createdClassName = remoteService.getSimpleSourceName() + "Impl";// requestedClassName
 																				// +
 																				// "Impl";
-		String fullCreatedClassName = remoteService.getPackage().getName() + "."
-				+ /* "com.example.client.data.record." + */remoteService.getSimpleSourceName() + "Impl";// requestedClass
+		String fullCreatedClassName = remoteService.getPackage().getName() + "." + /*
+																					 * "com.example.client.data.record."
+																					 * +
+																					 */remoteService.getSimpleSourceName() + "Impl";// requestedClass
 		// +
 		// "Impl";
-		String packageName = remoteService.getPackage().getName();// "com.example.client.data.record";// remoteService.getPackage().getName();
+		String packageName = remoteService.getPackage().getName();// "com.example.client.data.record";//
+																	// remoteService.getPackage().getName();
 
 		/*
-		 * String dataImplName = fiType.getSimpleSourceName() + "ImplStd"; PrintWriter pw2 = ctx.tryCreate( logger, packageName, dataImplName ); if( pw2 != null
-		 * ) { ClassSourceFileComposerFactory cf2 = new ClassSourceFileComposerFactory( packageName, dataImplName ); cf2.addImport(
-		 * "com.hexa.client.comm.GenericJSO" ); cf2.addImport( "com.google.gwt.core.client.JavaScriptObject" ); cf2.addImport( "com.google.gwt.core.client.GWT"
-		 * ); cf2.addImport( "com.hexa.client.tools.HexaTools" ); cf2.addImplementedInterface( fiType.getParameterizedQualifiedSourceName() );
-		 * cf2.setSuperclass( "GenericJSO" ); //sw.println( "static class "+getDataProxyFastImplName (type)+" extends GenericJSO implements "
-		 * +type.getParameterizedQualifiedSourceName() ); SourceWriter sw2 = cf2.createSourceWriter( ctx, pw2 ); generateDataImpl( fiType, sw2, logger );
-		 * sw2.commit( logger ); }
+		 * String dataImplName = fiType.getSimpleSourceName() + "ImplStd";
+		 * PrintWriter pw2 = ctx.tryCreate( logger, packageName, dataImplName );
+		 * if( pw2 != null ) { ClassSourceFileComposerFactory cf2 = new
+		 * ClassSourceFileComposerFactory( packageName, dataImplName );
+		 * cf2.addImport( "com.hexa.client.comm.GenericJSO" ); cf2.addImport(
+		 * "com.google.gwt.core.client.JavaScriptObject" ); cf2.addImport(
+		 * "com.google.gwt.core.client.GWT" ); cf2.addImport(
+		 * "com.hexa.client.tools.HexaTools" ); cf2.addImplementedInterface(
+		 * fiType.getParameterizedQualifiedSourceName() ); cf2.setSuperclass(
+		 * "GenericJSO" ); //sw.println(
+		 * "static class "+getDataProxyFastImplName
+		 * (type)+" extends GenericJSO implements "
+		 * +type.getParameterizedQualifiedSourceName() ); SourceWriter sw2 =
+		 * cf2.createSourceWriter( ctx, pw2 ); generateDataImpl( fiType, sw2,
+		 * logger ); sw2.commit( logger ); }
 		 */
 
 		PrintWriter printWriter = ctx.tryCreate( logger, packageName, createdClassName );

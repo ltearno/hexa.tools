@@ -32,7 +32,7 @@ public class ClazzBundleGenerator extends Generator
 	// type info on the asked class
 	JClassType askedType = null;
 
-	// 
+	//
 	Set<JType> introspectedTypes;
 
 	// package of the asked type
@@ -54,18 +54,18 @@ public class ClazzBundleGenerator extends Generator
 		{
 			// get classType and save instance variables
 			askedType = typeOracle.getType( typeName );
-			
+
 			introspectedTypes = new HashSet<JType>();
-			
+
 			// list all return types of all methods
 			JMethod[] methods = askedType.getMethods();
-			for( int i=0; i<methods.length; i++ )
+			for( int i = 0; i < methods.length; i++ )
 			{
 				ReflectedClasses classes = methods[i].getAnnotation( ReflectedClasses.class );
-				if( classes==null || classes.classes()==null || classes.classes().length==0 )
+				if( classes == null || classes.classes() == null || classes.classes().length == 0 )
 					continue;
-				
-				for( int c=0; c<classes.classes().length; c++ )
+
+				for( int c = 0; c < classes.classes().length; c++ )
 				{
 					JType classType = typeOracle.getType( classes.classes()[c].getName() );
 					if( classType != null )
@@ -105,7 +105,7 @@ public class ClazzBundleGenerator extends Generator
 		// output a class "typeName" + "Impl"
 		// which extends the asked type
 		composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );
-		
+
 		composer.addImport( "com.hexa.client.classinfo.Clazz" );
 		composer.addImport( "com.hexa.client.classinfo.ClassInfo" );
 		composer.addImport( "com.google.gwt.core.shared.GWT" );
@@ -126,30 +126,29 @@ public class ClazzBundleGenerator extends Generator
 	private void generateClass( SourceWriter sourceWriter )
 	{
 		sourceWriter.println( "" );
-		
+
 		List<String> names = new ArrayList<String>();
 		for( JType type : introspectedTypes )
 		{
 			String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
 			names.add( interfaceName );
-			
-			sourceWriter.println( "public interface "+interfaceName+" extends Clazz<"+type.getQualifiedSourceName()+"> {}" );
+
+			sourceWriter.println( "public interface " + interfaceName + " extends Clazz<" + type.getQualifiedSourceName() + "> {}" );
 		}
 		sourceWriter.println( "" );
-		
-		
+
 		JMethod[] methods = askedType.getMethods();
-		for( int m=0; m<methods.length; m++ )
+		for( int m = 0; m < methods.length; m++ )
 		{
 			JMethod method = methods[m];
 			ReflectedClasses classes = method.getAnnotation( ReflectedClasses.class );
-			if( classes==null || classes.classes()==null || classes.classes().length==0 )
+			if( classes == null || classes.classes() == null || classes.classes().length == 0 )
 				continue;
-			
-			sourceWriter.println( "public void "+method.getName()+"()" );
+
+			sourceWriter.println( "public void " + method.getName() + "()" );
 			sourceWriter.println( "{" );
 			sourceWriter.indent();
-			for( int c=0; c<classes.classes().length; c++ )
+			for( int c = 0; c < classes.classes().length; c++ )
 			{
 				JType type;
 				try
@@ -161,10 +160,10 @@ public class ClazzBundleGenerator extends Generator
 					e.printStackTrace();
 					continue;
 				}
-				
+
 				String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
-				
-				sourceWriter.println( "ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( "+interfaceName+".class ) );" );
+
+				sourceWriter.println( "ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( " + interfaceName + ".class ) );" );
 			}
 			sourceWriter.outdent();
 			sourceWriter.println( "}" );

@@ -14,26 +14,26 @@ public class Uploader extends Composite
 {
 	DecoratorPanel deco = new DecoratorPanel();
 	Label text = new Label( "Drop files here..." );
-	
+
 	public Uploader()
 	{
 		deco.setWidget( text );
-		
+
 		initWidget( deco );
-		
+
 		initDropZone( getElement() );
 	}
-	
+
 	private void onDragEnter()
 	{
 		deco.getElement().getStyle().setBackgroundColor( "grey" );
 	}
-	
+
 	private void onDragLeave()
 	{
 		deco.getElement().getStyle().clearBackgroundColor();
 	}
-	
+
 	private native void initDropZone( Element dropzone )
 	/*-{
 		var me = this;
@@ -72,7 +72,7 @@ public class Uploader extends Composite
 			  me.@com.hexa.client.ui.uploadjs.Uploader::onDropFiles(Lcom/hexa/client/ui/uploadjs/FilesList;)( allTheFiles );
 			}, true);
 	}-*/;
-	
+
 	void onDropFiles( FilesList files )
 	{
 		if( files == null )
@@ -80,42 +80,46 @@ public class Uploader extends Composite
 			Window.alert( "null drop !" );
 			return;
 		}
-		
+
 		int count = files.getCount();
-		
-		for( int i=0; i<count; i++ )
+
+		for( int i = 0; i < count; i++ )
 		{
 			final ProgressBar bar = new ProgressBar();
 			RootPanel.get().add( bar );
-			
+
 			bar.setValue( 0 );
-			
+
 			final File file = files.getFile( i );
-			file.getAsBinary( new File.Callback() {
+			file.getAsBinary( new File.Callback()
+			{
 				public void onDataReady( String fileData )
 				{
-					String boundary = "AJAX------"+ Math.random() + "" + new Date().getTime();
-					
+					String boundary = "AJAX------" + Math.random() + "" + new Date().getTime();
+
 					XMLHttpRequestEx req = XMLHttpRequestEx.create();
 					req.open( "POST", "upload.php" );
 					req.setRequestHeader( "Content-Type", "multipart/form-data; boundary=" + boundary );
-					
+
 					String CRLF = "\r\n";
-					
+
 					String data = "--" + boundary + CRLF;
 					data += "Content-Disposition: form-data; ";
 					data += "name=\"" + "uploadedFile" + "\"; ";
 					data += "filename=\"" + file.getFileName() + "\"; " + CRLF;
-					
+
 					data += "Content-Type: " + file.getMimeType();
 					data += CRLF + CRLF;
 					data += fileData + CRLF;
-					
+
 					data += "--" + boundary + "--" + CRLF;
-					
-					try {
-						req.sendAsBinary( data, new XMLHttpRequestEx.Callback() {
-							public void onProgress(int percentage) {
+
+					try
+					{
+						req.sendAsBinary( data, new XMLHttpRequestEx.Callback()
+						{
+							public void onProgress( int percentage )
+							{
 								if( percentage < 0 )
 								{
 									Window.alert( "error" );
@@ -124,10 +128,12 @@ public class Uploader extends Composite
 								bar.setValue( percentage );
 							}
 						} );
-				    } catch (JavaScriptException e) {
-				    }
+					}
+					catch( JavaScriptException e )
+					{
+					}
 				}
-			});
+			} );
 		}
 	}
 }

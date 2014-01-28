@@ -95,8 +95,7 @@ public class DatabaseMySQLDialect
 		return sql;
 	}
 
-	public String getSqlForCreateForeignKey( boolean fTableNameUpperCase, String tableName, String foreignKeyName, String referencedTable,
-			String referencedColumn )
+	public String getSqlForCreateForeignKey( boolean fTableNameUpperCase, String tableName, String foreignKeyName, String referencedTable, String referencedColumn )
 	{
 		if( fTableNameUpperCase )
 			tableName = tableName.toUpperCase();
@@ -129,8 +128,7 @@ public class DatabaseMySQLDialect
 			comment = "COMMENT '" + fieldDesc.comment + "'";
 		}
 
-		return "`" + fieldDesc.name + "` " + fieldDesc.type + " " + (fieldDesc.canNull == "NO" ? "NOT NULL" : "") + " " + defaultValue + " " + fieldDesc.extra
-				+ " " + comment;
+		return "`" + fieldDesc.name + "` " + fieldDesc.type + " " + (fieldDesc.canNull == "NO" ? "NOT NULL" : "") + " " + defaultValue + " " + fieldDesc.extra + " " + comment;
 	}
 
 	public String getSqlForDropForeignKey( boolean fTableNameUpperCase, String tableName, String constraintName )

@@ -15,14 +15,14 @@ public class FileUploader
 
 		void onProgress( int percentage, float speed, String response );
 	}
-	
+
 	public void uploadFile( String url, Map<String, String> parameters, String name, File file, Callback callback )
 	{
 		tasks.add( new UploadTask( url, parameters, name, file, callback ) );
-		
+
 		processNextTask();
 	}
-	
+
 	class UploadTask
 	{
 		UploadTask( String url, Map<String, String> parameters, String name, File file, Callback callback )
@@ -33,53 +33,55 @@ public class FileUploader
 			this.file = file;
 			this.callback = callback;
 		}
-		
+
 		String url;
 		String name;
 		File file;
 		Map<String, String> parameters;
 		Callback callback;
-		
+
 		void launch()
 		{
-			file.getAsBinary( new File.Callback() {
-				public void onDataReady( String data ) {
+			file.getAsBinary( new File.Callback()
+			{
+				public void onDataReady( String data )
+				{
 					realUpload( data );
 				}
-			});
+			} );
 		}
-		
+
 		void realUpload( Object binaryData )
 		{
-			String boundary = "AJAX------"+ Math.random() + "" + new Date().getTime();
-			
+			String boundary = "AJAX------" + Math.random() + "" + new Date().getTime();
+
 			final XMLHttpRequestEx req = XMLHttpRequestEx.create();
 			req.open( "POST", url );
 			req.setRequestHeader( "Content-Type", "multipart/form-data; boundary=" + boundary );
-			
+
 			String CRLF = "\r\n";
-			
+
 			String data = "--" + boundary + CRLF;
-			
+
 			data += "Content-Disposition: form-data; ";
 			data += "name=\"" + name + "\"; ";
 			data += "filename=\"" + file.getFileName() + "\"; " + CRLF;
 			data += "Content-Type: " + file.getMimeType();
 			data += CRLF + CRLF;
 			data += binaryData + CRLF;
-			
+
 			if( parameters != null )
 			{
 				for( Entry<String, String> e : parameters.entrySet() )
 				{
 					data += "--" + boundary + CRLF;
-					
+
 					data += "Content-Disposition: form-data; ";
 					data += "name=\"" + e.getKey() + "\"" + CRLF + CRLF;
 					data += e.getValue() + CRLF;
 				}
 			}
-			
+
 			data += "--" + boundary + "--" + CRLF;
 
 			try
@@ -114,17 +116,17 @@ public class FileUploader
 			}
 		}
 	}
-	
+
 	UploadTask currentTask = null;
 	ArrayList<UploadTask> tasks = new ArrayList<UploadTask>();
-	
+
 	void processNextTask()
 	{
 		if( currentTask != null )
 			return;
 		if( tasks.isEmpty() )
 			return;
-		
+
 		currentTask = tasks.remove( 0 );
 		currentTask.launch();
 	}
@@ -157,7 +159,8 @@ class TransfertSpeedCalculator
 			return 0; // prevent divide by zero
 
 		float coef = 1000.0f / 1024.0f;
-		float speed = coef * ((float) (bytesTransferred) / (float) (transfertTime)); // en ko/s
+		float speed = coef * ((float) (bytesTransferred) / (float) (transfertTime)); // en
+																						// ko/s
 
 		return speed;
 	}

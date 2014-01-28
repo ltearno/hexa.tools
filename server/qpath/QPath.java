@@ -127,7 +127,8 @@ public class QPath
 	}
 
 	/*
-	 * Executes a QPath expression and return only one row, or null if there is none in the result
+	 * Executes a QPath expression and return only one row, or null if there is
+	 * none in the result
 	 */
 	public QPathResultRow queryOne( String expression )
 	{
@@ -136,7 +137,8 @@ public class QPath
 			return null;
 
 		if( res.getNbRows() < 1 )
-			return null; // easy way for the caller to know that no result were found
+			return null; // easy way for the caller to know that no result were
+							// found
 
 		return new QPathResultRow()
 		{
@@ -270,7 +272,8 @@ public class QPath
 			return stack.get( 0 );
 		}
 
-		// echo "QPath parse error with expression : <b>$toeval</b><br>Stack content is :";
+		// echo
+		// "QPath parse error with expression : <b>$toeval</b><br>Stack content is :";
 		// Dump( $stack );
 		logger.err( "QPath parse error with expression : <b>" + toEval + "</b><br>Stack content is :" + stack );
 
@@ -283,18 +286,18 @@ public class QPath
 	{
 		switch( c )
 		{
-		case '(':
-		case ')':
-		case '[':
-		case ']':
-		case '{':
-		case '}':
-		case '?':
-		case 'G':
-		case 'A':
-		case 'F':
-		case 'O':
-			return true;
+			case '(':
+			case ')':
+			case '[':
+			case ']':
+			case '{':
+			case '}':
+			case '?':
+			case 'G':
+			case 'A':
+			case 'F':
+			case 'O':
+				return true;
 		}
 		return false;
 	}
@@ -351,7 +354,8 @@ public class QPath
 						break;
 					i++;
 				}
-				Token tokString = new Token( 's', text.extract( i ) ); // rtrim(substr($text,$pos,$i)) );
+				Token tokString = new Token( 's', text.extract( i ) ); // rtrim(substr($text,$pos,$i))
+																		// );
 				text.pos += i;
 				Token tokenClose = new Token( ']' );
 				text.pos++;
@@ -557,7 +561,8 @@ public class QPath
 		if( _IsReducable( stack, "s", 1 ) )
 		{
 			Token reduced = stack.remove( 0 );
-			// array_unshift( $stack, array( 't_type'=>'e', 'type'=>'v', 'value'=>$reduced['t_val'] ) );
+			// array_unshift( $stack, array( 't_type'=>'e', 'type'=>'v',
+			// 'value'=>$reduced['t_val'] ) );
 			stack.add( 0, new Token( 'e' ).type( "v" ).value( reduced.t_val ) );
 			return 1;
 		}
@@ -578,14 +583,17 @@ public class QPath
 			Token op = stack.remove( 0 );
 			Token opLeft = stack.remove( 0 );
 
-			// $reduced = array( 't_type'=>'e', 'type'=>$op['t_val'], 'left'=>$opLeft, 'right'=>$opRight );
+			// $reduced = array( 't_type'=>'e', 'type'=>$op['t_val'],
+			// 'left'=>$opLeft, 'right'=>$opRight );
 			Token reduced = new Token( 'e' ).type( op.t_val ).left( opLeft ).right( opRight );
 			// if( isset( $op['leftField'] ) )
-			// $reduced = array_merge( $reduced, array( 'leftField'=>$op['leftField'] ) );
+			// $reduced = array_merge( $reduced, array(
+			// 'leftField'=>$op['leftField'] ) );
 			if( op.leftField != null )
 				reduced.leftField( op.leftField );
 			// if( isset( $op['rightField'] ) )
-			// $reduced = array_merge( $reduced, array( 'rightField'=>$op['rightField'] ) );
+			// $reduced = array_merge( $reduced, array(
+			// 'rightField'=>$op['rightField'] ) );
 			if( op.rightField != null )
 				reduced.rightField( op.rightField );
 			stack.add( 0, reduced );
@@ -724,7 +732,8 @@ public class QPath
 			Token add_where = stack.remove( 0 );
 			stack.remove( 0 );
 
-			// array_unshift( $stack, array( 't_type'=>'w', 'val'=>$add_where ) );
+			// array_unshift( $stack, array( 't_type'=>'w', 'val'=>$add_where )
+			// );
 			stack.add( 0, new Token( 'w' ).val( add_where ) );
 			return 1;
 		}

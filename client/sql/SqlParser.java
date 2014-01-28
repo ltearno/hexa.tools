@@ -140,18 +140,18 @@ public class SqlParser
 
 		switch( parts.length )
 		{
-		case 1:
-			pi.className = parts[0];
-			pi.tableAlias = parts[0];
-			break;
+			case 1:
+				pi.className = parts[0];
+				pi.tableAlias = parts[0];
+				break;
 
-		case 2:
-			pi.className = parts[0];
-			pi.tableAlias = parts[1];
-			break;
+			case 2:
+				pi.className = parts[0];
+				pi.tableAlias = parts[1];
+				break;
 
-		default:
-			return false;
+			default:
+				return false;
 		}
 
 		return true;

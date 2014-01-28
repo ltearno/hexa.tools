@@ -20,7 +20,7 @@ public class Database
 	public boolean init( Connection connection )
 	{
 		logger.log( "Database initialisation" );
-		
+
 		this.connection = connection;
 
 		return true;
@@ -29,7 +29,7 @@ public class Database
 	public void term()
 	{
 		logger.log( "Database term" );
-		
+
 		if( connection == null )
 			return;
 
@@ -100,11 +100,11 @@ public class Database
 		catch( SQLException exception )
 		{
 			String message = "SQLException during call to sql executing statement '" + sql + "' !";
-			
+
 			logger.err( message );
 
 			exception.printStackTrace();
-			
+
 			throw new DatabaseException( message, exception );
 		}
 	}
@@ -127,7 +127,7 @@ public class Database
 		catch( SQLException exception )
 		{
 			String message = "SQLException during call to sqlInsert executing statement '" + sql + "' !";
-			
+
 			logger.err( message );
 
 			exception.printStackTrace();
@@ -157,7 +157,7 @@ public class Database
 		catch( SQLException exception )
 		{
 			String message = "SQLException during call to sqlUpdate executing statement '" + sql + "' !";
-			
+
 			logger.err( message );
 
 			exception.printStackTrace();
@@ -177,11 +177,11 @@ public class Database
 			catch( SQLException e )
 			{
 				String message = "SQLException during call to ensureMetadata !";
-				
+
 				logger.err( message );
-				
+
 				e.printStackTrace();
-				
+
 				throw new DatabaseException( message, e );
 			}
 		}

@@ -38,7 +38,8 @@ public abstract class HexaGWTServlet extends HttpServlet
 
 	HashMap<String, ServiceDescription> services = new HashMap<String, ServiceDescription>();
 
-	abstract protected void onInit(); // opportunity to configure implemented services
+	abstract protected void onInit(); // opportunity to configure implemented
+										// services
 
 	@Override
 	public void init()
@@ -191,8 +192,10 @@ public abstract class HexaGWTServlet extends HttpServlet
 		{
 			JsonArray serviceDescription = serviceDescriptions.get( i ).getAsJsonArray();
 
-			String serviceName = serviceDescription.get( 0 ).getAsString(); // Service name
-			String serviceChecksum = serviceDescription.get( 1 ).getAsString(); // service checksum
+			String serviceName = serviceDescription.get( 0 ).getAsString(); // Service
+																			// name
+			String serviceChecksum = serviceDescription.get( 1 ).getAsString(); // service
+																				// checksum
 
 			services[i] = getServiceDelegate( serviceName, serviceChecksum );
 			if( services[i] == null )

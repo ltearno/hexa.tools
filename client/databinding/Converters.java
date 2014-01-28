@@ -14,7 +14,7 @@ public enum Converters implements Converter
 
 			try
 			{
-				return Integer.parseInt( ((String)value) );
+				return Integer.parseInt( ((String) value) );
 			}
 			catch( Exception e )
 			{
@@ -45,17 +45,16 @@ public enum Converters implements Converter
 		{
 			return StringToInteger.convert( value );
 		}
-	}
-	;
+	};
 
 	public static Converter findConverter( Class<?> from, Class<?> to )
 	{
 		from = ClazzUtils.getBoxedType( from );
 		to = ClazzUtils.getBoxedType( to );
 
-		if( from==String.class && to==Integer.class )
+		if( from == String.class && to == Integer.class )
 			return StringToInteger;
-		if( from==Integer.class && to==String.class )
+		if( from == Integer.class && to == String.class )
 			return IntegerToString;
 
 		return null;

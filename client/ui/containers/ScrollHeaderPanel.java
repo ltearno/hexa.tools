@@ -14,7 +14,8 @@ public class ScrollHeaderPanel extends HeaderPanel
 	public ScrollHeaderPanel()
 	{
 		super();
-		// obtain the contentContainer element and set its overflow property to AUTO, so that it is scrollable...
-		((com.google.gwt.user.client.Element)getElement().getChild( 2 )).getStyle().setOverflow( Overflow.AUTO );
+		// obtain the contentContainer element and set its overflow property to
+		// AUTO, so that it is scrollable...
+		((com.google.gwt.user.client.Element) getElement().getChild( 2 )).getStyle().setOverflow( Overflow.AUTO );
 	}
 }

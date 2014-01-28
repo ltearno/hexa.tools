@@ -23,7 +23,7 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
 		// Can we register ?
-		if( ! ( source instanceof INotifyPropertyChanged ) )
+		if( !(source instanceof INotifyPropertyChanged) )
 			return null;
 
 		this.callback = callback;
@@ -35,9 +35,9 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 	@Override
 	public void removePropertyChangedHandler( Object registration )
 	{
-		if( ! ( source instanceof INotifyPropertyChanged ) )
+		if( !(source instanceof INotifyPropertyChanged) )
 			return;
-		
+
 		((INotifyPropertyChanged) source).removePropertyChangedHandler( registration );
 	}
 
@@ -58,7 +58,7 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 	{
 		if( callback == null )
 			return;
-		
+
 		callback.exec( this, cookie );
 	}
 }

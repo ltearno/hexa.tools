@@ -9,7 +9,8 @@ public class CalendarPeriod
 	private List<Period> periods = null;
 
 	// list of days this period is available
-	// if in this mode, it is implied that its boundaries are Functions.TIME_BEGIN to Functions.TIME_END
+	// if in this mode, it is implied that its boundaries are
+	// Functions.TIME_BEGIN to Functions.TIME_END
 	private Days days = null;
 
 	// Constructors
@@ -130,8 +131,7 @@ public class CalendarPeriod
 				else if( periods.get( i ).getTo().compareTo( CalendarFunctions.TIME_END ) == 0 )
 					expr += CalendarMessages.INSTANCE.from( CalendarFunctions.date2Display( periods.get( i ).getFrom() ) );
 				else
-					expr += CalendarMessages.INSTANCE.dateRange( CalendarFunctions.date2Display( periods.get( i ).getFrom() ),
-							CalendarFunctions.date2Display( periods.get( i ).getTo() ) );
+					expr += CalendarMessages.INSTANCE.dateRange( CalendarFunctions.date2Display( periods.get( i ).getFrom() ), CalendarFunctions.date2Display( periods.get( i ).getTo() ) );
 			}
 
 			if( i < (periods.size() - 1) )
@@ -180,7 +180,8 @@ public class CalendarPeriod
 		return expr;
 	}
 
-	// returns true if the submitted date is included in the list of periods, false if not
+	// returns true if the submitted date is included in the list of periods,
+	// false if not
 	public boolean IsInside( String pDate )
 	{
 		if( periods == null )
@@ -206,7 +207,8 @@ public class CalendarPeriod
 		return false;
 	}
 
-	// returns true if the submitted period is completely covered within the list of periods, false if not
+	// returns true if the submitted period is completely covered within the
+	// list of periods, false if not
 	public boolean IsContained( String pFrom, String pTo )
 	{
 		if( periods == null )
@@ -265,7 +267,9 @@ public class CalendarPeriod
 		return nbNights;
 	}
 
-	public int GetBoundaries( PeriodBoundaries boundaries ) // String from and to as attributes in class
+	public int GetBoundaries( PeriodBoundaries boundaries ) // String from and
+															// to as attributes
+															// in class
 	{
 		if( periods == null )
 		{
@@ -277,7 +281,10 @@ public class CalendarPeriod
 		if( periods.size() == 0 )
 		{
 			boundaries.from = CalendarFunctions.TIME_BEGIN;
-			boundaries.to = CalendarFunctions.TIME_BEGIN; // change made on the 2011-02-10, hope it doesn't break anyting...
+			boundaries.to = CalendarFunctions.TIME_BEGIN; // change made on the
+															// 2011-02-10, hope
+															// it doesn't break
+															// anyting...
 			// $to = CalendarFunctions.TIME_END;
 			return 0;
 		}
@@ -288,7 +295,10 @@ public class CalendarPeriod
 		return 1;
 	}
 
-	public int GetLeastBoundaries( PeriodBoundaries boundaries ) // String from and to as attributes in class
+	public int GetLeastBoundaries( PeriodBoundaries boundaries ) // String from
+																	// and to as
+																	// attributes
+																	// in class
 	{
 		if( periods == null )
 		{
@@ -325,7 +335,8 @@ public class CalendarPeriod
 			return;
 		}
 
-		// if one of the two operands is unresolved, it's a good time to resolve it now
+		// if one of the two operands is unresolved, it's a good time to resolve
+		// it now
 		List<Period> _periods = null;
 		CalendarPeriod _toResolve = null;
 		if( (days != null) || (pPeriod.getDays() != null) )
@@ -374,7 +385,8 @@ public class CalendarPeriod
 			return;
 		}
 
-		// if one of the two operands is unresolved, it's a good time to resolve it now
+		// if one of the two operands is unresolved, it's a good time to resolve
+		// it now
 		List<Period> _periods;
 		CalendarPeriod _toResolve;
 		if( (days != null) || (pPeriod.getDays() != null) )
@@ -396,7 +408,8 @@ public class CalendarPeriod
 			_toResolve.Resolve( from, to );
 		}
 
-		// echo "Intersect " . $this->Out() . " with " . $period->Out() . "<br>";
+		// echo "Intersect " . $this->Out() . " with " . $period->Out() .
+		// "<br>";
 
 		// intersect the two period list
 		List<Period> result = _Intersect( periods, pPeriod.getPeriods() );
@@ -404,17 +417,20 @@ public class CalendarPeriod
 		periods = result;
 	}
 
-	// starting from an unresolved periods, we build a resolved one, based on from and to parameters
+	// starting from an unresolved periods, we build a resolved one, based on
+	// from and to parameters
 	public void Resolve( String pFrom, String pTo )
 	{
 		if( periods != null )
 		{
 			// call on an already resolved CalendarPeriod
-			// echo "LJLJKZHL KJH ELF B.EB EKJGF EFJBH EKLFJHL JGH <{{ : ' } <br/>";
+			// echo
+			// "LJLJKZHL KJH ELF B.EB EKJGF EFJBH EKLFJHL JGH <{{ : ' } <br/>";
 			throw new RuntimeException( "Error call on an already resolved CalendarPeriod" );
 		}
 
-		// echo "Resolving from $from to $to " . implode( ".", $this->days ) . "<br/>";
+		// echo "Resolving from $from to $to " . implode( ".", $this->days ) .
+		// "<br/>";
 
 		// if all days are selected, make a whole period
 		// build the micro periods
@@ -446,7 +462,8 @@ public class CalendarPeriod
 			{
 				if( curGroup == null ) // no group created yet
 					curGroup = new Group( i - fromDay, i - fromDay );
-				else if( curGroup.getTo() == i - fromDay - 1 ) // day jointed to current group
+				else if( curGroup.getTo() == i - fromDay - 1 ) // day jointed to
+																// current group
 					curGroup.setTo( i - fromDay );
 				else
 				// day disjointed from current group
@@ -462,7 +479,8 @@ public class CalendarPeriod
 		// Dump( $groups );
 
 		// now generate the periods
-		// String msg = "Starts on " + pFrom + ", which day is a " + fromDay + "<br/>";
+		// String msg = "Starts on " + pFrom + ", which day is a " + fromDay +
+		// "<br/>";
 		// for( int i = 0; i < groups.size(); i++ )
 		// {
 		// Group group = groups.get( i );
@@ -523,8 +541,7 @@ public class CalendarPeriod
 		{
 			Period period = periods.get( i );
 
-			if( (!period.getFrom().equals( CalendarFunctions.TIME_BEGIN ))
-					&& (CalendarFunctions.date_add_day( period.getFrom(), -1 ).compareTo( curBegin ) >= 0) )
+			if( (!period.getFrom().equals( CalendarFunctions.TIME_BEGIN )) && (CalendarFunctions.date_add_day( period.getFrom(), -1 ).compareTo( curBegin ) >= 0) )
 				result.add( new Period( curBegin, CalendarFunctions.date_add_day( period.getFrom(), -1 ) ) );
 			curBegin = CalendarFunctions.date_add_day( period.getTo(), 1 );
 		}
@@ -550,20 +567,22 @@ public class CalendarPeriod
 		{
 			// one of the periods begins after the end of the other
 			if( periods1.get( i ).getFrom().compareTo( periods2.get( j ).getTo() ) > 0 )
-			{ // period 1 begins after period 2 finishes => period2 is eliminated !
+			{ // period 1 begins after period 2 finishes => period2 is
+				// eliminated !
 				j++;
 			}
 			else if( periods2.get( j ).getFrom().compareTo( periods1.get( i ).getTo() ) > 0 )
-			{ // period 2 begins after end of period 1 => period 1 is eliminated !
+			{ // period 2 begins after end of period 1 => period 1 is eliminated
+				// !
 				i++;
 			}
 
 			// after that test, we can assume there is a non-void intersection
 			else
 			{
-				// result[] = array( max($periods1[$i][0],$periods2[$j][0]), min($periods1[$i][1],$periods2[$j][1]) );
-				result.add( new Period( CalendarFunctions.max_date( periods1.get( i ).getFrom(), periods2.get( j ).getFrom() ), CalendarFunctions.min_date(
-						periods1.get( i ).getTo(), periods2.get( j ).getTo() ) ) );
+				// result[] = array( max($periods1[$i][0],$periods2[$j][0]),
+				// min($periods1[$i][1],$periods2[$j][1]) );
+				result.add( new Period( CalendarFunctions.max_date( periods1.get( i ).getFrom(), periods2.get( j ).getFrom() ), CalendarFunctions.min_date( periods1.get( i ).getTo(), periods2.get( j ).getTo() ) ) );
 
 				if( periods1.get( i ).getTo().compareTo( periods2.get( j ).getTo() ) > 0 )
 					j++;
@@ -715,7 +734,8 @@ public class CalendarPeriod
 				str += d.toString() + sep;
 			}
 			if( str.length() > 1 )
-				return str.substring( 0, str.length() - 1 ); // remove last separator
+				return str.substring( 0, str.length() - 1 ); // remove last
+																// separator
 			return str;
 		}
 

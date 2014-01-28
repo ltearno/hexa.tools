@@ -16,16 +16,16 @@ import com.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import com.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import com.hexa.client.databinding.propertyadapters.PropertyAdapter;
 
-
 public class DTOMapper
 {
-	// tries to bind as much fields of source to destination and the other way around
+	// tries to bind as much fields of source to destination and the other way
+	// around
 	// returns mapping resources handle that were created for this mapping
 	public static Object Map( Object source, Object destination )
 	{
 		List<DataBinding> res = new ArrayList<DataBinding>();
 
-		GWT.log( "Binding object of class " + getSimpleName(source.getClass()) + " to another of class " + getSimpleName(destination.getClass()) );
+		GWT.log( "Binding object of class " + getSimpleName( source.getClass() ) + " to another of class " + getSimpleName( destination.getClass() ) );
 
 		Clazz<?> sourceClass = ClassInfo.Clazz( source.getClass() );
 		Clazz<?> destinationClass = ClassInfo.Clazz( destination.getClass() );
@@ -42,7 +42,7 @@ public class DTOMapper
 		// ... and method wise
 		for( Method method : sourceClass.getMethods() )
 		{
-			if( ! method.getName().startsWith( "get" ) && ! method.getName().startsWith( "set" ) )
+			if( !method.getName().startsWith( "get" ) && !method.getName().startsWith( "set" ) )
 				continue;
 
 			String fieldName = method.getName().substring( 3, 4 ).toLowerCase() + method.getName().substring( 4 );
@@ -50,7 +50,7 @@ public class DTOMapper
 		}
 		for( Method method : destinationClass.getMethods() )
 		{
-			if( ! method.getName().startsWith( "get" ) && ! method.getName().startsWith( "set" ) )
+			if( !method.getName().startsWith( "get" ) && !method.getName().startsWith( "set" ) )
 				continue;
 
 			String fieldName = method.getName().substring( 3, 4 ).toLowerCase() + method.getName().substring( 4 );
@@ -66,7 +66,7 @@ public class DTOMapper
 			boolean destinationWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
 
 			// ensure both have necessary methods or field
-			if( ! srcRead || ! destinationWrite )
+			if( !srcRead || !destinationWrite )
 				continue; // bypass
 
 			// adjust binding mode according to capabilities
@@ -86,12 +86,18 @@ public class DTOMapper
 			String symbol = "";
 			switch( bindingMode )
 			{
-			case OneWay: symbol = "----->"; break;
-			case TwoWay: symbol = "<---->"; break;
-			case OneWayToSource: symbol = "<-----"; break;
+				case OneWay:
+					symbol = "----->";
+					break;
+				case TwoWay:
+					symbol = "<---->";
+					break;
+				case OneWayToSource:
+					symbol = "<-----";
+					break;
 			}
 
-			GWT.log( "[" + getSimpleName(sourceAdapterInfo.dataType) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
+			GWT.log( "[" + getSimpleName( sourceAdapterInfo.dataType ) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
 
 			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter, null );
 			binding.activate();
@@ -114,7 +120,7 @@ public class DTOMapper
 	static String getSimpleName( Class<?> cls )
 	{
 		String[] path = cls.getName().split( "\\." );
-		return path[path.length-1];
+		return path[path.length - 1];
 	}
 
 	static class DataAdapterInfo
@@ -130,7 +136,7 @@ public class DTOMapper
 	{
 		DataAdapterInfo res = new DataAdapterInfo();
 		res.dataType = ObjectPropertiesUtils.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
-		res.debugString = getSimpleName(context.getClass()) + ", ";
+		res.debugString = getSimpleName( context.getClass() ) + ", ";
 
 		// test to see if the asked property is in fact a HasValue widget
 		Object widget = ObjectPropertiesUtils.GetProperty( context, property );
@@ -142,14 +148,14 @@ public class DTOMapper
 				res.dataType = String.class;
 
 			// try to find a converter if dataType does not match srcPptyType
-			if( srcPptyType!=null && res.dataType!=null && res.dataType!=srcPptyType )
+			if( srcPptyType != null && res.dataType != null && res.dataType != srcPptyType )
 			{
 				// try to find a converter, if not : fail
 				res.converter = Converters.findConverter( srcPptyType, res.dataType );
 				if( res.converter == null )
 					return null;
 
-				res.debugString = "["+getSimpleName(srcPptyType)+">"+getSimpleName(res.dataType)+"] " + res.debugString;
+				res.debugString = "[" + getSimpleName( srcPptyType ) + ">" + getSimpleName( res.dataType ) + "] " + res.debugString;
 			}
 
 			res.debugString += "\"" + property + ".$HasValue\"";

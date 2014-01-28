@@ -4,7 +4,8 @@ public interface ValidatorCallback
 {
 	public enum Button
 	{
-		Ok, Cancel;
+		Ok,
+		Cancel;
 	}
 
 	public void onValidatorAction( Button button );

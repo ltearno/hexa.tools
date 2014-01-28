@@ -5,7 +5,7 @@ import com.hexa.client.ui.treetable.TreeTableBase.Row;
 
 /**
  * @author Arnaud
- *
+ * 
  */
 public interface TreeTableHandler
 {

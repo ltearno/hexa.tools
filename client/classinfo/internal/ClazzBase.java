@@ -13,7 +13,9 @@ public abstract class ClazzBase<T> implements Clazz<T>
 {
 	// To implement :
 	protected abstract List<Field> _getDeclaredFields();
+
 	protected abstract List<Method> _getMethods();
+
 	protected abstract void _ensureSuperClassInfoRegistered();
 
 	private Class<? super T> _superClass;

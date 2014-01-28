@@ -60,7 +60,8 @@ public class RPCBatchRequestSender
 	}
 
 	// returns true if this instance can send another RPC in this batch
-	// basically, once the request batch is prepared and sent, no more calls can be added
+	// basically, once the request batch is prepared and sent, no more calls can
+	// be added
 	public boolean canAddRequest()
 	{
 		return sentRequest == null && requestsToSend.size() < MAX_NB_REQUESTS;
