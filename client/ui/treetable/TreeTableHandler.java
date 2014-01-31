@@ -1,7 +1,7 @@
 package com.hexa.client.ui.treetable;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.hexa.client.ui.treetable.TreeTableBase.Row;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 /**
  * @author Arnaud

@@ -16,8 +16,7 @@ import com.hexa.client.comm.HexaFramework;
 import com.hexa.client.tools.HierarchySet.IHierarchyLevel;
 import com.hexa.client.ui.dialog.MyPopupPanel;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.hexa.client.ui.treetable.TreeTableBase;
-import com.hexa.client.ui.treetable.TreeTableBase.Row;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.TreeTableHandler;
 
 public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
@@ -141,7 +140,7 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 			if( currentLevels.contains( levels.get( i ) ) )
 				continue;
 
-			TreeTableBase.Row item = table.addRow( null );
+			TreeTable.Row item = table.addRow( null );
 			item.setText( 0, levels.get( i ).getName() );
 			item.setDataObject( levels.get( i ) );
 		}

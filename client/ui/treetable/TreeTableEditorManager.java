@@ -3,7 +3,7 @@ package com.hexa.client.ui.treetable;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.ITreeTableEditorManager;
-import com.hexa.client.ui.treetable.TreeTableBase.Row;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.widget.Validator;
 import com.hexa.client.ui.widget.ValidatorCallback;
 

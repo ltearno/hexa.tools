@@ -3,8 +3,8 @@ package com.hexa.client.tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.hexa.client.ui.treetable.TreeTable;
 

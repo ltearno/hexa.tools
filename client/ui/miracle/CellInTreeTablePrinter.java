@@ -1,7 +1,7 @@
 package com.hexa.client.ui.miracle;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.ui.treetable.TreeTableBase.Row;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class CellInTreeTablePrinter implements Printer
 {
