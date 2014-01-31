@@ -1,11 +1,12 @@
 package com.hexa.client.ui.widget;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
 
@@ -32,7 +33,7 @@ public class Slider extends Widget
 
 		maxLength = (maxLength + 1) / 2;
 
-		setElement( DOM.createDiv() );
+		setElement( Document.get().createDivElement() );
 		getElement().getStyle().setMargin( 10, Unit.PX );
 		getElement().getStyle().setMarginRight( maxLength, Unit.EM );
 		build( getElement(), min, max, step );

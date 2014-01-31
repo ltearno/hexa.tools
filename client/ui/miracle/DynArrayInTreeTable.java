@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -11,7 +12,6 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.miracle.Edits.Editor;
@@ -379,9 +379,6 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		@Override
 		public String getGhostInnerHTML( Integer cookie, Element source )
 		{
-			// return
-			// "<div style='background-color:rgba(120,120,120,0.4);'>Moving column "+cookie+"</div>";
-
 			class TempPrinter implements Printer
 			{
 				String html = null;

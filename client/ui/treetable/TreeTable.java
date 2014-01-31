@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,11 +15,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,7 +30,7 @@ import com.hexa.client.ui.widget.ImageButton;
 
 public class TreeTable extends Panel
 {
-	final int treePadding = 15;
+	final int treePadding = 25;
 
 	ImageResource treeMinus;
 	ImageResource treePlus;
@@ -131,7 +133,7 @@ public class TreeTable extends Panel
 	{
 		for( ; th != null; th = DOM.getParent( th ) )
 		{
-			if( DOM.getElementProperty( th, "tagName" ).equalsIgnoreCase( "th" ) )
+			if( th.getTagName().equalsIgnoreCase( "th" ) )
 			{
 				Element head = DOM.getParent( th );
 				if( head == m_headerRow )
@@ -152,7 +154,7 @@ public class TreeTable extends Panel
 		for( ; td != null; td = DOM.getParent( td ) )
 		{
 			// If it's a TD, it might be the one we're looking for.
-			if( DOM.getElementProperty( td, "tagName" ).equalsIgnoreCase( "td" ) )
+			if( td.getTagName().equalsIgnoreCase( "td" ) )
 			{
 				// Make sure it's directly a part of this table before returning
 				// it
@@ -215,7 +217,7 @@ public class TreeTable extends Panel
 		{
 			// Physical detach.
 			Element elem = w.getElement();
-			DOM.removeChild( DOM.getParent( elem ), elem );
+			elem.removeFromParent();
 
 			// Logical detach.
 			if( fDoLogical )
@@ -419,14 +421,13 @@ public class TreeTable extends Panel
 				parentItem = m_rootItem;
 
 			Row newItem = new Row();
-			newItem.m_tr = DOM.createTR();
+			newItem.m_tr = Document.get().createTRElement();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			// JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
 			newItem.m_tr.setInnerHTML( m_rowTemplate );
 
 			// DOM add
-			DOM.insertBefore( m_body, newItem.m_tr, m_tr );
+			m_body.insertBefore( newItem.m_tr, m_tr );
 
 			// logical add
 			newItem.m_parent = parentItem;
@@ -437,8 +438,6 @@ public class TreeTable extends Panel
 			// take care of the left padding
 			Element firstTd = DOM.getChild( newItem.m_tr, 0 );
 			firstTd.getStyle().setPaddingLeft( newItem.getLevel() * treePadding, Unit.PX );
-
-			// JQuery.get().jqEffect( "highlight", 250, newItem.m_tr, null );
 
 			return newItem;
 		}
@@ -707,6 +706,11 @@ public class TreeTable extends Panel
 			td.setInnerHTML( html );
 		}
 
+		public void setWidget( int column, IsWidget w )
+		{
+			setWidget( column, w.asWidget() );
+		}
+
 		public void setWidget( int column, Widget w )
 		{
 			assert column < m_nbColumns;
@@ -865,28 +869,11 @@ public class TreeTable extends Panel
 					public void onFinished()
 					{
 						// physical remove
-						DOM.removeChild( m_body, tr );
+						m_body.removeChild( tr );
 					}
 				} );
-				// DOM.removeChild( m_body, m_trToDelete );
 			}
 		}
-
-		// public void removeOLD()
-		// {
-		// // logical delete
-		// logicalRemove();
-		//
-		// JQuery.get().jqFadeOut( m_trToDelete, 250, new JQuery.Callback()
-		// {
-		// @Override
-		// public void onFinished()
-		// {
-		// // physical remove
-		// physicalRemove();
-		// }
-		// } );
-		// }
 
 		void logicalRemove()
 		{
@@ -927,7 +914,7 @@ public class TreeTable extends Panel
 
 			// remove myself...
 			if( m_trToDelete != null )
-				DOM.removeChild( m_body, m_trToDelete );
+				m_body.removeChild( m_trToDelete );
 
 			// ...and all my children
 			for( Row child : m_childs )

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -448,7 +448,7 @@ public class Raphael extends Panel
 		}
 		/**
 		 * doesn't seem to work
-		 * 
+		 *
 		 * public String getSubpath(int from, int to) { return
 		 * ((RaphaelJS.Path)el).getSubpath(from, to); }
 		 */

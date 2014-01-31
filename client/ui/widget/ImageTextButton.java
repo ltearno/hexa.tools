@@ -1,5 +1,6 @@
 package com.hexa.client.ui.widget;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -7,7 +8,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ImageTextButton extends Widget implements ClickHandler, HasClickHandlers
@@ -33,10 +33,6 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 
 		button = DOM.createButton();
 		button.setClassName( "buttonV2" );
-		// button.setClassName( "ImageTextButtonV2" );
-		// button.setAttribute( "style",
-		// "min-height:"+(resource.getHeight()+2)+"px;"+"padding-left:"+resource.getWidth()+"px; background: url('"+resource.getURL()+"') no-repeat 0px center;"
-		// );
 
 		setText( title );
 
@@ -107,49 +103,49 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 /*
  * public class ImageTextButton extends Composite implements ClickHandler {
  * public interface Callback { void onClick( Object cookie ); }
- * 
+ *
  * HTML h;
- * 
+ *
  * ImageResource resource; String title;
- * 
+ *
  * Object cookie = null; Callback callback = null;
- * 
+ *
  * private String getHTML() { return
  * "<button class='ImageTextButtonV2' style=\"padding-left:"
  * +resource.getWidth()+
  * "px; background: url('"+resource.getURL()+"') no-repeat 0px center;\">"
  * +title+"</button>"; }
- * 
+ *
  * @UiConstructor public ImageTextButton( ImageResource resource, String title )
  * { this.resource = resource; this.title = title;
- * 
+ *
  * h = new HTML( getHTML() );
- * 
+ *
  * initWidget( h );
- * 
+ *
  * Element button = DOM.createButton(); button.setClassName( "ImageTextButtonV2"
  * ); button.setAttribute( "style",
  * "padding-left:"+resource.getWidth()+"px; background: url('"
  * +resource.getURL()+"') no-repeat 0px center;" ); }
- * 
+ *
  * public void setCallback( Callback callback, Object cookie ) { this.callback =
  * callback; this.cookie = cookie;
- * 
+ *
  * addClickHandler( this ); }
- * 
+ *
  * public void setCookie( Object cookie ) { this.cookie = cookie; }
- * 
+ *
  * public Object getCookie() { return cookie; }
- * 
+ *
  * public void setText( String text ) { title = text; h.setHTML( getHTML() ); }
- * 
+ *
  * public void addClickHandler( ClickHandler handler ) { h.addClickHandler(
  * handler ); }
- * 
+ *
  * public boolean isMyClickEvent( ClickEvent event ) { if( event.getSource() ==
  * h ) return true; return false; }
- * 
+ *
  * @Override public void onClick(ClickEvent event) { assert( callback != null );
- * 
+ *
  * callback.onClick( cookie ); } }
  */

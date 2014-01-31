@@ -3,7 +3,7 @@ package com.hexa.client.ui.uploadjs;
 import java.util.Date;
 
 import com.google.gwt.core.client.JavaScriptException;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -37,38 +37,38 @@ public class Uploader extends Composite
 	private native void initDropZone( Element dropzone )
 	/*-{
 		var me = this;
-		
+
 		if( ! dropzone.addEventListener )
 			return;
-			
+
 		dropzone.addEventListener( "dragenter", function(event)
 			{
 				event.preventDefault();
-				
+
 				me.@com.hexa.client.ui.uploadjs.Uploader::onDragEnter()();
 			}, true );
-			
+
 		dropzone.addEventListener( "dragover", function(event)
 			{
 				event.preventDefault();
-				
+
 				me.@com.hexa.client.ui.uploadjs.Uploader::onDragEnter()();
 			}, true );
-			
+
 		dropzone.addEventListener( "dragleave", function(event)
 			{
 				event.preventDefault();
-				
+
 				me.@com.hexa.client.ui.uploadjs.Uploader::onDragLeave()();
 			}, true );
-		
+
 		dropzone.addEventListener( "drop", function(event)
 			{
 			  event.preventDefault();
-			  
+
 			  var allTheFiles = event.dataTransfer.files;
 			  //$wnd.droppedFiles = allTheFiles;
-			  
+
 			  me.@com.hexa.client.ui.uploadjs.Uploader::onDropFiles(Lcom/hexa/client/ui/uploadjs/FilesList;)( allTheFiles );
 			}, true);
 	}-*/;
@@ -93,6 +93,7 @@ public class Uploader extends Composite
 			final File file = files.getFile( i );
 			file.getAsBinary( new File.Callback()
 			{
+				@Override
 				public void onDataReady( String fileData )
 				{
 					String boundary = "AJAX------" + Math.random() + "" + new Date().getTime();
@@ -118,6 +119,7 @@ public class Uploader extends Composite
 					{
 						req.sendAsBinary( data, new XMLHttpRequestEx.Callback()
 						{
+							@Override
 							public void onProgress( int percentage )
 							{
 								if( percentage < 0 )

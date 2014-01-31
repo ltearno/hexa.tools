@@ -3,6 +3,8 @@ package com.hexa.client.ui.dialog;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -15,7 +17,6 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.ProvidesResize;
@@ -448,7 +449,7 @@ class Glass extends Widget
 {
 	public Glass()
 	{
-		setElement( DOM.createDiv() );
+		setElement( Document.get().createDivElement() );
 		getElement().getStyle().setBackgroundColor( "rgba(0, 0, 0, 0.5)" );
 	}
 }

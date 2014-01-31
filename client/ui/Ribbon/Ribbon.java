@@ -5,11 +5,11 @@ package com.hexa.client.ui.Ribbon;
 
 import java.util.ArrayList;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Arnaud
- * 
+ *
  */
 public class Ribbon extends ResizeComposite implements RibbonView
 {
@@ -94,7 +94,7 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			 * conf.tabs.get(i).buttons.get(j).name, new ClickHandler() { public
 			 * void onClick( ClickEvent event ) { callback.onRibbonChange( obj
 			 * ); } } );
-			 * 
+			 *
 			 * table.setWidget( 0, j, button ); } m_tabs.add( table );
 			 */
 		}
@@ -138,9 +138,9 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
 			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
 			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
-			 * 
+			 *
 			 * =======
-			 * 
+			 *
 			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
 			 * == obj ) { button.setEnabled( fEnabled ); return; } }
 			 */
@@ -167,9 +167,9 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
 			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
 			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
-			 * 
+			 *
 			 * =======
-			 * 
+			 *
 			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
 			 * == obj ) { m_tabBar.selectTab( i ); button.addStyleName(
 			 * "Ribbon-selected" ); } else { button.removeStyleName(
@@ -206,9 +206,9 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
 			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
 			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
-			 * 
+			 *
 			 * =======
-			 * 
+			 *
 			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
 			 * == obj ) { button.setText( text ); return; } }
 			 */

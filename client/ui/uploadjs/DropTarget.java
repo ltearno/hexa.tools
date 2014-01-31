@@ -1,6 +1,6 @@
 package com.hexa.client.ui.uploadjs;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -39,35 +39,35 @@ public class DropTarget extends Composite
 	/*-{
 		if( ! dropzone.addEventListener )
 			return;
-			
+
 		dropzone.addEventListener( "dragenter", function(event)
 			{
 				event.preventDefault();
-				
+
 				callback.@com.hexa.client.ui.uploadjs.DropTarget.Callback::onDragEnter()();
 			}, true );
-			
+
 		dropzone.addEventListener( "dragover", function(event)
 			{
 				event.preventDefault();
-				
+
 				callback.@com.hexa.client.ui.uploadjs.DropTarget.Callback::onDragEnter()();
 			}, true );
-			
+
 		dropzone.addEventListener( "dragleave", function(event)
 			{
 				event.preventDefault();
-				
+
 				callback.@com.hexa.client.ui.uploadjs.DropTarget.Callback::onDragLeave()();
 			}, true );
-		
+
 		dropzone.addEventListener( "drop", function(event)
 			{
 			  event.preventDefault();
-			  
+
 			  var allTheFiles = event.dataTransfer.files;
 			  //$wnd.droppedFiles = allTheFiles;
-			  
+
 			  callback.@com.hexa.client.ui.uploadjs.DropTarget.Callback::onDropFiles(Lcom/hexa/client/ui/uploadjs/FilesList;)( allTheFiles );
 			}, true);
 	}-*/;

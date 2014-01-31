@@ -1,5 +1,6 @@
 package com.hexa.client.ui.widget;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.FontStyle;
 import com.google.gwt.dom.client.Style.FontWeight;
@@ -10,7 +11,6 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.TextArea;
 
 public class GrowingTextArea extends TextArea implements KeyDownHandler, KeyUpHandler
@@ -22,7 +22,6 @@ public class GrowingTextArea extends TextArea implements KeyDownHandler, KeyUpHa
 		addKeyDownHandler( this );
 		addKeyUpHandler( this );
 
-		// getElement().getStyle().setOverflow( Overflow.HIDDEN );
 		applyStyle( getElement() );
 	}
 

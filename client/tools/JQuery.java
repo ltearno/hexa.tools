@@ -3,10 +3,10 @@ package com.hexa.client.tools;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 
 public class JQuery

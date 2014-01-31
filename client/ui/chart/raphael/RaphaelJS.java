@@ -41,7 +41,7 @@ public class RaphaelJS extends JavaScriptObject
 		return createImpl( elementId, width, height );
 	}
 
-	public static RaphaelJS create( com.google.gwt.user.client.Element element, int width, int height )
+	public static RaphaelJS create( com.google.gwt.dom.client.Element element, int width, int height )
 	{
 		_ensureScriptLoaded();
 		return createImpl( element, width, height );
@@ -57,7 +57,7 @@ public class RaphaelJS extends JavaScriptObject
 	/**
 	 * Raphael factory method
 	 */
-	static public final native RaphaelJS createImpl( com.google.gwt.user.client.Element element, int width, int height ) /*-{
+	static public final native RaphaelJS createImpl( com.google.gwt.dom.client.Element element, int width, int height ) /*-{
 																															return $wnd.Raphael(element, width, height);
 																															}-*/;
 
@@ -95,10 +95,10 @@ public class RaphaelJS extends JavaScriptObject
 		/**
 		 * Gives you a reference to the DOM object, so you can assign event
 		 * handlers or just mess around.
-		 * 
+		 *
 		 * @return reference to the current DOM object
 		 */
-		public final native com.google.gwt.user.client.Element node() /*-{
+		public final native com.google.gwt.dom.client.Element node() /*-{
 																		return this.node;
 																		}-*/;
 
@@ -112,7 +112,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Makes element invisible
-		 * 
+		 *
 		 * @return the javascript object hidden
 		 */
 		public final native Element hide() /*-{
@@ -121,7 +121,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Makes element visible
-		 * 
+		 *
 		 * @return the javascript object made visible
 		 */
 		public final native Element show() /*-{
@@ -131,10 +131,10 @@ public class RaphaelJS extends JavaScriptObject
 		/**
 		 * Rotates the element by the given degree from its center point
 		 * relatively.
-		 * 
+		 *
 		 * @param degree
 		 *            number of degrees of rotation (0-360)
-		 * 
+		 *
 		 * @return the javascript object rotated
 		 */
 		public final native Element rotate( double degree ) /*-{
@@ -143,13 +143,13 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Rotates the element by the given degree from its center point.
-		 * 
+		 *
 		 * @param degree
 		 *            number of degrees of rotation (0-360)
 		 * @param isAbsolute
 		 *            boolean Specifies if degree is relative to previous
 		 *            position (false) or is it absolute angle (true)
-		 * 
+		 *
 		 * @return the javascript object rotated
 		 */
 		public final native Element rotate( double degree, boolean isAbsolute ) /*-{
@@ -159,14 +159,14 @@ public class RaphaelJS extends JavaScriptObject
 		/**
 		 * Rotates the element by the given degree from its center point
 		 * relatively.
-		 * 
+		 *
 		 * @param degree
 		 *            number of degrees of rotation (0-360)
 		 * @param cx
 		 *            number X coordinate of center of rotation
 		 * @param cy
 		 *            number Y coordinate of center of rotation
-		 * 
+		 *
 		 * @return the javascript object rotated
 		 */
 		public final native Element rotate( double degree, double cx, double cy ) /*-{
@@ -175,12 +175,12 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Moves the element around the canvas by the given distances.
-		 * 
+		 *
 		 * @param dx
 		 *            number of pixels of translation by X-axis
 		 * @param dy
 		 *            number of pixels of translation by Y-axis
-		 * 
+		 *
 		 * @return the javascript object translated
 		 */
 		public final native Element translate( double dx, double dy ) /*-{
@@ -189,12 +189,12 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Resizes the element by the given multipliers.
-		 * 
+		 *
 		 * @param Xtimes
 		 *            factor to scale horizontally
 		 * @param Ytimes
 		 *            factor to scale vertically
-		 * 
+		 *
 		 * @return the javascript object scaled
 		 */
 		public final native Element scale( double Xtimes, double Ytimes ) /*-{
@@ -203,12 +203,12 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Resizes the element by the given multipliers.
-		 * 
+		 *
 		 * @param Xtimes
 		 *            factor to scale horizontally
 		 * @param Ytimes
 		 *            factor to scale vertically
-		 * 
+		 *
 		 * @return the javascript object scaled
 		 */
 		public final native Element scale( double Xtimes, double Ytimes, double centerX ) /*-{
@@ -217,12 +217,12 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Resizes the element by the given multipliers.
-		 * 
+		 *
 		 * @param Xtimes
 		 *            factor to scale horizontally
 		 * @param Ytimes
 		 *            factor to scale vertically
-		 * 
+		 *
 		 * @return the javascript object scaled
 		 */
 		public final native Element scale( double Xtimes, double Ytimes, double centerX, double centerY ) /*-{
@@ -232,7 +232,7 @@ public class RaphaelJS extends JavaScriptObject
 		/**
 		 * Linearly changes an attribute from its current value to its specified
 		 * value in the given amount of milliseconds.
-		 * 
+		 *
 		 * @param newAttrs
 		 *            string Attributes of the object after animation (not all
 		 *            attributes can be animated)
@@ -246,7 +246,7 @@ public class RaphaelJS extends JavaScriptObject
 		 *                         width number . x number . y number
 		 * @param duration
 		 *            The duration of the animation, given in milliseconds
-		 * 
+		 *
 		 */
 		public final native Element animate( JavaScriptObject newAttrs, int ms ) /*-{
 																					return this.animate(newAttrs, ms);
@@ -265,7 +265,7 @@ public class RaphaelJS extends JavaScriptObject
 		/**
 		 * Linearly changes an attribute from its current value to its specified
 		 * value in the given amount of milliseconds (with callback)
-		 * 
+		 *
 		 * @param newAttrs
 		 *            string Attributes of the object after animation (not all
 		 *            attributes can be animated)
@@ -275,7 +275,7 @@ public class RaphaelJS extends JavaScriptObject
 		 *            int the duration of the animation, given in milliseconds
 		 * @param easing
 		 *            [>, <, <>, backIn, backOut, bounce, elastic]
-		 * 
+		 *
 		 */
 		public final native Element animate( JavaScriptObject newAttrs, int ms, String easing ) /*-{
 																								return this.animate(newAttrs, ms, easing);
@@ -363,7 +363,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * Sets the attributes of elements directly.
-		 * 
+		 *
 		 * @param attributeName
 		 *            string of the attribute name
 		 * @attribute_names: . clip-rect string comma or space separated values:
@@ -386,7 +386,7 @@ public class RaphaelJS extends JavaScriptObject
 		 *                   x and y . width number . x number . y number
 		 * @param value
 		 *            string of the new value
-		 * 
+		 *
 		 * @return the javascript object having attributes modified
 		 */
 		public final native Element attr( String attributeName, String value ) /*-{
@@ -399,7 +399,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * sets a values for given attribute names
-		 * 
+		 *
 		 * @return the current value for the given attribute name
 		 */
 		public final native Element attr( JavaScriptObject params ) /*-{
@@ -408,7 +408,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * gets the value for an attribute
-		 * 
+		 *
 		 * @return the current value for the given attribute name
 		 */
 		public final native double attrAsDouble( String attributeName ) /*-{
@@ -417,7 +417,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * gets the value for an attribute
-		 * 
+		 *
 		 * @return the current value for the given attribute name
 		 */
 		public final native String attrAsString( String attributeName ) /*-{
@@ -426,7 +426,7 @@ public class RaphaelJS extends JavaScriptObject
 
 		/**
 		 * gets an array of values for given attribute names
-		 * 
+		 *
 		 * @return the current value for the given attribute name
 		 */
 		public final native JsArrayMixed attr( JsArrayMixed attributeNames ) /*-{
@@ -511,14 +511,14 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draw a circle to the Raphael canvas
-	 * 
+	 *
 	 * @param x
 	 *            number x coordinate of the center
 	 * @param y
 	 *            number y coordinate of the center
 	 * @param r
 	 *            r number radius of the circle
-	 * 
+	 *
 	 * @return the circle object
 	 */
 	public final native Element circle( double x, double y, double r ) /*-{
@@ -534,7 +534,7 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draw an ellipse to the Raphael canvas
-	 * 
+	 *
 	 * @param x
 	 *            number x coordinate of the center
 	 * @param y
@@ -543,7 +543,7 @@ public class RaphaelJS extends JavaScriptObject
 	 *            number horizontal radius
 	 * @param ry
 	 *            number vertical radius
-	 * 
+	 *
 	 * @return the ellipse object
 	 */
 	public final native Element ellipse( double x, double y, double rx, double ry ) /*-{
@@ -559,7 +559,7 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * return the next color in the spectrum
-	 * 
+	 *
 	 * @param brightness
 	 */
 	public final native Color getColor( double brightness ) /*-{
@@ -591,7 +591,7 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draw an image to the Raphael canvas
-	 * 
+	 *
 	 * @param src
 	 *            string URI of the source image
 	 * @param x
@@ -602,7 +602,7 @@ public class RaphaelJS extends JavaScriptObject
 	 *            number width of the image
 	 * @param height
 	 *            number height of the image
-	 * 
+	 *
 	 * @return the image object
 	 */
 	public final native Element image( String src, double x, double y, double width, double height ) /*-{
@@ -611,11 +611,11 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draws a path to the Raphael canvas
-	 * 
+	 *
 	 * @param obj
 	 *            string Attributes for the resulting path as described in the
 	 *            attr reference.
-	 * 
+	 *
 	 * @return the path object
 	 */
 	public final native Path path() /*-{
@@ -624,10 +624,10 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draws a path to the Raphael canvas given the SVG path string
-	 * 
+	 *
 	 * @param pathString
 	 *            string Path data in SVG path string format.
-	 * 
+	 *
 	 * @return the path object
 	 */
 	public final native Path path( String pathString ) /*-{
@@ -640,7 +640,7 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draw a rectangle to the Raphael canvas
-	 * 
+	 *
 	 * @param x
 	 *            number x coordinate of top left corner
 	 * @param y
@@ -649,7 +649,7 @@ public class RaphaelJS extends JavaScriptObject
 	 *            width of the rectangle
 	 * @param height
 	 *            height of the rectangle
-	 * 
+	 *
 	 * @return the rectangle object
 	 */
 	public final native Element rect( double x, double y, double width, double height ) /*-{
@@ -658,7 +658,7 @@ public class RaphaelJS extends JavaScriptObject
 
 	/**
 	 * Draw a rectangle (with rounded corners) to the Raphael canvas
-	 * 
+	 *
 	 * @param x
 	 *            number x coordinate of top left corner
 	 * @param y
@@ -669,7 +669,7 @@ public class RaphaelJS extends JavaScriptObject
 	 *            height of the rectangle
 	 * @param r
 	 *            r number [optional] radius for rounded corners, default is 0
-	 * 
+	 *
 	 * @return the rectangle object with rounded corners
 	 */
 	public final native Element rect( double x, double y, double width, double height, double r ) /*-{

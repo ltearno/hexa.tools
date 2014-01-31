@@ -2,13 +2,13 @@ package com.hexa.client.ui.miracle;
 
 import java.util.HashMap;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
@@ -22,15 +22,7 @@ public class MiracleTable extends FlexTable
 	public MiracleTable()
 	{
 		super();
-
-		// sinkEvents( Event.ONMOUSEMOVE );
-		// addDomHandler( onMouseMove, MouseMoveEvent.getType() );
 	}
-
-	/*
-	 * private MouseMoveHandler onMouseMove = new MouseMoveHandler() { public
-	 * void onMouseMove(MouseMoveEvent event) { GWT.log( "on mouse move" ); } };
-	 */
 
 	public HandlerRegistration addMouseDownHandler( MouseDownHandler handler )
 	{
@@ -38,14 +30,15 @@ public class MiracleTable extends FlexTable
 		return addDomHandler( handler, MouseDownEvent.getType() );
 	}
 
-	public Element getBodyElement()
+	@Override
+	public com.google.gwt.user.client.Element getBodyElement()
 	{
 		int nbc = getElement().getChildCount();
 		for( int c = 0; c < nbc; c++ )
 		{
 			Node node = getElement().getChild( c );
 			if( node.getNodeName().equalsIgnoreCase( "tbody" ) )
-				return (Element) (com.google.gwt.dom.client.Element.as( node ));
+				return node.<com.google.gwt.user.client.Element>cast();
 		}
 		return null;
 	}
@@ -57,7 +50,7 @@ public class MiracleTable extends FlexTable
 		{
 			Node node = getElement().getChild( c );
 			if( node.getNodeName().equalsIgnoreCase( "thead" ) )
-				return (Element) (com.google.gwt.dom.client.Element.as( node ));
+				return (com.google.gwt.dom.client.Element.as( node ));
 		}
 		return null;
 	}
@@ -72,7 +65,7 @@ public class MiracleTable extends FlexTable
 	{
 		ensureHeaderCell( col );
 
-		Element th = (Element) Element.as( thead.getChild( col ) );
+		Element th = Element.as( thead.getChild( col ) );
 
 		clearTH( th, false );
 
@@ -83,7 +76,7 @@ public class MiracleTable extends FlexTable
 	{
 		ensureHeaderCell( col );
 
-		Element th = (Element) Element.as( thead.getChild( col ) );
+		Element th = Element.as( thead.getChild( col ) );
 
 		clearTH( th, false );
 
@@ -94,7 +87,7 @@ public class MiracleTable extends FlexTable
 	{
 		ensureHeaderCell( col );
 
-		Element th = (Element) Element.as( thead.getChild( col ) );
+		Element th = Element.as( thead.getChild( col ) );
 
 		clearTH( th, true );
 
@@ -122,7 +115,7 @@ public class MiracleTable extends FlexTable
 		else
 		{
 			if( fClearHTML )
-				DOM.setInnerHTML( th, "" );
+				th.setInnerHTML( "" );
 		}
 	}
 
@@ -141,7 +134,7 @@ public class MiracleTable extends FlexTable
 
 		for( ; th != null; th = DOM.getParent( th ) )
 		{
-			if( DOM.getElementProperty( th, "tagName" ).equalsIgnoreCase( "th" ) )
+			if( th.getTagName().equalsIgnoreCase( "th" ) )
 			{
 				Element head = DOM.getParent( th );
 				if( head == headElem )

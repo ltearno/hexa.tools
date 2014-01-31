@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -14,7 +15,6 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Widget;
@@ -155,13 +155,12 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 	// return the row it was moved to
 	private int moveRowFor( int actual, int target, int objectRef )
 	{
-		com.google.gwt.user.client.Element tr = table.getBodyElement().getChild( actual ).cast();
-		assert tr.getPropertyInt( "ref" ) == objectRef; // just to be sure we do
-														// what we want
+		Element tr = table.getBodyElement().getChild( actual ).cast();
+		assert tr.getPropertyInt( "ref" ) == objectRef; // just to be sure we do what we want
 
-		com.google.gwt.user.client.Element parent = tr.getParentElement().cast();
+		Element parent = tr.getParentElement().cast();
 
-		DOM.removeChild( parent, tr );
+		parent.removeChild( tr );
 
 		if( target < 0 )
 		{
@@ -243,11 +242,11 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			if( needRef != refAtRow )
 			{
 				// we have to take the row and put it at its right place
-				com.google.gwt.user.client.Element tr = its.get( j ).tr.cast();
+				Element tr = its.get( j ).tr;
 				assert tr.getPropertyInt( "ref" ) == needRef; // just to be sure
 																// we do what we
 																// want
-				DOM.insertChild( (com.google.gwt.user.client.Element) tr.getParentElement(), tr, j );
+				DOM.insertChild( tr.getParentElement(), tr, j );
 			}
 		}
 	}
@@ -268,7 +267,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		if( rows.length() == 0 )
 			return -1;
 		Element tr = rows.get( 0 );
-		int row = DOM.getChildIndex( (com.google.gwt.user.client.Element) tr.getParentElement().cast(), (com.google.gwt.user.client.Element) tr.cast() );
+		int row = DOM.getChildIndex( tr.getParentElement(), tr );
 
 		return row;
 	}
@@ -478,9 +477,9 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 
 		@Override
-		public void onDragDropFinished( Integer cookie, com.google.gwt.user.client.Element source, com.google.gwt.user.client.Element destination )
+		public void onDragDropFinished( Integer cookie, Element source, Element destination )
 		{
-			com.google.gwt.user.client.Element th = table.getElementTargetHeader( destination );
+			Element th = table.getElementTargetHeader( destination );
 			if( th == null )
 				return;
 

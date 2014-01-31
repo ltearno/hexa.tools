@@ -1,8 +1,8 @@
 package com.hexa.client.ui;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
 public class IFrame extends Widget
