@@ -308,6 +308,11 @@ public class TreeTableBase extends Panel
 						// m_tr's "ref" attribute
 		Object m_dataObject = null;
 
+		public TreeTableBase getTable()
+		{
+			return TreeTableBase.this;
+		}
+
 		public Row getParent()
 		{
 			return m_parent == m_rootItem ? null : m_parent;
@@ -510,9 +515,9 @@ public class TreeTableBase extends Panel
 		/*
 		 * private boolean isLastChild() { Item parent = m_parent; if( parent ==
 		 * null ) parent = m_rootItem; <<<<<<< HEAD
-		 * 
+		 *
 		 * =======
-		 * 
+		 *
 		 * >>>>>>> origin/regsys return
 		 * parent.m_childs.get(parent.m_childs.size()-1) == this; }
 		 */
@@ -548,15 +553,15 @@ public class TreeTableBase extends Panel
 			 * Item ancestor = parent; while( ancestor!=null &&
 			 * ancestor.isLastChild() ) ancestor = ancestor.m_parent; <<<<<<<
 			 * HEAD
-			 * 
+			 *
 			 * // return the next sibling of this ancestor if( ancestor == null
 			 * ) return m_rootItem.m_childs.get(0);
-			 * 
+			 *
 			 * =======
-			 * 
+			 *
 			 * // return the next sibling of this ancestor if( ancestor == null
 			 * ) return m_rootItem.m_childs.get(0);
-			 * 
+			 *
 			 * >>>>>>> origin/regsys if( me == parent.m_childs.size() - 1 )
 			 * return parent.m_childs.get( 0 ); return parent.m_childs.get( me +
 			 * 1 );
