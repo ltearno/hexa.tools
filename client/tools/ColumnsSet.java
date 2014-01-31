@@ -2,9 +2,10 @@ package com.hexa.client.tools;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.ITreeTableEditorManager;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class ColumnsSet<T>
 {
@@ -13,12 +14,12 @@ public class ColumnsSet<T>
 		// simple print
 		public String getTitle();
 
-		public void fillCell( int ordinal, TreeTable table, Object item, T record );
+		public void fillCell( int ordinal, Row row, T record );
 
 		// from TreeTableEditorManager
-		void getAsyncCellEditorWidget( int ordinal, Object item, T record, ITreeTableEditorManager callback );
+		void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback );
 
-		void onCellEditorValidation( int ordinal, Widget editor, final TreeTable table, final Object item, T record );
+		void onCellEditorValidation( int ordinal, Widget editor, Row row, T record );
 	}
 
 	private ArrayList<IColumnMng<T>> columns = new ArrayList<IColumnMng<T>>();
@@ -43,10 +44,10 @@ public class ColumnsSet<T>
 			table.setHeader( i, columns.get( i ).getTitle() );
 	}
 
-	public void fillRow( TreeTable table, Object item, T record )
+	public void fillRow( Row row, T record )
 	{
 		for( int i = 0; i < columns.size(); i++ )
-			columns.get( i ).fillCell( i, table, item, record );
+			columns.get( i ).fillCell( i, row, record );
 	}
 
 	// simple print
@@ -55,19 +56,19 @@ public class ColumnsSet<T>
 		return columns.get( column ).getTitle();
 	}
 
-	public void fillCell( int column, TreeTable table, Object item, T record )
+	public void fillCell( int column, Row row, T record )
 	{
-		columns.get( column ).fillCell( column, table, item, record );
+		columns.get( column ).fillCell( column, row, record );
 	}
 
 	// from TreeTableEditorManager
-	public void getAsyncCellEditorWidget( int column, Object item, T record, ITreeTableEditorManager callback )
+	public void getAsyncCellEditorWidget( int column, Row row, T record, ITreeTableEditorManager callback )
 	{
-		columns.get( column ).getAsyncCellEditorWidget( column, item, record, callback );
+		columns.get( column ).getAsyncCellEditorWidget( column, row, record, callback );
 	}
 
-	public void onCellEditorValidation( int column, Widget editor, final TreeTable table, final Object item, T record )
+	public void onCellEditorValidation( int column, Widget editor, Row row, T record )
 	{
-		columns.get( column ).onCellEditorValidation( column, editor, table, item, record );
+		columns.get( column ).onCellEditorValidation( column, editor, row, record );
 	}
 }

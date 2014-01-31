@@ -9,20 +9,20 @@ import com.hexa.client.ui.widget.ValidatorCallback;
 
 /**
  * @author Arnaud
- * 
+ *
  */
 public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallback, ITreeTableEditorManager
 {
 	public interface TreeTableEditorManagerCallback
 	{
 		// when the cell must be updated by the client
-		public void onTouchCellContent( TreeTable table, Object item, int column );
+		public void onTouchCellContent( Row row, int column );
 
 		// when the editor is constructed, call callback.editorReady( ... )
-		public void getAsyncCellEditorWidget( Object item, int column, ITreeTableEditorManager callback );
+		public void getAsyncCellEditorWidget( Row row, int column, ITreeTableEditorManager callback );
 
 		// implies a touch of course
-		public void onCellEditorValidation( Widget editor, TreeTable table, Object item, int column );
+		public void onCellEditorValidation( Widget editor, Row row, int column );
 	}
 
 	private TreeTable m_table = null;
@@ -66,7 +66,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 	}
 
 	@Override
-	public void editorReady( Object item, int column, Widget editor, boolean fShowCancel )
+	public void editorReady( Row item, int column, Widget editor, boolean fShowCancel )
 	{
 		// forget any not relevant editor
 		if( m_currentEditedItem != item || m_currentEditedColumn != column )
@@ -82,7 +82,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 		validator.setCallback( this );
 
 		// display that in the table
-		m_table.setWidget( item, column, validator );
+		item.setWidget( column, validator );
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 	{
 		if( button == Button.Ok )
 		{
-			m_callback.onCellEditorValidation( m_currentEditor, m_table, m_currentEditedItem, m_currentEditedColumn );
+			m_callback.onCellEditorValidation( m_currentEditor, m_currentEditedItem, m_currentEditedColumn );
 		}
 
 		_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
@@ -104,7 +104,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 	}
 
 	// just replace the validator widget by a text in the table
-	private void _RemoveValidator( Object item, int column )
+	private void _RemoveValidator( Row item, int column )
 	{
 		// already clean ?
 		if( m_currentEditedItem == null && m_currentEditedColumn < 0 )
@@ -112,7 +112,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 
 		// touch the table
 		if( m_callback != null )
-			m_callback.onTouchCellContent( m_table, item, column );
+			m_callback.onTouchCellContent( item, column );
 
 		if( m_currentEditor != null )
 			m_currentEditor.removeFromParent();

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import com.google.gwt.user.client.Timer;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class TreeTableElemMng<T>
 {
@@ -16,14 +17,14 @@ public class TreeTableElemMng<T>
 
 	TreeTableElemMngCallback<T> callback;
 
-	HashMap<Integer, Object> elements = new HashMap<Integer, Object>();
+	HashMap<Integer, Row> elements = new HashMap<Integer, Row>();
 	HashMap<Integer, Integer> versions = new HashMap<Integer, Integer>();
 	int currentVersion = 0;
 
-	ArrayList<Object> elementsAdded = new ArrayList<Object>();
+	ArrayList<Row> elementsAdded = new ArrayList<Row>();
 
 	ArrayList<Integer> elementsToRemove = new ArrayList<Integer>();
-	TreeTable hackTable = null;
+	TreeTable table = null;
 	Timer timer = new Timer()
 	{
 		@Override
@@ -32,40 +33,32 @@ public class TreeTableElemMng<T>
 			if( elementsToRemove.size() > 0 )
 			{
 				int toRemove = elementsToRemove.remove( 0 );
-				_remove( toRemove, hackTable );
+				_remove( toRemove );
 
 				timer.schedule( 10 );
 			}
-
-			/*
-			 * if( elementsAdded.size() > 0 ) { if( elementsAdded.size() <=
-			 * elements.size()/2 ) { for( Object element : elementsAdded )
-			 * hackTable.highLite( element ); } elementsAdded.clear(); }
-			 */
 		}
 	};
 
-	public TreeTableElemMng( TreeTableElemMngCallback<T> callback )
+	public TreeTableElemMng( TreeTable table, TreeTableElemMngCallback<T> callback )
 	{
+		this.table = table;
 		this.callback = callback;
 	}
 
-	public Object addOrUpdateItemInCurrentVersion( T element, TreeTable table, Object parentItem )
+	public Row addOrUpdateItemInCurrentVersion( T element, Row parentItem )
 	{
 		int identifier = callback.getElementIdentifier( element );
 
 		versions.put( identifier, currentVersion );
 
-		Object item = elements.get( identifier );
+		Row item = elements.get( identifier );
 		if( item != null )
-		{
-			// ((TreeTableBase.Item)item).highLite();
 			return item;
-		}
 
-		item = table.addRow( parentItem );
+		item = parentItem.getTable().addRow( parentItem );
 		elements.put( identifier, item );
-		((TreeTable.Row) item).highLite();
+		item.highLite();
 
 		return item;
 	}
@@ -75,56 +68,57 @@ public class TreeTableElemMng<T>
 		int identifier = callback.getElementIdentifier( element );
 		versions.remove( identifier );
 
-		Object item = elements.get( identifier );
+		Row item = elements.get( identifier );
 		if( item == null )
 			return;
-		((TreeTable.Row) item).remove();
+
+		item.remove();
 	}
 
-	public Object getItem( T element, TreeTable table, Object parentItem )
+	public Row getItem( T element, Row parentItem )
 	{
 		int identifier = callback.getElementIdentifier( element );
 
 		versions.put( identifier, currentVersion + 1 );
 
-		Object item = elements.get( identifier );
+		Row item = elements.get( identifier );
 		if( item != null )
 			return item;
 
-		item = table.addRow( parentItem );
+		item = parentItem.getTable().addRow( parentItem );
 		elements.put( identifier, item );
 		elementsAdded.add( item );
 
 		return item;
 	}
 
-	public Object remove( T element, TreeTable table )
+	public Row remove( T element )
 	{
 		int identifier = callback.getElementIdentifier( element );
 
-		return _remove( identifier, table );
+		return _remove( identifier );
 	}
 
-	public Object remove( int elementIdentifier, TreeTable table )
+	public Row remove( int elementIdentifier )
 	{
-		return _remove( elementIdentifier, table );
+		return _remove( elementIdentifier );
 	}
 
-	public Object _remove( int identifier, TreeTable table )
+	public Row _remove( int identifier )
 	{
 		versions.remove( identifier );
 
-		Object item = elements.get( identifier );
+		Row item = elements.get( identifier );
 		if( item == null )
 			return null;
 
 		elements.remove( identifier );
-		table.removeRow( item );
+		item.remove();
 
 		return item;
 	}
 
-	public void commitVersion( TreeTable table )
+	public void commitVersion()
 	{
 		currentVersion++;
 		boolean fRearm = false;
@@ -140,9 +134,6 @@ public class TreeTableElemMng<T>
 		}
 
 		if( fRearm || elementsAdded.size() > 0 )
-		{
-			hackTable = table;
 			timer.schedule( 10 );
-		}
 	}
 }

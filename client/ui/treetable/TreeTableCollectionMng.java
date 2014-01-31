@@ -13,6 +13,7 @@ import com.hexa.client.tableobserver.XTableListen;
 import com.hexa.client.tools.ColumnsSet;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.ui.ITreeTableEditorManager;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.TreeTableEditorManager.TreeTableEditorManagerCallback;
 import com.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemMngCallback;
 import com.hexa.client.ui.widget.ImageButton;
@@ -37,11 +38,11 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 	private String deleteButtonTitle;
 
 	private TreeTable table = new TreeTable( HexaFramework.images.treeMinus(), HexaFramework.images.treePlus() );
-	private TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>( this );
+	private TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>( table, this );
 
 	private ColumnsSet<T> columns = new ColumnsSet<T>();
 	private TreeTableEditorManager tableEd = new TreeTableEditorManager();
-	HashMap<Object, T> records = new HashMap<Object, T>();
+	HashMap<Row, T> records = new HashMap<Row, T>();
 
 	ImageTextButton addButton;
 
@@ -67,7 +68,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 			columns.addColumn( new IColumnMng<T>()
 			{
 				@Override
-				public void fillCell( int ordinal, TreeTable table, Object item, final T record )
+				public void fillCell( int ordinal, Row row, final T record )
 				{
 					ImageButton im = new ImageButton( HexaFramework.images.delete(), deleteButtonTitle );
 					im.addClickHandler( new ClickHandler()
@@ -78,11 +79,12 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 							onWantDelete( record );
 						}
 					} );
-					table.setWidget( item, ordinal, im );
+
+					row.setWidget( ordinal, im );
 				}
 
 				@Override
-				public void getAsyncCellEditorWidget( int ordinal, Object item, T record, ITreeTableEditorManager callback )
+				public void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback )
 				{
 				}
 
@@ -93,7 +95,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 				}
 
 				@Override
-				public void onCellEditorValidation( int ordinal, Widget editor, TreeTable table, Object item, T record )
+				public void onCellEditorValidation( int ordinal, Widget editor, Row row, T record )
 				{
 				}
 			} );
@@ -103,7 +105,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 		tableEd.setTable( table, this );
 	}
 
-	public Widget getTable()
+	public TreeTable getTable()
 	{
 		return table;
 	}
@@ -115,9 +117,9 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 
 	public void addOrUpdateElemInCurrentVersion( T elem )
 	{
-		Object item = tableMng.addOrUpdateItemInCurrentVersion( elem, table, null );
+		Row item = tableMng.addOrUpdateItemInCurrentVersion( elem, null );
 		records.put( item, elem );
-		columns.fillRow( table, item, elem );
+		columns.fillRow( item, elem );
 	}
 
 	public void deleteElemInCurrentVersion( T elem )
@@ -131,7 +133,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 		records.clear();
 		for( T c : result )
 			addElem( c );
-		tableMng.commitVersion( table );
+		tableMng.commitVersion();
 	}
 
 	private XTableListen<T> dataPlug = new XTableListen<T>()
@@ -160,14 +162,14 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 			records.clear();
 			for( T c : data )
 				addElem( c );
-			tableMng.commitVersion( table );
+			tableMng.commitVersion();
 		}
 
 		@Override
 		public void clearAll( Object cookie )
 		{
 			records.clear();
-			tableMng.commitVersion( table );
+			tableMng.commitVersion();
 		}
 	};
 
@@ -178,42 +180,43 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 
 	private void addElem( T elem )
 	{
-		Object item = tableMng.getItem( elem, table, null );
+		Row item = tableMng.getItem( elem, null );
 		records.put( item, elem );
-		columns.fillRow( table, item, elem );
+		columns.fillRow( item, elem );
 	}
 
 	private void remElem( int elemId )
 	{
-		Object item = tableMng.remove( elemId, table );
+		Row item = tableMng.remove( elemId );
 		records.remove( item );
 	}
 
 	@Override
-	public void getAsyncCellEditorWidget( Object item, int column, ITreeTableEditorManager callback )
+	public void getAsyncCellEditorWidget( Row item, int column, ITreeTableEditorManager callback )
 	{
 		T record = records.get( item );
 		columns.getAsyncCellEditorWidget( column, item, record, callback );
 	}
 
 	@Override
-	public void onCellEditorValidation( Widget editor, TreeTable table, Object item, int column )
+	public void onCellEditorValidation( Widget editor, Row row, int column )
 	{
-		T record = records.get( item );
-		columns.onCellEditorValidation( column, editor, table, item, record );
+		T record = records.get( row );
+		columns.onCellEditorValidation( column, editor, row, record );
 	}
 
 	@Override
-	public void onTouchCellContent( TreeTable table, Object item, int column )
+	public void onTouchCellContent( Row row, int column )
 	{
-		T record = records.get( item );
+		T record = records.get( row );
 		if( record == null )
 		{
 			GWT.log( "NULL RECORD IN TreeTableCollectionMng for onTouchCellContent", null );
-			table.setText( item, column, "EMPTY" );
+			row.setText( column, "EMPTY" );
 			return;
 		}
-		columns.fillCell( column, table, item, record );
+
+		columns.fillCell( column, row, record );
 	}
 
 	@Override

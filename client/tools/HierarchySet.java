@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.hexa.client.ui.treetable.TreeTable;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class HierarchySet<T>
 {
@@ -16,7 +17,7 @@ public class HierarchySet<T>
 
 		public String getIdentifier( T record );
 
-		public void fillRow( TreeTable table, Object item, T record );
+		public void fillRow( Row row, T record );
 
 		public IHierarchyAccumulator<T> getNewAccumulator();
 	}
@@ -27,11 +28,11 @@ public class HierarchySet<T>
 	{
 		public void add( T element );
 
-		public void fillRow( TreeTable table, Object item );
+		public void fillRow( Row row );
 	}
 
-	HashMap<String, Object> items = new HashMap<String, Object>();
-	HashMap<Object, IHierarchyAccumulator<T>> accumulators = new HashMap<Object, IHierarchyAccumulator<T>>();
+	HashMap<String, Row> items = new HashMap<String, Row>();
+	HashMap<Row, IHierarchyAccumulator<T>> accumulators = new HashMap<Row, IHierarchyAccumulator<T>>();
 
 	public void resetDisplay()
 	{
@@ -49,19 +50,19 @@ public class HierarchySet<T>
 		hierarchy.add( item );
 	}
 
-	public Object getParentItem( TreeTable table, T element )
+	public Row getParentItem( TreeTable table, T element )
 	{
-		Object itemParent = null;
+		Row itemParent = null;
 		String itemAddress = "";
 		for( IHierarchyLevel<T> h : hierarchy )
 		{
 			itemAddress += "-" + h.getIdentifier( element );
-			Object item = items.get( itemAddress );
+			Row item = items.get( itemAddress );
 			if( item == null )
 			{
 				item = table.addRow( itemParent );
 
-				h.fillRow( table, item, element );
+				h.fillRow( item, element );
 
 				// TODO : FIx the bug that prevents to do that...
 				// table.setExpanded( item, false );
@@ -80,22 +81,22 @@ public class HierarchySet<T>
 		return itemParent;
 	}
 
-	public Object createItem( TreeTable table, T element )
+	public Row createItem( TreeTable table, T element )
 	{
-		Object itemParent = getParentItem( table, element );
+		Row itemParent = getParentItem( table, element );
 
 		return table.addRow( itemParent );
 	}
 
 	public void displayAccumulators( TreeTable table )
 	{
-		Set<Entry<Object, IHierarchyAccumulator<T>>> set = accumulators.entrySet();
-		for( Iterator<Entry<Object, IHierarchyAccumulator<T>>> i = set.iterator(); i.hasNext(); )
+		Set<Entry<Row, IHierarchyAccumulator<T>>> set = accumulators.entrySet();
+		for( Iterator<Entry<Row, IHierarchyAccumulator<T>>> i = set.iterator(); i.hasNext(); )
 		{
-			Entry<Object, IHierarchyAccumulator<T>> entry = i.next();
+			Entry<Row, IHierarchyAccumulator<T>> entry = i.next();
 
 			if( entry.getValue() != null )
-				entry.getValue().fillRow( table, entry.getKey() );
+				entry.getValue().fillRow( entry.getKey() );
 		}
 	}
 }

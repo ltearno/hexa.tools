@@ -181,74 +181,6 @@ public class TreeTable extends Panel
 		m_body.setInnerText( "" );
 	}
 
-	@Deprecated
-	public void setExpanded( Object item, boolean fExpanded )
-	{
-		if( item == null )
-			return;
-		((Row) item).setExpanded( fExpanded );
-	}
-
-	@Deprecated
-	public void setDataObject( Object item, Object dataObject )
-	{
-		((Row) item).setDataObject( dataObject );
-	}
-
-	@Deprecated
-	public Object getDataObject( Object item )
-	{
-		return ((Row) item).getDataObject();
-	}
-
-	@Deprecated
-	public void setText( Object item, int column, String text )
-	{
-		((Row) item).setText( column, text );
-	}
-
-	@Deprecated
-	public void setText( Object item, int column, int text )
-	{
-		((Row) item).setText( column, text );
-	}
-
-	@Deprecated
-	public void setText( Object item, int column, double text )
-	{
-		((Row) item).setText( column, text );
-	}
-
-	@Deprecated
-	public void setHTML( Object item, int column, String html )
-	{
-		((Row) item).setHTML( column, html );
-	}
-
-	@Deprecated
-	public void highLite( Object item )
-	{
-		((Row) item).highLite();
-	}
-
-	@Deprecated
-	public void addClassRow( Object item, String clazz )
-	{
-		((Row) item).addClassRow( clazz );
-	}
-
-	@Deprecated
-	public void removeClassRow( Object item, String clazz )
-	{
-		((Row) item).removeClassRow( clazz );
-	}
-
-	@Deprecated
-	public void setWidget( Object item, int column, Widget w )
-	{
-		((Row) item).setWidget( column, w );
-	}
-
 	private void clearCell( Element td )
 	{
 		clearCellWidget( td );
@@ -1104,18 +1036,6 @@ public class TreeTable extends Panel
 			parentItem = m_rootItem;
 
 		return parentItem.addLastChild();
-	}
-
-	@Deprecated
-	public Row addRowBefore( Object item )
-	{
-		return ((Row) item).addBefore();
-	}
-
-	@Deprecated
-	public void removeRow( Object item )
-	{
-		((Row) item).remove();
 	}
 
 	@Override

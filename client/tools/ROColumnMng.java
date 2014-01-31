@@ -1,9 +1,9 @@
 package com.hexa.client.tools;
 
+import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.ui.ITreeTableEditorManager;
-import com.hexa.client.ui.treetable.TreeTable;
-import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public abstract class ROColumnMng<T> implements IColumnMng<T>
 {
@@ -15,19 +15,23 @@ public abstract class ROColumnMng<T> implements IColumnMng<T>
 	}
 
 	// simple print
+	@Override
 	public final String getTitle()
 	{
 		return title;
 	}
 
-	abstract public void fillCell( int ordinal, TreeTable table, Object item, T record );
+	@Override
+	abstract public void fillCell( int ordinal, Row row, T record );
 
 	// from TreeTableEditorManager
-	public final void getAsyncCellEditorWidget( int ordinal, Object item, T record, ITreeTableEditorManager callback )
+	@Override
+	public final void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback )
 	{
 	}
 
-	public final void onCellEditorValidation( int ordinal, Widget editor, final TreeTable table, final Object item, T record )
+	@Override
+	public final void onCellEditorValidation( int ordinal, Widget editor, Row row, T record )
 	{
 	}
 }

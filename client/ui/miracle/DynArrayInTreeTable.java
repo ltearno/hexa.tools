@@ -130,7 +130,7 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		{
 			// new
 			if( insPos != null )
-				insPos = table.addRowBefore( insPos );
+				insPos = insPos.addBefore();
 			else
 				insPos = table.addRow( null );
 

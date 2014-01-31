@@ -1,7 +1,7 @@
 package com.hexa.client.tools;
 
 import com.hexa.client.tools.HierarchySet.IHierarchyAccumulator;
-import com.hexa.client.ui.treetable.TreeTable;
+import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class HLevelStd implements HierarchySet.IHierarchyLevel<String>
 {
@@ -14,20 +14,24 @@ public class HLevelStd implements HierarchySet.IHierarchyLevel<String>
 		this.name = name;
 	}
 
+	@Override
 	public String getName()
 	{
 		return name;
 	}
 
+	@Override
 	public String getIdentifier( String record )
 	{
 		return id;
 	}
 
-	public void fillRow( TreeTable table, Object item, String record )
+	@Override
+	public void fillRow( Row row, String record )
 	{
 	}
 
+	@Override
 	public IHierarchyAccumulator<String> getNewAccumulator()
 	{
 		return null;
