@@ -1,23 +1,13 @@
 package com.hexa.client.ui.dialog;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -25,84 +15,43 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.resources.image.ImageResources;
 
-class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHandler, MouseDownHandler, RequiresResize, ProvidesResize
+class ResizablePanel extends ComplexPanel implements RequiresResize, ProvidesResize
 {
-	int resizeHandlerSize = 5;
-	int titleSize;
-
-	static final int LEFT = 1;
-	static final int TOP = 2;
-	static final int RIGHT = 4;
-	static final int BOTTOM = 8;
-	static final int MOVE = 16;
-
-	int minWidth = 800;
-	int minHeight = 500;
-
-	Element topLeft;
-	Element top;
-	Element topRight;
-	Element right;
-	Element bottomRight;
-	Element bottom;
-	Element bottomLeft;
-	Element left;
-	Element content;
-	Element title;
-	Element close;
-
-	boolean fResizing = false;
-	int direction = 0;
-
-	int startX;
-	int startY;
-
-	int startTop;
-	int startLeft;
-	int startWidth;
-	int startHeight;
-
-	static final String template = "<div class='top_left_handler' style='position: absolute; left:0px; top:0px; width:#HANDLER_SIZE#px; height:#HANDLER_SIZE#px;'></div>"
-			+ "<div class='top_handler' style='position: absolute; left:#HANDLER_SIZE#px; top:0px; right:#HANDLER_SIZE#px; height:#HANDLER_SIZE#px;'></div>"
-			+ "<div class='top_right_handler' style='position: absolute; width:#HANDLER_SIZE#px; top:0px; right:0px; height:#HANDLER_SIZE#px;'></div>"
-			+ "<div class='right_handler' style='position: absolute; width:#HANDLER_SIZE#px; top:#HANDLER_SIZE#px; right:0px; bottom:#HANDLER_SIZE#px;'></div>"
-			+ "<div class='bottom_right_handler' style='position: absolute; width:#HANDLER_SIZE#px; height:#HANDLER_SIZE#px; right:0px; bottom:0px;'></div>"
-			+ "<div class='bottom_handler' style='position: absolute; left:#HANDLER_SIZE#px; height:#HANDLER_SIZE#px; right:#HANDLER_SIZE#px; bottom:0px;'></div>"
-			+ "<div class='bottom_left_handler' style='position: absolute; left:0px; height:#HANDLER_SIZE#px; width:#HANDLER_SIZE#px; bottom:0px;'></div>"
-			+ "<div class='left_handler' style='position: absolute; left:0px; top:#HANDLER_SIZE#px; width:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>"
-			+ "<div class='title' style='overflow:hidden; position: absolute; left:#HANDLER_SIZE#px; top:#HANDLER_SIZE#px; right:#TITLE_RIGHT#px; height:#TITLE_SIZE#px;'></div>"
-			+ "<div class='close_button' style='position: absolute; width:#TITLE_SIZE#px; top:#HANDLER_SIZE#px; right:#HANDLER_SIZE#px; height:#TITLE_SIZE#px;'><img></img></div>"
-			+ "<div class='content' style='overflow:auto; position: absolute; left:#HANDLER_SIZE#px; top:#CONTENT_TOP#px; right:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>";
-
+	private boolean isDisplayed = false;
+	
+	private Element main;
+	private Element title;
+	private Element close;
+	private Element content;
+	
 	public ResizablePanel()
 	{
-		Element main = DOM.createDiv();
-		setElement( main );
-
-		setStylePrimaryName( "ResizablePanel" );
-
+		Element glass = Document.get().createDivElement();
+		setElement( glass );
+		
+		glass.getStyle().setBackgroundColor( "rgba(0, 0, 0, 0.5)" );
+		glass.getStyle().setPosition( Position.ABSOLUTE );
+		glass.getStyle().setLeft( 0, Unit.PX );
+		glass.getStyle().setTop( 0, Unit.PX );
+		glass.getStyle().setRight( 0, Unit.PX );
+		glass.getStyle().setBottom( 0, Unit.PX );
+		glass.getStyle().setTextAlign( com.google.gwt.dom.client.Style.TextAlign.CENTER );
+		
 		ImageResource closeImage = ImageResources.INSTANCE.close();
-		titleSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
+		int headerSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
+		
+		glass.setInnerHTML( "<div style='background-color:pink; display: inline-block; margin: 50px; position: relative; overflow:auto;'>"+
+				"<div style='position:absolute; left:0px; right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
+				"<div style='position:absolute; right:0px; top:0px;'><img></img></div>"+
+				"<div style='position: relative; top:"+headerSize+"px;'> <!-- content holder --> </div>"+
+			"</div>" );		
 
-		String html = template.replaceAll( "#HANDLER_SIZE#", "" + resizeHandlerSize ).replaceAll( "#TITLE_SIZE#", "" + titleSize ).replaceAll( "#CONTENT_TOP#", "" + (resizeHandlerSize + titleSize) ).replaceAll( "#TITLE_RIGHT#", "" + (resizeHandlerSize + titleSize) );
-		main.setInnerHTML( html );
-
-		topLeft = (Element) main.getChild( 0 );
-		top = (Element) main.getChild( 1 );
-		topRight = (Element) main.getChild( 2 );
-		right = (Element) main.getChild( 3 );
-		bottomRight = (Element) main.getChild( 4 );
-		bottom = (Element) main.getChild( 5 );
-		bottomLeft = (Element) main.getChild( 6 );
-		left = (Element) main.getChild( 7 );
-		title = (Element) main.getChild( 8 );
-		close = (Element) main.getChild( 9 ).getChild( 0 );
+		main = (Element) glass.getChild( 0 );
+		
+		title = (Element) main.getChild( 0 );
+		close = (Element) main.getChild( 1 ).getChild( 0 );
 		close.setAttribute( "src", closeImage.getSafeUri().asString() );
-		content = (Element) main.getChild( 10 );
-
-		addDomHandler( this, MouseMoveEvent.getType() );
-		addDomHandler( this, MouseUpEvent.getType() );
-		addDomHandler( this, MouseDownEvent.getType() );
+		content = (Element) main.getChild( 2 );
 	}
 
 	private Widget contentWidget = null;
@@ -122,311 +71,24 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 		add( w, content );
 	}
 
-	Glass glass;
-
 	public void show( boolean modal )
 	{
-		// try to auto size the dialog, based on the content size, mais ca
-		// marche pas ... :(
-		if( contentWidget != null )
-		{
-			Scheduler.get().scheduleDeferred( new ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					// try to fit to the content size
-
-					int maxWidth = Window.getClientWidth() - 20; // 20 pixels of
-																	// margin
-					int w = Math.max( ResizablePanel.this.getOffsetWidth(), Math.max( contentWidget.getElement().getScrollWidth(), contentWidget.getElement().getOffsetWidth() ) ) + resizeHandlerSize * 2;
-					if( w > maxWidth )
-						w = maxWidth;
-
-					int maxHeight = Window.getClientHeight() - 20;
-					int h = Math.max( ResizablePanel.this.getOffsetHeight(), Math.max( contentWidget.getElement().getScrollHeight(), contentWidget.getElement().getOffsetHeight() ) ) + resizeHandlerSize * 2 + titleSize;
-					if( h > maxHeight )
-						h = maxHeight;
-
-					PositionAndSize posSize = new PositionAndSize( (Window.getClientWidth() - w) / 2, (Window.getClientHeight() - h) / 2, w, h );
-					posSize.limit();
-
-					RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
-					RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
-
-					RootLayoutPanel.get().animate( 300 );
-				}
-			} );
-		}
-
-		if( modal )
-		{
-			glass = new Glass();
-			RootLayoutPanel.get().add( glass );
-		}
+		if( isDisplayed )
+			return;
+		isDisplayed = true;
 
 		RootLayoutPanel.get().add( this );
-
-		int screenWidth = RootLayoutPanel.get().getOffsetWidth();
-		int screenHeight = RootLayoutPanel.get().getOffsetHeight();
-
-		int width = 400;
-		int height = 230;
-
-		PositionAndSize posSize = new PositionAndSize( (screenWidth - width) / 2, (screenHeight - height) / 2, width, height );
-		posSize.limit();
-
-		RootLayoutPanel.get().setWidgetLeftWidth( this, posSize.left, Unit.PX, posSize.width, Unit.PX );
-		RootLayoutPanel.get().setWidgetTopHeight( this, posSize.top, Unit.PX, posSize.height, Unit.PX );
-
-		RootLayoutPanel.get().animate( 300 );
+		
+		onResize();
 	}
 
 	public void hide()
 	{
+		if( ! isDisplayed )
+			return;
+		isDisplayed = false;
+		
 		RootLayoutPanel.get().remove( this );
-
-		if( glass != null )
-		{
-			RootLayoutPanel.get().remove( glass );
-			glass = null;
-		}
-	}
-
-	@Override
-	public void onMouseDown( MouseDownEvent event )
-	{
-		direction = getDirection( event.getNativeEvent().getEventTarget() );
-		if( direction == 0 )
-			return;
-
-		startX = event.getScreenX();
-		startY = event.getScreenY();
-
-		startLeft = ResizablePanel.this.getAbsoluteLeft();
-		startTop = ResizablePanel.this.getAbsoluteTop();
-		startWidth = ResizablePanel.this.getOffsetWidth();
-		startHeight = ResizablePanel.this.getOffsetHeight();
-
-		DOM.setCapture( getElement() );
-
-		fResizing = true;
-
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	@Override
-	public void onMouseMove( MouseMoveEvent event )
-	{
-		if( !fResizing )
-			return;
-
-		updateSize( event.getNativeEvent().getEventTarget(), event.getScreenX() - startX, event.getScreenY() - startY );
-
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	@Override
-	public void onMouseUp( MouseUpEvent event )
-	{
-		if( !fResizing )
-			return;
-
-		updateSize( event.getNativeEvent().getEventTarget(), event.getScreenX() - startX, event.getScreenY() - startY );
-
-		DOM.releaseCapture( getElement() );
-
-		fResizing = false;
-
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	private int getDirection( Object source )
-	{
-		if( source == top )
-			return TOP;
-		else if( source == topRight )
-			return TOP + RIGHT;
-		else if( source == right )
-			return RIGHT;
-		else if( source == bottomRight )
-			return RIGHT + BOTTOM;
-		else if( source == bottom )
-			return BOTTOM;
-		else if( source == bottomLeft )
-			return BOTTOM + LEFT;
-		else if( source == left )
-			return LEFT;
-		else if( source == topLeft )
-			return TOP + LEFT;
-		else if( source == title )
-			return MOVE;
-
-		return 0;
-	}
-
-	private void updateSize( Object source, int devX, int devY )
-	{
-		if( direction == MOVE )
-		{
-			PositionAndSize posSize = new PositionAndSize( startLeft + devX, startTop + devY, startWidth, startHeight );
-			posSize.limit();
-
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
-
-			return;
-		}
-
-		if( (direction & LEFT) == LEFT )
-		{
-			PositionAndSize posSize = new PositionAndSize( startLeft + devX, startTop, startWidth - devX, startHeight );
-			posSize.limit();
-
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
-		}
-
-		if( (direction & RIGHT) == RIGHT )
-		{
-			PositionAndSize posSize = new PositionAndSize( startLeft, startTop, startWidth + devX, startHeight );
-			posSize.limit();
-
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
-		}
-
-		if( (direction & TOP) == TOP )
-		{
-			PositionAndSize posSize = new PositionAndSize( startLeft, startTop + devY, startWidth, startHeight - devY );
-			posSize.limit();
-
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
-		}
-
-		if( (direction & BOTTOM) == BOTTOM )
-		{
-			PositionAndSize posSize = new PositionAndSize( startLeft, startTop, startWidth, startHeight + devY );
-			posSize.limit();
-
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
-		}
-	}
-
-	@Override
-	public void onResize()
-	{
-		int left = ResizablePanel.this.getAbsoluteLeft();
-		int top = ResizablePanel.this.getAbsoluteTop();
-		int width = ResizablePanel.this.getOffsetWidth();
-		int height = ResizablePanel.this.getOffsetHeight();
-
-		PositionAndSize posSize = new PositionAndSize( left, top, width, height );
-
-		boolean needAdjustment = posSize.limit();
-		if( needAdjustment )
-		{
-			GWT.log( "onResize => re-resize !" );
-
-			RootLayoutPanel.get().setWidgetLeftWidth( ResizablePanel.this, posSize.left, Unit.PX, posSize.width, Unit.PX );
-			RootLayoutPanel.get().setWidgetTopHeight( ResizablePanel.this, posSize.top, Unit.PX, posSize.height, Unit.PX );
-
-			return;
-		}
-
-		for( Widget child : getChildren() )
-		{
-			if( child instanceof RequiresResize )
-			{
-				((RequiresResize) child).onResize();
-			}
-		}
-	}
-
-	private class PositionAndSize
-	{
-		int top;
-		int left;
-
-		int width;
-		int height;
-
-		public PositionAndSize( int left, int top, int width, int height )
-		{
-			this.top = top;
-			this.left = left;
-			this.width = width;
-			this.height = height;
-		}
-
-		// ensure that the position and size fits in the screen
-		// returns false if something has been changed
-		boolean limit()
-		{
-			boolean res = true;
-
-			int screenHeight = Window.getClientHeight(); // RootLayoutPanel.get().getOffsetHeight()
-			int screenWidth = Window.getClientWidth(); // RootLayoutPanel.get().getOffsetWidth()
-
-			// adjust horizontally
-
-			// limit left position
-			if( left < 0 )
-			{
-				left = 0;
-				res = false;
-			}
-			int maxLeft = screenWidth - minWidth;
-			if( left > maxLeft )
-			{
-				left = maxLeft;
-				res = false;
-			}
-
-			// limit width
-			if( width < minWidth )
-			{
-				width = minWidth;
-				res = false;
-			}
-			int maxWidth = screenWidth - width;
-			if( width > maxWidth )
-			{
-				width = maxWidth;
-				res = false;
-			}
-
-			// adjust vertically
-
-			// limit top position
-			if( top < 0 )
-			{
-				top = 0;
-				res = false;
-			}
-			int maxTop = screenHeight - minHeight;
-			if( top > maxTop )
-			{
-				top = maxTop;
-				res = false;
-			}
-
-			// limit height
-			if( height < minHeight )
-			{
-				height = minHeight;
-				res = false;
-			}
-			int maxHeight = screenHeight - top;
-			if( height > maxHeight )
-			{
-				height = maxHeight;
-				res = false;
-			}
-
-			return res;
-		}
 	}
 
 	public HandlerRegistration addCloseClickHandler( final ClickHandler handler )
@@ -443,13 +105,25 @@ class ResizablePanel extends ComplexPanel implements MouseMoveHandler, MouseUpHa
 			}
 		}, ClickEvent.getType() );
 	}
+
+	@Override
+	public void onResize()
+	{
+		if( contentWidget instanceof RequiresResize )
+		{
+			int m = 20;
+			main.getStyle().setPosition( Position.ABSOLUTE );
+			main.getStyle().setLeft( m, Unit.PX );
+			main.getStyle().setTop( m, Unit.PX );
+			main.getStyle().setRight( m, Unit.PX );
+			main.getStyle().setBottom( m, Unit.PX );
+			
+			((RequiresResize)contentWidget).onResize();
+		}	
+	}
 }
 
-class Glass extends Widget
+class PanelForNormalWidget
 {
-	public Glass()
-	{
-		setElement( Document.get().createDivElement() );
-		getElement().getStyle().setBackgroundColor( "rgba(0, 0, 0, 0.5)" );
-	}
+	
 }
