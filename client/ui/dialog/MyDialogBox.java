@@ -64,6 +64,7 @@ public class MyDialogBox
 
 	public void center()
 	{
+		impl.show( modal );
 	}
 
 	public void hide()
