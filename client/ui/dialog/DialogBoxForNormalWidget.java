@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -17,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 import com.hexa.client.ui.resources.image.ImageResources;
 
-class ResizablePanel extends ComplexPanel implements DialogBox, HasCloseHandlers<DialogBox>
+class DialogBoxForNormalWidget extends ComplexPanel implements DialogBox, HasCloseHandlers<DialogBox>
 {
 	private boolean isDisplayed = false;
 	
@@ -28,7 +29,7 @@ class ResizablePanel extends ComplexPanel implements DialogBox, HasCloseHandlers
 	
 	private boolean isAutoHide;
 	
-	public ResizablePanel( String titleText, Widget contentWidget )
+	public DialogBoxForNormalWidget( String titleText, Widget contentWidget )
 	{
 		Element glass = Document.get().createDivElement();
 		setElement( glass );

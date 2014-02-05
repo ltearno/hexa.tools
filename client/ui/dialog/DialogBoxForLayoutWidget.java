@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 import com.hexa.client.ui.resources.image.ImageResources;
 
-public class ResizablePanelForLayoutContent implements DialogBox, HasCloseHandlers<DialogBox>
+public class DialogBoxForLayoutWidget implements DialogBox, HasCloseHandlers<DialogBox>
 {
 	HandlerManager handlerMng = new HandlerManager( this );
 	
@@ -30,7 +30,7 @@ public class ResizablePanelForLayoutContent implements DialogBox, HasCloseHandle
 	
 	Image closeWidget;
 	
-	public ResizablePanelForLayoutContent( String title, IsWidget content )
+	public DialogBoxForLayoutWidget( String title, IsWidget content )
 	{
 		int m = 50;
 		ImageResource closeImage = ImageResources.INSTANCE.close();

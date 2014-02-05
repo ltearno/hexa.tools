@@ -31,9 +31,9 @@ public class DialogBoxBuilder
 		
 		DialogBox db = null;
 		if( w instanceof RequiresResize )
-			db = new ResizablePanelForLayoutContent( title, w );
+			db = new DialogBoxForLayoutWidget( title, w );
 		else
-			db = new ResizablePanel( title, w );
+			db = new DialogBoxForNormalWidget( title, w );
 		
 		return db;
 	}

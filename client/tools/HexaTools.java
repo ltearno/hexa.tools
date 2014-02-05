@@ -110,6 +110,20 @@ public class HexaTools
 		return res;
 	}
 
+	public static List<String> stringToStringList( String s )
+	{
+		List<String> res = new ArrayList<>();
+
+		if( s.length() == 0 )
+			return res;
+
+		String[] ss = s.split( "," );
+		for( int i = 0; i < ss.length; i++ )
+			res.add( ss[i] );
+
+		return res;
+	}
+
 	public static void alert( String message )
 	{
 		alert( "No title", message );
