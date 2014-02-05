@@ -73,6 +73,12 @@ public class ResizablePanelForLayoutContent implements DialogBox, HasCloseHandle
 			}
 		} );
 	}
+	
+	@Override
+	public void show()
+	{
+		show( true );
+	}
 
 	@Override
 	public void show( boolean isAutoHide )

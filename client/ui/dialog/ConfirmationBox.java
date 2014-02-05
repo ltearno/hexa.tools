@@ -4,7 +4,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.hexa.client.ui.UiBuilder;
+import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 
 public class ConfirmationBox
 {
@@ -25,17 +28,12 @@ public class ConfirmationBox
 
 	public static void ask( String title, String message, final Callback callback )
 	{
-		final MyDialogBox db = new MyDialogBox( false, true );
-
-		db.setText( title );
-
-		VerticalPanel vp = new VerticalPanel();
-		vp.add( new HTML( message ) );
 		Button yes = new Button( "Yes" );
 		Button no = new Button( "No" );
-		vp.add( yes );
-		vp.add( no );
-
+		HorizontalPanel buttonBar = UiBuilder.addIn( new HorizontalPanel(), yes, no );
+		
+		final DialogBox db = DialogBoxBuilder.create( title, UiBuilder.addIn( new VerticalPanel(), new HTML( message ), buttonBar ) );
+		
 		no.addClickHandler( new ClickHandler()
 		{
 			@Override
@@ -54,10 +52,7 @@ public class ConfirmationBox
 				callback.onConfirmedBox();
 			}
 		} );
-
-		db.add( vp );
-
-		db.center();
-		db.show();
+		
+		db.show( false );
 	}
 }

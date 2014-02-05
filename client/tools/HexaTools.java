@@ -8,7 +8,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.hexa.client.ui.dialog.MyDialogBox;
+import com.hexa.client.ui.dialog.DialogBoxBuilder;
+import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 
 public class HexaTools
 {
@@ -116,20 +117,14 @@ public class HexaTools
 
 	public static void alert( String title, String message )
 	{
-		MyDialogBox db = new MyDialogBox();
-		db.setTitle( title );
-		db.setWidget( new Label( message ) );
+		final DialogBox db = DialogBoxBuilder.create( title, new Label( message ) );
 		db.show();
-		db.center();
 	}
 
 	public static void alertHtml( String title, String html )
 	{
-		MyDialogBox db = new MyDialogBox();
-		db.setTitle( title );
-		db.setWidget( new HTML( html ) );
+		final DialogBox db = DialogBoxBuilder.create( title, new HTML( html ) );
 		db.show();
-		db.center();
 	}
 
 	public static native JavaScriptObject evalJSO( String params )

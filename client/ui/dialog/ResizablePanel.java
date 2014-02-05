@@ -78,6 +78,12 @@ class ResizablePanel extends ComplexPanel implements DialogBox, HasCloseHandlers
 	}
 	
 	@Override
+	public void show()
+	{
+		show( true );
+	}
+	
+	@Override
 	public void show( boolean isAutoHide )
 	{
 		this.isAutoHide = isAutoHide;

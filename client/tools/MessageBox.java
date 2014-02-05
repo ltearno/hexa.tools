@@ -1,17 +1,14 @@
 package com.hexa.client.tools;
 
 import com.google.gwt.user.client.ui.HTML;
-import com.hexa.client.ui.dialog.MyDialogBox;
+import com.hexa.client.ui.dialog.DialogBoxBuilder;
+import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 
 public class MessageBox
 {
 	public static void show( String title, String message )
 	{
-		MyDialogBox db = new MyDialogBox();
-
-		db.setTitle( title );
-		db.setWidget( new HTML( message ) );
-
+		final DialogBox db = DialogBoxBuilder.create( title, new HTML( message ) );
 		db.show();
 	}
 }

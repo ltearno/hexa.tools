@@ -10,6 +10,7 @@ public class DialogBoxBuilder
 {
 	public interface DialogBox
 	{
+		void show();
 		void show( boolean isAutoHide );
 		void hide();
 		HandlerRegistration addCloseHandler( CloseHandler<DialogBox> handler );
