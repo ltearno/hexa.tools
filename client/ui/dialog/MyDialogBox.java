@@ -7,7 +7,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class MyDialogBox
 {
-	ResizablePanel impl = new ResizablePanel();
+	//ResizablePanel impl = new ResizablePanel();
+	//ResizablePanelForLayoutContent impl = new ResizablePanelForLayoutContent();
+	
 	boolean modal;
 
 	public MyDialogBox()
@@ -21,30 +23,30 @@ public class MyDialogBox
 
 		if( autoHide )
 		{
-			impl.addCloseClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					impl.hide();
-				}
-			} );
+//			impl.addCloseClickHandler( new ClickHandler()
+//			{
+//				@Override
+//				public void onClick( ClickEvent event )
+//				{
+//					impl.hide();
+//				}
+//			} );
 		}
 	}
 
 	public HandlerRegistration addCloseClickHandler( ClickHandler handler )
 	{
-		return impl.addCloseClickHandler( handler );
+		return null;//impl.addCloseClickHandler( handler );
 	}
 
 	public void setText( String text )
 	{
-		impl.setText( text );
+//		impl.setText( text );
 	}
 
 	public void setTitle( String text )
 	{
-		impl.setText( text );
+//		impl.setText( text );
 	}
 
 	public void add( Widget w )
@@ -54,21 +56,21 @@ public class MyDialogBox
 
 	public void setWidget( Widget w )
 	{
-		impl.setContent( w );
+//		impl.setContent( w );
 	}
 
 	public void show()
 	{
-		impl.show( modal );
+//		impl.show( modal );
 	}
 
 	public void center()
 	{
-		impl.show( modal );
+//		impl.show( modal );
 	}
 
 	public void hide()
 	{
-		impl.hide();
+//		impl.hide();
 	}
 }

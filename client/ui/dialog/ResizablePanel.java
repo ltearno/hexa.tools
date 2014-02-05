@@ -6,16 +6,18 @@ import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.ComplexPanel;
-import com.google.gwt.user.client.ui.ProvidesResize;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 import com.hexa.client.ui.resources.image.ImageResources;
 
-class ResizablePanel extends ComplexPanel implements RequiresResize, ProvidesResize
+class ResizablePanel extends ComplexPanel implements DialogBox, HasCloseHandlers<DialogBox>
 {
 	private boolean isDisplayed = false;
 	
@@ -24,7 +26,9 @@ class ResizablePanel extends ComplexPanel implements RequiresResize, ProvidesRes
 	private Element close;
 	private Element content;
 	
-	public ResizablePanel()
+	private boolean isAutoHide;
+	
+	public ResizablePanel( String titleText, Widget contentWidget )
 	{
 		Element glass = Document.get().createDivElement();
 		setElement( glass );
@@ -40,90 +44,65 @@ class ResizablePanel extends ComplexPanel implements RequiresResize, ProvidesRes
 		ImageResource closeImage = ImageResources.INSTANCE.close();
 		int headerSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
 		
-		glass.setInnerHTML( "<div style='background-color:pink; display: inline-block; margin: 50px; position: relative; overflow:auto;'>"+
-				"<div style='position:absolute; left:0px; right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
+		glass.setInnerHTML( "<div class='ResizablePanel-bkgnd' style='display: inline-block; position: relative;'>"+
+				"<div class='ResizablePanel-title' style='position:relative; left:0px; margin-right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
 				"<div style='position:absolute; right:0px; top:0px;'><img></img></div>"+
-				"<div style='position: relative; top:"+headerSize+"px;'> <!-- content holder --> </div>"+
+				"<div style='position: relative; overflow:auto;'> <!-- content holder --> </div>"+
 			"</div>" );		
 
 		main = (Element) glass.getChild( 0 );
 		
 		title = (Element) main.getChild( 0 );
+		title.setInnerText( titleText );
+		
 		close = (Element) main.getChild( 1 ).getChild( 0 );
 		close.setAttribute( "src", closeImage.getSafeUri().asString() );
 		content = (Element) main.getChild( 2 );
+		
+		add( contentWidget, content );
+		
+		addDomHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				if( ! isAutoHide )
+					return;
+				
+				if( (Object) event.getNativeEvent().getEventTarget() != (Object) close )
+					return;
+				
+				hide();
+			}
+		}, ClickEvent.getType() );
 	}
-
-	private Widget contentWidget = null;
-
-	public void setText( String titleText )
+	
+	@Override
+	public void show( boolean isAutoHide )
 	{
-		title.setInnerText( titleText );
-	}
-
-	public void setContent( Widget w )
-	{
-		if( contentWidget != null )
-			remove( contentWidget );
-
-		contentWidget = w;
-
-		add( w, content );
-	}
-
-	public void show( boolean modal )
-	{
+		this.isAutoHide = isAutoHide;
+		
 		if( isDisplayed )
 			return;
 		isDisplayed = true;
 
-		RootLayoutPanel.get().add( this );
-		
-		onResize();
+		RootPanel.get().add( this );
 	}
-
+	
+	@Override
 	public void hide()
 	{
 		if( ! isDisplayed )
 			return;
 		isDisplayed = false;
 		
-		RootLayoutPanel.get().remove( this );
+		RootPanel.get().remove( this );
+		
+		CloseEvent.fire( this, null );
 	}
-
-	public HandlerRegistration addCloseClickHandler( final ClickHandler handler )
-	{
-		return addDomHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				if( (Object) event.getNativeEvent().getEventTarget() != (Object) close )
-					return;
-
-				handler.onClick( event );
-			}
-		}, ClickEvent.getType() );
-	}
-
-	@Override
-	public void onResize()
-	{
-		if( contentWidget instanceof RequiresResize )
-		{
-			int m = 20;
-			main.getStyle().setPosition( Position.ABSOLUTE );
-			main.getStyle().setLeft( m, Unit.PX );
-			main.getStyle().setTop( m, Unit.PX );
-			main.getStyle().setRight( m, Unit.PX );
-			main.getStyle().setBottom( m, Unit.PX );
-			
-			((RequiresResize)contentWidget).onResize();
-		}	
-	}
-}
-
-class PanelForNormalWidget
-{
 	
+	public HandlerRegistration addCloseHandler( CloseHandler<DialogBox> handler )
+	{
+		return addHandler( handler, CloseEvent.getType() );
+	}
 }

@@ -27,6 +27,8 @@ import com.hexa.client.ui.resources.image.ImageResources;
 
 class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseUpHandler, MouseDownHandler, RequiresResize, ProvidesResize
 {
+	private Widget contentWidget = null;
+	
 	int resizeHandlerSize = 5;
 	int titleSize;
 
@@ -74,7 +76,7 @@ class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseU
 			+ "<div class='close_button' style='position: absolute; width:#TITLE_SIZE#px; top:#HANDLER_SIZE#px; right:#HANDLER_SIZE#px; height:#TITLE_SIZE#px;'><img></img></div>"
 			+ "<div class='content' style='overflow:auto; position: absolute; left:#HANDLER_SIZE#px; top:#CONTENT_TOP#px; right:#HANDLER_SIZE#px; bottom:#HANDLER_SIZE#px;'></div>";
 
-	public ResizablePanelBad()
+	public ResizablePanelBad( String titleText, Widget contentWidget )
 	{
 		Element main = DOM.createDiv();
 		setElement( main );
@@ -103,9 +105,11 @@ class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseU
 		addDomHandler( this, MouseMoveEvent.getType() );
 		addDomHandler( this, MouseUpEvent.getType() );
 		addDomHandler( this, MouseDownEvent.getType() );
+		
+		title.setInnerText( titleText );
+		
+		this.contentWidget = contentWidget;
 	}
-
-	private Widget contentWidget = null;
 
 	public void setText( String titleText )
 	{
@@ -124,7 +128,7 @@ class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseU
 
 	Glass glass;
 
-	public void show( boolean modal )
+	public void show( boolean isModal, boolean isAutoHide )
 	{
 		// try to auto size the dialog, based on the content size, mais ca marche pas ... :(
 		if( contentWidget != null )
@@ -158,7 +162,7 @@ class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseU
 			} );
 		}
 
-		if( modal )
+		if( isModal )
 		{
 			glass = new Glass();
 			RootLayoutPanel.get().add( glass );
