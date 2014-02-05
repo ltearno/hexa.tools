@@ -44,7 +44,7 @@ class ResizablePanel extends ComplexPanel implements DialogBox, HasCloseHandlers
 		ImageResource closeImage = ImageResources.INSTANCE.close();
 		int headerSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
 		
-		glass.setInnerHTML( "<div class='ResizablePanel-bkgnd' style='display: inline-block; position: relative;'>"+
+		glass.setInnerHTML( "<div class='ResizablePanel-bkgnd' style='display: inline-block; position: relative; margin-top:50px'>"+
 				"<div class='ResizablePanel-title' style='position:relative; left:0px; margin-right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
 				"<div style='position:absolute; right:0px; top:0px;'><img></img></div>"+
 				"<div style='position: relative; overflow:auto;'> <!-- content holder --> </div>"+
