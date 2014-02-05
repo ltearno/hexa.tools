@@ -56,7 +56,7 @@ public class TreeTableElemMng<T>
 		if( item != null )
 			return item;
 
-		item = parentItem.getTable().addRow( parentItem );
+		item = table.addRow( parentItem );
 		elements.put( identifier, item );
 		item.highLite();
 
@@ -85,7 +85,7 @@ public class TreeTableElemMng<T>
 		if( item != null )
 			return item;
 
-		item = parentItem.getTable().addRow( parentItem );
+		item = table.addRow( parentItem );
 		elements.put( identifier, item );
 		elementsAdded.add( item );
 

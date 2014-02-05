@@ -316,11 +316,6 @@ public class TreeTable extends Panel
 						// m_tr's "ref" attribute
 		Object m_dataObject = null;
 
-		public TreeTable getTable()
-		{
-			return TreeTable.this;
-		}
-
 		public Row getParent()
 		{
 			return m_parent == m_rootItem ? null : m_parent;
