@@ -928,7 +928,7 @@ public class TreeTable extends Panel
 			return 1 + m_parent.getLevel();
 		}
 		
-		public class Cell
+		public class Cell implements Printer
 		{
 			private int column;
 			
@@ -937,17 +937,20 @@ public class TreeTable extends Panel
 				this.column = col;
 			}
 			
+			@Override
 			public void setText( String text )
 			{
 				Row.this.setText( column, text );
 			}
 			
+			@Override
 			public void setHTML( String html )
 			{
 				Row.this.setHTML( column, html );
 			}
-			
-			public void setText( Widget widget )
+
+			@Override
+			public void setWidget( Widget widget )
 			{
 				Row.this.setWidget( column, widget );
 			}
