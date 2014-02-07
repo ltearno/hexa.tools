@@ -320,6 +320,11 @@ public class TreeTable extends Panel
 		{
 			return m_parent == m_rootItem ? null : m_parent;
 		}
+		
+		public Cell getCell( int column )
+		{
+			return new Cell( column );
+		}
 
 		// adds an item at the end of the children of the parent
 		public Row addLastChild()
@@ -921,6 +926,31 @@ public class TreeTable extends Panel
 			if( m_parent == null )
 				return -1;
 			return 1 + m_parent.getLevel();
+		}
+		
+		public class Cell
+		{
+			private int column;
+			
+			private Cell( int col )
+			{
+				this.column = col;
+			}
+			
+			public void setText( String text )
+			{
+				Row.this.setText( column, text );
+			}
+			
+			public void setHTML( String html )
+			{
+				Row.this.setHTML( column, html );
+			}
+			
+			public void setText( Widget widget )
+			{
+				Row.this.setWidget( column, widget );
+			}
 		}
 	}
 
