@@ -7,7 +7,5 @@ public interface HexaDateDisplayFormat
 
 	public String format( boolean fInvalid, int year, int month, int date );
 
-	public String getJQDatepickerFormat();
-
 	public HexaDate getHexaDateFromDisplayString( String string );
 }

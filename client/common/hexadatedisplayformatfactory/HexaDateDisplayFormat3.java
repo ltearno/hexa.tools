@@ -6,8 +6,7 @@ import com.hexa.client.common.text.DateTimeFormat;
 
 public class HexaDateDisplayFormat3 implements HexaDateDisplayFormat
 {
-	DateTimeFormat fmt = DateTimeFormat.getFormat( "MM d, yy" );// DateTimeFormat.PredefinedFormat.DATE_LONG
-																// );
+	DateTimeFormat fmt =  DateTimeFormat.getFormat( "EEEE, y MMMM dd" );
 
 	public String getName()
 	{
@@ -25,11 +24,6 @@ public class HexaDateDisplayFormat3 implements HexaDateDisplayFormat
 		return res;
 	}
 
-	public String getJQDatepickerFormat()
-	{
-		return "MM d, yy";
-	}
-
 	public HexaDate getHexaDateFromDisplayString( String string )
 	{
 		try
@@ -42,15 +36,5 @@ public class HexaDateDisplayFormat3 implements HexaDateDisplayFormat
 		}
 
 		return new HexaDate( "-" );
-
-		/*
-		 * JavaScriptObject obj = DateJS.create( string ); HexaDate date = new
-		 * HexaDate( DateJS.toConformity( obj ) );
-		 * 
-		 * GWT.log( "HexaDateDisplayFormat3 parse " + string + " => " +
-		 * date.getString() );
-		 * 
-		 * return date;
-		 */
 	}
 }

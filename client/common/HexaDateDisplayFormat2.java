@@ -20,11 +20,6 @@ public class HexaDateDisplayFormat2 implements HexaDateDisplayFormat
 		return yearFormat.format( year + 1900 ) + "-" + monthFormat.format( month + 1 ) + "-" + dayFormat.format( date );
 	}
 
-	public String getJQDatepickerFormat()
-	{
-		return "yy-mm-dd";
-	}
-
 	public HexaDate getHexaDateFromDisplayString( String string )
 	{
 		try

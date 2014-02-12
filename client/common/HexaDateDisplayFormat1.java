@@ -24,21 +24,6 @@ public class HexaDateDisplayFormat1 implements HexaDateDisplayFormat
 		if( fInvalid )
 			return "-";
 		return dayFormat.format( date ) + "-" + monthFormat.format( month + 1 ) + "-" + yearFormat.format( year + 1900 );
-
-		// other formatting
-		/*
-		 * if( fInvalid ) return "0000-00-00"; return
-		 * yearFormat.format(year+1900) + "-" + monthFormat.format(month+1) +
-		 * "-" + dayFormat.format(date);
-		 */
-	}
-
-	public String getJQDatepickerFormat()
-	{
-		return "dd-mm-yy";
-
-		// other formatting
-		// return "yy-mm-dd";
 	}
 
 	public HexaDate getHexaDateFromDisplayString( String string )
@@ -52,8 +37,5 @@ public class HexaDateDisplayFormat1 implements HexaDateDisplayFormat
 		{
 			return new HexaDate( "-" );
 		}
-
-		// other formatting
-		// return new HexaDate( string );
 	}
 }

@@ -30,12 +30,8 @@ public class JQDatepicker extends Widget
 			input = DOM.createInputText();
 
 		JQuery.get().jqDatepicker( input );
+		jqDatepickerOption( input, "dateFormat", "yy-mm-dd" );
 		setElement( input );
-	}
-
-	public void setFormat( String format )
-	{
-		jqDatepickerOption( input, "dateFormat", format );
 	}
 
 	private static native void jqDatepickerOption( Element e, String option, String value )
@@ -57,15 +53,23 @@ public class JQDatepicker extends Widget
 	{
 		jqDatepickerSetEventHandler( input, callback );
 	}
-
+	
 	public void setValueString( String date )
 	{
-		if( !fInline )
-			input.setInnerText( date );
-
-		// jqDatepickerRefresh( input );
-		input.setPropertyString( "value", date );
+		setValueString( input, date );
 	}
+
+	private native final void setValueString( Element element, String date )
+	/*-{
+		$wnd.$( element ).datepicker( "setDate", date );
+	}-*/;
+//	{
+//		if( ! fInline )
+//			input.setInnerText( date );
+//
+//		// jqDatepickerRefresh( input );
+//		input.setPropertyString( "value", date );
+//	}
 
 	public String getValueAsString()
 	{

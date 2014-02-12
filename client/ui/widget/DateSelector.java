@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.hexa.client.common.HexaDate;
@@ -15,12 +13,9 @@ import com.hexa.client.ui.dialog.MyPopupPanel;
 public class DateSelector extends Composite implements JQDatepicker.Callback
 {
 	boolean enabled = true;
-
 	TextBox textBox = new TextBox();
-
-	boolean fCallbackSet = false; // denotes if a call to
-									// JQDatepicker.setCallback has already been
-									// made
+	MyPopupPanel popup = null;
+	JQDatepicker datePicker = null;
 
 	ArrayList<IValueChangeHandler<HexaDate>> handlers = new ArrayList<IValueChangeHandler<HexaDate>>();
 
@@ -33,58 +28,12 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 			@Override
 			public void onFocus( FocusEvent event )
 			{
-				if( enabled )
-					showPopup();
+				if( ! enabled )
+					return;
+				
+				showPopup();
 			}
 		} );
-
-		textBox.addKeyUpHandler( new KeyUpHandler()
-		{
-			@Override
-			public void onKeyUp( KeyUpEvent event )
-			{
-				HexaDate hexaDate = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( textBox.getText() );
-				if( hexaDate != null )
-					datePicker.setValueString( hexaDate.getDisplayString() );
-			}
-		} );
-
-		/*
-		 * textBox.addClickHandler( new ClickHandler() { public void
-		 * onClick(ClickEvent event) { if( popup!=null && popup.isShowing() )
-		 * hidePopup(); else showPopup(); } });
-		 */
-	}
-
-	MyPopupPanel popup = null;
-	JQDatepicker datePicker = null;
-
-	private void showPopup()
-	{
-		if( datePicker == null )
-		{
-			datePicker = new JQDatepicker( true );
-			datePicker.setFormat( HexaDate.getDisplayFormat().getJQDatepickerFormat() );
-			datePicker.setCallback( DateSelector.this );
-		}
-
-		if( popup == null )
-		{
-			popup = new MyPopupPanel( true, true );
-			popup.setWidget( datePicker );
-		}
-
-		popup.showRelativeTo( textBox );
-
-		HexaDate hexaDate = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( textBox.getText() );
-		if( hexaDate != null )
-			datePicker.setValueString( hexaDate.getDisplayString() );
-	}
-
-	private void hidePopup()
-	{
-		if( popup != null )
-			popup.hide();
 	}
 
 	public void clear()
@@ -94,9 +43,9 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 
 	public HexaDate getDate()
 	{
-		// return HexaDate.getDisplayFormat().getHexaDateFromDisplayString(
-		// datePicker.getValueAsString() );
-		return HexaDate.getDisplayFormat().getHexaDateFromDisplayString( textBox.getText() );
+		String tb = textBox.getText();
+		HexaDate res = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( tb );
+		return res;
 	}
 
 	public void setDate( HexaDate hexaDate )
@@ -106,8 +55,10 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 			textBox.setText( "" );
 			return;
 		}
-
-		textBox.setText( hexaDate.getDisplayString() );
+		
+		String display = hexaDate.getDisplayString();
+		
+		textBox.setText( display );
 		if( datePicker != null )
 			datePicker.setValueString( hexaDate.getString() );
 	}
@@ -125,13 +76,45 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 		handlers.add( handler );
 	}
 
+	public void setEnabled( boolean enabled )
+	{
+		this.enabled = enabled;
+		textBox.setEnabled( enabled );
+	}
+
+	private void showPopup()
+	{
+		if( datePicker == null )
+		{
+			datePicker = new JQDatepicker( true );
+			datePicker.setCallback( this );
+		}
+
+		if( popup == null )
+		{
+			popup = new MyPopupPanel( true, true );
+			popup.setWidget( datePicker );
+		}
+
+		popup.showRelativeTo( textBox );
+
+		HexaDate hexaDate = getDate();
+		if( hexaDate != null )
+			datePicker.setValueString( hexaDate.getString() );
+	}
+
+	private void hidePopup()
+	{
+		if( popup != null )
+			popup.hide();
+	}
+
 	@Override
 	public void onDateSelected( String text )
 	{
-		HexaDate date = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( text );
-		textBox.setText( date.getDisplayString() );
-
 		hidePopup();
+		
+		HexaDate date = new HexaDate( text );
 		setDate( date, true );
 	}
 
@@ -139,11 +122,5 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 	{
 		for( IValueChangeHandler<HexaDate> handler : handlers )
 			handler.onValueChange( date );
-	}
-
-	public void setEnabled( boolean enabled )
-	{
-		this.enabled = enabled;
-		textBox.setEnabled( enabled );
 	}
 }
