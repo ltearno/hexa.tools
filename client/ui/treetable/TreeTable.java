@@ -6,12 +6,14 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
@@ -30,10 +32,29 @@ import com.hexa.client.ui.widget.ImageButton;
 
 public class TreeTable extends Panel
 {
+	interface BasicImageBundle extends ClientBundle
+	{
+		@Source( "16-arrow-down.png" )
+		ImageResource treeMinus();
+
+		@Source( "16-arrow-right.png" )
+		ImageResource treePlus();
+	}
+	
+	private static BasicImageBundle BUNDLE;
+	
+	private BasicImageBundle basicBundle()
+	{
+		if( BUNDLE == null )
+			BUNDLE = GWT.create( BasicImageBundle.class );
+		
+		return BUNDLE;
+	}
+	
 	final int treePadding = 25;
 
-	ImageResource treeMinus;
-	ImageResource treePlus;
+	final ImageResource treeMinus;
+	final ImageResource treePlus;
 
 	// can be : sub item added, sub item removed, expanded, shrinked
 	public interface IItemStateCallback
@@ -59,6 +80,11 @@ public class TreeTable extends Panel
 	@UiConstructor
 	public TreeTable( ImageResource treeMinus, ImageResource treePlus )
 	{
+		if( treeMinus == null )
+			treeMinus = basicBundle().treeMinus();
+		if( treePlus == null )
+			treePlus = basicBundle().treePlus();
+		
 		this.treeMinus = treeMinus;
 		this.treePlus = treePlus;
 
