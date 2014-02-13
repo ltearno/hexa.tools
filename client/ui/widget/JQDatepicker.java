@@ -1,5 +1,6 @@
 package com.hexa.client.ui.widget;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
@@ -56,6 +57,9 @@ public class JQDatepicker extends Widget
 	
 	public void setValueString( String date )
 	{
+		if( date == null || date.isEmpty() )
+			return;
+		
 		setValueString( input, date );
 	}
 
