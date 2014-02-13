@@ -1,6 +1,5 @@
 package com.hexa.client.ui.widget;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
