@@ -41,6 +41,10 @@
 	<generate-with class="com.hexa.rebind.ClazzBundleGenerator">
 		<when-type-assignable class="com.hexa.client.classinfo.ClazzBundle" />
 	</generate-with>
+	
+	<generate-with class="com.hexa.rebind.JSONBrowserGenerator">
+		<when-type-assignable class="com.hexa.client.jsonbrowser.JSONBrowser"/>
+	</generate-with>
 
 	<define-linker name="AppCacheLinker" class="com.hexa.linker.AppCacheLinker" />
 
