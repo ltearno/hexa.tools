@@ -2,7 +2,7 @@ package com.hexa.client.tools;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
-import com.hexa.client.ui.ITreeTableEditorManager;
+import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class EmptyColumn<T> implements IColumnMng<T>
@@ -13,8 +13,9 @@ public class EmptyColumn<T> implements IColumnMng<T>
 	}
 
 	@Override
-	public void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback )
+	public IEditor editCell( T record )
 	{
+		return null;
 	}
 
 	@Override

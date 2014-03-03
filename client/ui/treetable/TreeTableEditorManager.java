@@ -2,7 +2,7 @@ package com.hexa.client.ui.treetable;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.ui.ITreeTableEditorManager;
+import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.widget.Validator;
 import com.hexa.client.ui.widget.ValidatorCallback;
@@ -11,7 +11,7 @@ import com.hexa.client.ui.widget.ValidatorCallback;
  * @author Arnaud
  *
  */
-public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallback, ITreeTableEditorManager
+public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallback
 {
 	public interface TreeTableEditorManagerCallback
 	{
@@ -19,7 +19,7 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 		public void onTouchCellContent( Row row, int column );
 
 		// when the editor is constructed, call callback.editorReady( ... )
-		public void getAsyncCellEditorWidget( Row row, int column, ITreeTableEditorManager callback );
+		public IEditor editCell( Row row, int column );
 
 		// implies a touch of course
 		public void onCellEditorValidation( Widget editor, Row row, int column );
@@ -62,23 +62,23 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 		m_currentEditedColumn = column;
 
 		// get any editor for that cell or forget about it
-		m_callback.getAsyncCellEditorWidget( item, column, this );
+		IEditor editor = m_callback.editCell( item, column );
+		useEditor( item, column, editor );
 	}
 
-	@Override
-	public void editorReady( Row item, int column, Widget editor, boolean fShowCancel )
+	private void useEditor( Row item, int column, IEditor editor )
 	{
 		// forget any not relevant editor
 		if( m_currentEditedItem != item || m_currentEditedColumn != column )
 			return;
 
-		m_currentEditor = editor;
+		m_currentEditor = editor.getWidget();
 		if( m_currentEditor == null )
 			return;
 
 		// create the validator around
 		final Validator<Widget> validator = new Validator<Widget>();
-		validator.setEditor( m_currentEditor, fShowCancel );
+		validator.setEditor( m_currentEditor, editor.isShowCancel() );
 		validator.setCallback( this );
 
 		// display that in the table

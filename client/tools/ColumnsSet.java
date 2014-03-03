@@ -3,26 +3,56 @@ package com.hexa.client.tools;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.ui.ITreeTableEditorManager;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class ColumnsSet<T>
 {
+	// an editor has a widget and
+	// can instruct container to show a cancel button around
+	public interface IEditor
+	{
+		Widget getWidget();
+
+		boolean isShowCancel();
+	}
+
 	public interface IColumnMng<T>
 	{
-		// simple print
 		public String getTitle();
 
 		public void fillCell( int ordinal, Row row, T record );
 
-		// from TreeTableEditorManager
-		void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback );
+		IEditor editCell( T record );
 
 		void onCellEditorValidation( int ordinal, Widget editor, Row row, T record );
 	}
 
-	private ArrayList<IColumnMng<T>> columns = new ArrayList<IColumnMng<T>>();
+	public static class Editor implements IEditor
+	{
+		private final Widget widget;
+		private final boolean isShowCancel;
+
+		public Editor( Widget widget, boolean isShowCancel )
+		{
+			this.widget = widget;
+			this.isShowCancel = isShowCancel;
+		}
+
+		@Override
+		public Widget getWidget()
+		{
+			return widget;
+		}
+
+		@Override
+		public boolean isShowCancel()
+		{
+			return isShowCancel;
+		}
+	}
+
+	private final ArrayList<IColumnMng<T>> columns = new ArrayList<IColumnMng<T>>();
 
 	public ColumnsSet()
 	{
@@ -61,10 +91,9 @@ public class ColumnsSet<T>
 		columns.get( column ).fillCell( column, row, record );
 	}
 
-	// from TreeTableEditorManager
-	public void getAsyncCellEditorWidget( int column, Row row, T record, ITreeTableEditorManager callback )
+	public IEditor editCell( int column, T record )
 	{
-		columns.get( column ).getAsyncCellEditorWidget( column, row, record, callback );
+		return columns.get( column ).editCell( record );
 	}
 
 	public void onCellEditorValidation( int column, Widget editor, Row row, T record )

@@ -12,7 +12,7 @@ import com.hexa.client.interfaces.IAsyncCallback;
 import com.hexa.client.tableobserver.XTableListen;
 import com.hexa.client.tools.ColumnsSet;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
-import com.hexa.client.ui.ITreeTableEditorManager;
+import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.TreeTableEditorManager.TreeTableEditorManagerCallback;
 import com.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemMngCallback;
@@ -37,11 +37,11 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 	@SuppressWarnings( "unused" )
 	private String deleteButtonTitle;
 
-	private TreeTable table = new TreeTable( HexaFramework.images.treeMinus(), HexaFramework.images.treePlus() );
-	private TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>( table, this );
+	private final TreeTable table = new TreeTable( HexaFramework.images.treeMinus(), HexaFramework.images.treePlus() );
+	private final TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>( table, this );
 
-	private ColumnsSet<T> columns = new ColumnsSet<T>();
-	private TreeTableEditorManager tableEd = new TreeTableEditorManager();
+	private final ColumnsSet<T> columns = new ColumnsSet<T>();
+	private final TreeTableEditorManager tableEd = new TreeTableEditorManager();
 	HashMap<Row, T> records = new HashMap<Row, T>();
 
 	ImageTextButton addButton;
@@ -84,11 +84,6 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 				}
 
 				@Override
-				public void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback )
-				{
-				}
-
-				@Override
 				public String getTitle()
 				{
 					return "Delete";
@@ -97,6 +92,12 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 				@Override
 				public void onCellEditorValidation( int ordinal, Widget editor, Row row, T record )
 				{
+				}
+
+				@Override
+				public IEditor editCell( T record )
+				{
+					return null;
 				}
 			} );
 		}
@@ -136,7 +137,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 		tableMng.commitVersion();
 	}
 
-	private XTableListen<T> dataPlug = new XTableListen<T>()
+	private final XTableListen<T> dataPlug = new XTableListen<T>()
 	{
 		@Override
 		public void deleted( int recordId, T oldRecord, Object cookie )
@@ -192,10 +193,10 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 	}
 
 	@Override
-	public void getAsyncCellEditorWidget( Row item, int column, ITreeTableEditorManager callback )
+	public IEditor editCell( Row row, int column )
 	{
-		T record = records.get( item );
-		columns.getAsyncCellEditorWidget( column, item, record, callback );
+		T record = records.get( row );
+		return columns.editCell( column, record );
 	}
 
 	@Override

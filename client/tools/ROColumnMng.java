@@ -2,12 +2,12 @@ package com.hexa.client.tools;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
-import com.hexa.client.ui.ITreeTableEditorManager;
+import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public abstract class ROColumnMng<T> implements IColumnMng<T>
 {
-	private String title;
+	private final String title;
 
 	public ROColumnMng( String title )
 	{
@@ -24,10 +24,10 @@ public abstract class ROColumnMng<T> implements IColumnMng<T>
 	@Override
 	abstract public void fillCell( int ordinal, Row row, T record );
 
-	// from TreeTableEditorManager
 	@Override
-	public final void getAsyncCellEditorWidget( int ordinal, Row row, T record, ITreeTableEditorManager callback )
+	public final IEditor editCell( T record )
 	{
+		return null;
 	}
 
 	@Override
