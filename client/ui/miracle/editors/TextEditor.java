@@ -1,6 +1,5 @@
 package com.hexa.client.ui.miracle.editors;
 
-import com.example.client.ui.Resources;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -10,6 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.hexa.client.interfaces.IAsyncCallback;
+import com.hexa.client.ui.css.Css;
 
 public class TextEditor extends Composite
 {
@@ -20,7 +20,7 @@ public class TextEditor extends Composite
 
 	public TextEditor()
 	{
-		tb.addStyleName( Resources.css().borderBoxSizing() );
+		tb.addStyleName( Css.css().borderBoxSizing() );
 		initWidget( tb );
 	}
 
