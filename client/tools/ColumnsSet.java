@@ -8,13 +8,17 @@ import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class ColumnsSet<T>
 {
+	public interface IEditorHost
+	{
+		void finishedEdition();
+	}
+
 	// an editor has a widget and
 	// can instruct container to show a cancel button around
 	public interface IEditor
 	{
+		void setHost( IEditorHost editorHost );
 		Widget getWidget();
-
-		boolean isShowCancel();
 	}
 
 	public interface IColumnMng<T>
@@ -23,32 +27,34 @@ public class ColumnsSet<T>
 
 		public void fillCell( int ordinal, Row row, T record );
 
+		// begins a editing session.
+		// callee should return an IEditor implementation
+		// it is its role to update the data if needed.
+		// when finished, callee should call the IEditorHost.finishedEdition();
+		// then the host will redraw the cell
 		IEditor editCell( T record );
-
-		void onCellEditorValidation( int ordinal, Widget editor, Row row, T record );
 	}
 
 	public static class Editor implements IEditor
 	{
 		private final Widget widget;
-		private final boolean isShowCancel;
+		private IEditorHost editorHost;
 
-		public Editor( Widget widget, boolean isShowCancel )
+		public Editor( Widget widget )
 		{
 			this.widget = widget;
-			this.isShowCancel = isShowCancel;
+		}
+
+		@Override
+		public void setHost( IEditorHost editorHost )
+		{
+			this.editorHost = editorHost;
 		}
 
 		@Override
 		public Widget getWidget()
 		{
 			return widget;
-		}
-
-		@Override
-		public boolean isShowCancel()
-		{
-			return isShowCancel;
 		}
 	}
 
@@ -94,10 +100,5 @@ public class ColumnsSet<T>
 	public IEditor editCell( int column, T record )
 	{
 		return columns.get( column ).editCell( record );
-	}
-
-	public void onCellEditorValidation( int column, Widget editor, Row row, T record )
-	{
-		columns.get( column ).onCellEditorValidation( column, editor, row, record );
 	}
 }

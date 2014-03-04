@@ -3,15 +3,14 @@ package com.hexa.client.ui.treetable;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IEditor;
+import com.hexa.client.tools.ColumnsSet.IEditorHost;
 import com.hexa.client.ui.treetable.TreeTable.Row;
-import com.hexa.client.ui.widget.Validator;
-import com.hexa.client.ui.widget.ValidatorCallback;
 
 /**
  * @author Arnaud
  *
  */
-public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallback
+public class TreeTableEditorManager implements TreeTableHandler
 {
 	public interface TreeTableEditorManagerCallback
 	{
@@ -20,9 +19,6 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 
 		// when the editor is constructed, call callback.editorReady( ... )
 		public IEditor editCell( Row row, int column );
-
-		// implies a touch of course
-		public void onCellEditorValidation( Widget editor, Row row, int column );
 	}
 
 	private TreeTable m_table = null;
@@ -66,41 +62,27 @@ public class TreeTableEditorManager implements TreeTableHandler, ValidatorCallba
 		useEditor( item, column, editor );
 	}
 
-	private void useEditor( Row item, int column, IEditor editor )
+	private void useEditor( final Row item, final int column, IEditor editor )
 	{
 		// forget any not relevant editor
 		if( m_currentEditedItem != item || m_currentEditedColumn != column )
 			return;
 
+		editor.setHost( new IEditorHost()
+		{
+			@Override
+			public void finishedEdition()
+			{
+				_RemoveValidator( item, column );
+			}
+		} );
+
 		m_currentEditor = editor.getWidget();
 		if( m_currentEditor == null )
 			return;
 
-		// create the validator around
-		final Validator<Widget> validator = new Validator<Widget>();
-		validator.setEditor( m_currentEditor, editor.isShowCancel() );
-		validator.setCallback( this );
-
 		// display that in the table
-		item.setWidget( column, validator );
-	}
-
-	@Override
-	public void onValidatorAction( ValidatorCallback.Button button )
-	{
-		if( button == Button.Ok )
-		{
-			m_callback.onCellEditorValidation( m_currentEditor, m_currentEditedItem, m_currentEditedColumn );
-		}
-
-		_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
-	}
-
-	@Override
-	public void onValidatorMoveRequest( int dx, int dy )
-	{
-		if( dx != 0 )
-			onTableCellClick( m_currentEditedItem, m_currentEditedColumn + dx, null );
+		item.setWidget( column, m_currentEditor );
 	}
 
 	// just replace the validator widget by a text in the table

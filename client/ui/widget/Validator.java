@@ -18,9 +18,9 @@ import com.hexa.client.comm.HexaFramework;
  */
 public class Validator<T extends Widget> extends Composite implements ClickHandler, KeyUpHandler
 {
-	private FlexTable m_table = new FlexTable();
-	private ImageButton m_okBut = new ImageButton( HexaFramework.images.ok(), "Validate" );
-	private ImageButton m_cancelBut = new ImageButton( HexaFramework.images.cancel(), "Cancel modification" );
+	private final FlexTable m_table = new FlexTable();
+	private final ImageButton m_okBut = new ImageButton( HexaFramework.images.ok(), "Validate" );
+	private final ImageButton m_cancelBut = new ImageButton( HexaFramework.images.cancel(), "Cancel modification" );
 
 	private T m_editor = null;
 	private ValidatorCallback m_callback = null;
