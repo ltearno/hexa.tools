@@ -9,6 +9,8 @@ public abstract class TextEditor extends GenericEditor<TextBox>
 	public TextEditor( String text, boolean fShowCancel )
 	{
 		super( new TextBox(), fShowCancel );
+		
+		getWidget().getEditor().setFocus( true );
 
 		getWidget().getEditor().setText( text );
 	}

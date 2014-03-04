@@ -37,7 +37,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 	@SuppressWarnings( "unused" )
 	private String deleteButtonTitle;
 
-	private final TreeTable table = new TreeTable( HexaFramework.images.treeMinus(), HexaFramework.images.treePlus() );
+	private final TreeTable table = new TreeTable( HexaFramework.images != null ? HexaFramework.images.treeMinus() : null, HexaFramework.images != null ? HexaFramework.images.treePlus() : null );
 	private final TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>( table, this );
 
 	private final ColumnsSet<T> columns = new ColumnsSet<T>();
@@ -58,7 +58,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 
 		if( addButtonTitle != null )
 		{
-			addButton = new ImageTextButton( HexaFramework.images.add(), addButtonTitle );
+			addButton = new ImageTextButton( HexaFramework.images != null ? HexaFramework.images.add() : null, addButtonTitle );
 			addButton.addClickHandler( this );
 		}
 
@@ -87,11 +87,6 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 				public String getTitle()
 				{
 					return "Delete";
-				}
-
-				@Override
-				public void onCellEditorValidation( int ordinal, Widget editor, Row row, T record )
-				{
 				}
 
 				@Override
@@ -197,13 +192,6 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 	{
 		T record = records.get( row );
 		return columns.editCell( column, record );
-	}
-
-	@Override
-	public void onCellEditorValidation( Widget editor, Row row, int column )
-	{
-		T record = records.get( row );
-		columns.onCellEditorValidation( column, editor, row, record );
 	}
 
 	@Override

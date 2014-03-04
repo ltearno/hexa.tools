@@ -25,7 +25,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.comm.HexaFramework;
 import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.widget.ImageButton;
@@ -39,6 +38,9 @@ public class TreeTable extends Panel
 
 		@Source( "16-arrow-right.png" )
 		ImageResource treePlus();
+		
+		@Source( "blank16.png" )
+		ImageResource blank();
 	}
 	
 	private static BasicImageBundle BUNDLE;
@@ -55,6 +57,7 @@ public class TreeTable extends Panel
 
 	final ImageResource treeMinus;
 	final ImageResource treePlus;
+	final ImageResource blankImage;
 
 	// can be : sub item added, sub item removed, expanded, shrinked
 	public interface IItemStateCallback
@@ -76,17 +79,25 @@ public class TreeTable extends Panel
 	String m_rowTemplate = "";
 
 	HashMap<Element, Widget> m_widgets = new HashMap<Element, Widget>();
-
+	
 	@UiConstructor
 	public TreeTable( ImageResource treeMinus, ImageResource treePlus )
+	{
+		this( treeMinus, treePlus, null );
+	}
+
+	public TreeTable( ImageResource treeMinus, ImageResource treePlus, ImageResource blankImage )
 	{
 		if( treeMinus == null )
 			treeMinus = basicBundle().treeMinus();
 		if( treePlus == null )
 			treePlus = basicBundle().treePlus();
+		if( blankImage == null )
+			blankImage = basicBundle().blank();
 		
 		this.treeMinus = treeMinus;
 		this.treePlus = treePlus;
+		this.blankImage = blankImage;
 
 		m_decorator = DOM.createDiv();
 		m_decorator.setClassName( "tableDecorator" );
@@ -133,7 +144,7 @@ public class TreeTable extends Panel
 
 	public TreeTable()
 	{
-		this( null, null );
+		this( null, null, null );
 	}
 
 	@Override
@@ -277,7 +288,7 @@ public class TreeTable extends Panel
 	{
 		TreeTable.Row item;
 
-		ImageButton im = new ImageButton( HexaFramework.images.blank(), "Expand" );
+		ImageButton im = new ImageButton( blankImage, "Expand" );
 
 		public ExpShrinkWidget( Row item, Widget child )
 		{
@@ -956,7 +967,7 @@ public class TreeTable extends Panel
 		
 		public class Cell implements Printer
 		{
-			private int column;
+			private final int column;
 			
 			private Cell( int col )
 			{
@@ -979,6 +990,11 @@ public class TreeTable extends Panel
 			public void setWidget( Widget widget )
 			{
 				Row.this.setWidget( column, widget );
+			}
+			
+			public Element getTdElement()
+			{
+				return DOM.getChild( m_tr, column );
 			}
 		}
 	}

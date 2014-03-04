@@ -1,9 +1,11 @@
 package com.hexa.client.ui.treetable;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.tools.ColumnsSet.IEditorHost;
+import com.hexa.client.ui.css.Css;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 
 /**
@@ -59,7 +61,8 @@ public class TreeTableEditorManager implements TreeTableHandler
 
 		// get any editor for that cell or forget about it
 		IEditor editor = m_callback.editCell( item, column );
-		useEditor( item, column, editor );
+		if( editor != null )
+			useEditor( item, column, editor );
 	}
 
 	private void useEditor( final Row item, final int column, IEditor editor )
@@ -80,6 +83,14 @@ public class TreeTableEditorManager implements TreeTableHandler
 		m_currentEditor = editor.getWidget();
 		if( m_currentEditor == null )
 			return;
+		
+		Element td = item.getCell( column ).getTdElement();
+		int width = td.getOffsetWidth() - 2;
+		int height = td.getOffsetHeight() - 2;
+		
+		m_currentEditor.addStyleName( Css.css().borderBoxSizing() );
+		m_currentEditor.setWidth( width + "px" );
+		m_currentEditor.setHeight( height + "px" );
 
 		// display that in the table
 		item.setWidget( column, m_currentEditor );
