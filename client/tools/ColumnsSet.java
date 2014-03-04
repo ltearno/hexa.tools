@@ -35,29 +35,6 @@ public class ColumnsSet<T>
 		IEditor editCell( T record );
 	}
 
-	public static class Editor implements IEditor
-	{
-		private final Widget widget;
-		private IEditorHost editorHost;
-
-		public Editor( Widget widget )
-		{
-			this.widget = widget;
-		}
-
-		@Override
-		public void setHost( IEditorHost editorHost )
-		{
-			this.editorHost = editorHost;
-		}
-
-		@Override
-		public Widget getWidget()
-		{
-			return widget;
-		}
-	}
-
 	private final ArrayList<IColumnMng<T>> columns = new ArrayList<IColumnMng<T>>();
 
 	public ColumnsSet()
