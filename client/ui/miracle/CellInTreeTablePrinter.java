@@ -50,7 +50,7 @@ public class CellInTreeTablePrinter implements Printer
 	}
 
 	@Override
-	public HTMLPrinter cloneHTMLPrinterForLaterUse()
+	public HtmlPrinter cloneHTMLPrinterForLaterUse()
 	{
 		return cloneForLaterUse();
 	}

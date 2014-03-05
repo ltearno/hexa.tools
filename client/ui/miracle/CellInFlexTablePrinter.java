@@ -45,7 +45,7 @@ public class CellInFlexTablePrinter implements Printer
 	}
 
 	@Override
-	public HTMLPrinter cloneHTMLPrinterForLaterUse()
+	public HtmlPrinter cloneHTMLPrinterForLaterUse()
 	{
 		return cloneForLaterUse();
 	}

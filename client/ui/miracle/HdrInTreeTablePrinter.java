@@ -45,7 +45,7 @@ public class HdrInTreeTablePrinter implements Printer
 	}
 
 	@Override
-	public HTMLPrinter cloneHTMLPrinterForLaterUse()
+	public HtmlPrinter cloneHTMLPrinterForLaterUse()
 	{
 		return cloneForLaterUse();
 	}

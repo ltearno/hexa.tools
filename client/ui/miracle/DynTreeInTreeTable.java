@@ -145,7 +145,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		}
 
 		@Override
-		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		public HtmlPrinter cloneHTMLPrinterForLaterUse()
 		{
 			return cloneForLaterUse();
 		}
@@ -199,7 +199,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		}
 
 		@Override
-		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		public HtmlPrinter cloneHTMLPrinterForLaterUse()
 		{
 			return cloneForLaterUse();
 		}
@@ -567,7 +567,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		}
 
 		@Override
-		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		public HtmlPrinter cloneHTMLPrinterForLaterUse()
 		{
 			return cloneForLaterUse();
 		}
@@ -687,7 +687,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 				}
 
 				@Override
-				public HTMLPrinter cloneHTMLPrinterForLaterUse()
+				public HtmlPrinter cloneHTMLPrinterForLaterUse()
 				{
 					return cloneForLaterUse();
 				}

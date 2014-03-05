@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
-import com.hexa.client.ui.miracle.HTMLPrinter;
+import com.hexa.client.ui.miracle.HtmlPrinter;
 import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.miracle.TextPrinter;
@@ -1008,7 +1008,7 @@ public class TreeTable extends Panel
 			}
 
 			@Override
-			public HTMLPrinter cloneHTMLPrinterForLaterUse()
+			public HtmlPrinter cloneHTMLPrinterForLaterUse()
 			{
 				return cloneForLaterUse();
 			}
@@ -1068,7 +1068,7 @@ public class TreeTable extends Panel
 		}
 
 		@Override
-		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		public HtmlPrinter cloneHTMLPrinterForLaterUse()
 		{
 			return cloneForLaterUse();
 		}

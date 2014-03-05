@@ -1,8 +1,8 @@
 package com.hexa.client.ui.miracle;
 
-public interface HTMLPrinter
+public interface HtmlPrinter
 {
-	HTMLPrinter cloneHTMLPrinterForLaterUse();
+	HtmlPrinter cloneHTMLPrinterForLaterUse();
 	
 	void setHTML( String html );
 }

@@ -215,7 +215,7 @@ public class MiracleTable extends FlexTable
 		}
 
 		@Override
-		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		public HtmlPrinter cloneHTMLPrinterForLaterUse()
 		{
 			return cloneForLaterUse();
 		}

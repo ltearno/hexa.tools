@@ -386,7 +386,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 
 		@Override
-		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		public HtmlPrinter cloneHTMLPrinterForLaterUse()
 		{
 			return cloneForLaterUse();
 		}
