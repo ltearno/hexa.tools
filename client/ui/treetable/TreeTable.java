@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.HTMLPrinter;
 import com.hexa.client.ui.miracle.Printer;
+import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.miracle.TextPrinter;
 import com.hexa.client.ui.miracle.WidgetPrinter;
 import com.hexa.client.ui.widget.ImageButton;
@@ -1022,6 +1023,12 @@ public class TreeTable extends Panel
 			public Printer cloneForLaterUse()
 			{
 				return new Cell( column );
+			}
+
+			public Size getSize()
+			{
+				Element td = getTdElement();
+				return new Size( td.getOffsetWidth(), td.getOffsetHeight() );
 			}
 		}
 	}
