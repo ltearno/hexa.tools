@@ -37,4 +37,28 @@ public class CellInFlexTablePrinter implements Printer
 	{
 		table.setWidget( row, col, widget );
 	}
+
+	@Override
+	public TextPrinter cloneTextPrinterForLaterUse()
+	{
+		return cloneForLaterUse();
+	}
+
+	@Override
+	public HTMLPrinter cloneHTMLPrinterForLaterUse()
+	{
+		return cloneForLaterUse();
+	}
+
+	@Override
+	public WidgetPrinter cloneWidgetPrinterForLaterUse()
+	{
+		return cloneForLaterUse();
+	}
+
+	@Override
+	public Printer cloneForLaterUse()
+	{
+		return this;
+	}
 }

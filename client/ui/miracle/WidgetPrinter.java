@@ -4,5 +4,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public interface WidgetPrinter
 {
+	WidgetPrinter cloneWidgetPrinterForLaterUse();
+	
 	void setWidget( Widget widget );
 }

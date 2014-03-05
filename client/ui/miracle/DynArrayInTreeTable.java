@@ -358,7 +358,7 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	}
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	private final MouseDownHandler onTableMouseDown = new MouseDownHandler()
 	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
@@ -399,6 +399,30 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 				public void setHTML( String html )
 				{
 					this.html = html;
+				}
+
+				@Override
+				public TextPrinter cloneTextPrinterForLaterUse()
+				{
+					return this;
+				}
+
+				@Override
+				public HTMLPrinter cloneHTMLPrinterForLaterUse()
+				{
+					return this;
+				}
+
+				@Override
+				public WidgetPrinter cloneWidgetPrinterForLaterUse()
+				{
+					return this;
+				}
+
+				@Override
+				public Printer cloneForLaterUse()
+				{
+					return this;
 				}
 			}
 
@@ -441,7 +465,7 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	};
 
-	private Edits.Callback onEdit = new Edits.Callback()
+	private final Edits.Callback onEdit = new Edits.Callback()
 	{
 		@Override
 		public void cancelEdition()
@@ -521,7 +545,7 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	private final KeyDownHandler onTableKeyUp = new KeyDownHandler()
 	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
@@ -562,7 +586,7 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	};
 
-	private TreeTableHandler tableHandler = new TreeTableHandler()
+	private final TreeTableHandler tableHandler = new TreeTableHandler()
 	{
 		@Override
 		public void onTableHeaderClick( int column, ClickEvent event )

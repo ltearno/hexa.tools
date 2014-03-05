@@ -13,6 +13,7 @@ import com.hexa.client.tableobserver.XTableListen;
 import com.hexa.client.tools.ColumnsSet;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.tools.ColumnsSet.IEditor;
+import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.TreeTableEditorManager.TreeTableEditorManagerCallback;
 import com.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemMngCallback;
@@ -68,7 +69,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 			columns.addColumn( new IColumnMng<T>()
 			{
 				@Override
-				public void fillCell( int ordinal, Row row, final T record )
+				public void fillCell( Printer printer, final T record )
 				{
 					ImageButton im = new ImageButton( HexaFramework.images.delete(), deleteButtonTitle );
 					im.addClickHandler( new ClickHandler()
@@ -80,7 +81,7 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 						}
 					} );
 
-					row.setWidget( ordinal, im );
+					printer.setWidget( im );
 				}
 
 				@Override

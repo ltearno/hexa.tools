@@ -2,12 +2,12 @@ package com.hexa.client.tools;
 
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.tools.ColumnsSet.IEditor;
-import com.hexa.client.ui.treetable.TreeTable.Row;
+import com.hexa.client.ui.miracle.Printer;
 
 public class EmptyColumn<T> implements IColumnMng<T>
 {
 	@Override
-	public void fillCell( int ordinal, Row row, T record )
+	public void fillCell( Printer printer, T record )
 	{
 	}
 

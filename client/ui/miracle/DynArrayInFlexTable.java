@@ -378,6 +378,30 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			impl.row = getRow( objectRef );
 			impl.setHTML( html );
 		}
+
+		@Override
+		public TextPrinter cloneTextPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public WidgetPrinter cloneWidgetPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public Printer cloneForLaterUse()
+		{
+			return this;
+		}
 	}
 
 	private static class CellPos
@@ -392,7 +416,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	}
 
-	private ClickHandler onTableClick = new ClickHandler()
+	private final ClickHandler onTableClick = new ClickHandler()
 	{
 		@Override
 		public void onClick( ClickEvent event )
@@ -452,7 +476,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	};
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	private final MouseDownHandler onTableMouseDown = new MouseDownHandler()
 	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
@@ -504,7 +528,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	};
 
-	private Edits.Callback onEdit = new Edits.Callback()
+	private final Edits.Callback onEdit = new Edits.Callback()
 	{
 		@Override
 		public void cancelEdition()
@@ -626,7 +650,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	private final KeyDownHandler onTableKeyUp = new KeyDownHandler()
 	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )

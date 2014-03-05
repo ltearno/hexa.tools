@@ -137,6 +137,30 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 			assert false;
 			table.setHeader( col, "WIDGET PLACE" );
 		}
+
+		@Override
+		public TextPrinter cloneTextPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public WidgetPrinter cloneWidgetPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public Printer cloneForLaterUse()
+		{
+			return this;
+		}
 	}
 
 	class CellInTreeTablePrinter implements Printer
@@ -166,6 +190,30 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		public void setWidget( Widget widget )
 		{
 			item.setWidget( col, widget );
+		}
+
+		@Override
+		public TextPrinter cloneTextPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public WidgetPrinter cloneWidgetPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public Printer cloneForLaterUse()
+		{
+			return this;
 		}
 	}
 
@@ -511,6 +559,30 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 			else
 				return "<img src='" + resources.blank16().getSafeUri().asString() + "'/>";
 		}
+
+		@Override
+		public TextPrinter cloneTextPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public WidgetPrinter cloneWidgetPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public Printer cloneForLaterUse()
+		{
+			return this;
+		}
 	}
 
 	private boolean beginEdit( Row item, int col )
@@ -562,7 +634,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		}
 	}
 
-	private MouseDownHandler onTableMouseDown = new MouseDownHandler()
+	private final MouseDownHandler onTableMouseDown = new MouseDownHandler()
 	{
 		@Override
 		public void onMouseDown( MouseDownEvent event )
@@ -606,6 +678,30 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 				public void setHTML( String html )
 				{
 					this.html = html;
+				}
+
+				@Override
+				public TextPrinter cloneTextPrinterForLaterUse()
+				{
+					return cloneForLaterUse();
+				}
+
+				@Override
+				public HTMLPrinter cloneHTMLPrinterForLaterUse()
+				{
+					return cloneForLaterUse();
+				}
+
+				@Override
+				public WidgetPrinter cloneWidgetPrinterForLaterUse()
+				{
+					return cloneForLaterUse();
+				}
+
+				@Override
+				public Printer cloneForLaterUse()
+				{
+					return this;
 				}
 			}
 
@@ -657,7 +753,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		return printer;
 	}
 
-	private Edits.Callback onEdit = new Edits.Callback()
+	private final Edits.Callback onEdit = new Edits.Callback()
 	{
 		@Override
 		public void cancelEdition()
@@ -737,7 +833,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		return null;
 	}
 
-	private KeyDownHandler onTableKeyUp = new KeyDownHandler()
+	private final KeyDownHandler onTableKeyUp = new KeyDownHandler()
 	{
 		@Override
 		public void onKeyDown( KeyDownEvent event )
@@ -778,7 +874,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		}
 	};
 
-	private TreeTableHandler tableHandler = new TreeTableHandler()
+	private final TreeTableHandler tableHandler = new TreeTableHandler()
 	{
 		@Override
 		public void onTableHeaderClick( int column, ClickEvent event )

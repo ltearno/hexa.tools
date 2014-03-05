@@ -37,4 +37,28 @@ public class HdrInTreeTablePrinter implements Printer
 		assert false;
 		table.setHeader( col, "WIDGET PLACE" );
 	}
+
+	@Override
+	public TextPrinter cloneTextPrinterForLaterUse()
+	{
+		return cloneForLaterUse();
+	}
+
+	@Override
+	public HTMLPrinter cloneHTMLPrinterForLaterUse()
+	{
+		return cloneForLaterUse();
+	}
+
+	@Override
+	public WidgetPrinter cloneWidgetPrinterForLaterUse()
+	{
+		return cloneForLaterUse();
+	}
+
+	@Override
+	public Printer cloneForLaterUse()
+	{
+		return this;
+	}
 }

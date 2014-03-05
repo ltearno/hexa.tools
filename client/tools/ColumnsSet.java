@@ -3,6 +3,7 @@ package com.hexa.client.tools;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTable.Row;
@@ -31,7 +32,7 @@ public class ColumnsSet<T>
 	{
 		public String getTitle();
 
-		public void fillCell( int ordinal, Row row, T record );
+		public void fillCell( Printer printer, T record );
 
 		// begins a editing session.
 		// callee should return an IEditor implementation
@@ -66,7 +67,7 @@ public class ColumnsSet<T>
 	public void fillRow( Row row, T record )
 	{
 		for( int i = 0; i < columns.size(); i++ )
-			columns.get( i ).fillCell( i, row, record );
+			columns.get( i ).fillCell( row.getCell( i ), record );
 	}
 
 	// simple print
@@ -77,7 +78,7 @@ public class ColumnsSet<T>
 
 	public void fillCell( int column, Row row, T record )
 	{
-		columns.get( column ).fillCell( column, row, record );
+		columns.get( column ).fillCell( row.getCell( column ), record );
 	}
 
 	public IEditor editCell( int column, T record )

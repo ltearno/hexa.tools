@@ -26,7 +26,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
+import com.hexa.client.ui.miracle.HTMLPrinter;
 import com.hexa.client.ui.miracle.Printer;
+import com.hexa.client.ui.miracle.TextPrinter;
+import com.hexa.client.ui.miracle.WidgetPrinter;
 import com.hexa.client.ui.widget.ImageButton;
 
 public class TreeTable extends Panel
@@ -996,6 +999,30 @@ public class TreeTable extends Panel
 			{
 				return DOM.getChild( m_tr, column );
 			}
+
+			@Override
+			public TextPrinter cloneTextPrinterForLaterUse()
+			{
+				return cloneForLaterUse();
+			}
+
+			@Override
+			public HTMLPrinter cloneHTMLPrinterForLaterUse()
+			{
+				return cloneForLaterUse();
+			}
+
+			@Override
+			public WidgetPrinter cloneWidgetPrinterForLaterUse()
+			{
+				return cloneForLaterUse();
+			}
+
+			@Override
+			public Printer cloneForLaterUse()
+			{
+				return new Cell( column );
+			}
 		}
 	}
 
@@ -1025,6 +1052,30 @@ public class TreeTable extends Panel
 		public void setHTML( String html )
 		{
 			setHeader( column, html + " (html not implemented)" );
+		}
+
+		@Override
+		public TextPrinter cloneTextPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public WidgetPrinter cloneWidgetPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public Printer cloneForLaterUse()
+		{
+			return new HeaderPrinter( column );
 		}
 	}
 

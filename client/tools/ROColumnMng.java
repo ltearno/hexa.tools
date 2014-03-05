@@ -2,7 +2,7 @@ package com.hexa.client.tools;
 
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
 import com.hexa.client.tools.ColumnsSet.IEditor;
-import com.hexa.client.ui.treetable.TreeTable.Row;
+import com.hexa.client.ui.miracle.Printer;
 
 public abstract class ROColumnMng<T> implements IColumnMng<T>
 {
@@ -21,7 +21,7 @@ public abstract class ROColumnMng<T> implements IColumnMng<T>
 	}
 
 	@Override
-	abstract public void fillCell( int ordinal, Row row, T record );
+	abstract public void fillCell( Printer printer, T record );
 
 	@Override
 	public final IEditor editCell( T record )

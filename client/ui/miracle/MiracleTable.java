@@ -207,5 +207,29 @@ public class MiracleTable extends FlexTable
 		{
 			table.setHdrWidget( col, widget );
 		}
+
+		@Override
+		public TextPrinter cloneTextPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public HTMLPrinter cloneHTMLPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public WidgetPrinter cloneWidgetPrinterForLaterUse()
+		{
+			return cloneForLaterUse();
+		}
+
+		@Override
+		public Printer cloneForLaterUse()
+		{
+			return this;
+		}
 	}
 }
