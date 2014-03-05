@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.tools.ColumnsSet.IEditorHost;
-import com.hexa.client.ui.css.Css;
+import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 
 /**
@@ -70,9 +70,21 @@ public class TreeTableEditorManager implements TreeTableHandler
 		// forget any not relevant editor
 		if( m_currentEditedItem != item || m_currentEditedColumn != column )
 			return;
+		
+		// store the pixel size of the TD, editor might be gentleful to ask
+		Element td = item.getCell( column ).getTdElement();
+		int width = td.getOffsetWidth() - 2;
+		int height = td.getOffsetHeight() - 2;
+		final Size preferredEditorSize = new Size( width, height );
 
 		editor.setHost( new IEditorHost()
 		{
+			@Override
+			public Size getPreferredSize()
+			{
+				return preferredEditorSize;
+			}
+			
 			@Override
 			public void finishedEdition()
 			{
@@ -83,14 +95,6 @@ public class TreeTableEditorManager implements TreeTableHandler
 		m_currentEditor = editor.getWidget();
 		if( m_currentEditor == null )
 			return;
-		
-		Element td = item.getCell( column ).getTdElement();
-		int width = td.getOffsetWidth() - 2;
-		int height = td.getOffsetHeight() - 2;
-		
-		m_currentEditor.addStyleName( Css.css().borderBoxSizing() );
-		m_currentEditor.setWidth( width + "px" );
-		m_currentEditor.setHeight( height + "px" );
 
 		// display that in the table
 		item.setWidget( column, m_currentEditor );

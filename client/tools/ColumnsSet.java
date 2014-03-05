@@ -3,6 +3,7 @@ package com.hexa.client.tools;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 
@@ -10,6 +11,11 @@ public class ColumnsSet<T>
 {
 	public interface IEditorHost
 	{
+		// allows the editors to ask what is the best pixel size to adopt 
+		// (so that in a table for example, the layout keeps being beautiful)
+		Size getPreferredSize();
+		
+		// editor can say it has finished its job
 		void finishedEdition();
 	}
 
