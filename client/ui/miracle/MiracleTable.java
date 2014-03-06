@@ -181,8 +181,8 @@ public class MiracleTable extends FlexTable
 
 	public static class HdrInFlexTablePrinter implements Printer
 	{
-		MiracleTable table;
-		int col;
+		final MiracleTable table;
+		final int col;
 
 		HdrInFlexTablePrinter( MiracleTable table, int col )
 		{
@@ -206,30 +206,6 @@ public class MiracleTable extends FlexTable
 		public void setWidget( Widget widget )
 		{
 			table.setHdrWidget( col, widget );
-		}
-
-		@Override
-		public TextPrinter cloneTextPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public HtmlPrinter cloneHTMLPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public WidgetPrinter cloneWidgetPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public Printer cloneForLaterUse()
-		{
-			return this;
 		}
 	}
 }

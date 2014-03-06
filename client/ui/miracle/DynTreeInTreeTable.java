@@ -137,36 +137,12 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 			assert false;
 			table.setHeader( col, "WIDGET PLACE" );
 		}
-
-		@Override
-		public TextPrinter cloneTextPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public HtmlPrinter cloneHTMLPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public WidgetPrinter cloneWidgetPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public Printer cloneForLaterUse()
-		{
-			return this;
-		}
 	}
 
 	class CellInTreeTablePrinter implements Printer
 	{
-		Row item;
-		int col;
+		final Row item;
+		final int col;
 
 		CellInTreeTablePrinter( Row item, int col )
 		{
@@ -191,30 +167,6 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		{
 			item.setWidget( col, widget );
 		}
-
-		@Override
-		public TextPrinter cloneTextPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public HtmlPrinter cloneHTMLPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public WidgetPrinter cloneWidgetPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public Printer cloneForLaterUse()
-		{
-			return this;
-		}
 	}
 
 	@Override
@@ -222,18 +174,9 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 	{
 		table.setHeader( 0, "+/-" );
 
-		HdrInTreeTablePrinter printer = new HdrInTreeTablePrinter( table, 0 );
 		int nbCols = columns.size();
 		for( int i = 0; i < nbCols; i++ )
-		{
-			printer.col = i;
-
-			ColumnMng<T> c = columns.get( i );
-			if( c.hdrPrintsOn.print( null, printer ) )
-				printer = new HdrInTreeTablePrinter( table, 0 );
-		}
-
-		// table.setColumnWidth( 0, 12 );
+			columns.get( i ).hdrPrintsOn.print( null, new HdrInTreeTablePrinter( table, i ) );
 	}
 
 	@Override
@@ -245,16 +188,14 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		if( data == null )
 			return;
 
-		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( null, 0 );
-
 		// each row
 		for( T d : data )
 		{
 			InsertPos insPos = getInsertPoint( d );
-			cp.item = insPos.insert();
-			cp.item.setRef( refMng.getRef( d ) );
+			Row row = insPos.insert();
+			row.setRef( refMng.getRef( d ) );
 
-			cp = printRow( d, cp );
+			printRow( d, row );
 		}
 	}
 
@@ -287,10 +228,9 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 				insPos.move( item );
 			}
 		}
-		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( item, 0 );
 
 		// print the row
-		printRow( object, cp );
+		printRow( object, item );
 	}
 
 	class InsertPos
@@ -316,9 +256,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 				int ref = getRefAtRow( parent );
 				T obj = refMng.getObject( ref );
 
-				PrinterFirstCol p = new PrinterFirstCol();
-				p.item = parent;
-				columns.get( 0 ).prints.print( obj, p );
+				columns.get( 0 ).prints.print( obj, new PrinterFirstCol( parent ) );
 			}
 			return item;
 		}
@@ -407,9 +345,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 
 			T obj = refMng.getObject( parent.getRef() );
 
-			PrinterFirstCol p = new PrinterFirstCol();
-			p.item = parent;
-			columns.get( 0 ).prints.print( obj, p );
+			columns.get( 0 ).prints.print( obj, new PrinterFirstCol( parent ) );
 		}
 	}
 
@@ -489,10 +425,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		return table.getItemForRef( objectRef );
 	}
 
-	// returns a printer that can be used for the next call. a new one can be
-	// created
-	// WARNING : assumes the printer item is correctly initialized
-	private CellInTreeTablePrinter printRow( T object, CellInTreeTablePrinter printer )
+	private void printRow( T object, Row row )
 	{
 		// to reset the edition state, just in case...
 		if( edition != null && refMng.getRef( edition.editedObject ) == refMng.getRef( object ) )
@@ -500,34 +433,25 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 
 		// writes the element reference on the corresponding row element
 		// note that this does not create a hard link to the referenced object
-		// so
-		// no garbage is created here
-		printer.item.setRef( refMng.getRef( object ) );
+		// so no garbage is created here
+		row.setRef( refMng.getRef( object ) );
 
-		// print the icon correcponding to expand/shrink state
-		PrinterFirstCol firstCol = new PrinterFirstCol();
-		firstCol.item = printer.item;
-		columns.get( 0 ).prints.print( object, firstCol );
-		// drawExpShrink( printer.item );
+		// print the icon corresponding to expand/shrink state
+		columns.get( 0 ).prints.print( object, new PrinterFirstCol( row ) );
 
 		// each column
 		for( int i = 1; i < columns.size(); i++ )
-		{
-			printer.col = i;
-
-			boolean fStillInUse = columns.get( i ).prints.print( object, printer );
-
-			// recreate a printer if the old one is still in use by our client
-			if( fStillInUse )
-				printer = new CellInTreeTablePrinter( null, 0 );
-		}
-
-		return printer;
+			columns.get( i ).prints.print( object, new CellInTreeTablePrinter( row, i ) );
 	}
 
 	class PrinterFirstCol implements Printer
 	{
-		Row item;
+		final Row row;
+		
+		PrinterFirstCol( Row row )
+		{
+			this.row = row;
+		}
 
 		@Override
 		public void setText( String text )
@@ -538,7 +462,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 		@Override
 		public void setHTML( String html )
 		{
-			item.setHTML( 0, getExpShrinkHTML() + html );
+			row.setHTML( 0, getExpShrinkHTML() + html );
 		}
 
 		@Override
@@ -549,39 +473,15 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 
 		private String getExpShrinkHTML()
 		{
-			if( item.hasChilds() )
+			if( row.hasChilds() )
 			{
-				if( item.getExpanded() )
+				if( row.getExpanded() )
 					return "<img src='" + resources.treeMinus3().getSafeUri().asString() + "'/>";
 				else
 					return "<img src='" + resources.treePlus3().getSafeUri().asString() + "'/>";
 			}
 			else
 				return "<img src='" + resources.blank16().getSafeUri().asString() + "'/>";
-		}
-
-		@Override
-		public TextPrinter cloneTextPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public HtmlPrinter cloneHTMLPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public WidgetPrinter cloneWidgetPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public Printer cloneForLaterUse()
-		{
-			return this;
 		}
 	}
 
@@ -679,30 +579,6 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 				{
 					this.html = html;
 				}
-
-				@Override
-				public TextPrinter cloneTextPrinterForLaterUse()
-				{
-					return cloneForLaterUse();
-				}
-
-				@Override
-				public HtmlPrinter cloneHTMLPrinterForLaterUse()
-				{
-					return cloneForLaterUse();
-				}
-
-				@Override
-				public WidgetPrinter cloneWidgetPrinterForLaterUse()
-				{
-					return cloneForLaterUse();
-				}
-
-				@Override
-				public Printer cloneForLaterUse()
-				{
-					return this;
-				}
 			}
 
 			TempPrinter printer = new TempPrinter();
@@ -733,24 +609,20 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 			printHeaders();
 
 			// Redraw all objects in the table
-			CellInTreeTablePrinter printer = new CellInTreeTablePrinter( null, 0 );
-			redrawAll( null, printer );
+			redrawAll( null );
 		}
 	};
 
-	private CellInTreeTablePrinter redrawAll( Row parent, CellInTreeTablePrinter printer )
+	private void redrawAll( Row parent )
 	{
 		ArrayList<Row> items = table.getItemChilds( parent );
-		for( Row item : items )
+		for( Row row : items )
 		{
-			printer.item = item;
-			int ref = item.getRef();
-			printer = printRow( refMng.getObject( ref ), printer );
+			int ref = row.getRef();
+			printRow( refMng.getObject( ref ), row );
 
-			printer = redrawAll( item, printer );
+			redrawAll( row );
 		}
-
-		return printer;
 	}
 
 	private final Edits.Callback onEdit = new Edits.Callback()
@@ -912,9 +784,7 @@ public class DynTreeInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManag
 
 				T obj = refMng.getObject( clickedRef );
 
-				PrinterFirstCol p = new PrinterFirstCol();
-				p.item = item;
-				columns.get( 0 ).prints.print( obj, p );
+				columns.get( 0 ).prints.print( obj, new PrinterFirstCol( item ) );
 				return;
 			}
 

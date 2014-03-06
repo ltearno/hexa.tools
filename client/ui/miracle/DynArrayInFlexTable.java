@@ -70,16 +70,9 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 	@Override
 	public void printHeaders()
 	{
-		MiracleTable.HdrInFlexTablePrinter printer = table.getHdrPrinter( 0 );
 		int nbCols = columns.size();
 		for( int i = 0; i < nbCols; i++ )
-		{
-			printer.col = i;
-
-			ColumnMng<T> c = columns.get( i );
-			if( c.hdrPrintsOn.print( null, printer ) )
-				printer = table.getHdrPrinter( 0 );
-		}
+			columns.get( i ).hdrPrintsOn.print( null, table.getHdrPrinter( i ) );
 	}
 
 	@Override
@@ -102,15 +95,11 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			data = tmp;
 		}
 
-		CellInFlexTablePrinter cp = new CellInFlexTablePrinter( table, 0, 0 );
-
 		// each row
 		int j = 0;
 		for( T d : data )
 		{
-			cp.row = j;
-
-			cp = printRow( d, cp );
+			printRow( d, j );
 
 			j++;
 		}
@@ -129,7 +118,6 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		int insPos = userComparator != null ? getInsertPoint( object ) : row;
 
 		// insert or move the row to the right place and create a cell printer
-		CellInFlexTablePrinter cp;
 		if( row < 0 )
 		{
 			// new
@@ -146,10 +134,9 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 				insPos = moveRowFor( row, insPos, objectRef );
 			}
 		}
-		cp = new CellInFlexTablePrinter( table, insPos, 0 );
 
 		// print the row
-		printRow( object, cp );
+		printRow( object, insPos );
 	}
 
 	// return the row it was moved to
@@ -272,11 +259,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		return row;
 	}
 
-	// returns a printer that can be used for the next call. a new one can be
-	// created
-	// WARNING : assumes the printer table and row fields are correctly
-	// initialized
-	private CellInFlexTablePrinter printRow( T object, CellInFlexTablePrinter printer )
+	private void printRow( T object, int row )
 	{
 		// to reset the edition state, just in case...
 		if( edition != null && refMng.getRef( edition.editedObject ) == refMng.getRef( object ) )
@@ -284,15 +267,7 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 
 		// each column
 		for( int i = 0; i < columns.size(); i++ )
-		{
-			printer.col = i;
-
-			boolean fStillInUse = columns.get( i ).prints.print( object, printer );
-
-			// recreate a printer if the old one is still in use by our client
-			if( fStillInUse )
-				printer = new CellInFlexTablePrinter( table, printer.row, 0 );
-		}
+			columns.get( i ).prints.print( object, new CellInFlexTablePrinter( table, row, i ) );
 
 		// writes the element reference on the corresponding row element
 		// note that this does not create a hard link to the referenced object
@@ -301,11 +276,9 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 
 		// to avoid cases when the colummn has printed nothing and the row
 		// doesnt exist
-		if( table.getRowCount() <= printer.row )
-			table.setText( printer.row, 0, "" );
-		table.getRowFormatter().getElement( printer.row ).setPropertyInt( "ref", refMng.getRef( object ) );
-
-		return printer;
+		if( table.getRowCount() <= row )
+			table.setText( row, 0, "" );
+		table.getRowFormatter().getElement( row ).setPropertyInt( "ref", refMng.getRef( object ) );
 	}
 
 	private boolean beginEdit( int row, int col )
@@ -349,58 +322,29 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 
 	private class DynamicTablePrinter implements Printer
 	{
-		CellInFlexTablePrinter impl;
-		int objectRef;
+		final CellInFlexTablePrinter printer;
 
 		DynamicTablePrinter( T object, int col )
 		{
-			impl = new CellInFlexTablePrinter( table, -1, col );
-			objectRef = refMng.getRef( object );
+			printer = new CellInFlexTablePrinter( table, getRow( refMng.getRef( object ) ), col );
 		}
 
 		@Override
 		public void setWidget( Widget widget )
 		{
-			impl.row = getRow( objectRef );
-			impl.setWidget( widget );
+			printer.setWidget( widget );
 		}
 
 		@Override
 		public void setText( String text )
 		{
-			impl.row = getRow( objectRef );
-			impl.setText( text );
+			printer.setText( text );
 		}
 
 		@Override
 		public void setHTML( String html )
 		{
-			impl.row = getRow( objectRef );
-			impl.setHTML( html );
-		}
-
-		@Override
-		public TextPrinter cloneTextPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public HtmlPrinter cloneHTMLPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public WidgetPrinter cloneWidgetPrinterForLaterUse()
-		{
-			return cloneForLaterUse();
-		}
-
-		@Override
-		public Printer cloneForLaterUse()
-		{
-			return this;
+			printer.setHTML( html );
 		}
 	}
 
@@ -515,15 +459,12 @@ public class DynArrayInFlexTable<T> implements Prints<Iterable<T>>, DynArrayMana
 
 			printHeaders();
 			// Redraw all objects in the table
-			CellInFlexTablePrinter printer = new CellInFlexTablePrinter( table, 0, 0 );
 			int nbRows = table.getRowCount();
 			for( int r = 0; r < nbRows; r++ )
 			{
-				printer.row = r;
-
 				Element tr = table.getRowFormatter().getElement( r );
 				int ref = tr.getPropertyInt( "ref" );
-				printer = printRow( refMng.getObject( ref ), printer );
+				printRow( refMng.getObject( ref ), r );
 			}
 		}
 	};

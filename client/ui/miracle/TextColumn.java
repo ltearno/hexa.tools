@@ -12,20 +12,18 @@ public abstract class TextColumn<T> implements IColumnMng<T>
 		hdrPrintsOn = new PrintsOn<Void>()
 		{
 			@Override
-			public boolean print( Void data, Printer printer )
+			public void print( Void data, Printer printer )
 			{
 				printer.setText( title );
-				return false;
 			}
 		};
 
 		printsOn = new PrintsOn<T>()
 		{
 			@Override
-			public boolean print( T data, Printer printer )
+			public void print( T data, Printer printer )
 			{
 				printer.setText( getText( data ) );
-				return false;
 			}
 		};
 	}

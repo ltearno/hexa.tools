@@ -65,16 +65,9 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 	@Override
 	public void printHeaders()
 	{
-		HdrInTreeTablePrinter printer = new HdrInTreeTablePrinter( table, 0 );
 		int nbCols = columns.size();
 		for( int i = 0; i < nbCols; i++ )
-		{
-			printer.col = i;
-
-			ColumnMng<T> c = columns.get( i );
-			if( c.hdrPrintsOn.print( null, printer ) )
-				printer = new HdrInTreeTablePrinter( table, 0 );
-		}
+			columns.get( i ).hdrPrintsOn.print( null, new HdrInTreeTablePrinter( table, i ) );
 	}
 
 	@Override
@@ -101,15 +94,13 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			data = tmp;
 		}
 
-		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( null, 0 );
-
 		// each row
 		for( T d : data )
 		{
-			cp.item = table.addRow( null );
-			cp.item.setRef( refMng.getRef( d ) );
+			Row row = table.addRow( null );
+			row.setRef( refMng.getRef( d ) );
 
-			cp = printRow( d, cp );
+			printRow( d, row );
 		}
 	}
 
@@ -146,10 +137,9 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 				insPos = item;
 			}
 		}
-		CellInTreeTablePrinter cp = new CellInTreeTablePrinter( insPos, 0 );
 
 		// print the row
-		printRow( object, cp );
+		printRow( object, insPos );
 	}
 
 	private Row getInsertPoint( T object )
@@ -282,7 +272,7 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 	// returns a printer that can be used for the next call. a new one can be
 	// created
 	// WARNING : assumes the printer item is correctly initialized
-	private CellInTreeTablePrinter printRow( T object, CellInTreeTablePrinter printer )
+	private void printRow( T object, Row row )
 	{
 		// to reset the edition state, just in case...
 		if( edition != null && refMng.getRef( edition.editedObject ) == refMng.getRef( object ) )
@@ -292,21 +282,11 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		// note that this does not create a hard link to the referenced object
 		// so
 		// no garbage is created here
-		printer.item.setRef( refMng.getRef( object ) );
+		row.setRef( refMng.getRef( object ) );
 
 		// each column
 		for( int i = 0; i < columns.size(); i++ )
-		{
-			printer.col = i;
-
-			boolean fStillInUse = columns.get( i ).prints.print( object, printer );
-
-			// recreate a printer if the old one is still in use by our client
-			if( fStillInUse )
-				printer = new CellInTreeTablePrinter( printer.item, 0 );
-		}
-
-		return printer;
+			columns.get( i ).prints.print( object, new CellInTreeTablePrinter( row, i ) );
 	}
 
 	private boolean beginEdit( Row item, int col )
@@ -400,30 +380,6 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 				{
 					this.html = html;
 				}
-
-				@Override
-				public TextPrinter cloneTextPrinterForLaterUse()
-				{
-					return this;
-				}
-
-				@Override
-				public HtmlPrinter cloneHTMLPrinterForLaterUse()
-				{
-					return this;
-				}
-
-				@Override
-				public WidgetPrinter cloneWidgetPrinterForLaterUse()
-				{
-					return this;
-				}
-
-				@Override
-				public Printer cloneForLaterUse()
-				{
-					return this;
-				}
 			}
 
 			TempPrinter printer = new TempPrinter();
@@ -454,13 +410,11 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 			printHeaders();
 
 			// Redraw all objects in the table
-			CellInTreeTablePrinter printer = new CellInTreeTablePrinter( null, 0 );
 			ArrayList<Row> items = table.getItemChilds( null );
 			for( Row item : items )
 			{
-				printer.item = item;
 				int ref = item.getRef();
-				printer = printRow( refMng.getObject( ref ), printer );
+				printRow( refMng.getObject( ref ), item );
 			}
 		}
 	};

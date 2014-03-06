@@ -5,17 +5,12 @@ import com.hexa.client.ui.treetable.TreeTable;
 
 public class HdrInTreeTablePrinter implements Printer
 {
-	TreeTable table;
-	int col;
+	final TreeTable table;
+	final int col;
 
 	public HdrInTreeTablePrinter( TreeTable table, int col )
 	{
 		this.table = table;
-		this.col = col;
-	}
-
-	public void setCol( int col )
-	{
 		this.col = col;
 	}
 
@@ -36,29 +31,5 @@ public class HdrInTreeTablePrinter implements Printer
 	{
 		assert false;
 		table.setHeader( col, "WIDGET PLACE" );
-	}
-
-	@Override
-	public TextPrinter cloneTextPrinterForLaterUse()
-	{
-		return cloneForLaterUse();
-	}
-
-	@Override
-	public HtmlPrinter cloneHTMLPrinterForLaterUse()
-	{
-		return cloneForLaterUse();
-	}
-
-	@Override
-	public WidgetPrinter cloneWidgetPrinterForLaterUse()
-	{
-		return cloneForLaterUse();
-	}
-
-	@Override
-	public Printer cloneForLaterUse()
-	{
-		return this;
 	}
 }

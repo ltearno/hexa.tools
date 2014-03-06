@@ -5,9 +5,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class CellInFlexTablePrinter implements Printer
 {
-	FlexTable table;
-	int row;
-	int col;
+	final FlexTable table;
+	final int row;
+	final int col;
 
 	public CellInFlexTablePrinter( FlexTable table, int row, int col )
 	{
@@ -36,29 +36,5 @@ public class CellInFlexTablePrinter implements Printer
 	public void setWidget( Widget widget )
 	{
 		table.setWidget( row, col, widget );
-	}
-
-	@Override
-	public TextPrinter cloneTextPrinterForLaterUse()
-	{
-		return cloneForLaterUse();
-	}
-
-	@Override
-	public HtmlPrinter cloneHTMLPrinterForLaterUse()
-	{
-		return cloneForLaterUse();
-	}
-
-	@Override
-	public WidgetPrinter cloneWidgetPrinterForLaterUse()
-	{
-		return cloneForLaterUse();
-	}
-
-	@Override
-	public Printer cloneForLaterUse()
-	{
-		return this;
 	}
 }
