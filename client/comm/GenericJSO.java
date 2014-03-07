@@ -34,7 +34,7 @@ public class GenericJSO extends JavaScriptObject
 
 	public final native ResponseJSO getResponseJSOByIdx( int idx ) /*-{ return this[idx]; }-*/;
 
-	public final native GenericJSO getGenericJSO( String fieldName ) /*-{ return this[fieldName]; }-*/;
+	public final native GenericJSO getGenericJSO( String fieldName ) /*-{ return this[fieldName] || null; }-*/;
 
 	public final native GenericJSO getGenericJSOByIdx( int idx ) /*-{ return this[idx]; }-*/;
 
