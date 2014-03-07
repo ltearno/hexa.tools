@@ -1,6 +1,6 @@
 package com.hexa.client.ui.miracle;
 
-public interface HtmlPrinter
+public interface HTMLPrinter
 {
 	void setHTML( String html );
 }
