@@ -1,5 +1,6 @@
 package com.hexa.client.ui.widget;
 
+import com.example.client.ui.Resources;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -10,6 +11,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.hexa.client.interfaces.AValueControl;
+import com.hexa.client.ui.editable.EditableLabel;
+import com.hexa.client.ui.editable.EditableWidget;
 
 public class SpinControl extends AValueControl<Integer> implements ClickHandler
 {
@@ -19,7 +22,8 @@ public class SpinControl extends AValueControl<Integer> implements ClickHandler
 
 	Image up;
 	Image down;
-	Label valueLabel;
+	//Label valueLabel;
+	EditableLabel<Void> valueLabel;
 
 	@UiConstructor
 	public SpinControl( ImageResource upRsrc, ImageResource downRsrc )
@@ -29,13 +33,26 @@ public class SpinControl extends AValueControl<Integer> implements ClickHandler
 
 		up = new Image( upRsrc );
 		down = new Image( downRsrc );
-		valueLabel = new Label( String.valueOf( value ) );
+		valueLabel = new EditableLabel<Void>( Resources.get().images.loading(), new EditableLabel.Callback<Void>()
+		{
+			@Override
+			public void onWantChange( String text, EditableWidget<Label, Void> widget, Void cookie )
+			{
+				try
+				{
+					value = Integer.parseInt( text );
+					valueLabel.setText( String.valueOf( value ) );
+					
+					signalCallbacks();
+				}
+				catch( Exception e )
+				{
+				}
+			}
+		}, null );
+		valueLabel.setText( String.valueOf( value ) );
 
 		up.getElement().getStyle().setDisplay( Display.BLOCK );
-
-		// w = new HTMLPanel(
-		// "<table><tr><td style='height:12px;' id='"+upPlace+"'></td><td style='height:24px;' rowspan=2 id='"+labelPlace+"'></td></tr><tr><td style='height:12px;' id='"+downPlace+"'></td></tr></table>"
-		// );
 
 		w = new HTMLPanel( "<table><tr>" + "<td id='" + imgsPlace + "'></td>" + "<td id='" + labelPlace + "'></td>" + "</tr></table>" );
 
