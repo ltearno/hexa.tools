@@ -13,21 +13,6 @@ import com.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 
 public class HexaTools
 {
-	public static native void firefox3compatibility()
-	/*-{
-		if (!$doc.getBoxObjectFor) {
-			$doc.getBoxObjectFor = function(element) {
-				var box = element.getBoundingClientRect();
-				return {
-					"x" : box.left,
-					"y" : box.top,
-					"width" : box.width,
-					"height" : box.height
-				};
-			}
-		}
-	}-*/;
-
 	public static String arrayToStringHuman( Iterable<?> array, String coordinatorWord )
 	{
 		StringBuilder txt = new StringBuilder();
