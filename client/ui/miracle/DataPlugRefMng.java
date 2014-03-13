@@ -29,7 +29,8 @@ public abstract class DataPlugRefMng<T> extends CollectionOf<T> implements RefMn
 	}
 
 	@Override
-	final public void deleted( int recordId, T oldRecord )
+	// TODO : check that, not sure about refactoring
+	/*final*/ public void deleted( int recordId, T oldRecord )
 	{
 		delete( recordId );
 	}

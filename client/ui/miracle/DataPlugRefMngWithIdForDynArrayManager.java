@@ -22,11 +22,11 @@ public final class DataPlugRefMngWithIdForDynArrayManager<T extends IHasIntegerI
 	// but now this method name is colliding with XTableListen deleted method...
 	// so there might be a big bug here !
 	// TODO : check that ...
-//	@Override
-//	protected void deleted( int ref, T object )
-//	{
-//		mng.deleteRow( ref );
-//	}
+	@Override
+	public void deleted( int ref, T object )
+	{
+		mng.deleteRow( ref );
+	}
 
 	@Override
 	protected void refreshed( Iterable<T> objects )
