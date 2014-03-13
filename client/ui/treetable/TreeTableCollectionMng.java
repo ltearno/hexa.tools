@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.comm.HexaFramework;
 import com.hexa.client.interfaces.IAsyncCallback;
+import com.hexa.client.interfaces.IHasIntegerId;
 import com.hexa.client.tableobserver.XTableListen;
 import com.hexa.client.tools.ColumnsSet;
 import com.hexa.client.tools.ColumnsSet.IColumnMng;
@@ -20,16 +21,13 @@ import com.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemMngCallback;
 import com.hexa.client.ui.widget.ImageButton;
 import com.hexa.client.ui.widget.ImageTextButton;
 
-public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler
+public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements IAsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler
 {
 	public abstract void reload();
 
 	public abstract void onWantAdd();
 
 	public abstract void onWantDelete( T record );
-
-	@Override
-	public abstract int getElementIdentifier( T element );
 
 	public abstract void initColumns( ColumnsSet<T> columns );
 
@@ -122,6 +120,12 @@ public abstract class TreeTableCollectionMng<T> implements IAsyncCallback<List<T
 	public void deleteElemInCurrentVersion( T elem )
 	{
 		tableMng.deleteItemInCurrentVersion( elem, table );
+	}
+	
+	@Override
+	public final int getElementIdentifier( T record )
+	{
+		return record.getId();
 	}
 
 	@Override
