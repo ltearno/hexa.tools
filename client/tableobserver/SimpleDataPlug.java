@@ -3,42 +3,42 @@ package com.hexa.client.tableobserver;
 public abstract class SimpleDataPlug<T> implements XTableListen<T>
 {
 	@Override
-	public final void deleted( int recordId, T oldRecord, Object cookie )
+	public final void deleted( int recordId, T oldRecord )
 	{
-		currentRecord( null, cookie );
+		currentRecord( null );
 	}
 
 	@Override
-	public final void updated( int recordId, T record, Object cookie )
+	public final void updated( int recordId, T record )
 	{
-		currentRecord( record, cookie );
+		currentRecord( record );
 	}
 
 	@Override
-	public final void updatedField( int recordId, String fieldName, T record, Object cookie )
+	public final void updatedField( int recordId, String fieldName, T record )
 	{
-		currentRecord( record, cookie );
+		currentRecord( record );
 	}
 
 	@Override
-	public final void wholeTable( Iterable<T> records, Object cookie )
+	public final void wholeTable( Iterable<T> records )
 	{
 		boolean ok = false;
 		for( T r : records )
 		{
 			ok = true;
-			currentRecord( r, cookie );
+			currentRecord( r );
 			break;
 		}
 		if( !ok )
-			currentRecord( null, cookie );
+			currentRecord( null );
 	}
 
 	@Override
-	public final void clearAll( Object cookie )
+	public final void clearAll()
 	{
-		currentRecord( null, cookie );
+		currentRecord( null );
 	}
 
-	protected abstract void currentRecord( T record, Object cookie );
+	protected abstract void currentRecord( T record );
 }

@@ -140,25 +140,25 @@ public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements
 	private final XTableListen<T> dataPlug = new XTableListen<T>()
 	{
 		@Override
-		public void deleted( int recordId, T oldRecord, Object cookie )
+		public void deleted( int recordId, T oldRecord )
 		{
 			remElem( recordId );
 		}
 
 		@Override
-		public void updated( int recordId, T record, Object cookie )
+		public void updated( int recordId, T record )
 		{
 			addElem( record );
 		}
 
 		@Override
-		public void updatedField( int recordId, String fieldName, T record, Object cookie )
+		public void updatedField( int recordId, String fieldName, T record )
 		{
 			addElem( record );
 		}
 
 		@Override
-		public void wholeTable( Iterable<T> data, Object cookie )
+		public void wholeTable( Iterable<T> data )
 		{
 			records.clear();
 			for( T c : data )
@@ -167,7 +167,7 @@ public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements
 		}
 
 		@Override
-		public void clearAll( Object cookie )
+		public void clearAll()
 		{
 			records.clear();
 			tableMng.commitVersion();

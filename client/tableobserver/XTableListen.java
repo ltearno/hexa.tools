@@ -2,13 +2,13 @@ package com.hexa.client.tableobserver;
 
 public interface XTableListen<T>
 {
-	void deleted( int recordId, T oldRecord, Object cookie );
+	void deleted( int recordId, T oldRecord );
 
-	void updated( int recordId, T record, Object cookie );
+	void updated( int recordId, T record );
 
-	void updatedField( int recordId, String fieldName, T record, Object cookie );
+	void updatedField( int recordId, String fieldName, T record );
 
-	void wholeTable( Iterable<T> records, Object cookie );
+	void wholeTable( Iterable<T> records );
 
-	void clearAll( Object cookie );
+	void clearAll();
 }

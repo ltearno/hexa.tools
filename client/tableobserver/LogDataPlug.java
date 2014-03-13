@@ -13,42 +13,43 @@ public class LogDataPlug<T> implements XTableListen<T>
 		this.realPlug = realPlug;
 	}
 
-	public void deleted( int recordId, T oldRecord, Object cookie )
+	@Override
+	public void deleted( int recordId, T oldRecord )
 	{
 		GWT.log( plugName + "deleted record " + recordId );
-		realPlug.deleted( recordId, oldRecord, cookie );
+		realPlug.deleted( recordId, oldRecord );
 	}
 
 	@Override
-	public void updated( int recordId, T record, Object cookie )
+	public void updated( int recordId, T record )
 	{
 		GWT.log( plugName + "updated record " + recordId );
-		realPlug.updated( recordId, record, cookie );
+		realPlug.updated( recordId, record );
 	}
 
 	@Override
-	public void updatedField( int recordId, String fieldName, T record, Object cookie )
+	public void updatedField( int recordId, String fieldName, T record )
 	{
 		GWT.log( plugName + "updated field record " + recordId + "/" + fieldName );
-		realPlug.updatedField( recordId, fieldName, record, cookie );
+		realPlug.updatedField( recordId, fieldName, record );
 	}
 
 	@Override
-	public void wholeTable( Iterable<T> records, Object cookie )
+	public void wholeTable( Iterable<T> records )
 	{
 		int c = 0;
 		for( @SuppressWarnings( "unused" )
 		T i : records )
 			c++;
 		GWT.log( plugName + "whole table " + c + " elements" );
-		realPlug.wholeTable( records, cookie );
+		realPlug.wholeTable( records );
 	}
 
 	@Override
-	public void clearAll( Object cookie )
+	public void clearAll()
 	{
 		GWT.log( plugName + "clear all" );
-		realPlug.clearAll( cookie );
+		realPlug.clearAll();
 	}
 
 }

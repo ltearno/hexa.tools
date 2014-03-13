@@ -7,34 +7,35 @@ import com.hexa.client.tableobserver.XTableListen;
  * for the use of DynArrayInFlexTable for example
  */
 
+// implements and finalize the XTableListen methods
 public abstract class DataPlugRefMng<T> extends CollectionOf<T> implements RefMng<T>, XTableListen<T>
 {
 	@Override
-	final public void wholeTable( Iterable<T> records, Object cookie )
+	final public void wholeTable( Iterable<T> records )
 	{
 		refresh( records );
 	}
 
 	@Override
-	final public void updatedField( int recordId, String fieldName, T record, Object cookie )
+	final public void updatedField( int recordId, String fieldName, T record )
 	{
 		update( record );
 	}
 
 	@Override
-	final public void updated( int recordId, T record, Object cookie )
+	final public void updated( int recordId, T record )
 	{
 		update( record );
 	}
 
 	@Override
-	final public void deleted( int recordId, T oldRecord, Object cookie )
+	final public void deleted( int recordId, T oldRecord )
 	{
 		delete( recordId );
 	}
 
 	@Override
-	final public void clearAll( Object cookie )
+	final public void clearAll()
 	{
 		refresh( null );
 	}

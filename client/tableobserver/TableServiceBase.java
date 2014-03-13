@@ -47,14 +47,12 @@ public abstract class TableServiceBase<T>
 	{
 		Object param;
 		XTableListen<T> callback;
-		Object cookie;
 		ITableCommand<T> command;
 
-		public ClientInfo( Object param, XTableListen<T> callback, Object cookie )
+		public ClientInfo( Object param, XTableListen<T> callback )
 		{
 			this.param = param;
 			this.callback = callback;
-			this.cookie = cookie;
 			command = new ITableCommand<T>()
 			{
 				@Override
@@ -182,9 +180,9 @@ public abstract class TableServiceBase<T>
 			if( callback == null )
 				return;
 			if( param != null )
-				callback.wholeTable( new FilteredIterable( records ), cookie );
+				callback.wholeTable( new FilteredIterable( records ) );
 			else
-				callback.wholeTable( records, cookie );
+				callback.wholeTable( records );
 		}
 
 		void onUpdatedRecord( T record )
@@ -193,7 +191,7 @@ public abstract class TableServiceBase<T>
 				return;
 			if( param != null && !isClientInterestedByRecord( record, param ) )
 				return;
-			callback.updated( doGetRecordId( record ), record, cookie );
+			callback.updated( doGetRecordId( record ), record );
 		}
 
 		void onUpdatedRecordField( T record, String fieldName )
@@ -202,7 +200,7 @@ public abstract class TableServiceBase<T>
 				return;
 			if( param != null && !isClientInterestedByRecord( record, param ) )
 				return;
-			callback.updatedField( doGetRecordId( record ), fieldName, record, cookie );
+			callback.updatedField( doGetRecordId( record ), fieldName, record );
 		}
 
 		void onDeletedRecord( int recordId, T oldRecord )
@@ -211,7 +209,7 @@ public abstract class TableServiceBase<T>
 				return;
 			if( param != null && !isClientInterestedByRecord( oldRecord, param ) )
 				return;
-			callback.deleted( recordId, oldRecord, cookie );
+			callback.deleted( recordId, oldRecord );
 		}
 
 		class FilteredIterable implements Iterable<T>
@@ -281,14 +279,14 @@ public abstract class TableServiceBase<T>
 
 	HashSet<ClientInfo> clients = new HashSet<ClientInfo>();
 
-	public ITableCommand<T> listen( XTableListen<T> callback, Object cookie )
+	public ITableCommand<T> listen( XTableListen<T> callback )
 	{
-		return listenInternal( null, callback, cookie );
+		return listenInternal( null, callback );
 	}
 
-	protected ITableCommand<T> listenInternal( Object clientParam, XTableListen<T> callback, Object cookie )
+	protected ITableCommand<T> listenInternal( Object clientParam, XTableListen<T> callback )
 	{
-		ClientInfo client = new ClientInfo( clientParam, callback, cookie );
+		ClientInfo client = new ClientInfo( clientParam, callback );
 		clients.add( client );
 		return client.command;
 	}
