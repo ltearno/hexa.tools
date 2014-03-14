@@ -22,8 +22,6 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 
 	protected abstract void doGetRecord( int recordId, IAsyncCallback<T> callback );
 
-	protected abstract int doGetRecordId( T record );
-
 	// to be overriden if needed
 	protected boolean isClientInterestedByRecord( T record, Object clientParam )
 	{
@@ -109,7 +107,7 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 								{
 									records.clear();
 									for( T e : result )
-										records.put( doGetRecordId( e ), e );
+										records.put( e.getId(), e );
 
 									// GWT.log(
 									// "TableServiceBase "+logName+" WHOLE TABLE RECEIVED / "
@@ -192,7 +190,7 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 				return;
 			if( param != null && !isClientInterestedByRecord( record, param ) )
 				return;
-			callback.updated( doGetRecordId( record ), record );
+			callback.updated( record );
 		}
 
 		void onUpdatedRecordField( T record, String fieldName )
@@ -201,7 +199,7 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 				return;
 			if( param != null && !isClientInterestedByRecord( record, param ) )
 				return;
-			callback.updatedField( doGetRecordId( record ), fieldName, record );
+			callback.updatedField( fieldName, record );
 		}
 
 		void onDeletedRecord( int recordId, T oldRecord )
@@ -304,7 +302,7 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 					callback.onSuccess( null );
 					return;
 				}
-				records.put( doGetRecordId( result ), result );
+				records.put( result.getId(), result );
 				for( ClientInfo client : clients )
 					client.onUpdatedRecord( result );
 				if( callback != null )
@@ -374,7 +372,7 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 			@Override
 			protected void onFinish()
 			{
-				records.put( doGetRecordId( newValueRecord ), newValueRecord );
+				records.put( newValueRecord.getId(), newValueRecord );
 
 				for( ClientInfo client : clients )
 					client.onUpdatedRecordField( newValueRecord, fieldName );

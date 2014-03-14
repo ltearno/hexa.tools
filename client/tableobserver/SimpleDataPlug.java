@@ -11,13 +11,13 @@ public abstract class SimpleDataPlug<T extends IHasIntegerId> implements XTableL
 	}
 
 	@Override
-	public final void updated( int recordId, T record )
+	public final void updated( T record )
 	{
 		currentRecord( record );
 	}
 
 	@Override
-	public final void updatedField( int recordId, String fieldName, T record )
+	public final void updatedField( String fieldName, T record )
 	{
 		currentRecord( record );
 	}

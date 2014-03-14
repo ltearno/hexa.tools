@@ -12,7 +12,7 @@ public final class DataPlugRefMngWithIdForDynArrayManager<T extends IHasIntegerI
 	}
 
 	@Override
-	protected void updated( T object )
+	public void updated( T object )
 	{
 		mng.updateRow( object );
 	}

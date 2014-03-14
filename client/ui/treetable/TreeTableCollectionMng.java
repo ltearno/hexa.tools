@@ -146,13 +146,13 @@ public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements
 		}
 
 		@Override
-		public void updated( int recordId, T record )
+		public void updated( T record )
 		{
 			addElem( record );
 		}
 
 		@Override
-		public void updatedField( int recordId, String fieldName, T record )
+		public void updatedField( String fieldName, T record )
 		{
 			addElem( record );
 		}

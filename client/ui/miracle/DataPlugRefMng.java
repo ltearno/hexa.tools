@@ -18,13 +18,14 @@ public abstract class DataPlugRefMng<T extends IHasIntegerId> extends Collection
 	}
 
 	@Override
-	final public void updatedField( int recordId, String fieldName, T record )
+	final public void updatedField( String fieldName, T record )
 	{
 		update( record );
 	}
 
 	@Override
-	final public void updated( int recordId, T record )
+	// TODO : check that, not sure about refactoring
+	/*final*/ public void updated( T record )
 	{
 		update( record );
 	}

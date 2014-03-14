@@ -22,17 +22,17 @@ public class LogDataPlug<T extends IHasIntegerId> implements XTableListen<T>
 	}
 
 	@Override
-	public void updated( int recordId, T record )
+	public void updated( T record )
 	{
-		GWT.log( plugName + "updated record " + recordId );
-		realPlug.updated( recordId, record );
+		GWT.log( plugName + "updated record " + record.getId() );
+		realPlug.updated( record );
 	}
 
 	@Override
-	public void updatedField( int recordId, String fieldName, T record )
+	public void updatedField( String fieldName, T record )
 	{
-		GWT.log( plugName + "updated field record " + recordId + "/" + fieldName );
-		realPlug.updatedField( recordId, fieldName, record );
+		GWT.log( plugName + "updated field record " + record.getId() + "/" + fieldName );
+		realPlug.updatedField( fieldName, record );
 	}
 
 	@Override

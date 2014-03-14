@@ -6,9 +6,9 @@ public interface XTableListen<T extends IHasIntegerId>
 {
 	void deleted( int recordId, T oldRecord );
 
-	void updated( int recordId, T record );
+	void updated( T record );
 
-	void updatedField( int recordId, String fieldName, T record );
+	void updatedField( String fieldName, T record );
 
 	void wholeTable( Iterable<T> records );
 
