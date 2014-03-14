@@ -1,5 +1,6 @@
 package com.hexa.client.ui.widget;
 
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.TextBox;
 
 public abstract class TextEditor extends GenericEditor<TextBox>
@@ -10,7 +11,14 @@ public abstract class TextEditor extends GenericEditor<TextBox>
 	{
 		super( new TextBox(), fShowCancel );
 		
-		getWidget().getEditor().setFocus( true );
+		getWidget().getEditor().addAttachHandler( new AttachEvent.Handler()
+		{
+			@Override
+			public void onAttachOrDetach( AttachEvent event )
+			{
+				getWidget().getEditor().selectAll();
+			}
+		} );
 
 		getWidget().getEditor().setText( text );
 	}

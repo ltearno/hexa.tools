@@ -1,5 +1,7 @@
 package com.hexa.client.ui.widget;
 
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.tools.ColumnsSet.IEditorHost;
@@ -16,6 +18,18 @@ public abstract class GenericEditor<T extends Widget> implements IEditor
 		validator = new Validator<>();
 		validator.setEditor( widget, fShowCancel );
 		validator.setCallback( validatorCallback );
+		
+		if( widget instanceof Focusable )
+		{
+			widget.addAttachHandler( new AttachEvent.Handler()
+			{
+				@Override
+				public void onAttachOrDetach( AttachEvent event )
+				{
+					((Focusable)(validator.getEditor())).setFocus( true );
+				}
+			} );
+		}
 	}
 
 	@Override
