@@ -9,9 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.hexa.client.interfaces.IAsyncCallback;
+import com.hexa.client.interfaces.IHasIntegerId;
 import com.hexa.client.tools.CallCounter;
 
-public abstract class TableServiceBase<T>
+public abstract class TableServiceBase<T extends IHasIntegerId>
 {
 	protected abstract void doDeleteRecord( int recordId, IAsyncCallback<Integer> callback );
 

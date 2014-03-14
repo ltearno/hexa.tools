@@ -1,6 +1,8 @@
 package com.hexa.client.tableobserver;
 
-public interface XTableListen<T>
+import com.hexa.client.interfaces.IHasIntegerId;
+
+public interface XTableListen<T extends IHasIntegerId>
 {
 	void deleted( int recordId, T oldRecord );
 

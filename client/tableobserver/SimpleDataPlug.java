@@ -1,6 +1,8 @@
 package com.hexa.client.tableobserver;
 
-public abstract class SimpleDataPlug<T> implements XTableListen<T>
+import com.hexa.client.interfaces.IHasIntegerId;
+
+public abstract class SimpleDataPlug<T extends IHasIntegerId> implements XTableListen<T>
 {
 	@Override
 	public final void deleted( int recordId, T oldRecord )

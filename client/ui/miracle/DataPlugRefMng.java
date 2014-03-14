@@ -1,5 +1,6 @@
 package com.hexa.client.ui.miracle;
 
+import com.hexa.client.interfaces.IHasIntegerId;
 import com.hexa.client.tableobserver.XTableListen;
 
 /*
@@ -8,7 +9,7 @@ import com.hexa.client.tableobserver.XTableListen;
  */
 
 // implements and finalize the XTableListen methods
-public abstract class DataPlugRefMng<T> extends CollectionOf<T> implements RefMng<T>, XTableListen<T>
+public abstract class DataPlugRefMng<T extends IHasIntegerId> extends CollectionOf<T> implements RefMng<T>, XTableListen<T>
 {
 	@Override
 	final public void wholeTable( Iterable<T> records )

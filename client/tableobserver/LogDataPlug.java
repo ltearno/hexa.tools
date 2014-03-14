@@ -1,8 +1,9 @@
 package com.hexa.client.tableobserver;
 
 import com.google.gwt.core.client.GWT;
+import com.hexa.client.interfaces.IHasIntegerId;
 
-public class LogDataPlug<T> implements XTableListen<T>
+public class LogDataPlug<T extends IHasIntegerId> implements XTableListen<T>
 {
 	String plugName;
 	XTableListen<T> realPlug;
