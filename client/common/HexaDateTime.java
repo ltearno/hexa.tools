@@ -13,16 +13,8 @@ public class HexaDateTime
 
 	public HexaDateTime( String string )
 	{
-		// assert( string.length() == 19 ) : ("Invalid string length for : '" +
-		// string + "'");
 		if( string.length() != 19 )
-		{
-			// GWT.log( "Invalid string " + string +
-			// " for HexaDateTime initialization" );
-			// date = new HexaDate( "" );
-			// time = new HexaTime( "" );
 			return;
-		}
 
 		date = new HexaDate( string.substring( 0, 10 ) );
 		time = new HexaTime( string.substring( 11 ) );
@@ -71,6 +63,22 @@ public class HexaDateTime
 		if( date == null && time == null )
 			return "";
 		return (date != null ? date.getDisplayString() : "") + " at " + (time != null ? time.getDisplayString() : "");
+	}
+
+	public String getDisplayString( String locale )
+	{
+		if( date == null && time == null )
+			return "";
+
+		String and = " at ";
+		switch( locale )
+		{
+			case "fr":
+				and = " à ";
+				break;
+		}
+
+		return (date != null ? date.getDisplayString() : "") + and + (time != null ? time.getDisplayString() : "");
 	}
 
 	public int compareTo( HexaDateTime other )
