@@ -89,7 +89,7 @@ public abstract class EditableWidget<WIDGET extends Widget & HasText & HasClickH
 		}
 		else
 		{
-			if( text.compareTo( "" ) == 0 )
+			if( text==null || text.trim().isEmpty() )
 				text = "...";
 			m_widget.setText( text );
 			m_spot.setWidget( m_widget );
