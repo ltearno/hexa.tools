@@ -19,8 +19,8 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -39,21 +39,21 @@ public class TreeTable extends Panel
 
 		@Source( "16-arrow-right.png" )
 		ImageResource treePlus();
-		
+
 		@Source( "blank16.png" )
 		ImageResource blank();
 	}
-	
+
 	private static BasicImageBundle BUNDLE;
-	
+
 	private BasicImageBundle basicBundle()
 	{
 		if( BUNDLE == null )
 			BUNDLE = GWT.create( BasicImageBundle.class );
-		
+
 		return BUNDLE;
 	}
-	
+
 	final int treePadding = 25;
 
 	final ImageResource treeMinus;
@@ -80,7 +80,7 @@ public class TreeTable extends Panel
 	String m_rowTemplate = "";
 
 	HashMap<Element, Widget> m_widgets = new HashMap<Element, Widget>();
-	
+
 	@UiConstructor
 	public TreeTable( ImageResource treeMinus, ImageResource treePlus )
 	{
@@ -95,7 +95,7 @@ public class TreeTable extends Panel
 			treePlus = basicBundle().treePlus();
 		if( blankImage == null )
 			blankImage = basicBundle().blank();
-		
+
 		this.treeMinus = treeMinus;
 		this.treePlus = treePlus;
 		this.blankImage = blankImage;
@@ -295,7 +295,7 @@ public class TreeTable extends Panel
 		{
 			this.item = item;
 
-			HorizontalPanel panel = new HorizontalPanel();
+			FlowPanel panel = new FlowPanel();
 			panel.add( im );
 			panel.add( child );
 			initWidget( panel );
@@ -358,7 +358,7 @@ public class TreeTable extends Panel
 		{
 			return m_parent == m_rootItem ? null : m_parent;
 		}
-		
+
 		public Cell getCell( int column )
 		{
 			return new Cell( column );
@@ -369,13 +369,10 @@ public class TreeTable extends Panel
 		{
 			assert (m_nbColumns > 0) : "Table should have at least one column before adding items";
 
-			// Item parentItem = this;
-
 			Row newItem = new Row();
 			newItem.m_tr = DOM.createTR();
 			newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
-			// JQuery.get().jqHtml( newItem.m_tr, m_rowTemplate );
 			newItem.m_tr.setInnerHTML( m_rowTemplate );
 
 			// DOM add
@@ -400,8 +397,6 @@ public class TreeTable extends Panel
 			// take care of the left padding
 			Element firstTd = DOM.getChild( newItem.m_tr, 0 );
 			firstTd.getStyle().setPaddingLeft( newItem.getLevel() * treePadding, Unit.PX );
-
-			// JQuery.get().jqEffect( "highlight", 250, newItem.m_tr, null );
 
 			return newItem;
 		}
@@ -444,8 +439,6 @@ public class TreeTable extends Panel
 			// take care of the left padding
 			Element firstTd = DOM.getChild( m_tr, 0 );
 			firstTd.getStyle().setPaddingLeft( getLevel() * treePadding, Unit.PX );
-
-			// highLite();
 		}
 
 		// adds a new sibling item, just below (with same parent)
@@ -494,7 +487,6 @@ public class TreeTable extends Panel
 			if( parentItem == null )
 				parentItem = m_rootItem;
 			parentItem.m_childs.remove( this );
-			// DOM.removeChild( m_body, m_tr );
 
 			// insert at the selected position
 			if( item == null )
@@ -545,25 +537,12 @@ public class TreeTable extends Panel
 					firstChildRow = next;
 				}
 			}
-
-			// highLite();
 		}
 
 		public Element getTdElement( int column )
 		{
 			return DOM.getChild( m_tr, column );
 		}
-
-		// returns true if the item is the last of its parent
-		/*
-		 * private boolean isLastChild() { Item parent = m_parent; if( parent ==
-		 * null ) parent = m_rootItem; <<<<<<< HEAD
-		 *
-		 * =======
-		 *
-		 * >>>>>>> origin/regsys return
-		 * parent.m_childs.get(parent.m_childs.size()-1) == this; }
-		 */
 
 		public Row getNextTraversalItem()
 		{
@@ -591,24 +570,6 @@ public class TreeTable extends Panel
 				return parentNext;
 
 			return m_rootItem.m_childs.get( 0 );
-			/*
-			 * // while our parent if the last of its siblings, go up one level
-			 * Item ancestor = parent; while( ancestor!=null &&
-			 * ancestor.isLastChild() ) ancestor = ancestor.m_parent; <<<<<<<
-			 * HEAD
-			 *
-			 * // return the next sibling of this ancestor if( ancestor == null
-			 * ) return m_rootItem.m_childs.get(0);
-			 *
-			 * =======
-			 *
-			 * // return the next sibling of this ancestor if( ancestor == null
-			 * ) return m_rootItem.m_childs.get(0);
-			 *
-			 * >>>>>>> origin/regsys if( me == parent.m_childs.size() - 1 )
-			 * return parent.m_childs.get( 0 ); return parent.m_childs.get( me +
-			 * 1 );
-			 */
 		}
 
 		private Row getNextSiblingNoBack()
@@ -740,7 +701,6 @@ public class TreeTable extends Panel
 
 			clearCell( td );
 
-			// JQuery.get().jqHtml( td, html );
 			td.setInnerHTML( html );
 		}
 
@@ -965,22 +925,22 @@ public class TreeTable extends Panel
 				return -1;
 			return 1 + m_parent.getLevel();
 		}
-		
+
 		public class Cell implements Printer
 		{
 			private final int column;
-			
+
 			private Cell( int col )
 			{
 				this.column = col;
 			}
-			
+
 			@Override
 			public void setText( String text )
 			{
 				Row.this.setText( column, text );
 			}
-			
+
 			@Override
 			public void setHTML( String html )
 			{
@@ -992,7 +952,7 @@ public class TreeTable extends Panel
 			{
 				Row.this.setWidget( column, widget );
 			}
-			
+
 			public Element getTdElement()
 			{
 				return DOM.getChild( m_tr, column );
