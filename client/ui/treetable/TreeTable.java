@@ -16,6 +16,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -126,10 +129,7 @@ public class TreeTable extends Panel
 						return;
 
 					int column = DOM.getChildIndex( m_headerRow, th );
-					if( column == 0 )
-						return;
-
-					m_handler.onTableHeaderClick( column - 1, event );
+					m_handler.onTableHeaderClick( column, event );
 					return;
 				}
 
@@ -140,9 +140,16 @@ public class TreeTable extends Panel
 				if( item != null )
 				{
 					if( column == 0 )
-						item.setExpanded( ! item.getExpanded() );
+					{
+						// if expshrink is clicked, then the event target must be the <img> tag, which is the first child of the td
+						//event.getNativeEvent().getEventTarget();
+						if( event.getNativeEvent().getEventTarget().<Element>cast() == td.getFirstChildElement() )
+							item.setExpanded( ! item.getExpanded() );
+					}
 					else if( m_handler != null )
-						m_handler.onTableCellClick( item, column - 1, event );
+					{
+						m_handler.onTableCellClick( item, column, event );
+					}
 				}
 			}
 		}, ClickEvent.getType() );
@@ -358,6 +365,21 @@ public class TreeTable extends Panel
 		int m_ref = -1; // this field is synchronized with the dom element m_tr's "ref" attribute
 		Object m_dataObject = null;
 
+		private SafeHtml getExpandImageHtml()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append( "<img src='" );
+			if( ! hasChilds() )
+				sb.append( "" );
+			else if( getExpanded() )
+				sb.append( treeMinus.getSafeUri().asString() );
+			else
+				sb.append( treePlus.getSafeUri().asString() );
+			sb.append( "'></img>" );
+
+			return SafeHtmlUtils.fromTrustedString( sb.toString() );
+		}
+
 		private void updateExpandImage()
 		{
 			if( m_tr == null )
@@ -367,7 +389,7 @@ public class TreeTable extends Panel
 			ImageElement img = td.getChild( 0 ).cast();
 
 			if( ! hasChilds() )
-				img.setSrc( blankImage.getSafeUri().asString() );
+				img.setSrc( "" );
 			else if( getExpanded() )
 				img.setSrc( treeMinus.getSafeUri().asString() );
 			else
@@ -561,7 +583,7 @@ public class TreeTable extends Panel
 
 		public Element getTdElement( int column )
 		{
-			return DOM.getChild( m_tr, column + 1 );
+			return DOM.getChild( m_tr, column );
 		}
 
 		public Row getNextTraversalItem()
@@ -681,16 +703,6 @@ public class TreeTable extends Panel
 			if( column >= m_nbColumns )
 				return;
 
-			// first column is dedicated to the expshrink widget
-			column++;
-
-			// special case, the first column is also used to display expansion widget...
-//			if( column == 0 )
-//			{
-//				setWidget( column, new Label( text ) );
-//				return;
-//			}
-
 			if( m_tr == null )
 				return;
 
@@ -698,7 +710,18 @@ public class TreeTable extends Panel
 
 			clearCell( td );
 
-			td.setInnerText( text );
+			if( column == 0 )
+			{
+				SafeHtmlBuilder sb = new SafeHtmlBuilder();
+				sb.append( getExpandImageHtml() );
+				sb.appendEscaped( text );
+
+				td.setInnerHTML( sb.toSafeHtml().asString() );
+			}
+			else
+			{
+				td.setInnerText( text );
+			}
 		}
 
 		public void setText( int column, int text )
@@ -717,14 +740,6 @@ public class TreeTable extends Panel
 			if( column >= m_nbColumns )
 				return;
 
-			// first column is dedicated to the expshrink widget
-			column++;
-//			if( column == 0 )
-//			{
-//				setWidget( column, new HTML( html ) );
-//				return;
-//			}
-
 			if( m_tr == null )
 				return;
 
@@ -732,7 +747,10 @@ public class TreeTable extends Panel
 
 			clearCell( td );
 
-			td.setInnerHTML( html );
+			if( column == 0 )
+				td.setInnerHTML( getExpandImageHtml().asString() + html );
+			else
+				td.setInnerHTML( html );
 		}
 
 		public void setWidget( int column, IsWidget w )
@@ -746,18 +764,15 @@ public class TreeTable extends Panel
 			if( column >= m_nbColumns )
 				return;
 
-			// first column is dedicated to the expshrink widget
-			column++;
-			// special case : first column is used also for displaying the expand/shrink widget
-//			if( column == 0 )
-//				w = new ExpShrinkWidget( this, w );
-
 			if( m_tr == null )
 				return;
 
 			Element td = DOM.getChild( m_tr, column );
 
 			clearCell( td );
+
+			if( column == 0 )
+				td.setInnerHTML( getExpandImageHtml().asString() );
 
 			// detach new child
 			w.removeFromParent();
@@ -1080,8 +1095,6 @@ public class TreeTable extends Panel
 		StringBuilder b = new StringBuilder();
 		StringBuilder bTemplate = new StringBuilder();
 		m_nbColumns = headers.length;
-		b.append( "<th></th>" );
-		bTemplate.append( "<td><img/></td>" );
 		for( int i = 0; i < m_nbColumns; i++ )
 		{
 			b.append( "<th>" + headers[i] + "</th>" );
