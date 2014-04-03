@@ -9,6 +9,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,17 +19,12 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.miracle.Size;
-import com.hexa.client.ui.widget.ImageButton;
 
 public class TreeTable extends Panel
 {
@@ -119,17 +115,21 @@ public class TreeTable extends Panel
 			@Override
 			public void onClick( ClickEvent event )
 			{
-				if( m_handler == null )
-					return;
-
 				Element td = getEventTargetCell( Event.as( event.getNativeEvent() ) );
 				if( td == null )
 				{
 					Element th = getEventTargetHeader( DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ) );
 					if( th == null )
 						return;
+
+					if( m_handler == null )
+						return;
+
 					int column = DOM.getChildIndex( m_headerRow, th );
-					m_handler.onTableHeaderClick( column, event );
+					if( column == 0 )
+						return;
+
+					m_handler.onTableHeaderClick( column - 1, event );
 					return;
 				}
 
@@ -138,7 +138,12 @@ public class TreeTable extends Panel
 
 				Row item = (Row) tr.getPropertyObject( "linkedItem" );
 				if( item != null )
-					m_handler.onTableCellClick( item, column, event );
+				{
+					if( column == 0 )
+						item.setExpanded( ! item.getExpanded() );
+					else if( m_handler != null )
+						m_handler.onTableCellClick( item, column - 1, event );
+				}
 			}
 		}, ClickEvent.getType() );
 	}
@@ -285,74 +290,89 @@ public class TreeTable extends Panel
 		return item.getChilds();
 	}
 
-	class ExpShrinkWidget extends Composite implements TreeTable.IItemStateCallback, ClickHandler
-	{
-		TreeTable.Row item;
-
-		ImageButton im = new ImageButton( blankImage, "Expand" );
-
-		public ExpShrinkWidget( Row item, Widget child )
-		{
-			this.item = item;
-
-			FlowPanel panel = new FlowPanel();
-			panel.add( im );
-			panel.add( child );
-			initWidget( panel );
-
-			item.addStateChangeCallback( this );
-			update();
-
-			im.addClickHandler( this );
-		}
-
-		void update()
-		{
-			if( item.getChilds().size() == 0 )
-			{
-				im.getElement().getStyle().setDisplay( Display.NONE );
-				// im.setResource( blank );
-				return;
-			}
-
-			im.getElement().getStyle().clearDisplay();
-
-			if( !item.getExpanded() )
-				im.setResource( treePlus );
-			else
-				im.setResource( treeMinus );
-		}
-
-		@Override
-		public void onItemStateChange()
-		{
-			update();
-		}
-
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			event.preventDefault();
-			event.stopPropagation();
-
-			item.setExpanded( !item.getExpanded() );
-		}
-	}
+//	class ExpShrinkWidget extends Composite implements TreeTable.IItemStateCallback, ClickHandler
+//	{
+//		TreeTable.Row row;
+//
+//		ImageButton im = new ImageButton( blankImage, "Expand" );
+//
+//		public ExpShrinkWidget( Row item, Widget child )
+//		{
+//			this.row = item;
+//
+//			FlowPanel panel = new FlowPanel();
+//			panel.add( im );
+//			panel.add( child );
+//			initWidget( panel );
+//
+//			item.addStateChangeCallback( this );
+//			update();
+//
+//			im.addClickHandler( this );
+//		}
+//
+//		void update()
+//		{
+//			if( row.getChilds().size() == 0 )
+//			{
+//				im.getElement().getStyle().setDisplay( Display.NONE );
+//				// im.setResource( blank );
+//				return;
+//			}
+//
+//			im.getElement().getStyle().clearDisplay();
+//
+//			if( !row.getExpanded() )
+//				im.setResource( treePlus );
+//			else
+//				im.setResource( treeMinus );
+//		}
+//
+//		@Override
+//		public void onItemStateChange()
+//		{
+//			update();
+//		}
+//
+//		@Override
+//		public void onClick( ClickEvent event )
+//		{
+//			event.preventDefault();
+//			event.stopPropagation();
+//
+//			row.setExpanded( !row.getExpanded() );
+//		}
+//	}
 
 	public class Row
 	{
 		Row m_parent = null;
 		Element m_tr = null;
 		Element m_trToDelete = null;
-		ArrayList<Row> m_childs = new ArrayList<Row>();
+		ArrayList<Row> m_childs;// = new ArrayList<Row>();
 
 		ArrayList<IItemStateCallback> m_stateCallbacks = null;
 
 		boolean m_fExpanded = true;
 
-		int m_ref = -1; // this field is synchronized with the dom element
-						// m_tr's "ref" attribute
+		int m_ref = -1; // this field is synchronized with the dom element m_tr's "ref" attribute
 		Object m_dataObject = null;
+
+		private void updateExpandImage()
+		{
+			if( m_tr == null )
+				return;
+
+			Element td = m_tr.getChild( 0 ).cast();
+			ImageElement img = td.getChild( 0 ).cast();
+
+			if( ! hasChilds() )
+				img.setSrc( blankImage.getSafeUri().asString() );
+			else if( getExpanded() )
+				img.setSrc( treeMinus.getSafeUri().asString() );
+			else
+				img.setSrc( treePlus.getSafeUri().asString() );
+		}
 
 		public Row getParent()
 		{
@@ -391,7 +411,7 @@ public class TreeTable extends Panel
 
 			// logical add
 			newItem.m_parent = this;
-			m_childs.add( newItem );
+			getChilds().add( newItem );
 			signalStateChange();
 
 			// take care of the left padding
@@ -411,7 +431,7 @@ public class TreeTable extends Panel
 			Row parentItem = m_parent;
 			if( parentItem == null )
 				parentItem = m_rootItem;
-			parentItem.m_childs.remove( this );
+			parentItem.getChilds().remove( this );
 			// DOM.removeChild( m_body, m_tr );
 
 			if( newParent == null )
@@ -434,7 +454,7 @@ public class TreeTable extends Panel
 				DOM.appendChild( m_body, m_tr );
 			}
 
-			parentItem.m_childs.add( this );
+			parentItem.getChilds().add( this );
 
 			// take care of the left padding
 			Element firstTd = DOM.getChild( m_tr, 0 );
@@ -462,8 +482,8 @@ public class TreeTable extends Panel
 
 			// logical add
 			newItem.m_parent = parentItem;
-			int itemPos = parentItem.m_childs.indexOf( this );
-			parentItem.m_childs.add( itemPos, newItem );
+			int itemPos = parentItem.getChilds().indexOf( this );
+			parentItem.getChilds().add( itemPos, newItem );
 			parentItem.signalStateChange();
 
 			// take care of the left padding
@@ -486,7 +506,7 @@ public class TreeTable extends Panel
 			Row parentItem = m_parent;
 			if( parentItem == null )
 				parentItem = m_rootItem;
-			parentItem.m_childs.remove( this );
+			parentItem.getChilds().remove( this );
 
 			// insert at the selected position
 			if( item == null )
@@ -508,15 +528,15 @@ public class TreeTable extends Panel
 					DOM.appendChild( m_body, m_tr );
 				}
 
-				parentItem.m_childs.add( this );
+				parentItem.getChilds().add( this );
 			}
 			else
 			{
 				Row newParentItem = item.m_parent;
 				if( newParentItem == null )
 					newParentItem = m_rootItem;
-				int itemPos = item.m_parent.m_childs.indexOf( item );
-				newParentItem.m_childs.add( itemPos, this );
+				int itemPos = item.m_parent.getChilds().indexOf( item );
+				newParentItem.getChilds().add( itemPos, this );
 				DOM.insertBefore( m_body, m_tr, item.m_tr );
 			}
 
@@ -526,7 +546,7 @@ public class TreeTable extends Panel
 
 			// update child rows
 			Element nextTR = DOM.getNextSibling( m_tr );
-			if( firstChildRow != null && lastTrToMove != null && !m_childs.isEmpty() )
+			if( firstChildRow != null && lastTrToMove != null && hasChilds() )
 			{
 				while( true )
 				{
@@ -541,13 +561,13 @@ public class TreeTable extends Panel
 
 		public Element getTdElement( int column )
 		{
-			return DOM.getChild( m_tr, column );
+			return DOM.getChild( m_tr, column + 1 );
 		}
 
 		public Row getNextTraversalItem()
 		{
 			// if has child, return first child
-			if( !m_childs.isEmpty() )
+			if( hasChilds() )
 				return m_childs.get( 0 );
 
 			// return next sibling if any
@@ -569,7 +589,7 @@ public class TreeTable extends Panel
 			if( parentNext != null )
 				return parentNext;
 
-			return m_rootItem.m_childs.get( 0 );
+			return m_rootItem.getChilds().get( 0 );
 		}
 
 		private Row getNextSiblingNoBack()
@@ -657,14 +677,20 @@ public class TreeTable extends Panel
 
 		public void setText( int column, String text )
 		{
-			// special case, the first column is also used to display expansion widget...
-			if( column == 0 )
-			{
-				setWidget( column, new Label( text ) );
-				return;
-			}
-
 			assert column < m_nbColumns;
+			if( column >= m_nbColumns )
+				return;
+
+			// first column is dedicated to the expshrink widget
+			column++;
+
+			// special case, the first column is also used to display expansion widget...
+//			if( column == 0 )
+//			{
+//				setWidget( column, new Label( text ) );
+//				return;
+//			}
+
 			if( m_tr == null )
 				return;
 
@@ -687,13 +713,18 @@ public class TreeTable extends Panel
 
 		public void setHTML( int column, String html )
 		{
-			if( column == 0 )
-			{
-				setWidget( column, new HTML( html ) );
-				return;
-			}
-
 			assert column < m_nbColumns;
+			if( column >= m_nbColumns )
+				return;
+
+			// first column is dedicated to the expshrink widget
+			column++;
+//			if( column == 0 )
+//			{
+//				setWidget( column, new HTML( html ) );
+//				return;
+//			}
+
 			if( m_tr == null )
 				return;
 
@@ -712,12 +743,17 @@ public class TreeTable extends Panel
 		public void setWidget( int column, Widget w )
 		{
 			assert column < m_nbColumns;
-			if( m_tr == null )
+			if( column >= m_nbColumns )
 				return;
 
+			// first column is dedicated to the expshrink widget
+			column++;
 			// special case : first column is used also for displaying the expand/shrink widget
-			if( column == 0 )
-				w = new ExpShrinkWidget( this, w );
+//			if( column == 0 )
+//				w = new ExpShrinkWidget( this, w );
+
+			if( m_tr == null )
+				return;
 
 			Element td = DOM.getChild( m_tr, column );
 
@@ -753,21 +789,23 @@ public class TreeTable extends Panel
 
 		public boolean hasChilds()
 		{
-			return !m_childs.isEmpty();
+			return (m_childs!=null) && (!m_childs.isEmpty());
 		}
 
 		public ArrayList<Row> getChilds()
 		{
+			if( m_childs == null )
+				m_childs = new ArrayList<>();
 			return m_childs;
 		}
 
-		public void addStateChangeCallback( IItemStateCallback callback )
-		{
-			if( m_stateCallbacks == null )
-				m_stateCallbacks = new ArrayList<IItemStateCallback>();
-
-			m_stateCallbacks.add( callback );
-		}
+//		private void addStateChangeCallback( IItemStateCallback callback )
+//		{
+//			if( m_stateCallbacks == null )
+//				m_stateCallbacks = new ArrayList<IItemStateCallback>();
+//
+//			m_stateCallbacks.add( callback );
+//		}
 
 		public boolean getExpanded()
 		{
@@ -784,11 +822,12 @@ public class TreeTable extends Panel
 
 		void signalStateChange()
 		{
-			if( m_stateCallbacks == null )
-				return;
-
-			for( IItemStateCallback cb : m_stateCallbacks )
-				cb.onItemStateChange();
+			updateExpandImage();
+//			if( m_stateCallbacks == null )
+//				return;
+//
+//			for( IItemStateCallback cb : m_stateCallbacks )
+//				cb.onItemStateChange();
 		}
 
 		void ensureAllChildRespectExpand()
@@ -810,7 +849,10 @@ public class TreeTable extends Panel
 
 		void ensureAllChildRespectExpand( boolean fOneParentAboveShrinked )
 		{
-			for( Row child : m_childs )
+			if( ! hasChilds() )
+				return;
+
+			for( Row child : getChilds() )
 			{
 				if( m_fExpanded && (!fOneParentAboveShrinked) )
 					child.m_tr.getStyle().clearDisplay();
@@ -822,9 +864,10 @@ public class TreeTable extends Panel
 
 		Row getLastLeaf()
 		{
-			int nbChilds = m_childs.size();
-			if( nbChilds == 0 )
+			if( ! hasChilds() )
 				return this;
+
+			int nbChilds = m_childs.size();
 			return m_childs.get( nbChilds - 1 ).getLastLeaf();
 		}
 
@@ -838,13 +881,13 @@ public class TreeTable extends Panel
 			removeRec();
 			// remove from parent
 			if( m_parent != null )
-				m_parent.m_childs.remove( this );
+				m_parent.getChilds().remove( this );
 		}
 
 		public void removeRec()
 		{
 			// remove all children
-			while( !m_childs.isEmpty() )
+			while( hasChilds() )
 				m_childs.remove( 0 ).remove();
 
 			// remove all widgets
@@ -888,8 +931,11 @@ public class TreeTable extends Panel
 			m_tr = null;
 
 			//
-			for( Row child : m_childs )
-				child.logicalRemove();
+			if( m_childs != null )
+			{
+				for( Row child : m_childs )
+					child.logicalRemove();
+			}
 		}
 
 		void removeAllWidgets()
@@ -915,8 +961,11 @@ public class TreeTable extends Panel
 				m_body.removeChild( m_trToDelete );
 
 			// ...and all my children
-			for( Row child : m_childs )
-				child.physicalRemove();
+			if( m_childs != null )
+			{
+				for( Row child : m_childs )
+					child.physicalRemove();
+			}
 		}
 
 		public int getLevel()
@@ -1031,12 +1080,14 @@ public class TreeTable extends Panel
 		StringBuilder b = new StringBuilder();
 		StringBuilder bTemplate = new StringBuilder();
 		m_nbColumns = headers.length;
+		b.append( "<th></th>" );
+		bTemplate.append( "<td><img/></td>" );
 		for( int i = 0; i < m_nbColumns; i++ )
 		{
 			b.append( "<th>" + headers[i] + "</th>" );
 			bTemplate.append( "<td/>" );
 		}
-		// JQuery.get().jqHtml( m_headerRow, b.toString() );
+
 		m_headerRow.setInnerHTML( b.toString() );
 
 		if( oldHeaderRow != null )
