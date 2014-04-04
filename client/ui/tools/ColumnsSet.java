@@ -9,18 +9,14 @@ public class ColumnsSet<T>
 {
 	private final ArrayList<IColumn<T>> columns = new ArrayList<IColumn<T>>();
 
-	public ColumnsSet()
-	{
-	}
-
 	public void addColumn( IColumn<T> columnManager )
 	{
 		columns.add( columnManager );
 	}
 
-	public int getLastOrdinal()
+	public int getNbColumns()
 	{
-		return columns.size() - 1;
+		return columns.size();
 	}
 
 	public void setHeaders( TreeTable table )

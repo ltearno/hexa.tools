@@ -14,6 +14,7 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -29,6 +30,10 @@ import com.hexa.client.interfaces.IAsyncCallback;
 import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.miracle.Size;
+import com.hexa.client.ui.treetable.event.TableCellClickEvent;
+import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
+import com.hexa.client.ui.treetable.event.TableHeaderClickEvent;
+import com.hexa.client.ui.treetable.event.TableHeaderClickEvent.TableHeaderClickHandler;
 
 public class TreeTable extends Panel
 {
@@ -65,8 +70,6 @@ public class TreeTable extends Panel
 	{
 		void onItemStateChange();
 	}
-
-	TreeTableHandler m_handler = null;
 
 	Element m_decorator;
 	Element m_table;
@@ -126,11 +129,10 @@ public class TreeTable extends Panel
 					if( th == null )
 						return;
 
-					if( m_handler == null )
-						return;
-
 					int column = DOM.getChildIndex( m_headerRow, th );
-					m_handler.onTableHeaderClick( column, event );
+
+					fireEvent( new TableHeaderClickEvent( column, event ) );
+
 					return;
 				}
 
@@ -140,18 +142,11 @@ public class TreeTable extends Panel
 				Row item = (Row) tr.getPropertyObject( "linkedItem" );
 				if( item != null )
 				{
-					if( column == 0 )
-					{
-						// if expshrink is clicked, then the event target must
-						// be the <img> tag, which is the first child of the td
-						// event.getNativeEvent().getEventTarget();
-						if( event.getNativeEvent().getEventTarget().<Element> cast() == td.getFirstChildElement() )
-							item.setExpanded( !item.getExpanded() );
-					}
-					else if( m_handler != null )
-					{
-						m_handler.onTableCellClick( item, column, event );
-					}
+					// if hit the tree arrow (which is the <img> first child of <td>
+					if( column==0 && event.getNativeEvent().getEventTarget().<Element> cast()==td.getFirstChildElement() )
+						item.setExpanded( !item.getExpanded() );
+					else
+						fireEvent( new TableCellClickEvent( item, column, event ) );
 				}
 			}
 		}, ClickEvent.getType() );
@@ -162,15 +157,20 @@ public class TreeTable extends Panel
 		this( null, null, null );
 	}
 
+	public HandlerRegistration addTableHeaderClickHandler( TableHeaderClickHandler handler )
+	{
+		return addHandler( handler, TableHeaderClickEvent.getType() );
+	}
+
+	public HandlerRegistration addTableCellClickHandler( TableCellClickHandler handler )
+	{
+		return addHandler( handler, TableCellClickEvent.getType() );
+	}
+
 	@Override
 	public void clear()
 	{
 		emptyTable();
-	}
-
-	public void setHandler( TreeTableHandler handler )
-	{
-		m_handler = handler;
 	}
 
 	public int getEventTargetHeaderIdx( Element th )

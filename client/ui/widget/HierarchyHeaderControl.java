@@ -17,7 +17,7 @@ import com.hexa.client.tools.HierarchySet.IHierarchyLevel;
 import com.hexa.client.ui.dialog.MyPopupPanel;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTable.Row;
-import com.hexa.client.ui.treetable.TreeTableHandler;
+import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
 
 public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 {
@@ -80,7 +80,7 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 	 * IHierarchyLevel<T> level : currentLevels ) { res += "\"" +
 	 * level.getName() + "\""; if( count < currentLevels.size() ) res += ", ";
 	 * count ++; } res += "]";
-	 * 
+	 *
 	 * return res; }
 	 */
 
@@ -147,13 +147,8 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 
 		popup.setWidget( table );
 
-		table.setHandler( new TreeTableHandler()
+		table.addTableCellClickHandler( new TableCellClickHandler()
 		{
-			@Override
-			public void onTableHeaderClick( int column, ClickEvent event )
-			{
-			}
-
 			@Override
 			public void onTableCellClick( Row item, int column, ClickEvent event )
 			{

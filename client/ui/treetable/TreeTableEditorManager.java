@@ -7,12 +7,13 @@ import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.tools.IEditor;
 import com.hexa.client.ui.tools.IEditorHost;
 import com.hexa.client.ui.treetable.TreeTable.Row;
+import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
 
 /**
  * @author Arnaud
  *
  */
-public class TreeTableEditorManager implements TreeTableHandler
+public class TreeTableEditorManager
 {
 	public interface TreeTableEditorManagerCallback
 	{
@@ -34,43 +35,41 @@ public class TreeTableEditorManager implements TreeTableHandler
 	{
 		m_table = table;
 		m_callback = callback;
-		m_table.setHandler( this );
+		m_table.addTableCellClickHandler( tableCellClickHandler );
 	}
 
-	@Override
-	public void onTableHeaderClick( int column, ClickEvent event )
+	TableCellClickHandler tableCellClickHandler = new TableCellClickHandler()
 	{
-	}
+		@Override
+		public void onTableCellClick( Row item, int column, ClickEvent event )
+		{
+			// forget edition if already opened at the same place
+			if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )
+				return;
 
-	@Override
-	public void onTableCellClick( Row item, int column, ClickEvent event )
-	{
-		// forget edition if already opened at the same place
-		if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )
-			return;
+			// remove any previous edition state
+			_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
 
-		// remove any previous edition state
-		_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
+			if( m_callback == null )
+				return;
 
-		if( m_callback == null )
-			return;
+			// now we really register as editing
+			m_currentEditedItem = item;
+			m_currentEditedColumn = column;
 
-		// now we really register as editing
-		m_currentEditedItem = item;
-		m_currentEditedColumn = column;
-
-		// get any editor for that cell or forget about it
-		IEditor editor = m_callback.editCell( item, column );
-		if( editor != null )
-			useEditor( item, column, editor );
-	}
+			// get any editor for that cell or forget about it
+			IEditor editor = m_callback.editCell( item, column );
+			if( editor != null )
+				useEditor( item, column, editor );
+		}
+	};
 
 	private void useEditor( final Row item, final int column, IEditor editor )
 	{
 		// forget any not relevant editor
 		if( m_currentEditedItem != item || m_currentEditedColumn != column )
 			return;
-		
+
 		// store the pixel size of the TD, editor might be gentleful to ask
 		Element td = item.getCell( column ).getTdElement();
 		int width = td.getOffsetWidth() - 2;
@@ -84,7 +83,7 @@ public class TreeTableEditorManager implements TreeTableHandler
 			{
 				return preferredEditorSize;
 			}
-			
+
 			@Override
 			public void finishedEdition()
 			{

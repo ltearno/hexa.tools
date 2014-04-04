@@ -17,7 +17,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.miracle.Edits.Editor;
 import com.hexa.client.ui.treetable.TreeTable;
 import com.hexa.client.ui.treetable.TreeTable.Row;
-import com.hexa.client.ui.treetable.TreeTableHandler;
+import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
+import com.hexa.client.ui.treetable.event.TableHeaderClickEvent.TableHeaderClickHandler;
 
 public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayManager<T>, HasColumns<T>
 {
@@ -51,7 +52,8 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		this.table = table;
 		this.refMng = refMng;
 
-		table.setHandler( tableHandler );
+		table.addTableHeaderClickHandler( tableHeaderClickHandler );
+		table.addTableCellClickHandler( tableCellClickHandler );
 		table.addDomHandler( onTableKeyUp, KeyDownEvent.getType() );
 		table.addDomHandler( onTableMouseDown, MouseDownEvent.getType() );
 	}
@@ -540,10 +542,10 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 		}
 	};
 
-	private final TreeTableHandler tableHandler = new TreeTableHandler()
+	private final TableHeaderClickHandler tableHeaderClickHandler = new TableHeaderClickHandler()
 	{
 		@Override
-		public void onTableHeaderClick( int column, ClickEvent event )
+		public void onTableHeaderClick( int column, ClickEvent clickEvent )
 		{
 			CellClickMng<Void> clickMng = columns.get( column ).hdrClickMng;
 			if( clickMng == null )
@@ -551,9 +553,12 @@ public class DynArrayInTreeTable<T> implements Prints<Iterable<T>>, DynArrayMana
 
 			// get the printer, and go
 			Printer printer = table.getHeaderPrinter( column );
-			clickMng.onTableClick( null, DOM.eventGetTarget( Event.as( event.getNativeEvent() ) ), printer );
+			clickMng.onTableClick( null, DOM.eventGetTarget( Event.as( clickEvent.getNativeEvent() ) ), printer );
 		}
+	};
 
+	private final TableCellClickHandler tableCellClickHandler = new TableCellClickHandler()
+	{
 		@Override
 		public void onTableCellClick( Row item, int column, ClickEvent event )
 		{
