@@ -25,6 +25,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.interfaces.IAsyncCallback;
 import com.hexa.client.tools.JQuery;
 import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.miracle.Size;
@@ -141,10 +142,11 @@ public class TreeTable extends Panel
 				{
 					if( column == 0 )
 					{
-						// if expshrink is clicked, then the event target must be the <img> tag, which is the first child of the td
-						//event.getNativeEvent().getEventTarget();
-						if( event.getNativeEvent().getEventTarget().<Element>cast() == td.getFirstChildElement() )
-							item.setExpanded( ! item.getExpanded() );
+						// if expshrink is clicked, then the event target must
+						// be the <img> tag, which is the first child of the td
+						// event.getNativeEvent().getEventTarget();
+						if( event.getNativeEvent().getEventTarget().<Element> cast() == td.getFirstChildElement() )
+							item.setExpanded( !item.getExpanded() );
 					}
 					else if( m_handler != null )
 					{
@@ -306,14 +308,15 @@ public class TreeTable extends Panel
 
 		boolean m_fExpanded = true;
 
-		int m_ref = -1; // this field is synchronized with the dom element m_tr's "ref" attribute
+		int m_ref = -1; // this field is synchronized with the dom element
+						// m_tr's "ref" attribute
 		Object m_dataObject = null;
 
 		private SafeHtml getExpandImageHtml()
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.append( "<img src='" );
-			if( ! hasChilds() )
+			if( !hasChilds() )
 				sb.append( "" );
 			else if( getExpanded() )
 				sb.append( treeMinus.getSafeUri().asString() );
@@ -332,7 +335,7 @@ public class TreeTable extends Panel
 			Element td = m_tr.getChild( 0 ).cast();
 			ImageElement img = td.getChild( 0 ).cast();
 
-			if( ! hasChilds() )
+			if( !hasChilds() )
 				img.setSrc( "" );
 			else if( getExpanded() )
 				img.setSrc( treeMinus.getSafeUri().asString() );
@@ -631,6 +634,21 @@ public class TreeTable extends Panel
 			return m_ref;
 		}
 
+		public void setVisible( final boolean isVisible )
+		{
+			visitTreeDeep( new IAsyncCallback<TreeTable.Row>()
+			{
+				@Override
+				public void onSuccess( Row result )
+				{
+					if( isVisible )
+						result.m_tr.getStyle().clearDisplay();
+					else
+						result.m_tr.getStyle().setDisplay( Display.NONE );
+				}
+			} );
+		}
+
 		public void setDataObject( Object dataObject )
 		{
 			m_dataObject = dataObject;
@@ -748,7 +766,7 @@ public class TreeTable extends Panel
 
 		public boolean hasChilds()
 		{
-			return (m_childs!=null) && (!m_childs.isEmpty());
+			return (m_childs != null) && (!m_childs.isEmpty());
 		}
 
 		public ArrayList<Row> getChilds()
@@ -757,14 +775,6 @@ public class TreeTable extends Panel
 				m_childs = new ArrayList<>();
 			return m_childs;
 		}
-
-//		private void addStateChangeCallback( IItemStateCallback callback )
-//		{
-//			if( m_stateCallbacks == null )
-//				m_stateCallbacks = new ArrayList<IItemStateCallback>();
-//
-//			m_stateCallbacks.add( callback );
-//		}
 
 		public boolean getExpanded()
 		{
@@ -782,11 +792,17 @@ public class TreeTable extends Panel
 		void signalStateChange()
 		{
 			updateExpandImage();
-//			if( m_stateCallbacks == null )
-//				return;
-//
-//			for( IItemStateCallback cb : m_stateCallbacks )
-//				cb.onItemStateChange();
+		}
+
+		private void visitTreeDeep( IAsyncCallback<Row> callback )
+		{
+			if( hasChilds() )
+			{
+				for( Row child : getChilds() )
+					child.visitTreeDeep( callback );
+			}
+
+			callback.onSuccess( this );
 		}
 
 		void ensureAllChildRespectExpand()
@@ -808,7 +824,7 @@ public class TreeTable extends Panel
 
 		void ensureAllChildRespectExpand( boolean fOneParentAboveShrinked )
 		{
-			if( ! hasChilds() )
+			if( !hasChilds() )
 				return;
 
 			for( Row child : getChilds() )
@@ -823,7 +839,7 @@ public class TreeTable extends Panel
 
 		Row getLastLeaf()
 		{
-			if( ! hasChilds() )
+			if( !hasChilds() )
 				return this;
 
 			int nbChilds = m_childs.size();
