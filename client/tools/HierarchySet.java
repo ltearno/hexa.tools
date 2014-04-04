@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.hexa.client.ui.treetable.Row;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class HierarchySet<T>
 {

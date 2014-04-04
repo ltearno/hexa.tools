@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.miracle.Size;
 import com.hexa.client.ui.tools.IEditor;
 import com.hexa.client.ui.tools.IEditorHost;
-import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
 
 /**

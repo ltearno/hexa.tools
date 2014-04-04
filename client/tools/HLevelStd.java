@@ -1,7 +1,7 @@
 package com.hexa.client.tools;
 
 import com.hexa.client.tools.HierarchySet.IHierarchyAccumulator;
-import com.hexa.client.ui.treetable.TreeTable.Row;
+import com.hexa.client.ui.treetable.Row;
 
 public class HLevelStd implements HierarchySet.IHierarchyLevel<String>
 {

@@ -2,8 +2,8 @@ package com.hexa.client.ui.tools;
 
 import java.util.ArrayList;
 
+import com.hexa.client.ui.treetable.Row;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class ColumnsSet<T>
 {

@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import com.google.gwt.user.client.Timer;
-import com.hexa.client.ui.treetable.TreeTable.Row;
 
 public class TreeTableElemMng<T>
 {

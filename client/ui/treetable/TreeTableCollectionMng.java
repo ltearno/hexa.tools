@@ -15,7 +15,6 @@ import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.tools.ColumnsSet;
 import com.hexa.client.ui.tools.IColumn;
 import com.hexa.client.ui.tools.IEditor;
-import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.TreeTableEditorManager.TreeTableEditorManagerCallback;
 import com.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemMngCallback;
 import com.hexa.client.ui.widget.ImageButton;

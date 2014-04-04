@@ -15,8 +15,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.ui.miracle.Edits.Editor;
+import com.hexa.client.ui.treetable.Row;
 import com.hexa.client.ui.treetable.TreeTable;
-import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
 import com.hexa.client.ui.treetable.event.TableHeaderClickEvent.TableHeaderClickHandler;
 
