@@ -297,68 +297,12 @@ public class TreeTable extends Panel
 		return item.getChilds();
 	}
 
-//	class ExpShrinkWidget extends Composite implements TreeTable.IItemStateCallback, ClickHandler
-//	{
-//		TreeTable.Row row;
-//
-//		ImageButton im = new ImageButton( blankImage, "Expand" );
-//
-//		public ExpShrinkWidget( Row item, Widget child )
-//		{
-//			this.row = item;
-//
-//			FlowPanel panel = new FlowPanel();
-//			panel.add( im );
-//			panel.add( child );
-//			initWidget( panel );
-//
-//			item.addStateChangeCallback( this );
-//			update();
-//
-//			im.addClickHandler( this );
-//		}
-//
-//		void update()
-//		{
-//			if( row.getChilds().size() == 0 )
-//			{
-//				im.getElement().getStyle().setDisplay( Display.NONE );
-//				// im.setResource( blank );
-//				return;
-//			}
-//
-//			im.getElement().getStyle().clearDisplay();
-//
-//			if( !row.getExpanded() )
-//				im.setResource( treePlus );
-//			else
-//				im.setResource( treeMinus );
-//		}
-//
-//		@Override
-//		public void onItemStateChange()
-//		{
-//			update();
-//		}
-//
-//		@Override
-//		public void onClick( ClickEvent event )
-//		{
-//			event.preventDefault();
-//			event.stopPropagation();
-//
-//			row.setExpanded( !row.getExpanded() );
-//		}
-//	}
-
 	public class Row
 	{
 		Row m_parent = null;
 		Element m_tr = null;
 		Element m_trToDelete = null;
-		ArrayList<Row> m_childs;// = new ArrayList<Row>();
-
-		ArrayList<IItemStateCallback> m_stateCallbacks = null;
+		ArrayList<Row> m_childs;
 
 		boolean m_fExpanded = true;
 
