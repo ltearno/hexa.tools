@@ -988,6 +988,12 @@ public class TreeTable extends Panel
 				return new Size( td.getOffsetWidth(), td.getOffsetHeight() );
 			}
 		}
+
+		public boolean isDisplayed()
+		{
+			String display = m_tr.getStyle().getDisplay();
+			return display==null || !display.equalsIgnoreCase( "none" );
+		}
 	}
 
 	private class HeaderPrinter implements Printer

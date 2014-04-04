@@ -1,10 +1,10 @@
-package com.hexa.client.tools;
+package com.hexa.client.ui.tools;
 
-import com.hexa.client.tools.ColumnsSet.IColumnMng;
-import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.ui.miracle.Printer;
+import com.hexa.client.ui.tools.IColumn;
+import com.hexa.client.ui.tools.IEditor;
 
-public class EmptyColumn<T> implements IColumnMng<T>
+public class EmptyColumn<T> implements IColumn<T>
 {
 	@Override
 	public void fillCell( Printer printer, T record )

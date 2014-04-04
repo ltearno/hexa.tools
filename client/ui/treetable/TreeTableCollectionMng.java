@@ -11,10 +11,10 @@ import com.hexa.client.comm.HexaFramework;
 import com.hexa.client.interfaces.IAsyncCallback;
 import com.hexa.client.interfaces.IHasIntegerId;
 import com.hexa.client.tableobserver.XTableListen;
-import com.hexa.client.tools.ColumnsSet;
-import com.hexa.client.tools.ColumnsSet.IColumnMng;
-import com.hexa.client.tools.ColumnsSet.IEditor;
 import com.hexa.client.ui.miracle.Printer;
+import com.hexa.client.ui.tools.ColumnsSet;
+import com.hexa.client.ui.tools.IColumn;
+import com.hexa.client.ui.tools.IEditor;
 import com.hexa.client.ui.treetable.TreeTable.Row;
 import com.hexa.client.ui.treetable.TreeTableEditorManager.TreeTableEditorManagerCallback;
 import com.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemMngCallback;
@@ -64,7 +64,7 @@ public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements
 		initColumns( columns );
 		if( deleteButtonTitle != null )
 		{
-			columns.addColumn( new IColumnMng<T>()
+			columns.addColumn( new IColumn<T>()
 			{
 				@Override
 				public void fillCell( Printer printer, final T record )

@@ -3,8 +3,8 @@ package com.hexa.client.ui.widget;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
-import com.hexa.client.tools.ColumnsSet.IEditor;
-import com.hexa.client.tools.ColumnsSet.IEditorHost;
+import com.hexa.client.ui.tools.IEditor;
+import com.hexa.client.ui.tools.IEditorHost;
 
 public abstract class GenericEditor<T extends Widget> implements IEditor
 {

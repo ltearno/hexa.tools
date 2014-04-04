@@ -2,6 +2,7 @@ package com.hexa.client.tools;
 
 import com.hexa.client.interfaces.IHasIntegerId;
 import com.hexa.client.ui.miracle.Printer;
+import com.hexa.client.ui.tools.ROColumnMng;
 
 public class IdColumn<T extends IHasIntegerId> extends ROColumnMng<T>
 {
