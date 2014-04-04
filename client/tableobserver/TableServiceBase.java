@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.hexa.client.interfaces.IAsyncCallback;
 import com.hexa.client.interfaces.IHasIntegerId;
-import com.hexa.client.tools.CallCounter;
 
 public abstract class TableServiceBase<T extends IHasIntegerId>
 {
@@ -327,60 +326,27 @@ public abstract class TableServiceBase<T extends IHasIntegerId>
 		} );
 	}
 
-	public void updateField( int recordId, String fieldName, String newValue )
+	public void updateField( int recordId, final String fieldName, String newValue )
 	{
-		class Updater extends CallCounter
+		doUpdateField( recordId, fieldName, newValue, new IAsyncCallback<String>()
 		{
-			String fieldName;
-
-			T newValueRecord = null;
-
-			Updater()
-			{
-			}
-
-			void launch( int recordId, String fieldName, String wantedValue )
-			{
-				this.fieldName = fieldName;
-
-				add();
-
-				add();
-				doUpdateField( recordId, fieldName, wantedValue, new IAsyncCallback<String>()
-				{
-					@Override
-					public void onSuccess( String result )
-					{
-						rem();
-					}
-				} );
-
-				add();
-				doGetRecord( recordId, new IAsyncCallback<T>()
-				{
-					@Override
-					public void onSuccess( T result )
-					{
-						newValueRecord = result;
-						rem();
-					}
-				} );
-
-				rem();
-			}
-
 			@Override
-			protected void onFinish()
+			public void onSuccess( String result )
 			{
-				records.put( newValueRecord.getId(), newValueRecord );
+			}
+		} );
+
+		doGetRecord( recordId, new IAsyncCallback<T>()
+		{
+			@Override
+			public void onSuccess( T result )
+			{
+				records.put( result.getId(), result );
 
 				for( ClientInfo client : clients )
-					client.onUpdatedRecordField( newValueRecord, fieldName );
+					client.onUpdatedRecordField( result, fieldName );
 			}
-		}
-
-		Updater updater = new Updater();
-		updater.launch( recordId, fieldName, newValue );
+		} );
 	}
 
 	public void getRecord( int recordId, IAsyncCallback<T> callback )
