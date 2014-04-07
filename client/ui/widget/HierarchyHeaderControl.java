@@ -75,15 +75,6 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 		return currentLevels;
 	}
 
-	/*
-	 * public String getLevelsString() { String res = "[ "; int count = 1; for(
-	 * IHierarchyLevel<T> level : currentLevels ) { res += "\"" +
-	 * level.getName() + "\""; if( count < currentLevels.size() ) res += ", ";
-	 * count ++; } res += "]";
-	 *
-	 * return res; }
-	 */
-
 	public JSONValue getLevelsJson()
 	{
 		JSONArray arr = new JSONArray();
