@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -37,8 +36,6 @@ public abstract class SelectionColumnMng<T extends IHasIntegerId> extends ROColu
 	@Override
 	public void fillCell( Printer printer, T record )
 	{
-		GWT.log( "Crecte CheckBox for selection" );
-
 		CheckBox cb = getCheckBoxForRecord( record );
 
 		cb.setValue( selected.contains( record.getId() ), false );
@@ -65,7 +62,6 @@ public abstract class SelectionColumnMng<T extends IHasIntegerId> extends ROColu
 		@Override
 		public void onValueChange( ValueChangeEvent<Boolean> event )
 		{
-			GWT.log( "CheckBox changed : " + event.getValue() );
 			int recordId = checkBoxes.getReverse( (CheckBox) event.getSource() );
 
 			boolean isSelected = ((CheckBox) event.getSource()).getValue();
