@@ -1,8 +1,10 @@
 package com.hexa.client.application.archi;
 
+import com.hexa.client.tools.Action1;
+
 public interface PlaceTokenizer
 {
 	String getToken( Place place );
 
-	Place getPlace( String token );
+	void getPlaceAsync( String token, Action1<Place> created );
 }
