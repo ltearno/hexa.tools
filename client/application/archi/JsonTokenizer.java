@@ -1,11 +1,11 @@
 package com.hexa.client.application.archi;
 
-import com.hexa.client.comm.GenericJSO;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.hexa.client.comm.GenericJSO;
 
 public class JsonTokenizer
 {
@@ -74,11 +74,11 @@ public class JsonTokenizer
 	{
 		JSONValue value = values.get( name );
 		if( value == null )
-			return 0;
+			return null;
 
 		JSONNumber number = value.isNumber();
 		if( number == null )
-			return 0;
+			return null;
 
 		return (int) (number.doubleValue());
 	}
