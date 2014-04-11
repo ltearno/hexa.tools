@@ -13,7 +13,6 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
-import com.hexa.client.tools.Action1;
 import com.hexa.client.tools.HexaTools;
 
 public class PlaceController implements ValueChangeHandler<String>
@@ -91,23 +90,14 @@ public class PlaceController implements ValueChangeHandler<String>
 	public void onValueChange( ValueChangeEvent<String> event )
 	{
 		GWT.log( "History : " + event.getValue() );
-		placeTokenizer.getPlaceAsync( event.getValue(), new Action1<Place>()
+		currentPlace = placeTokenizer.getPlace( event.getValue() );
+		if( currentPlace == null )
 		{
-			@Override
-			public void exec( Place place )
-			{
-				currentPlace = place;
+			GWT.log( "NULL PLACE FOR PLACE '" + event.getValue() + "'" );
+			History.newItem( "" );
+			return;
+		}
 
-				if( currentPlace == null )
-				{
-					GWT.log( "NULL PLACE !" );
-					History.newItem( "" );
-				}
-				else
-				{
-					activityMng.setPlace( currentPlace );
-				}
-			}
-		} );
+		activityMng.setPlace( currentPlace );
 	}
 }
