@@ -247,7 +247,8 @@ public class DataProxyGenerator extends Generator
 				{
 					sw.println( "return jso.getGenericJSO( \"" + fnAnnotation.fieldName() + "\" ).cast();" );
 				}
-				else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
+				//else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
+				else if( ! ( method.getReturnType().getQualifiedSourceName().equals( "java.util.ArrayList" ) || method.getReturnType().getQualifiedSourceName().equals( "java.util.List" ) ) )
 				{
 					String jsoType = method.getReturnType().getSimpleSourceName();
 					if( method.getReturnType().getSimpleSourceName().compareTo( "int" ) == 0 )
