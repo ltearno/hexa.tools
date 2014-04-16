@@ -221,7 +221,8 @@ public class TreeTable extends Composite
 	public void emptyTable()
 	{
 		for( Entry<Element, Widget> entry : m_widgets.entrySet() )
-			removeWidget( entry.getKey(), entry.getValue() );
+			customPanel.remove( entry.getValue() );
+		m_widgets.clear();
 
 		m_rootItem = new Row(this);
 
