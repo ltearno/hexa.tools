@@ -2,9 +2,11 @@ package com.hexa.client.tools;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
@@ -68,48 +70,28 @@ public class Pager
 			w.update();
 	}
 
+	interface PagerWidgetUiBinder extends UiBinder<Element, PagingWidget>
+	{
+	}
+
+	private static PagerWidgetUiBinder uiBinder = GWT.create( PagerWidgetUiBinder.class );
+
 	class PagingWidget extends Widget
 	{
-		Element span;
+		@UiField
 		Element first;
+		@UiField
 		Element prev;
+		@UiField
 		Element position;
+		@UiField
 		Element next;
+		@UiField
 		Element last;
 
 		public PagingWidget()
 		{
-			span = DOM.createSpan();
-
-			setElement( span );
-			span.getStyle().setFloat( Style.Float.RIGHT );
-
-			first = DOM.createAnchor();
-			first.setInnerText( "First" );
-			first.setAttribute( "href", "#first" );
-			span.appendChild( first );
-
-			addSpace();
-
-			prev = DOM.createAnchor();
-			prev.setInnerText( "Prev" );
-			prev.setAttribute( "href", "#prev" );
-			span.appendChild( prev );
-
-			position = DOM.createSpan();
-			span.appendChild( position );
-
-			next = DOM.createAnchor();
-			next.setInnerText( "Next" );
-			next.setAttribute( "href", "#next" );
-			span.appendChild( next );
-
-			addSpace();
-
-			last = DOM.createAnchor();
-			last.setInnerText( "Last" );
-			last.setAttribute( "href", "#last" );
-			span.appendChild( last );
+			setElement( uiBinder.createAndBindUi( this ) );
 
 			DOM.setEventListener( first, firstEvent );
 			DOM.sinkEvents( first, Event.ONCLICK );
@@ -126,8 +108,6 @@ public class Pager
 
 		public void update()
 		{
-			// JQuery.get().jqHtml( position, "&nbsp;<b>" + start + " - " + end
-			// + "</b> of <b>" + nb + "</b>&nbsp;" );
 			position.setInnerHTML( "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
 
 			if( fFirst )
@@ -149,13 +129,6 @@ public class Pager
 				last.getStyle().clearDisplay();
 			else
 				last.getStyle().setDisplay( Display.NONE );
-		}
-
-		private void addSpace()
-		{
-			Element dum = DOM.createSpan();
-			dum.setInnerHTML( "&nbsp;" );
-			span.appendChild( dum );
 		}
 	}
 

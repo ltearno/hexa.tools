@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder">
+	<span style='float:right;'>
+		<a ui:field="first" href="#first">First</a>
+		&nbsp;
+		<a ui:field="prev" href="#prev">Prev</a>
+		<span ui:field="position"></span>
+		<a ui:field="next" href="#next">Next</a>
+		&nbsp;
+		<a ui:field="last" href="#last">Last</a>
+	</span>
+</ui:UiBinder>
