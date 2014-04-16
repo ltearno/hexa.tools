@@ -16,16 +16,17 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.hexa.client.tools.JQuery;
+import com.hexa.client.ui.containers.CustomPanel;
 import com.hexa.client.ui.miracle.Printer;
 import com.hexa.client.ui.treetable.event.TableCellClickEvent;
 import com.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
 import com.hexa.client.ui.treetable.event.TableHeaderClickEvent;
 import com.hexa.client.ui.treetable.event.TableHeaderClickEvent.TableHeaderClickHandler;
 
-public class TreeTable extends Panel
+public class TreeTable extends Composite
 {
 	interface BasicImageBundle extends ClientBundle
 	{
@@ -50,6 +51,8 @@ public class TreeTable extends Panel
 	}
 
 	final int treePadding = 25;
+
+	private CustomPanel customPanel;
 
 	final ImageResource treeMinus;
 	final ImageResource treePlus;
@@ -95,7 +98,9 @@ public class TreeTable extends Panel
 
 		m_decorator = DOM.createDiv();
 		m_decorator.setClassName( "tableDecorator" );
-		setElement( m_decorator );
+
+		customPanel = new CustomPanel( m_decorator );
+		initWidget( customPanel );
 
 		m_table = DOM.createTable();
 		m_table.setClassName( "TreeTable" );
@@ -157,7 +162,6 @@ public class TreeTable extends Panel
 		return addHandler( handler, TableCellClickEvent.getType() );
 	}
 
-	@Override
 	public void clear()
 	{
 		emptyTable();
@@ -217,8 +221,7 @@ public class TreeTable extends Panel
 	public void emptyTable()
 	{
 		for( Entry<Element, Widget> entry : m_widgets.entrySet() )
-			removeWidget( entry.getKey(), entry.getValue(), false );
-		m_widgets.clear();
+			removeWidget( entry.getKey(), entry.getValue() );
 
 		m_rootItem = new Row(this);
 
@@ -235,7 +238,7 @@ public class TreeTable extends Panel
 	{
 		Widget old = m_widgets.get( td );
 		if( old != null )
-			removeWidget( td, old, true );
+			removeWidget( td, old );
 	}
 
 	private void clearCellText( Element td )
@@ -245,41 +248,14 @@ public class TreeTable extends Panel
 
 	void addWidget( Element td, Widget w )
 	{
-		// detach new child
-		w.removeFromParent();
-
-		// logical add
 		m_widgets.put( td, w );
-
-		// physical add
-		td.appendChild( w.getElement() );
-
-		// adopt
-		adopt( w );
+		customPanel.addIn( td, w );
 	}
 
-	private void removeWidget( Element td, Widget w, boolean fDoLogical )
+	private void removeWidget( Element td, Widget w )
 	{
-		assert (td != null) && (w != null);
-
-		// Validate.
-		if( w.getParent() != this )
-			return;
-
-		try
-		{
-			orphan( w );
-		}
-		finally
-		{
-			// Physical detach.
-			Element elem = w.getElement();
-			elem.removeFromParent();
-
-			// Logical detach.
-			if( fDoLogical )
-				m_widgets.remove( td );
-		}
+		customPanel.remove( w );
+		m_widgets.remove( td );
 	}
 
 	public Row getItemForRef( int ref )
@@ -400,13 +376,11 @@ public class TreeTable extends Panel
 		return parentItem.addLastChild();
 	}
 
-	@Override
 	public Iterator<Widget> iterator()
 	{
 		return m_widgets.values().iterator();
 	}
 
-	@Override
 	public boolean remove( Widget child )
 	{
 		return false;

@@ -20,14 +20,8 @@ import com.hexa.client.ui.miracle.Size;
 
 public class Row
 {
-	/**
-	 *
-	 */
 	private final TreeTable treeTable;
 
-	/**
-	 * @param treeTable
-	 */
 	Row( TreeTable treeTable )
 	{
 		this.treeTable = treeTable;
@@ -643,9 +637,6 @@ public class Row
 			Element td = DOM.getChild( m_tr, i );
 			this.treeTable.clearCellWidget( td );
 		}
-
-		// for( Item child: m_childs )
-		// child.removeAllWidgets();
 	}
 
 	void physicalRemove()
