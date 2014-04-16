@@ -14,11 +14,10 @@ public class Pager
 {
 	public interface PagerCallback
 	{
-		public void onPagerWant( Object cookie, int startPosition, int endPosition );
+		public void onPagerWant( int startPosition, int endPosition );
 	}
 
 	PagerCallback callback = null;
-	Object cookie = null;
 
 	int currentPosition = 0;
 	int nbDisplayed = 0;
@@ -33,15 +32,14 @@ public class Pager
 	boolean fNext = false;
 	boolean fLast = false;
 
-	public Pager( PagerCallback callback, Object cookie )
+	public Pager( PagerCallback callback )
 	{
-		setCallback( callback, cookie );
+		setCallback( callback );
 	}
 
-	public void setCallback( PagerCallback callback, Object cookie )
+	public void setCallback( PagerCallback callback )
 	{
 		this.callback = callback;
-		this.cookie = cookie;
 	}
 
 	public void setCurrent( int currentPosition, int nbDisplayed, int lastPosition, int nbPerPage )
@@ -179,7 +177,7 @@ public class Pager
 				return;
 
 			if( callback != null )
-				callback.onPagerWant( cookie, 0, nbPerPage - 1 );
+				callback.onPagerWant( 0, nbPerPage - 1 );
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -196,7 +194,7 @@ public class Pager
 
 			int nextPos = currentPosition - nbPerPage;
 			if( callback != null )
-				callback.onPagerWant( cookie, nextPos, nextPos + nbPerPage - 1 );
+				callback.onPagerWant( nextPos, nextPos + nbPerPage - 1 );
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -213,7 +211,7 @@ public class Pager
 
 			int nextPos = currentPosition + nbPerPage;
 			if( callback != null )
-				callback.onPagerWant( cookie, nextPos, nextPos + nbPerPage - 1 );
+				callback.onPagerWant( nextPos, nextPos + nbPerPage - 1 );
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -230,7 +228,7 @@ public class Pager
 
 			int nextPos = lastPosition - (lastPosition % nbPerPage);
 			if( callback != null )
-				callback.onPagerWant( cookie, nextPos, nextPos + nbPerPage - 1 );
+				callback.onPagerWant( nextPos, nextPos + nbPerPage - 1 );
 
 			event.preventDefault();
 			event.stopPropagation();
