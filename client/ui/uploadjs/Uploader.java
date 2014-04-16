@@ -4,11 +4,11 @@ import java.util.Date;
 
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.hexa.client.tools.HexaTools;
 
 public class Uploader extends Composite
 {
@@ -77,7 +77,7 @@ public class Uploader extends Composite
 	{
 		if( files == null )
 		{
-			Window.alert( "null drop !" );
+			HexaTools.alert( "null drop !" );
 			return;
 		}
 
@@ -124,7 +124,7 @@ public class Uploader extends Composite
 							{
 								if( percentage < 0 )
 								{
-									Window.alert( "error" );
+									HexaTools.alert( "error" );
 									return;
 								}
 								bar.setValue( percentage );

@@ -17,8 +17,6 @@ public class RevRPCServices
 	{
 		assert json != null;
 
-		// Window.alert( json.toString() );
-
 		String serviceName = json.get( "service" ).isString().stringValue();
 		String interfaceName = json.get( "interface" ).isString().stringValue();
 		JSONObject call = json.get( "value" ).isObject();

@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.HexaTools;
 import com.hexa.client.tools.JQuery;
 
 public class Accordion extends Panel
@@ -192,7 +192,7 @@ public class Accordion extends Panel
 		@Override
 		public void remove()
 		{
-			Window.alert( "Error !!! Remove not implemented in Accordion.java" );
+			HexaTools.alert( "Error !!! Remove not implemented in Accordion.java" );
 		}
 
 	}

@@ -18,7 +18,6 @@ import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -27,6 +26,7 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.hexa.client.interfaces.IAsyncCallback;
+import com.hexa.client.tools.HexaTools;
 
 public class UploadForm extends Composite
 {
@@ -159,7 +159,7 @@ public class UploadForm extends Composite
 
 		if( nb > 1 && !fMultiple )
 		{
-			Window.alert( "Vous ne pouvez envoyer qu'un seul fichier à la fois" );
+			HexaTools.alert( "Vous ne pouvez envoyer qu'un seul fichier à la fois" );
 			return;
 		}
 

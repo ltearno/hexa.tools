@@ -10,9 +10,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.hexa.client.tools.HexaTools;
 
 public class HTreeTable extends ComplexPanel implements ClickHandler
 {
@@ -67,7 +67,7 @@ public class HTreeTable extends ComplexPanel implements ClickHandler
 		HTItem item = getHTItemForEvent( event );
 		if( item == null )
 		{
-			Window.alert( "getHTItemForEvent return null in HTreeTable.java" );
+			HexaTools.alert( "getHTItemForEvent return null in HTreeTable.java" );
 			return;
 		}
 
