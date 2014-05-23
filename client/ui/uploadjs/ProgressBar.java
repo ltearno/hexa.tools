@@ -42,8 +42,8 @@ public class ProgressBar extends Widget implements HasValue<Integer>
 
 		Element main = DOM.createDiv();
 		main.appendChild( div );
-		main.getStyle().setWidth( 100, Unit.PX );
-		main.getStyle().setHeight( 20, Unit.PX );
+		main.getStyle().setWidth( 102, Unit.PX );
+		main.getStyle().setHeight( 22, Unit.PX );
 		setElement( main );
 	}
 
