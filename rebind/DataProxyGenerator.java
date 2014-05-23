@@ -177,6 +177,7 @@ public class DataProxyGenerator extends Generator
 		composerFactory.addImport( "com.hexa.client.common.HexaTime" );
 		composerFactory.addImport( "com.hexa.client.common.HexaDateTime" );
 		composerFactory.addImport( "com.google.gwt.core.client.JavaScriptObject" );
+		composerFactory.addImport( "com.google.gwt.json.client.JSONObject" );
 		composerFactory.addImplementedInterface( requestedClass + typeExt );
 
 		SourceWriter sw = composerFactory.createSourceWriter( context, printWriter );
@@ -190,6 +191,12 @@ public class DataProxyGenerator extends Generator
 		sw.println( "private GenericJSO jso = null;" );
 
 		JMethod[] methods = requestedType.getMethods();
+
+		sw.println( "@Override public String toString() {" );
+		sw.indent();
+		sw.println( "return new JSONObject(jso).toString();" );
+		sw.outdent();
+		sw.println( "}" );
 
 		sw.println( "public void init( GenericJSO jso ) {" );
 		sw.indent();
