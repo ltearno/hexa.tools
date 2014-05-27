@@ -59,6 +59,9 @@ public class Row
 			return;
 
 		Element td = m_tr.getChild( 0 ).cast();
+		if( td.getChildCount() == 0 )
+			return;
+
 		ImageElement img = td.getChild( 0 ).cast();
 
 		if( !hasChilds() )
