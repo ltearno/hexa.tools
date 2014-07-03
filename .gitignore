@@ -1,0 +1,5 @@
+.settings/
+.project
+hexa.core/.classpath
+hexa.demo/.classpath
+*.classpath

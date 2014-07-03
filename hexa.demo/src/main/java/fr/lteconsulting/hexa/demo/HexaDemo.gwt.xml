@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="hexademo">
+  <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.json.JSON" />
+  <inherits name="com.google.gwt.user.theme.clean.Clean"/>
+  
+  <inherits name="fr.lteconsulting.hexa.Hexa"/>
+
+  <source path="client" />
+
+  <add-linker name="xsiframe" />
+
+  <entry-point class="fr.lteconsulting.hexa.demo.client.App" />
+</module>

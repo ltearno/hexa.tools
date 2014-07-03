@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.1/distro-source/core/src/gwt-module.dtd">
+<module rename-to='hexarpc'>
+	<inherits name='fr.lteconsulting.hexa.HexaCore' />
+
+	<super-source path="jre" />
+	<source path="client" />
+	<source path="shared" />
+
+	<generate-with class="fr.lteconsulting.hexa.rebind.DataProxyGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.DataProxy" />
+	</generate-with>
+	<generate-with class="fr.lteconsulting.hexa.rebind.DataProxyJSOGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.DataProxyJSO" />
+	</generate-with>
+	<generate-with class="fr.lteconsulting.hexa.rebind.DataProxySerializedGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.DataProxySerialized" />
+	</generate-with>
+	<generate-with class="fr.lteconsulting.hexa.rebind.ServiceGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.Service" />
+	</generate-with>
+	<generate-with class="fr.lteconsulting.hexa.rebind.DataProxyFastFactoryGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.IDataProxyFastFactory" />
+	</generate-with>
+
+	<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" />
+
+	<!-- You can add that in your own app module, to support HTML5 AppCache 
+		manifest -->
+	<!--<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" 
+		/> <add-linker name="AppCacheLinker" /> -->
+</module>

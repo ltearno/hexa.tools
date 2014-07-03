@@ -1,0 +1,91 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.lteconsulting</groupId>
+	<artifactId>hexa.demo</artifactId>
+
+	<version>1.0-SNAPSHOT</version>
+
+	<name>Hexa GWT demo</name>
+
+	<packaging>war</packaging>
+
+	<properties>
+		<runTarget>http://localhost:8888/</runTarget>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.lteconsulting</groupId>
+			<artifactId>hexa.all</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- GWT -->
+		<!-- <dependency> <groupId>com.google.gwt</groupId> <artifactId>gwt-servlet</artifactId> 
+			<scope>runtime</scope> </dependency> -->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+			<!-- GWT Maven Plugin -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>2.6.1</version>
+
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<debugPort>8001</debugPort>
+					<compileReport>true</compileReport>
+					<runTarget>${runTarget}</runTarget>
+					<!--<warSourceDirectory>target/webapp</warSourceDirectory> -->
+					<!-- <webappDirectory>${basedir}/target/gwtwebapp</webappDirectory> -->
+					<!-- launch configuration -->
+					<!-- <hostedWebapp>${basedir}/target/webapp</hostedWebapp> -->
+					<!-- <noServer>true</noServer> -->
+					<gen>${basedir}/target/gwt-gen</gen>
+					<module>fr.lteconsulting.hexa.demo.HexaDemo</module>
+					<!-- cache -->
+					<persistentunitcache>true</persistentunitcache>
+					<persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<!--<webXml>${basedir}/WEB-INF/web.xml</webXml> -->
+					<!-- <warName>offline-demo-all</warName> -->
+					<!-- <webResources> <resource> <directory>${basedir}/target/gwtwebapp</directory> 
+						<filtering>false</filtering> <excludes> <exclude>**/*.jar</exclude> <exclude>**/*.bat</exclude> 
+						<exclude>**/tu/*</exclude> <exclude>**/test/*</exclude> </excludes> </resource> 
+						</webResources> -->
+					<!-- <warSourceDirectory>${basedir}/site</warSourceDirectory> -->
+					<!-- <webappDirectory>${basedir}/target/webapp</webappDirectory> -->
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
