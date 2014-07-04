@@ -56,6 +56,8 @@ public class Delayer
 			reallyDoTimer.cancel();
 
 			callback.onDelayedEvent();
+			
+			reallyDoTimer.cancel();
 		}
 	};
 }

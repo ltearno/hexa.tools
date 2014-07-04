@@ -169,7 +169,7 @@ public class SqlParser
 			return false;
 
 		boolean fComa = false;
-		for( Field field : clazz.getFields() )
+		for( Field field : clazz.getDeclaredFields() )
 		{
 			// no need to select fields that we don't know how to manage
 			if( SQLiteTypeManagerManager.get( field.getType() ) == null )

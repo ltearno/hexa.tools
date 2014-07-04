@@ -3,6 +3,7 @@ package fr.lteconsulting.hexa.client.sql;
 import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
+
 import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.sql.SqlParser.SqlParseInfo;
@@ -17,6 +18,11 @@ public abstract class BaseSQLiteDAO<T>
 
 	protected abstract T recordFactory();
 
+	public BaseSQLiteDAO( Class<T> clazzz, SQLite db )
+	{
+		this( clazzz, db, null );
+	}
+	
 	public BaseSQLiteDAO( Class<T> clazzz, SQLite db, Action requestSaveAction )
 	{
 		clazz = ClassInfo.Clazz( clazzz );
@@ -85,7 +91,8 @@ public abstract class BaseSQLiteDAO<T>
 	{
 		SqlHelper.update( db, record );
 
-		requestSaveAction.exec();
+		if( requestSaveAction != null )
+			requestSaveAction.exec();
 
 		return record;
 	}
@@ -94,7 +101,8 @@ public abstract class BaseSQLiteDAO<T>
 	{
 		SqlHelper.delete( db, clazz.getReflectedClass(), id );
 
-		requestSaveAction.exec();
+		if( requestSaveAction != null )
+			requestSaveAction.exec();
 
 		return true;
 	}
@@ -105,7 +113,8 @@ public abstract class BaseSQLiteDAO<T>
 
 		SqlHelper.insert( db, record );
 
-		requestSaveAction.exec();
+		if( requestSaveAction != null )
+			requestSaveAction.exec();
 
 		return record;
 	}

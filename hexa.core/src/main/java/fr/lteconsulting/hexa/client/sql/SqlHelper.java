@@ -4,8 +4,9 @@ import static fr.lteconsulting.hexa.client.classinfo.ClassInfo.Clazz;
 
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.shared.GWT;
+
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
@@ -29,7 +30,8 @@ public class SqlHelper
 		if( clazz == null )
 			return null;
 
-		String request = "select {" + clazz.getClassName() + "}, recordState from " + clazz.getClassName() + " where id=" + id;
+		//String request = "select {" + clazz.getClassName() + "}, recordState from " + clazz.getClassName() + " where id=" + id;
+		String request = "select {" + clazz.getClassName() + "} from " + clazz.getClassName() + " where id=" + id;
 		SqlParser parser = new SqlParser();
 		SqlParseInfo pi = parser.parse( request );
 		JavaScriptObject results = db.execute( parser.getSql( pi ) );
@@ -66,7 +68,7 @@ public class SqlHelper
 		SqlParser parser = new SqlParser();
 		SqlParseInfo pi = parser.parse( sql );
 		String formattedSql = parser.getSql( pi );
-		GWT.log( "QUERY: " + formattedSql );
+		//GWT.log( "QUERY: " + formattedSql );
 		JavaScriptObject results = db.execute( formattedSql );
 		SQLiteResult sqliteR = new SQLiteResult( results );
 
@@ -150,7 +152,7 @@ public class SqlHelper
 
 		requestPersistDatabase.exec();
 
-		GWT.log( "UPDATE: " + sql );
+		//GWT.log( "UPDATE: " + sql );
 
 		// update the given object
 		T newVersion = find( db, (Class<T>) record.getClass(), recordId );
@@ -176,8 +178,6 @@ public class SqlHelper
 		if( clazz == null )
 			return false;
 
-		// INSERT INTO users (name) VALUES('Arnaud');
-
 		String tableName = clazz.getClassName();
 
 		StringBuilder sb = new StringBuilder();
@@ -189,16 +189,11 @@ public class SqlHelper
 		StringBuilder sbValues = new StringBuilder();
 
 		boolean fComa = false;
-		for( Field field : clazz.getFields() )
+		for( Field field : clazz.getDeclaredFields() )
 		{
 			// we dont insert id field when they are not specified...
-			if( field.getName().equals( "id" ) )
-			{
-				if( ((Integer) field.getValue( record )) == 0 )
-				{
-					field.setValue( record, SQLite.createLocalId() );
-				}
-			}
+			if( field.getName().equals( "id" ) && ((Integer) field.getValue( record )) == 0 )
+				continue;
 
 			SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
 			if( mng == null )
@@ -210,7 +205,9 @@ public class SqlHelper
 				sbValues.append( ", " );
 			}
 			else
+			{
 				fComa = true;
+			}
 
 			sb.append( field.getName() + " " );
 
@@ -218,33 +215,23 @@ public class SqlHelper
 				return false;
 		}
 
-		if( fComa )
-		{
-			sb.append( ", " );
-			sbValues.append( ", " );
-		}
-		sb.append( "recordState " );
-		if( isFromServer )
-			sbValues.append( "1" );
-		else
-			sbValues.append( "2" );
-
 		sb.append( ") VALUES (" );
 		sb.append( sbValues.toString() );
 		sb.append( ");" );
 
 		String sql = sb.toString();
 
-		GWT.log( "INSERT: " + sql );
+		//GWT.log( "INSERT: " + sql );
 
 		db.execute( sql );
 
 		requestPersistDatabase.exec();
 
 		int lastId = db.getLastInsertedId();
+		GWT.log( "LastInsertedId : " + lastId );
 		if( lastId > 0 )
 		{
-			Field idField = clazz.getField( "id" );
+			Field idField = clazz.getDeclaredField( "id" );
 			if( idField != null )
 				idField.setValue( record, lastId );
 		}
@@ -285,7 +272,7 @@ public class SqlHelper
 
 		requestPersistDatabase.exec();
 
-		GWT.log( "DELETE: " + sql );
+		//GWT.log( "DELETE: " + sql );
 
 		if( !isFromServer )
 		{

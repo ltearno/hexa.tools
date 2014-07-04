@@ -5,6 +5,7 @@ import java.util.Iterator;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 
 public class SQLiteResult implements Iterable<SQLiteResult.Row>
 {
@@ -14,20 +15,62 @@ public class SQLiteResult implements Iterable<SQLiteResult.Row>
 	{
 		this.root = new JSONObject( jso );
 	}
+	
+	public int size()
+	{
+		return root.size();
+	}
 
-	public class Cell
+	public Row getRow( int rowIdx )
+	{
+		JSONArray row = root.get( "" + rowIdx ).isArray();
+		return new Row( row );
+	}
+
+	public static class Cell
 	{
 		public String column;
 		public String value;
 	}
 
-	public class Row implements Iterable<Cell>
+	public static class Row implements Iterable<Cell>
 	{
 		JSONArray row;
 
 		Row( JSONArray row )
 		{
 			this.row = row;
+		}
+
+		public Row()
+		{
+			row = new JSONArray();
+		}
+
+		public void addCell( String columnName, String value )
+		{
+			JSONObject cell = new JSONObject();
+			cell.put( "column", new JSONString( columnName ) );
+			cell.put( "value", new JSONString( value ) );
+			row.set( row.size(), cell );
+		}
+
+		public String getColumnValue( String columnName )
+		{
+			for( int i=0; i<row.size(); i++ )
+			{
+				JSONObject cellJson = row.get( i ).isObject();
+				if( cellJson.get( "column" ).isString().stringValue().equals( columnName ) )
+					return cellJson.get( "value" ).isString().stringValue();
+			}
+
+			return null;
+		}
+
+		@Override
+		public String toString()
+		{
+			return row.toString();
 		}
 
 		@Override

@@ -62,7 +62,7 @@ public class SqlHelper2
 
 			this.tableName = this.clazz.getClassName();
 
-			for( Field field : this.clazz.getFields() )
+			for( Field field : this.clazz.getDeclaredFields() )
 			{
 				SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
 				if( mng == null )
@@ -133,7 +133,7 @@ public class SqlHelper2
 
 				sb.append( fieldName );
 				sb.append( " " );
-				String createFieldSql = mng.createFieldSql( fieldName );
+				String createFieldSql = mng.createFieldSql( fieldName, false, false );
 				if( createFieldSql == null )
 					return false;
 				sb.append( createFieldSql );
@@ -195,9 +195,16 @@ public class SqlHelper2
 
 		public Boolean localRecordDeletedCreateTriggerSql()
 		{
-			String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_deleted AFTER DELETE ON " + tableName + " FOR EACH ROW " + "BEGIN " + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '" + tableName + "'); END";
+			 String triggerSql = "CREATE TRIGGER IF NOT EXISTS "
+				 + tableName
+				 + "_deleted AFTER DELETE ON "
+				 + tableName
+				 + " FOR EACH ROW "
+				 + "BEGIN "
+				 + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '"
+				 + tableName + "'); END";
 
-			db.execute( triggerSql );
+			 db.execute(triggerSql);
 
 			return true;
 		}

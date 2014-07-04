@@ -12,6 +12,8 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.storage.client.Storage;
 
+import fr.lteconsulting.hexa.client.tools.Action2;
+
 public class SQLite extends JavaScriptObject
 {
 	interface SQLiteBundle extends ClientBundle
@@ -64,13 +66,35 @@ public class SQLite extends JavaScriptObject
 	/*-{
 		this.close();
 	}-*/;
+	
+	public final native void setStatementCallback( Action2<String, JavaScriptObject> callback )
+	/*-{
+		this.__stmcb = callback;
+	}-*/;
+	
+	private final native Action2<String, JavaScriptObject> getStatementCallback()
+	/*-{
+		return this.__stmcb || null;
+	}-*/;
 
 	public final native JsArrayInteger exportData()
 	/*-{
 		return this.exportData();
 	}-*/;
+	
+	public final JavaScriptObject execute( String statement )
+	{
+		JavaScriptObject res = executeNative( statement );
+		
+		Action2<String, JavaScriptObject> callback = getStatementCallback();
+		if( callback != null )
+			callback.exec( statement, res );
+		
+		return res;
+	}
 
-	public final native JavaScriptObject execute( String statement )
+
+	private final native JavaScriptObject executeNative( String statement )
 	/*-{
 		return this.exec(statement);
 	}-*/;
