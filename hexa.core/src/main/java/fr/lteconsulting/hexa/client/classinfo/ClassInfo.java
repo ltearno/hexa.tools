@@ -3,7 +3,6 @@ package fr.lteconsulting.hexa.client.classinfo;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.google.gwt.core.shared.GWT;
 import fr.lteconsulting.hexa.client.classinfo.internal.ObjectClazz;
 
 public class ClassInfo
@@ -27,10 +26,7 @@ public class ClassInfo
 		_ensureMap();
 
 		if( clazzz.containsKey( clazz.getReflectedClass() ) )
-		{
-			GWT.log( "Class " + clazz.getClassName() + " already registered..." );
 			return;
-		}
 
 		clazzz.put( clazz.getReflectedClass(), clazz );
 	}
