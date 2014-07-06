@@ -5,6 +5,15 @@ import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
 import fr.lteconsulting.hexa.client.tools.Action2;
 
+/**
+ * A PropertyAdapter implementation which is able to work with an object's field or property
+ * 
+ * To access the object's property, first the adapter tries to find a getter/setter. Then, if no
+ * access method is found, the adapter works with the object's field value directly.
+ * 
+ * @author Arnaud
+ *
+ */
 public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 {
 	private final Object source;

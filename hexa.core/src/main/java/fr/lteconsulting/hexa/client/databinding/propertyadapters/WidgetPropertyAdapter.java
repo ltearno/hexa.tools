@@ -4,8 +4,17 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
+
 import fr.lteconsulting.hexa.client.tools.Action2;
 
+/**
+ * A PropertyAdapter implementation that works with a target implementing the HasValue interface.
+ * 
+ * Typically, this will be a Widget, like a TextBox for example, that will receive and notify its changes
+ * 
+ * @author Arnaud Tournier
+ *
+ */
 @SuppressWarnings( "rawtypes" )
 public class WidgetPropertyAdapter implements PropertyAdapter, ValueChangeHandler
 {
