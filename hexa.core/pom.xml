@@ -106,12 +106,10 @@
                 <includes>
                     <include>**/*.java</include>
                     <include>**/*.gwt.xml</include>
+					<include>**/*.js</include>
+					<include>**/*.*</include>
                 </includes>
             </resource>
         </resources>
-
-		<!--<resources> <resource> <directory>${basedir}/src</directory> <includes> 
-			<include>**/*.java</include> <include>**/*.xml</include> <include>**/*.js</include> 
-			<include>**/*.png</include> </includes> </resource> </resources> -->
 	</build>
 </project>
