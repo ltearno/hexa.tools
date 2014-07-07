@@ -1,8 +1,12 @@
 package fr.lteconsulting.hexa.demo.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
+import fr.lteconsulting.hexa.client.tools.HTMLSnip;
 import fr.lteconsulting.hexa.client.ui.containers.CenterPanel;
 import fr.lteconsulting.hexa.demo.client.databinding.DataBindingDemo;
 
@@ -22,5 +26,22 @@ public class HexaDemo implements EntryPoint
 		
 		DataBindingDemo dataBindingDemo = new DataBindingDemo();
 		dataBindingDemo.run( centerPanel );
+	}
+}
+
+class Form extends ComplexPanel
+{
+	static String html = "<b>Demos</b>"
+			+ "<ul>"
+			+ "<li>Data Binding</li>"
+			+ "<li>Jpa 4 Gwt</li>"
+			+ "</ul>";
+	
+	public Form()
+	{
+		DivElement main = Document.get().createDivElement();
+		
+		HTMLSnip snip = new HTMLSnip();
+		main.setInnerHTML( html );
 	}
 }

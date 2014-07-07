@@ -5,6 +5,19 @@ import java.util.Map.Entry;
 
 import com.google.gwt.user.client.DOM;
 
+/**
+ * A tool to generate html stream with unique ids.
+ * 
+ * Example :
+ * snip.setRaw( "<div><div id="#name#"></div></div>" );
+ * snip.addElement( "name" );
+ * String html = snip.getSnip(); // returns #name# replaced by a unique id
+ * // add html inside your document...
+ * Document.getElement( snip.getElementId( "name" ) ); // returns the id of the named element in the raw snip
+ * 
+ * @author Arnaud Tournier
+ *
+ */
 public class HTMLSnip
 {
 	String raw = null;
