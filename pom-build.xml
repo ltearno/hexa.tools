@@ -17,5 +17,6 @@
 		<module>hexa.rpc</module>
 		<module>hexa.demo</module>
 		<module>hexa.spring</module>
+		<module>hexa.persistence</module>
   </modules>
 </project>

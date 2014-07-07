@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>${groupId}</groupId>
-  <artifactId>${artifactId}</artifactId>
+  <groupId>fr.lteconsulting</groupId>
+  <artifactId>hexa.persistence</artifactId>
 
-  <name>! New Project !</name>
+  <name>hexa.persistence</name>
   <url>http://www.lteconsulting.fr</url>
 
   <parent>
@@ -14,7 +14,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-	<version>${version}</version>
+	<version>1.0-SNAPSHOT</version>
 
   <packaging>jar</packaging>
   
@@ -35,6 +35,19 @@
 		<artifactId>hexa.core</artifactId>
 		<version>1.0-SNAPSHOT</version>
 		<scope>compile</scope>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.antlr</groupId>
+		<artifactId>antlr</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<scope>compile</scope>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.hibernate.javax.persistence</groupId>
+		<artifactId>hibernate-jpa-2.0-api</artifactId>
+		<version>1.0.1.Final</version>
 	</dependency>
   </dependencies>
   
@@ -62,7 +75,8 @@
 		<resource>
 			<directory>src/main/java</directory>
 			<includes>
-				<include>**/*.*</include>
+				<include>**/*.java</include>
+				<include>**/*.gwt.xml</include>
 			</includes>
 		</resource>
 	</resources>
