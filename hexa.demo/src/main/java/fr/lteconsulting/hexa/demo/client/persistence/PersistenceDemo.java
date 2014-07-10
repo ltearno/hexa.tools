@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.persistence.client;
+package fr.lteconsulting.hexa.demo.client.persistence;
 
 import java.util.List;
 
@@ -21,10 +21,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 import fr.lteconsulting.hexa.client.ui.UiBuilder;
+import fr.lteconsulting.hexa.persistence.client.hqlLexer;
+import fr.lteconsulting.hexa.persistence.client.hqlParser;
 import fr.lteconsulting.hexa.persistence.client.hqlParser.statement_return;
-import fr.lteconsulting.hexa.persistence.client.persistenceApiTest.EMTest;
 
-public class Antlr3Tests implements EntryPoint
+public class PersistenceDemo implements EntryPoint
 {
 	HTML result = new HTML();
 

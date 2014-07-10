@@ -75,17 +75,52 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
-					<!--<webXml>${basedir}/WEB-INF/web.xml</webXml> -->
-					<!-- <warName>offline-demo-all</warName> -->
-					<!-- <webResources> <resource> <directory>${basedir}/target/gwtwebapp</directory> 
-						<filtering>false</filtering> <excludes> <exclude>**/*.jar</exclude> <exclude>**/*.bat</exclude> 
-						<exclude>**/tu/*</exclude> <exclude>**/test/*</exclude> </excludes> </resource> 
-						</webResources> -->
-					<!-- <warSourceDirectory>${basedir}/site</warSourceDirectory> -->
-					<!-- <webappDirectory>${basedir}/target/webapp</webappDirectory> -->
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>com.buschmais.jqassistant.scm</groupId>
+				<artifactId>jqassistant-maven-plugin</artifactId>
+				<version>1.0.0-M3</version>
+				<!--<executions>
+					<execution>
+						<id>scan</id>
+						<goals>
+							<goal>scan</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>analyze</id>
+						<goals>
+							<goal>analyze</goal>
+						</goals>
+					</execution>
+				</executions>-->
+			</plugin>
 		</plugins>
 	</build>
+	
+	<!--
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.buschmais.jqassistant.scm</groupId>
+				<artifactId>jqassistant-maven-plugin</artifactId>
+				<version>1.0.0-M3</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+	-->
 </project>

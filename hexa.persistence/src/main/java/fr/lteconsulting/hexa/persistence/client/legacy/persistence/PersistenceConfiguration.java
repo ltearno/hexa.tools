@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 
 import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.persistence.client.persistenceApiTest.Category;
-import fr.lteconsulting.hexa.persistence.client.persistenceApiTest.CategoryProxy;
 
 public class PersistenceConfiguration
 {
@@ -67,7 +65,7 @@ public class PersistenceConfiguration
 			directFields.add( new FieldConfiguration( fieldClass, fieldName, fieldName ) );
 		}
 
-		public void addManyToOneFieldConfiguration( Class<Category> fieldClass, String fieldName, String columnName, FetchType fetchType )
+		public void addManyToOneFieldConfiguration( Class<?> fieldClass, String fieldName, String columnName, FetchType fetchType )
 		{
 			manyToOneFields.add( new ManyToOneFieldConfiguration( fieldClass, fieldName, columnName, fetchType ) );
 		}

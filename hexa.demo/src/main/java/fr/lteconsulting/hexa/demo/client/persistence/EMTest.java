@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.persistence.client.persistenceApiTest;
+package fr.lteconsulting.hexa.demo.client.persistence;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,10 @@ import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+
 import fr.lteconsulting.hexa.client.tools.Action;
+import fr.lteconsulting.hexa.persistence.client.legacy.persistence.Article;
+import fr.lteconsulting.hexa.persistence.client.legacy.persistence.Category;
 import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceConfigurationFactory;
 
 public class EMTest

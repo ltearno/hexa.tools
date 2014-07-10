@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.persistence.client.persistenceApiTest;
+package fr.lteconsulting.hexa.persistence.client.legacy.persistence;
 
 import java.util.List;
 

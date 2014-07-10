@@ -12,8 +12,7 @@
 	
 	<modules>
 		<module>hexa.all</module>
-		<!--<module>hexa.artifact</module>-->
-		<module>hexa.parent</module>
+		<module>hexa.artifact</module>
 		<module>hexa.core</module>
 		<module>hexa.rpc</module>
 		<module>hexa.demo</module>

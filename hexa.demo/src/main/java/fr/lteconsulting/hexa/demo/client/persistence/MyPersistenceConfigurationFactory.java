@@ -1,5 +1,7 @@
-package fr.lteconsulting.hexa.persistence.client.persistenceApiTest;
+package fr.lteconsulting.hexa.demo.client.persistence;
 
+import fr.lteconsulting.hexa.persistence.client.legacy.persistence.Article;
+import fr.lteconsulting.hexa.persistence.client.legacy.persistence.Category;
 import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceConfigurationFactory;
 import fr.lteconsulting.hexa.persistence.client.legacy.persistence.WithEntityClasses;
 

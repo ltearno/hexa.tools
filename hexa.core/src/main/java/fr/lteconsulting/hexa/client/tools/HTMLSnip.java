@@ -24,6 +24,15 @@ public class HTMLSnip
 	HashMap<String, String> elementIds = new HashMap<String, String>();
 
 	String snip = null;
+	
+	public HTMLSnip()
+	{
+	}
+	
+	public HTMLSnip( String raw )
+	{
+		this.raw = raw;
+	}
 
 	public void setRaw( String raw )
 	{

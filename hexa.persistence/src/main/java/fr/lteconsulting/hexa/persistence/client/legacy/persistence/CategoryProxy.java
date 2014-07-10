@@ -1,6 +1,5 @@
-package fr.lteconsulting.hexa.persistence.client.persistenceApiTest;
+package fr.lteconsulting.hexa.persistence.client.legacy.persistence;
 
-import fr.lteconsulting.hexa.persistence.client.legacy.persistence.EntityManagerImpl;
 
 public class CategoryProxy extends Category
 {
