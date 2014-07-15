@@ -81,7 +81,7 @@ public class EMTest
 		} );
 	}
 
-	private Action test7 = new Action()
+	private final Action test7 = new Action()
 	{
 		@Override
 		public void exec()
@@ -107,7 +107,7 @@ public class EMTest
 		}
 	};
 
-	private Action test1 = new Action()
+	private final Action test1 = new Action()
 	{
 		@Override
 		public void exec()
@@ -136,7 +136,7 @@ public class EMTest
 	};
 
 	@SuppressWarnings( "unused" )
-	private Action test2 = new Action()
+	private final Action test2 = new Action()
 	{
 		@Override
 		public void exec()
@@ -159,7 +159,7 @@ public class EMTest
 	};
 
 	@SuppressWarnings( "unused" )
-	private Action test3 = new Action()
+	private final Action test3 = new Action()
 	{
 		@Override
 		public void exec()
@@ -192,7 +192,7 @@ public class EMTest
 	};
 
 	@SuppressWarnings( "unused" )
-	private Action test4 = new Action()
+	private final Action test4 = new Action()
 	{
 		@Override
 		public void exec()
@@ -202,8 +202,8 @@ public class EMTest
 			c.setMarque( "Marque jaune" );
 
 			Article a = new Article();
-			a.name = "un article";
-			a.category = c;
+			a.setName( "un article" );
+			a.setCategory( c );
 
 			em.persist( a );
 			em.persist( c );
@@ -212,8 +212,7 @@ public class EMTest
 		}
 	};
 
-	@SuppressWarnings( "unused" )
-	private Action testCreateArticles = new Action()
+	private final Action testCreateArticles = new Action()
 	{
 		@Override
 		public void exec()
@@ -227,9 +226,9 @@ public class EMTest
 			for( int i=0; i<10; i++ )
 			{
 				Article a = new Article();
-				a.name = "un article";
-				a.category = c;
-				a.price = (int)(100 * Math.random());
+				a.setName( "un article" );
+				a.setCategory( c );
+				a.setPrice( (int)(100 * Math.random()) );
 
 				em.persist( a );
 			}
@@ -239,7 +238,7 @@ public class EMTest
 	};
 
 	@SuppressWarnings( "unused" )
-	private Action test5 = new Action()
+	private final Action test5 = new Action()
 	{
 		@Override
 		public void exec()
@@ -263,7 +262,7 @@ public class EMTest
 	};
 
 	@SuppressWarnings( "unused" )
-	private Action test6 = new Action()
+	private final Action test6 = new Action()
 	{
 		@Override
 		public void exec()
