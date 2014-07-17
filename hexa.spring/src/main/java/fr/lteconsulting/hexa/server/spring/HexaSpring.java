@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,15 +39,18 @@ public class HexaSpring
 
 	public final void onContextInitialized( ServletContextEvent servletContextEvent )
 	{
-		init();
+		ServletContext c = servletContextEvent.getServletContext();
+		String hexaSpringProperties = c.getInitParameter( "hexa.spring.properties" );
+		
+		init( hexaSpringProperties );
 	}
 
-	private void init()
+	private void init( String hexaSpringProperties )
 	{
 		log.log( "Initialisation..." );
 
 		log.log( " ... Properties" );
-		initProperties();
+		initProperties( hexaSpringProperties );
 
 		log.log( " ... DatabaseContext pool" );
 		databaseContextFactory = new DatabaseContextFactory();
@@ -62,17 +66,18 @@ public class HexaSpring
 
 	//
 
-	private String configurationDirectory;
+	//private String configurationDirectory;
 	private String rootDataDir;
 	private String databaseUri;
 	private String serverRootUrl;
 	private String administratorEmail;
 
-	private void initProperties()
+	private void initProperties( String hexaSpringProperties )
 	{
-		configurationDirectory = System.getProperty( "jboss.server.config.dir" );
-		String filename = "photo-config.properties";
-		File f = new File( configurationDirectory, filename );
+		//configurationDirectory = System.getProperty( "jboss.server.config.dir" );
+		//String filename = "photo-config.properties";
+		//File f = new File( configurationDirectory, filename );
+		File f = new File( hexaSpringProperties );
 		Properties p = new Properties();
 		try
 		{
