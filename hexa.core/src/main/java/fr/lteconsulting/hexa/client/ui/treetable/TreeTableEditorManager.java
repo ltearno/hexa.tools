@@ -1,12 +1,13 @@
 package fr.lteconsulting.hexa.client.ui.treetable;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.ui.miracle.Size;
 import fr.lteconsulting.hexa.client.ui.tools.IEditor;
 import fr.lteconsulting.hexa.client.ui.tools.IEditorHost;
-import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
+import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellDoubleClickEvent.TableCellDoubleClickHandler;
 
 /**
  * @author Arnaud
@@ -34,13 +35,13 @@ public class TreeTableEditorManager
 	{
 		m_table = table;
 		m_callback = callback;
-		m_table.addTableCellClickHandler( tableCellClickHandler );
+		m_table.addTableCellDoubleClickHandler( tableCellDoubleClickHandler );
 	}
 
-	TableCellClickHandler tableCellClickHandler = new TableCellClickHandler()
+	TableCellDoubleClickHandler tableCellDoubleClickHandler = new TableCellDoubleClickHandler()
 	{
 		@Override
-		public void onTableCellClick( Row item, int column, ClickEvent event )
+		public void onTableCellDoubleClick( Row item, int column, DoubleClickEvent clickEvent )
 		{
 			// forget edition if already opened at the same place
 			if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )
