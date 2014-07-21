@@ -10,6 +10,8 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -18,11 +20,14 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.tools.JQuery;
 import fr.lteconsulting.hexa.client.ui.containers.CustomPanel;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellClickEvent;
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
+import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellDoubleClickEvent;
+import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellDoubleClickEvent.TableCellDoubleClickHandler;
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableHeaderClickEvent;
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableHeaderClickEvent.TableHeaderClickHandler;
 
@@ -145,6 +150,29 @@ public class TreeTable extends Composite
 				}
 			}
 		}, ClickEvent.getType() );
+		
+		addDomHandler( new DoubleClickHandler()
+		{
+			
+			@Override
+			public void onDoubleClick( DoubleClickEvent event )
+			{
+				Element td = getEventTargetCell( Event.as( event.getNativeEvent() ) );
+				if( td == null )
+					return;
+
+				Element tr = DOM.getParent( td );
+				int column = DOM.getChildIndex( tr, td );
+
+				Row item = (Row) tr.getPropertyObject( "linkedItem" );
+				if( item != null )
+				{
+					// if hit the tree arrow (which is the <img> first child of <td>
+					if( !( column==0 && event.getNativeEvent().getEventTarget().<Element> cast()==td.getFirstChildElement() ) )
+						fireEvent( new TableCellDoubleClickEvent( item, column, event ) );
+				}
+			}
+		}, DoubleClickEvent.getType() );
 	}
 
 	public TreeTable()
@@ -160,6 +188,11 @@ public class TreeTable extends Composite
 	public HandlerRegistration addTableCellClickHandler( TableCellClickHandler handler )
 	{
 		return addHandler( handler, TableCellClickEvent.getType() );
+	}
+
+	public HandlerRegistration addTableCellDoubleClickHandler( TableCellDoubleClickHandler handler )
+	{
+		return addHandler( handler, TableCellDoubleClickEvent.getType() );
 	}
 
 	public void clear()
