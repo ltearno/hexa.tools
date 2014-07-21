@@ -9,11 +9,11 @@ import fr.lteconsulting.hexa.server.qpath.QPathResult.QPathResultRow;
 
 public class AutoDTO<T>
 {
-	private Class<T> target;
+	private final Class<T> target;
 
-	private String tablePrefix;
-	private Field[] fields;
-	private String[] dbFields;
+	private final String tablePrefix;
+	private final Field[] fields;
+	private final String[] dbFields;
 
 	public AutoDTO( Class<T> target, QPath qpath )
 	{

@@ -11,6 +11,7 @@ import fr.lteconsulting.hexa.client.common.HexaDate;
 import fr.lteconsulting.hexa.client.common.HexaDateTime;
 import fr.lteconsulting.hexa.client.common.HexaTime;
 import fr.lteconsulting.hexa.client.common.text.DateTimeFormat;
+import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
 import fr.lteconsulting.hexa.shared.data.IdDTO;
 
 public class DatabaseHelper
@@ -236,6 +237,49 @@ public class DatabaseHelper
 	public int update( String table, String condition, FieldsMap fields )
 	{
 		return update( table, condition, fields.map );
+	}
+	
+	public <T extends IHasIntegerId> T update( String table, Class<T> clazz, T item )
+	{
+		return update( table, clazz, item, null );
+	}
+	
+	public <T extends IHasIntegerId> T update( String table, Class<T> clazz, T item, FieldsMap toAppendFieldsMap )
+	{
+		try
+		{
+			FieldsMap fields = FieldsMap.create();
+
+			Field[] classFields = clazz.getFields();
+			for( int i = 0; i < classFields.length; i++ )
+			{
+				Field classField = classFields[i];
+				if( classField.getName().equals( "id" ) )
+					continue;
+
+				fields.p( JavaDBNames.javaToDBName( classFields[i].getName() ), classField.get( item ) );
+			}
+
+			if( toAppendFieldsMap != null )
+			{
+				for( Entry<String, Object> e : toAppendFieldsMap.map.entrySet() )
+				{
+					fields.map.put( e.getKey(), e.getValue() );
+
+					// TODO sets the item's field also
+				}
+			}
+			
+			int res = update( table, "id="+item.getId(), fields.map );
+			if( res < 0 )
+				return null;
+			
+			return item;
+		}
+		catch( IllegalAccessException e )
+		{
+			return null;
+		}
 	}
 
 	public int update( String table, String condition, HashMap<String, ?> data )
