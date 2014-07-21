@@ -3,6 +3,7 @@ package fr.lteconsulting.hexa.client.ui.widget;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.ui.tools.IEditor;
 import fr.lteconsulting.hexa.client.ui.tools.IEditorHost;
 
@@ -10,14 +11,29 @@ public abstract class GenericEditor<T extends Widget> implements IEditor
 {
 	private IEditorHost editorHost;
 	private final Validator<T> validator;
+	private final T widget;
 
 	abstract protected void onValidate( T widget );
 
 	public GenericEditor( T widget, boolean fShowCancel )
 	{
-		validator = new Validator<>();
-		validator.setEditor( widget, fShowCancel );
-		validator.setCallback( validatorCallback );
+		this( widget, fShowCancel, true );
+	}
+	
+	public GenericEditor( final T widget, boolean fShowCancel, boolean fShowValidator )
+	{
+		this.widget = widget;
+		
+		if( fShowValidator ) 
+		{
+			validator = new Validator<>();
+			validator.setEditor( widget, fShowCancel );
+			validator.setCallback( validatorCallback );
+		}
+		else
+		{
+			validator = null;
+		}
 		
 		if( widget instanceof Focusable )
 		{
@@ -26,7 +42,7 @@ public abstract class GenericEditor<T extends Widget> implements IEditor
 				@Override
 				public void onAttachOrDetach( AttachEvent event )
 				{
-					((Focusable)(validator.getEditor())).setFocus( true );
+					((Focusable)widget).setFocus( true );
 				}
 			} );
 		}
@@ -39,9 +55,14 @@ public abstract class GenericEditor<T extends Widget> implements IEditor
 	}
 
 	@Override
-	public final Validator<T> getWidget()
+	public final Widget getWidget()
 	{
-		return validator;
+		return validator != null ? validator : widget;
+	}
+	
+	protected final T getEditorWidget()
+	{
+		return widget;
 	}
 
 	protected final void finishedEdition()
