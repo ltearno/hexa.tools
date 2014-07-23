@@ -144,7 +144,7 @@ public class DatabaseHelper
 		if( o instanceof HexaTime )
 			return "'" + ((HexaTime) o).getString() + "'";
 
-		return "'" + o.toString() + "'";
+		return "'" + o.toString().replaceAll( "'" , "''" ) + "'";
 	}
 
 	// TODO : return the T item. for this have to prepare for the clazz some
