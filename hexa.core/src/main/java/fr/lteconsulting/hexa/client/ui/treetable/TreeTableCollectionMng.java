@@ -7,6 +7,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.comm.HexaFramework;
 import fr.lteconsulting.hexa.client.interfaces.IAsyncCallback;
 import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
@@ -22,6 +23,7 @@ import fr.lteconsulting.hexa.client.ui.widget.ImageTextButton;
 
 public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements IAsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler
 {
+	@Deprecated
 	public abstract void reload();
 
 	public abstract void onWantAdd();
