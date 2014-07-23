@@ -19,7 +19,9 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.impl.FocusImpl;
 
 import fr.lteconsulting.hexa.client.tools.JQuery;
 import fr.lteconsulting.hexa.client.ui.containers.CustomPanel;
@@ -31,7 +33,7 @@ import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellDoubleClickEvent
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableHeaderClickEvent;
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableHeaderClickEvent.TableHeaderClickHandler;
 
-public class TreeTable extends Composite
+public class TreeTable extends Composite implements Focusable
 {
 	interface BasicImageBundle extends ClientBundle
 	{
@@ -74,7 +76,7 @@ public class TreeTable extends Composite
 	Element m_head;
 	Element m_body;
 	Element m_headerRow = null;
-	Row m_rootItem = new Row(this);
+	Row m_rootItem = new Row( this );
 
 	int m_nbColumns = 0;
 	String[] m_headers = null;
@@ -106,6 +108,8 @@ public class TreeTable extends Composite
 
 		customPanel = new CustomPanel( m_decorator );
 		initWidget( customPanel );
+
+		setTabIndex( 0 );
 
 		m_table = DOM.createTable();
 		m_table.setClassName( "TreeTable" );
@@ -142,18 +146,19 @@ public class TreeTable extends Composite
 				Row item = (Row) tr.getPropertyObject( "linkedItem" );
 				if( item != null )
 				{
-					// if hit the tree arrow (which is the <img> first child of <td>
-					if( column==0 && event.getNativeEvent().getEventTarget().<Element> cast()==td.getFirstChildElement() )
+					// if hit the tree arrow (which is the <img> first child of
+					// <td>
+					if( column == 0 && event.getNativeEvent().getEventTarget().<Element> cast() == td.getFirstChildElement() )
 						item.setExpanded( !item.getExpanded() );
 					else
 						fireEvent( new TableCellClickEvent( item, column, event ) );
 				}
 			}
 		}, ClickEvent.getType() );
-		
+
 		addDomHandler( new DoubleClickHandler()
 		{
-			
+
 			@Override
 			public void onDoubleClick( DoubleClickEvent event )
 			{
@@ -167,8 +172,9 @@ public class TreeTable extends Composite
 				Row item = (Row) tr.getPropertyObject( "linkedItem" );
 				if( item != null )
 				{
-					// if hit the tree arrow (which is the <img> first child of <td>
-					if( !( column==0 && event.getNativeEvent().getEventTarget().<Element> cast()==td.getFirstChildElement() ) )
+					// if hit the tree arrow (which is the <img> first child of
+					// <td>
+					if( !(column == 0 && event.getNativeEvent().getEventTarget().<Element> cast() == td.getFirstChildElement()) )
 						fireEvent( new TableCellDoubleClickEvent( item, column, event ) );
 				}
 			}
@@ -257,7 +263,7 @@ public class TreeTable extends Composite
 			customPanel.remove( entry.getValue() );
 		m_widgets.clear();
 
-		m_rootItem = new Row(this);
+		m_rootItem = new Row( this );
 
 		m_body.setInnerText( "" );
 	}
@@ -418,5 +424,38 @@ public class TreeTable extends Composite
 	public boolean remove( Widget child )
 	{
 		return false;
+	}
+
+	static final FocusImpl focusImpl = FocusImpl.getFocusImplForPanel();
+
+	@Override
+	public int getTabIndex()
+	{
+		return focusImpl.getTabIndex( getElement() );
+	}
+
+	@Override
+	public void setAccessKey( char key )
+	{
+		focusImpl.setAccessKey( getElement(), key );
+	}
+
+	@Override
+	public void setFocus( boolean focused )
+	{
+		if( focused )
+		{
+			focusImpl.focus( getElement() );
+		}
+		else
+		{
+			focusImpl.blur( getElement() );
+		}
+	}
+
+	@Override
+	public void setTabIndex( int index )
+	{
+		focusImpl.setTabIndex( getElement(), index );
 	}
 }
