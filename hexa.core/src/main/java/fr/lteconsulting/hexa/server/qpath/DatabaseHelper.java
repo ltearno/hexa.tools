@@ -2,6 +2,8 @@ package fr.lteconsulting.hexa.server.qpath;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -303,6 +305,12 @@ public class DatabaseHelper
 			updateSb.append( "`" + fieldName + "`=" );
 			if( fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).equalsIgnoreCase( "null" )) )
 				updateSb.append( "NULL" );
+			else if( fieldValue instanceof Date )
+			{
+				Date date = (Date) fieldValue;
+				DateFormat format = new SimpleDateFormat( "yyyy-MM-dd" );
+				updateSb.append( "'" + format.format( date ) + "'" );
+			}
 			else
 				updateSb.append( "'" + fieldValue.toString() + "'" );
 		}
