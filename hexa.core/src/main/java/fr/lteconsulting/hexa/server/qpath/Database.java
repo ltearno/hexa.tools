@@ -6,8 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import fr.lteconsulting.hexa.server.tools.Logger;
+import java.util.logging.Logger;
 
 public class Database
 {
@@ -15,11 +14,11 @@ public class Database
 
 	DatabaseMetaData databaseMetaData;
 
-	private final Logger logger = Logger.getLogger( Database.class );
+	private static final Logger logger = Logger.getLogger( Database.class.getSimpleName() );
 
 	public boolean init( Connection connection )
 	{
-		logger.log( "Database initialisation" );
+		logger.info( "Database initialisation" );
 
 		this.connection = connection;
 
@@ -28,7 +27,7 @@ public class Database
 
 	public void term()
 	{
-		logger.log( "Database term" );
+		logger.info( "Database term" );
 
 		if( connection == null )
 			return;
@@ -70,19 +69,19 @@ public class Database
 
 	public void startTransaction()
 	{
-		logger.log( "START TRANSACTION" );
+		logger.info( "START TRANSACTION" );
 		sql( "START TRANSACTION" );
 	}
 
 	public void commit()
 	{
-		logger.log( "COMMIT" );
+		logger.info( "COMMIT" );
 		sql( "COMMIT" );
 	}
 
 	public void rollback()
 	{
-		logger.log( "ROLLBACK" );
+		logger.info( "ROLLBACK" );
 		sql( "ROLLBACK" );
 	}
 
@@ -90,7 +89,7 @@ public class Database
 	{
 		try
 		{
-			logger.log( "SQL-SELECT: " + sql );
+			logger.info( "SQL-SELECT: " + sql );
 
 			Statement stmt = connection.createStatement();
 
@@ -101,7 +100,7 @@ public class Database
 		{
 			String message = "SQLException during call to sql executing statement '" + sql + "' !";
 
-			logger.err( message );
+			logger.severe( message );
 
 			exception.printStackTrace();
 
@@ -113,7 +112,7 @@ public class Database
 	{
 		try
 		{
-			logger.log( "SQL-INSERT: " + sql );
+			logger.info( "SQL-INSERT: " + sql );
 
 			PreparedStatement stmt = connection.prepareStatement( sql, Statement.RETURN_GENERATED_KEYS );
 			stmt.execute();
@@ -128,7 +127,7 @@ public class Database
 		{
 			String message = "SQLException during call to sqlInsert executing statement '" + sql + "' !";
 
-			logger.err( message );
+			logger.severe( message );
 
 			exception.printStackTrace();
 
@@ -147,7 +146,7 @@ public class Database
 	{
 		try
 		{
-			logger.log( "SQL-MODIFY: " + sql );
+			logger.info( "SQL-MODIFY: " + sql );
 
 			PreparedStatement stmt = connection.prepareStatement( sql );
 			stmt.execute();
@@ -158,7 +157,7 @@ public class Database
 		{
 			String message = "SQLException during call to sqlUpdate executing statement '" + sql + "' !";
 
-			logger.err( message );
+			logger.severe( message );
 
 			exception.printStackTrace();
 
@@ -178,7 +177,7 @@ public class Database
 			{
 				String message = "SQLException during call to ensureMetadata !";
 
-				logger.err( message );
+				logger.severe( message );
 
 				e.printStackTrace();
 

@@ -5,24 +5,21 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import fr.lteconsulting.hexa.server.qpath.QPathResult.QPathResultRow;
-import fr.lteconsulting.hexa.server.tools.Logger;
 
 public class QPath
 {
 	private Database db = null;
 	private DatabaseHelper dbh = null;
 
-	private final Logger logger = Logger.getLogger( QPath.class );
-	// private boolean alwaysLog = false;
+	private final static Logger logger = Logger.getLogger( QPath.class.getName() );
 
 	private final HashMap<String, String> singularizations = new HashMap<String, String>();
 	private final HashMap<String, String> pluralizations = new HashMap<String, String>();
 
 	private final AutoDTOs autoDtos = new AutoDTOs( this );
-
-	// function Dump
 
 	public void init( Database database )
 	{
@@ -34,7 +31,7 @@ public class QPath
 		this.db = database;
 		this.dbh = databaseHelper;
 
-		logger.log( "QPath initialized with database " + database.getCurrentDatabase() );
+		logger.info( "QPath initialized with database " + database.getCurrentDatabase() );
 	}
 
 	public void term()
@@ -42,7 +39,7 @@ public class QPath
 		db = null;
 		dbh = null;
 
-		logger.log( "QPath terminated" );
+		logger.info( "QPath terminated" );
 	}
 
 	// function NewParsedQuery( $template )
@@ -275,7 +272,7 @@ public class QPath
 		// echo
 		// "QPath parse error with expression : <b>$toeval</b><br>Stack content is :";
 		// Dump( $stack );
-		logger.err( "QPath parse error with expression : <b>" + toEval + "</b><br>Stack content is :" + stack );
+		logger.severe( "QPath parse error with expression : <b>" + toEval + "</b><br>Stack content is :" + stack );
 
 		return null;
 	}

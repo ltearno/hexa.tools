@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -15,11 +16,10 @@ import fr.lteconsulting.hexa.server.data.UserDTO;
 import fr.lteconsulting.hexa.server.data.UserSecurityTokenDTO;
 import fr.lteconsulting.hexa.server.database.DatabaseContext;
 import fr.lteconsulting.hexa.server.database.DatabaseContextFactory;
-import fr.lteconsulting.hexa.server.tools.Logger;
 
 public class HexaSpring
 {
-	private static Logger log = Logger.getLogger( HexaSpring.class );
+	private static final Logger log = Logger.getLogger( HexaSpring.class.getName() );
 
 	private static HexaSpring instance = null;
 
@@ -47,21 +47,19 @@ public class HexaSpring
 
 	private void init( String hexaSpringProperties )
 	{
-		log.log( "Initialisation..." );
+		log.info( "Initialisation..." );
 
-		log.log( " ... Properties" );
+		log.info( " ... Properties" );
 		initProperties( hexaSpringProperties );
 
-		log.log( " ... DatabaseContext pool" );
+		log.info( " ... DatabaseContext pool" );
 		databaseContextFactory = new DatabaseContextFactory();
 		if( !databaseContextFactory.init( databaseUri ) )
 		{
-			log.err( "**********************************************************************************" );
-			log.err( "Cannot initialize database connection pool, it won't be available to the program !" );
-			log.err( "**********************************************************************************" );
+			log.severe( "Cannot initialize database connection pool, it won't be available to the program !" );
 		}
 
-		log.log( "Initialisation Ok." );
+		log.info( "Initialisation Ok." );
 	}
 
 	//
@@ -89,16 +87,16 @@ public class HexaSpring
 		}
 
 		rootDataDir = p.getProperty( "root_data_dir" );
-		log.log( " ...  root_data_dir: " + rootDataDir );
+		log.info( " ...  root_data_dir: " + rootDataDir );
 
 		databaseUri = p.getProperty( "database_uri" );
-		log.log( " ...  database_uri: " + databaseUri );
+		log.info( " ...  database_uri: " + databaseUri );
 
 		serverRootUrl = p.getProperty( "server_root_url" );
-		log.log( " ...  server_root_url: " + serverRootUrl );
+		log.info( " ...  server_root_url: " + serverRootUrl );
 
 		administratorEmail = p.getProperty( "administrator_email" );
-		log.log( " ...  administrator_email: " + administratorEmail );
+		log.info( " ...  administrator_email: " + administratorEmail );
 	}
 
 	// configuration
@@ -152,13 +150,13 @@ public class HexaSpring
 			@Override
 			public void run()
 			{
-				log.log( "Starting a background thread..." );
+				log.info( "Starting a background thread..." );
 
 				runnable.run();
 
 				cleanThread();
 
-				log.log( "Background thread stopped" );
+				log.info( "Background thread stopped" );
 			}
 		} );
 

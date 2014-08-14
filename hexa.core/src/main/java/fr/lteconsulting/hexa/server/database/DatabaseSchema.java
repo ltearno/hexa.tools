@@ -6,19 +6,20 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
+
 import fr.lteconsulting.hexa.server.qpath.DatabaseDescription;
 import fr.lteconsulting.hexa.server.qpath.DatabaseDescriptionInspector;
-import fr.lteconsulting.hexa.server.tools.Logger;
 
 public class DatabaseSchema
 {
-	private static Logger log = Logger.getLogger( DatabaseSchema.class );
+	private final static Logger log = Logger.getLogger( DatabaseSchema.class.getName() );
 
 	public static ArrayList<String> updateDatabaseSchemaFromFile( File file, DatabaseContext ctx, boolean fDoDelete, boolean fReallyExecute )
 	{
-		log.log( "Updating database schema from file " + file.getAbsolutePath() );
+		log.info( "Updating database schema from file " + file.getAbsolutePath() );
 
 		try
 		{
@@ -38,7 +39,7 @@ public class DatabaseSchema
 			DatabaseDescription targetDatabase = gson.fromJson( targetJson.toString(), DatabaseDescription.class );
 			if( targetDatabase == null )
 			{
-				log.err( "Cannot parse " + file.getAbsolutePath() + " to update DB, aborting schema update !" );
+				log.severe( "Cannot parse " + file.getAbsolutePath() + " to update DB, aborting schema update !" );
 				return null;
 			}
 
@@ -52,30 +53,30 @@ public class DatabaseSchema
 																										 */);
 			if( sqls != null && !sqls.isEmpty() )
 			{
-				log.log( " ... Needed to update database schema:" );
+				log.info( " ... Needed to update database schema:" );
 				if( fReallyExecute )
 				{
 					for( String sql : sqls )
 					{
-						log.log( " ...  Executing " + sql );
+						log.info( " ...  Executing " + sql );
 						ctx.db.sqlUpdate( sql );
-						log.log( " --- ok" );
+						log.info( " --- ok" );
 					}
 				}
 				else
 				{
 					for( String sql : sqls )
-						log.log( sql );
+						log.info( sql );
 				}
 			}
 
-			log.log( " ... Your database schema is up to date" );
+			log.info( " ... Your database schema is up to date" );
 
 			return sqls;
 		}
 		catch( FileNotFoundException exception )
 		{
-			log.log( " ... " + file.getAbsolutePath() + " does not exist to update the database schema !" );
+			log.info( " ... " + file.getAbsolutePath() + " does not exist to update the database schema !" );
 
 			return null;
 		}
@@ -83,7 +84,7 @@ public class DatabaseSchema
 
 	public static boolean dumpDatabaseSchemaToFile( DatabaseContext ctx, File file )
 	{
-		log.log( "Dumping database schema to file " + file.getAbsolutePath() );
+		log.info( "Dumping database schema to file " + file.getAbsolutePath() );
 
 		DatabaseDescriptionInspector inspector = new DatabaseDescriptionInspector();
 		DatabaseDescription dbDesc = inspector.getDatabaseDescription( ctx.db, ctx.dbh );

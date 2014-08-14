@@ -4,13 +4,13 @@ import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
-import fr.lteconsulting.hexa.server.tools.Logger;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class DatabaseContextFactory
 {
-	private static Logger log = Logger.getLogger( DatabaseContextFactory.class );
+	private static Logger log = Logger.getLogger( DatabaseContextFactory.class.getName() );
 
 	String host;
 	int port;
@@ -38,7 +38,7 @@ public class DatabaseContextFactory
 		Connection connexion = connectionFactory.getConnection();
 		context.init( connexion );
 
-		log.log( " ... DatabaseContext creation" );
+		log.info( " ... DatabaseContext creation" );
 
 		return context;
 	}
@@ -70,7 +70,7 @@ class DatabaseConnectionFactoryImpl implements DatabaseConnectionFactory
 		}
 		catch( ClassNotFoundException e )
 		{
-			log.err( "Driver load failed: ClassNotFoundException: " );
+			log.severe( "Driver load failed: ClassNotFoundException: " );
 			e.printStackTrace();
 		}
 
@@ -88,12 +88,12 @@ class DatabaseConnectionFactoryImpl implements DatabaseConnectionFactory
 		}
 		catch( SQLException e )
 		{
-			log.err( "SQLException: " );
+			log.severe( "SQLException: " );
 			e.printStackTrace();
 			return null;
 		}
 
-		log.log( "Initialized with database " + url );
+		log.info( "Initialized with database " + url );
 
 		return connection;
 	}
