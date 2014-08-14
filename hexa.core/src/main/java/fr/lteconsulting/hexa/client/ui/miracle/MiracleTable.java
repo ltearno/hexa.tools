@@ -30,6 +30,7 @@ public class MiracleTable extends FlexTable
 		return addDomHandler( handler, MouseDownEvent.getType() );
 	}
 
+	@SuppressWarnings( "deprecation" )
 	@Override
 	public com.google.gwt.user.client.Element getBodyElement()
 	{

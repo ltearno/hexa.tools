@@ -16,6 +16,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.storage.client.Storage;
+
 import fr.lteconsulting.hexa.client.sql.SQLite;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
@@ -27,7 +28,7 @@ import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceCo
 
 public class EntityManagerFactoryImpl implements EntityManagerFactory
 {
-	private String name;
+	private final String name;
 	PersistenceConfiguration configuration;
 	SQLite sqlite;
 
@@ -46,7 +47,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory
 		}
 	}, true );
 
-	EntityManagerFactoryImpl( String name, Map parameters )
+	EntityManagerFactoryImpl( String name, @SuppressWarnings( "rawtypes" ) Map parameters )
 	{
 		this.name = name;
 		if( parameters != null )

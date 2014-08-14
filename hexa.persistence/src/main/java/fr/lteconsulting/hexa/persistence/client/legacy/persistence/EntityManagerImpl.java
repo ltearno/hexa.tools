@@ -18,6 +18,7 @@ import javax.persistence.metamodel.Metamodel;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.shared.GWT;
+
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLite;
@@ -32,10 +33,9 @@ import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceCo
 
 public class EntityManagerImpl implements EntityManager
 {
-	private String name;
 	PersistenceConfiguration configuration;
 
-	private SQLite sqlite;
+	private final SQLite sqlite;
 
 	ManagedObjectPool pool = new ManagedObjectPool();
 
@@ -43,7 +43,6 @@ public class EntityManagerImpl implements EntityManager
 
 	public EntityManagerImpl( String name, PersistenceConfiguration configuration, SQLite sqlite )
 	{
-		this.name = name;
 		this.configuration = configuration;
 		this.sqlite = sqlite;
 	}
@@ -375,6 +374,7 @@ public class EntityManagerImpl implements EntityManager
 		return s1.equals( s2 );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public <T> List<T> executeTypedQueryAndGetResultList( TypedQueryImpl<T> query )
 	{
 		// compute SQLite's SQL dialect
@@ -484,6 +484,7 @@ public class EntityManagerImpl implements EntityManager
 	<T> T createObjectAndRegisterIt( SQLiteResult.Row row, Object id, EntityConfiguration config )
 	{
 		// create the object
+		@SuppressWarnings( "unchecked" )
 		T object = (T) config.entityClazz.NEW();
 
 		readSQLiteResultToEntityObject( row, object, config );

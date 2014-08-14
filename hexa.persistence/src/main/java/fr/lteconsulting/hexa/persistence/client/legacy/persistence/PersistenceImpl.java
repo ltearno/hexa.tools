@@ -16,7 +16,7 @@ public class PersistenceImpl
 		return createEntityManagerFactory( name, null );
 	}
 
-	public static EntityManagerFactory createEntityManagerFactory( String name, Map parameters )
+	public static EntityManagerFactory createEntityManagerFactory( String name, @SuppressWarnings( "rawtypes" ) Map parameters )
 	{
 		GWT.log( "Persistence EntityManagerFactory creation..." );
 

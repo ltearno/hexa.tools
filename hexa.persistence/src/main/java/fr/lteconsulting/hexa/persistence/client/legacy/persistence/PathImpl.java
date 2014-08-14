@@ -36,7 +36,7 @@ public class PathImpl<X> implements Path<X>, SqlRenderable
 	}
 
 	@Override
-	public <X> Expression<X> as( Class<X> arg0 )
+	public <Y> Expression<Y> as( Class<Y> arg0 )
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -191,7 +191,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>
 	@Override
 	public CriteriaQuery<T> where( Predicate... arg0 )
 	{
-		queryStructure.where( arg0 );
+		queryStructure.where( (Object[]) arg0 );
 		return this;
 	}
 

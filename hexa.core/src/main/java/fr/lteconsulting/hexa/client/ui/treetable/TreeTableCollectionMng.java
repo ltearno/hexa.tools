@@ -23,7 +23,7 @@ import fr.lteconsulting.hexa.client.ui.widget.ImageTextButton;
 
 public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements IAsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler
 {
-	@Deprecated
+	//@Deprecated
 	public abstract void reload();
 
 	public abstract void onWantAdd();

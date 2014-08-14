@@ -80,21 +80,21 @@ public class TypedQueryImpl<T> implements TypedQuery<T>
 	}
 
 	@Override
-	public <T> Parameter<T> getParameter( String arg0, Class<T> arg1 )
+	public <U> Parameter<U> getParameter( String arg0, Class<U> arg1 )
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> Parameter<T> getParameter( int arg0, Class<T> arg1 )
+	public <U> Parameter<U> getParameter( int arg0, Class<U> arg1 )
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> T getParameterValue( Parameter<T> arg0 )
+	public <U> U getParameterValue( Parameter<U> arg0 )
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -129,7 +129,7 @@ public class TypedQueryImpl<T> implements TypedQuery<T>
 	}
 
 	@Override
-	public <T> T unwrap( Class<T> arg0 )
+	public <U> U unwrap( Class<U> arg0 )
 	{
 		// TODO Auto-generated method stub
 		return null;

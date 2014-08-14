@@ -89,7 +89,7 @@ public class QueryStructure
 
 	public List<?> interpretResultAndFeedEntityManager( SQLiteResult results, EntityManagerImpl em )
 	{
-		ArrayList<?> list = new ArrayList();
+		ArrayList<?> list = new ArrayList<>();
 
 		for( SQLiteResult.Row row : results )
 		{
@@ -101,7 +101,7 @@ public class QueryStructure
 
 	interface Selection
 	{
-		void processResultRow( Row row, EntityManagerImpl em, ArrayList list );
+		void processResultRow( Row row, EntityManagerImpl em, ArrayList<?> list );
 		void processSelectClause( StringBuilder sb );
 	}
 
@@ -133,8 +133,9 @@ public class QueryStructure
 			}
 		}
 
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
 		@Override
-		public void processResultRow( Row row, EntityManagerImpl em, ArrayList list )
+		public void processResultRow( Row row, EntityManagerImpl em, ArrayList<?> list )
 		{
 			Object[] result = new Object[selections.length];
 
@@ -144,7 +145,7 @@ public class QueryStructure
 
 				if( selections[i] instanceof PathImpl )
 				{
-					PathImpl path = (PathImpl) selections[i];
+					PathImpl<?> path = (PathImpl<?>) selections[i];
 					EntityConfiguration config = path.root.configuration.getConfigurationForEntity( path.root.entityClass );
 
 					SQLiteTypeManager sqlMng = SQLiteTypeManagerManager.get( config.getFieldConfiguration( path.path ).fieldClass );
@@ -152,8 +153,8 @@ public class QueryStructure
 					result[i] = sqlMng.getValueFromString( stringValue );
 				}
 			}
-
-			list.add( result );
+			
+			((List)list).add( result );
 		}
 	}
 
@@ -179,8 +180,9 @@ public class QueryStructure
 			}
 		}
 
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
 		@Override
-		public void processResultRow( Row row, EntityManagerImpl em, ArrayList list )
+		public void processResultRow( Row row, EntityManagerImpl em, ArrayList<?> list )
 		{
 			assert roots.size() == 1 : "not yet implemented !";
 
@@ -196,7 +198,7 @@ public class QueryStructure
 			if( entityInfo != null )
 			{
 				// if yes, the registered object will be added to the list
-				list.add( entityInfo.managedObject );
+				((List)list).add( entityInfo.managedObject );
 			}
 			else
 			{
@@ -209,7 +211,7 @@ public class QueryStructure
 					convertedRow.addCell( field.columnName, row.getColumnValue( root.sqlAlias + "_" + field.columnName ) );
 
 				Object entity = em.createObjectAndRegisterIt( convertedRow, id, entityConfig );
-				list.add( entity );
+				((List)list).add( entity );
 			}
 		}
 
