@@ -1,6 +1,7 @@
 package fr.lteconsulting.hexa.client.databinding.propertyadapters;
 
 import com.google.gwt.user.client.ui.HasValue;
+
 import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.classinfo.Field;
@@ -73,8 +74,17 @@ public class ObjectPropertiesUtils
 		String getterName = "get" + canon( name );
 		Method getter = s.getMethod( getterName );
 		if( getter != null )
-			return getter.invoke( object );
-
+		{
+			try
+			{
+				return getter.invoke( object );
+			}
+			catch( Exception e )
+			{
+				throw new RuntimeException( "ObjectAdapter [object]." + object.getClass().getName() + "." + getterName + "() : getter call throwed an exception. See cause.", e );
+			}
+		}
+		
 		if( !fTryDirectFieldAccess )
 		{
 			assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter for property " + name + " and field not found !";
