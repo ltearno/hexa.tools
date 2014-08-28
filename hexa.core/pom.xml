@@ -39,10 +39,17 @@
 			<artifactId>gwt-user</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-dev</artifactId>
 			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-codeserver</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

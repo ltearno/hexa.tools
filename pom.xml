@@ -46,6 +46,11 @@
 				<version>${gwt.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.google.gwt</groupId>
+				<artifactId>gwt-codeserver</artifactId>
+				<version>${gwt.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>3.0.1</version>

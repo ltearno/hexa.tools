@@ -36,4 +36,8 @@
 		manifest -->
 	<!--<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" 
 		/> <add-linker name="AppCacheLinker" /> -->
+	
+	<add-linker name="xsiframe" />
+	<set-property name="compiler.useSourceMaps" value="true"/>
+	<set-configuration-property name="devModeRedirectEnabled" value="true" />
 </module>
