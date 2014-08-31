@@ -29,7 +29,9 @@ public class DatabaseContextFactory
 		DatabaseConnectionFactoryC3P0Impl impl = new DatabaseConnectionFactoryC3P0Impl();
 		connectionFactory = impl;
 
-		return impl.init( log, "com.mysql.jdbc.Driver", databaseUri );
+		boolean res = impl.init( log, "com.mysql.jdbc.Driver", databaseUri );
+		
+		return res;
 	}
 
 	synchronized public DatabaseContext requestDatabaseContext()
