@@ -50,6 +50,8 @@ public class Database
 	{
 		try
 		{
+			if( connection == null )
+				return null;
 			return connection.getCatalog();
 		}
 		catch( SQLException e )
