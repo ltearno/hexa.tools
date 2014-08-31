@@ -274,17 +274,14 @@ public class HexaSpring
 	
 	public synchronized DatabaseContextFactory dbFactory( String databaseUri )
 	{
-		if( databaseContextFactory != null )
-			return databaseContextFactory;
-		
-		databaseContextFactory = new DatabaseContextFactory();
-		if( ! databaseContextFactory.init( databaseUri ) )
+		DatabaseContextFactory factory = new DatabaseContextFactory();
+		if( ! factory.init( databaseUri ) )
 		{
 			log.severe( "Cannot initialize database connection pool, it won't be available to the program !" );
 			return null;
 		}
 		
-		return databaseContextFactory;
+		return factory;
 	}
 
 	public DatabaseContext db()
