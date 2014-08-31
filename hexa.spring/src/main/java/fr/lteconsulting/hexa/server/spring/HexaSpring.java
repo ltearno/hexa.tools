@@ -36,29 +36,44 @@ public class HexaSpring
 
 		return instance;
 	}
+	
+	public interface InitPropertyProvider
+	{
+		String getRootDataDir();
+		String getDatabaseUri();
+		String getServerRootUrl();
+		String getAdministratorEmeail();
+	}
 
 	public final void onContextInitialized( ServletContextEvent servletContextEvent )
 	{
 		ServletContext c = servletContextEvent.getServletContext();
-		String hexaSpringProperties = c.getInitParameter( "hexa.spring.properties" );
-		
-		init( hexaSpringProperties );
+		init( c );
 	}
 
-	private void init( String hexaSpringProperties )
+	private void init( ServletContext c )
 	{
 		log.info( "Initialisation..." );
 
 		log.info( " ... Properties" );
-		initProperties( hexaSpringProperties );
+		String hexaSpringProperties = c.getInitParameter( "hexa.spring.properties" );
+		String hexaSpringPropertiesProvider = c.getInitParameter( "hexa.spring.properties-provider" );
+		
+		if( hexaSpringProperties != null )
+			initProperties( hexaSpringProperties );
+		else
+			initPropertiesByProvider( hexaSpringPropertiesProvider );
 
-		log.info( " ... DatabaseContext pool" );
-		databaseContextFactory = new DatabaseContextFactory();
-		if( !databaseContextFactory.init( databaseUri ) )
+		if( databaseUri != null )
 		{
-			log.severe( "Cannot initialize database connection pool, it won't be available to the program !" );
+			log.info( " ... DatabaseContext pool" );
+			databaseContextFactory = dbFactory( databaseUri );
 		}
-
+		else
+		{
+			log.info( " ... Skiping default DatabaseContext pool because not used" );
+		}
+		
 		log.info( "Initialisation Ok." );
 	}
 
@@ -72,6 +87,8 @@ public class HexaSpring
 
 	private void initProperties( String hexaSpringProperties )
 	{
+		log.info( " ...  Configuring through class " + hexaSpringProperties );
+		
 		//configurationDirectory = System.getProperty( "jboss.server.config.dir" );
 		//String filename = "photo-config.properties";
 		//File f = new File( configurationDirectory, filename );
@@ -83,19 +100,59 @@ public class HexaSpring
 		}
 		catch( Exception e )
 		{
+			log.info( " ...  Failed ! " + e.getMessage() );
 			e.printStackTrace();
 		}
 
 		rootDataDir = p.getProperty( "root_data_dir" );
-		log.info( " ...  root_data_dir: " + rootDataDir );
-
 		databaseUri = p.getProperty( "database_uri" );
-		log.info( " ...  database_uri: " + databaseUri );
-
 		serverRootUrl = p.getProperty( "server_root_url" );
-		log.info( " ...  server_root_url: " + serverRootUrl );
-
 		administratorEmail = p.getProperty( "administrator_email" );
+		
+		logConfig();
+	}
+	
+	private void initPropertiesByProvider( String hexaSpringPropertiesProvider )
+	{
+		try
+		{
+			log.info( " ...  Configuring through class " + hexaSpringPropertiesProvider );
+			Class<?> cls = Class.forName( hexaSpringPropertiesProvider );
+			Object provider = cls.newInstance();
+			if( provider==null || ! (provider instanceof InitPropertyProvider) )
+				return;
+			
+			InitPropertyProvider p = (InitPropertyProvider) provider;
+			
+			rootDataDir = p.getRootDataDir();
+			databaseUri = p.getDatabaseUri();
+			serverRootUrl = p.getServerRootUrl();
+			administratorEmail = p.getAdministratorEmeail();
+			
+			logConfig();
+		}
+		catch( ClassNotFoundException e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+		catch( InstantiationException e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+		catch( IllegalAccessException e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+	}
+	
+	private void logConfig()
+	{
+		log.info( " ...  root_data_dir: " + rootDataDir );
+		log.info( " ...  database_uri: " + databaseUri );
+		log.info( " ...  server_root_url: " + serverRootUrl );
 		log.info( " ...  administrator_email: " + administratorEmail );
 	}
 
@@ -214,6 +271,21 @@ public class HexaSpring
 	}
 
 	// handles the database connection creation
+	
+	public synchronized DatabaseContextFactory dbFactory( String databaseUri )
+	{
+		if( databaseContextFactory != null )
+			return databaseContextFactory;
+		
+		databaseContextFactory = new DatabaseContextFactory();
+		if( ! databaseContextFactory.init( databaseUri ) )
+		{
+			log.severe( "Cannot initialize database connection pool, it won't be available to the program !" );
+			return null;
+		}
+		
+		return databaseContextFactory;
+	}
 
 	public DatabaseContext db()
 	{
