@@ -21,6 +21,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 import fr.lteconsulting.hexa.client.ui.resources.image.ImageResources;
 
@@ -51,8 +52,8 @@ class DialogBoxForNormalWidget extends ComplexPanel implements DialogBox, HasClo
 		ImageResource closeImage = ImageResources.INSTANCE.close();
 		int headerSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
 
-		glass.setInnerHTML( "<div class='ResizablePanel-bkgnd' style='display: inline-block; position: relative; margin-top:50px'>"+
-				"<div class='ResizablePanel-title' style='position:relative; left:0px; margin-right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
+		glass.setInnerHTML( "<div class='"+ResizablePanel.CSS.bkgnd()+"' style='display: inline-block; position: relative; margin-top:50px'>"+
+				"<div class='"+ResizablePanel.CSS.title()+"' style='position:relative; left:0px; margin-right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
 				"<div style='position:absolute; right:0px; top:0px;'><img></img></div>"+
 				"<div style='position: relative; overflow:auto;'> <!-- content holder --> </div>"+
 			"</div>" );

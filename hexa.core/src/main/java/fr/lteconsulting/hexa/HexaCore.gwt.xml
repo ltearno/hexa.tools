@@ -29,6 +29,13 @@
 	<generate-with class="fr.lteconsulting.hexa.rebind.JSONBrowserGenerator">
 		<when-type-assignable class="fr.lteconsulting.hexa.client.jsonbrowser.JSONBrowser"/>
 	</generate-with>
+	
+	<generate-with class="fr.lteconsulting.hexa.rebind.HexaCssGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.client.css.HexaCss"/>
+	</generate-with>
+	
+	<define-linker name="HexaCssLinker" class="fr.lteconsulting.hexa.linker.HexaCssLinker"/>
+	<add-linker name="HexaCssLinker"/>
 
 	<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" />
 
@@ -38,6 +45,5 @@
 		/> <add-linker name="AppCacheLinker" /> -->
 	
 	<add-linker name="xsiframe" />
-	<set-property name="compiler.useSourceMaps" value="true"/>
-	<set-configuration-property name="devModeRedirectEnabled" value="true" />
+<!-- 	<set-property name="compiler.useSourceMaps" value="true"/> -->
 </module>

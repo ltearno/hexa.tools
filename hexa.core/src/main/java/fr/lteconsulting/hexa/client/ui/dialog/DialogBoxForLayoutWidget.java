@@ -42,13 +42,13 @@ public class DialogBoxForLayoutWidget implements DialogBox, HasCloseHandlers<Dia
 		dock.add( glass );
 		
 		DivWidget backGround = new DivWidget();
-		backGround.addStyleName( "ResizablePanel-bkgnd" );
+		backGround.addStyleName( ResizablePanel.CSS.bkgnd() );
 		dock.add( backGround );
 		dock.setWidgetLeftRight( backGround, m, Unit.PX, m, Unit.PX );
 		dock.setWidgetTopBottom( backGround, m, Unit.PX, m, Unit.PX );
 		
 		DivWidget titleWidget = new DivWidget();
-		titleWidget.addStyleName( "ResizablePanel-title" );
+		titleWidget.addStyleName( ResizablePanel.CSS.title() );
 		titleWidget.getElement().setInnerText( title );
 		dock.add( titleWidget );
 		dock.setWidgetLeftRight( titleWidget, m, Unit.PX, m + titleSize, Unit.PX );

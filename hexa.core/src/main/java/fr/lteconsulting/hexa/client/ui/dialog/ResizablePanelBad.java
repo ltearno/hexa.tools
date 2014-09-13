@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.ui.resources.image.ImageResources;
 
 class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseUpHandler, MouseDownHandler, RequiresResize, ProvidesResize
@@ -81,7 +82,7 @@ class ResizablePanelBad extends ComplexPanel implements MouseMoveHandler, MouseU
 		Element main = DOM.createDiv();
 		setElement( main );
 
-		setStylePrimaryName( "ResizablePanel" );
+		setStylePrimaryName( ResizablePanel.CSS.main() );
 
 		ImageResource closeImage = ImageResources.INSTANCE.close();
 		titleSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;

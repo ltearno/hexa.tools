@@ -15,15 +15,16 @@
 		<module>hexa.artifact</module>
 		<module>hexa.core</module>
 		<module>hexa.rpc</module>
-		<module>hexa.demo</module>
 		<module>hexa.spring</module>
 		<module>hexa.persistence</module>
+		
+		<!--<module>hexa.demo</module>-->
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mavenVersion>3.0</mavenVersion>
-		<gwt.version>2.6.1</gwt.version>
+		<gwt.version>3.0.1</gwt.version>
 	</properties>
 
 	<dependencyManagement>
