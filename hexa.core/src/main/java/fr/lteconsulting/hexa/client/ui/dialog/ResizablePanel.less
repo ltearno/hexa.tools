@@ -1,46 +1,49 @@
-.ResizablePanel-bkgnd
+.fr-lteconsulting-hexa-client-ui-dialog-ResizablePanel
 {
-	.rounded_corners;
-	border: 1px solid @greyBorder;
-	background-color: #eee;
-}
-
-.ResizablePanel-title
-{
-	cursor: move;
-	.rounded_corners;
-	border: 1px solid @greyBorder;
-	background-color: @ribbonShadedBkColor;
-}
-
-.ResizablePanel
-{
-	.rounded_corners;
-	border: 1px solid @greyBorder;
-	background-color: #eee;
-}
-
-.ResizablePanel .top_handler { cursor: n-resize; }
-.ResizablePanel .top_right_handler { cursor: ne-resize; }
-.ResizablePanel .right_handler { cursor: e-resize; }
-.ResizablePanel .bottom_right_handler { cursor: se-resize; }
-.ResizablePanel .bottom_handler { cursor: s-resize; }
-.ResizablePanel .bottom_left_handler { cursor: sw-resize; }
-.ResizablePanel .left_handler { cursor: w-resize; }
-.ResizablePanel .top_left_handler { cursor: nw-resize; }
-
-.ResizablePanel .title
-{
-	cursor: move;
-	.rounded_corners;
-	border: 1px solid @greyBorder;
-	background-color: @ribbonShadedBkColor;
-}
-
-.ResizablePanel .close_button:hover
-{
-	cursor: pointer;
-	.rounded_corners;
-	margin:-1px;
-	border: 1px solid @greyBorder;
+	&-bkgnd
+	{
+		.rounded_corners;
+		border: 1px solid @greyBorder;
+		background-color: #eee;
+	}
+	
+	&-title
+	{
+		cursor: move;
+		.rounded_corners;
+		border: 1px solid @greyBorder;
+		background-color: @ribbonShadedBkColor;
+	}
+	
+	&-main
+	{
+		.rounded_corners;
+		border: 1px solid @greyBorder;
+		background-color: #eee;
+	}
+	
+	&-main .top_handler { cursor: n-resize; }
+	&-main .top_right_handler { cursor: ne-resize; }
+	&-main .right_handler { cursor: e-resize; }
+	&-main .bottom_right_handler { cursor: se-resize; }
+	&-main .bottom_handler { cursor: s-resize; }
+	&-main .bottom_left_handler { cursor: sw-resize; }
+	&-main .left_handler { cursor: w-resize; }
+	&-main .top_left_handler { cursor: nw-resize; }
+	
+	&-main .title
+	{
+		cursor: move;
+		.rounded_corners;
+		border: 1px solid @greyBorder;
+		background-color: @ribbonShadedBkColor;
+	}
+	
+	&-main .close_button:hover
+	{
+		cursor: pointer;
+		.rounded_corners;
+		margin:-1px;
+		border: 1px solid @greyBorder;
+	}
 }
