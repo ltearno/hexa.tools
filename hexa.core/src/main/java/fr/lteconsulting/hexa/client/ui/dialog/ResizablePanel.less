@@ -1,49 +1,52 @@
 .fr-lteconsulting-hexa-client-ui-dialog-ResizablePanel
 {
+	@border-color: (@std-color + @lighter-color);
+	@background-color: (@std-background + @lighter-color);
+	
 	&-bkgnd
 	{
 		.rounded_corners;
-		border: 1px solid @greyBorder;
-		background-color: #eee;
+		border: 1px solid @border-color;
+		background-color: @background-color;
 	}
 	
 	&-title
 	{
 		cursor: move;
 		.rounded_corners;
-		border: 1px solid @greyBorder;
-		background-color: @ribbonShadedBkColor;
+		border: 1px solid @border-color;
+		background-color: @background-color + @lighter-color;
 	}
 	
 	&-main
 	{
 		.rounded_corners;
-		border: 1px solid @greyBorder;
-		background-color: #eee;
-	}
+		border: 1px solid @border-color;
+		background-color: @background-color;
 	
-	&-main .top_handler { cursor: n-resize; }
-	&-main .top_right_handler { cursor: ne-resize; }
-	&-main .right_handler { cursor: e-resize; }
-	&-main .bottom_right_handler { cursor: se-resize; }
-	&-main .bottom_handler { cursor: s-resize; }
-	&-main .bottom_left_handler { cursor: sw-resize; }
-	&-main .left_handler { cursor: w-resize; }
-	&-main .top_left_handler { cursor: nw-resize; }
-	
-	&-main .title
-	{
-		cursor: move;
-		.rounded_corners;
-		border: 1px solid @greyBorder;
-		background-color: @ribbonShadedBkColor;
-	}
-	
-	&-main .close_button:hover
-	{
-		cursor: pointer;
-		.rounded_corners;
-		margin:-1px;
-		border: 1px solid @greyBorder;
+		& .top_handler { cursor: n-resize; }
+		& .top_right_handler { cursor: ne-resize; }
+		& .right_handler { cursor: e-resize; }
+		& .bottom_right_handler { cursor: se-resize; }
+		& .bottom_handler { cursor: s-resize; }
+		& .bottom_left_handler { cursor: sw-resize; }
+		& .left_handler { cursor: w-resize; }
+		& .top_left_handler { cursor: nw-resize; }
+		
+		& .title
+		{
+			cursor: move;
+			.rounded_corners;
+			border: 1px solid @border-color;
+			background-color: @background-color + @lighter-color;
+		}
+		
+		& .close_button:hover
+		{
+			cursor: pointer;
+			.rounded_corners;
+			margin:-1px;
+			border: 1px solid @border-color;
+		}
 	}
 }
