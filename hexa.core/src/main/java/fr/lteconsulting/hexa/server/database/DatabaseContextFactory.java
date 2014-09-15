@@ -1,12 +1,13 @@
 package fr.lteconsulting.hexa.server.database;
 
-import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import fr.lteconsulting.hexa.server.qpath.DBResults;
 
 public class DatabaseContextFactory
 {
@@ -18,7 +19,7 @@ public class DatabaseContextFactory
 	String user;
 	String password;
 
-	DatabaseConnectionFactory connectionFactory;
+	DatabaseConnectionFactoryImpl connectionFactory;
 
 	public DatabaseContextFactory()
 	{
@@ -26,32 +27,91 @@ public class DatabaseContextFactory
 
 	public boolean init( String databaseUri )
 	{
-		DatabaseConnectionFactoryC3P0Impl impl = new DatabaseConnectionFactoryC3P0Impl();
+		//DatabaseConnectionFactoryC3P0Impl impl = new DatabaseConnectionFactoryC3P0Impl();
+		DatabaseConnectionFactoryImpl impl = new DatabaseConnectionFactoryImpl();
 		connectionFactory = impl;
 
 		boolean res = impl.init( log, "com.mysql.jdbc.Driver", databaseUri );
 		
 		return res;
 	}
+	
+	Pool<DatabaseContext> dbCtxPool = new Pool<DatabaseContext>()
+	{
+		@Override
+		protected DatabaseContext createObj()
+		{
+			DatabaseContext context = new DatabaseContext();
+			Connection connexion = connectionFactory.getConnection();
+			context.init( connexion );
+
+			log.info( " ... DatabaseContext creation in pool" );
+			
+			return context;
+		}
+	};
 
 	synchronized public DatabaseContext requestDatabaseContext()
 	{
-		DatabaseContext context = new DatabaseContext();
-		Connection connexion = connectionFactory.getConnection();
-		context.init( connexion );
-
-		log.info( " ... DatabaseContext creation" );
-
+		DatabaseContext context;
+		
+		do
+		{
+			context = dbCtxPool.get();
+			
+			// test the connection
+			try
+			{
+				context.db.sql( "select 1" );
+			}
+			catch( Exception e )
+			{
+				log.info( " ... DatabaseContext error with connection, forgetting this one" );
+				dbCtxPool.remove( context );
+				context.term();
+				context = null;
+			}
+		}
+		while( context == null );
+		
 		return context;
 	}
 
 	synchronized public void releaseDatabaseContext( DatabaseContext databaseContext )
 	{
-		databaseContext.term();
+		dbCtxPool.replace( databaseContext );
 	}
 }
 
-class DatabaseConnectionFactoryImpl implements DatabaseConnectionFactory
+abstract class Pool<T>
+{
+	abstract protected T createObj();
+	
+	List<T> freeObjects = new ArrayList<>();
+	
+	public T get()
+	{
+		T object = null;
+		if( freeObjects.isEmpty() )
+			object = createObj();
+		else
+			object = freeObjects.remove( 0 );
+		
+		return object;
+	}
+	
+	public void replace( T object )
+	{
+		freeObjects.add( object );
+	}
+	
+	public void remove( T object )
+	{
+		freeObjects.remove( object );
+	}
+}
+
+class DatabaseConnectionFactoryImpl
 {
 	Logger log;
 
@@ -74,12 +134,12 @@ class DatabaseConnectionFactoryImpl implements DatabaseConnectionFactory
 		{
 			log.severe( "Driver load failed: ClassNotFoundException: " );
 			e.printStackTrace();
+			throw new RuntimeException( e );
 		}
 
 		return true;
 	}
 
-	@Override
 	public Connection getConnection()
 	{
 		// initiate a connection to db
@@ -100,52 +160,4 @@ class DatabaseConnectionFactoryImpl implements DatabaseConnectionFactory
 		return connection;
 	}
 
-}
-
-class DatabaseConnectionFactoryC3P0Impl implements DatabaseConnectionFactory
-{
-	Logger log;
-
-	ComboPooledDataSource pooledDataSource;
-
-	String driver;
-	String url;
-	String user;
-	String password;
-
-	public boolean init( Logger log, String driver, String url )
-	{
-		pooledDataSource = new ComboPooledDataSource();
-		try
-		{
-			pooledDataSource.setDriverClass( driver );
-		}
-		catch( PropertyVetoException e )
-		{
-			e.printStackTrace();
-			return false;
-		}
-
-		// loads the jdbc driver
-		pooledDataSource.setJdbcUrl( url );
-
-		return true;
-	}
-
-	@Override
-	public Connection getConnection()
-	{
-		try
-		{
-			Connection conn = pooledDataSource.getConnection();
-
-			return conn;
-		}
-		catch( SQLException e )
-		{
-			e.printStackTrace();
-
-			return null;
-		}
-	}
 }

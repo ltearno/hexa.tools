@@ -45,6 +45,11 @@ public class Database
 
 		connection = null;
 	}
+	
+	public Connection getConnection()
+	{
+		return connection;
+	}
 
 	public String getCurrentDatabase()
 	{
