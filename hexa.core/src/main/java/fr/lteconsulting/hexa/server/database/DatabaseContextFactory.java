@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import fr.lteconsulting.hexa.server.qpath.DBResults;
-
 public class DatabaseContextFactory
 {
 	private static Logger log = Logger.getLogger( DatabaseContextFactory.class.getName() );
