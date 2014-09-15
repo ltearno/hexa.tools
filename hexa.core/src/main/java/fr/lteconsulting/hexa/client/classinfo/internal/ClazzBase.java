@@ -1,6 +1,5 @@
 package fr.lteconsulting.hexa.client.classinfo.internal;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,7 +125,7 @@ public abstract class ClazzBase<T> implements Clazz<T>
 			_fields = new ArrayList<Field>();
 			for( Field field : getDeclaredFields() )
 			{
-				if( (field.getModifier() & Modifier.PUBLIC) == Modifier.PUBLIC )
+				if( (field.getModifier() & /*Modifier.PUBLIC*/1) == /*Modifier.PUBLIC*/1 )
 					_fields.add( field );
 			}
 

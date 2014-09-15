@@ -310,20 +310,20 @@ class OneClazzGenerator
 	{
 		ModifierBuilder mb = new ModifierBuilder();
 		if( field.isPrivate() )
-			mb.append( "java.lang.reflect.Modifier.PRIVATE" );
+			mb.append( "2" );//"java.lang.reflect.Modifier.PRIVATE" );
 		if( field.isProtected() )
-			mb.append( "java.lang.reflect.Modifier.PROTECTED" );
+			mb.append( "4" );//"java.lang.reflect.Modifier.PROTECTED" );
 		if( field.isPublic() )
-			mb.append( "java.lang.reflect.Modifier.PUBLIC" );
+			mb.append( "1" );//"java.lang.reflect.Modifier.PUBLIC" );
 
 		if( field.isStatic() )
-			mb.append( "java.lang.reflect.Modifier.STATIC" );
+			mb.append( "8" );//"java.lang.reflect.Modifier.STATIC" );
 		if( field.isTransient() )
-			mb.append( "java.lang.reflect.Modifier.TRANSIENT" );
+			mb.append( "128" );//"java.lang.reflect.Modifier.TRANSIENT" );
 		if( field.isVolatile() )
-			mb.append( "java.lang.reflect.Modifier.VOLATILE" );
+			mb.append( "64" );//"java.lang.reflect.Modifier.VOLATILE" );
 		if( field.isFinal() )
-			mb.append( "java.lang.reflect.Modifier.FINAL" );
+			mb.append( "16" );//"java.lang.reflect.Modifier.FINAL" );
 
 		return mb.toString();
 	}
