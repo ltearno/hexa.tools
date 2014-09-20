@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.lteconsulting.hexa.server.qpath.QPathResult.QPathResultRow;
 
@@ -14,7 +16,7 @@ public class QPath
 	private Database db = null;
 	private DatabaseHelper dbh = null;
 
-	private final static Logger logger = Logger.getLogger( QPath.class.getName() );
+	private final static Logger logger = LoggerFactory.getLogger( QPath.class.getName() );
 
 	private final HashMap<String, String> singularizations = new HashMap<String, String>();
 	private final HashMap<String, String> pluralizations = new HashMap<String, String>();
@@ -272,7 +274,7 @@ public class QPath
 		// echo
 		// "QPath parse error with expression : <b>$toeval</b><br>Stack content is :";
 		// Dump( $stack );
-		logger.severe( "QPath parse error with expression : <b>" + toEval + "</b><br>Stack content is :" + stack );
+		logger.error( "QPath parse error with expression : <b>" + toEval + "</b><br>Stack content is :" + stack );
 
 		return null;
 	}

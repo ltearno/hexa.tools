@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.lteconsulting.hexa.server.data.UserDTO;
 import fr.lteconsulting.hexa.server.data.UserSecurityTokenDTO;
@@ -19,7 +21,7 @@ import fr.lteconsulting.hexa.server.database.DatabaseContextFactory;
 
 public class HexaSpring
 {
-	private static final Logger log = Logger.getLogger( HexaSpring.class.getName() );
+	private static final Logger log = LoggerFactory.getLogger( HexaSpring.class.getName() );
 
 	private static HexaSpring instance = null;
 
@@ -277,7 +279,7 @@ public class HexaSpring
 		DatabaseContextFactory factory = new DatabaseContextFactory();
 		if( ! factory.init( databaseUri ) )
 		{
-			log.severe( "Cannot initialize database connection pool, it won't be available to the program !" );
+			log.error( "Cannot initialize database connection pool, it won't be available to the program !" );
 			return null;
 		}
 		

@@ -5,11 +5,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 public class DatabaseContextFactory
 {
-	private static Logger log = Logger.getLogger( DatabaseContextFactory.class.getName() );
+	private static Logger log = LoggerFactory.getLogger( DatabaseContextFactory.class );
 
 	String host;
 	int port;
@@ -130,7 +132,7 @@ class DatabaseConnectionFactoryImpl
 		}
 		catch( ClassNotFoundException e )
 		{
-			log.severe( "Driver load failed: ClassNotFoundException: " );
+			log.error( "Driver load failed: ClassNotFoundException: " );
 			e.printStackTrace();
 			throw new RuntimeException( e );
 		}
@@ -148,7 +150,7 @@ class DatabaseConnectionFactoryImpl
 		}
 		catch( SQLException e )
 		{
-			log.severe( "SQLException: " );
+			log.error( "SQLException: " );
 			e.printStackTrace();
 			return null;
 		}

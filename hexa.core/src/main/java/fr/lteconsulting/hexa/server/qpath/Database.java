@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Database
 {
@@ -14,7 +16,7 @@ public class Database
 
 	DatabaseMetaData databaseMetaData;
 
-	private static final Logger logger = Logger.getLogger( Database.class.getSimpleName() );
+	private static final Logger logger = LoggerFactory.getLogger( Database.class );
 
 	public boolean init( Connection connection )
 	{
@@ -107,7 +109,7 @@ public class Database
 		{
 			String message = "SQLException during call to sql executing statement '" + sql + "' !";
 
-			logger.severe( message );
+			logger.error( message );
 
 			exception.printStackTrace();
 
@@ -134,7 +136,7 @@ public class Database
 		{
 			String message = "SQLException during call to sqlInsert executing statement '" + sql + "' !";
 
-			logger.severe( message );
+			logger.error( message );
 
 			exception.printStackTrace();
 
@@ -164,7 +166,7 @@ public class Database
 		{
 			String message = "SQLException during call to sqlUpdate executing statement '" + sql + "' !";
 
-			logger.severe( message );
+			logger.error( message );
 
 			exception.printStackTrace();
 
@@ -184,7 +186,7 @@ public class Database
 			{
 				String message = "SQLException during call to ensureMetadata !";
 
-				logger.severe( message );
+				logger.error( message );
 
 				e.printStackTrace();
 

@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.core.ext.linker.ArtifactSet;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;

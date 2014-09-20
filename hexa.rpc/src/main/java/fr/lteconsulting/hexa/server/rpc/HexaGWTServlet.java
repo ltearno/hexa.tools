@@ -8,8 +8,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,12 +17,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+
 import fr.lteconsulting.hexa.client.comm.DataProxy;
 import fr.lteconsulting.hexa.client.comm.FieldName;
 import fr.lteconsulting.hexa.client.common.HexaDateTime;
@@ -34,7 +35,7 @@ public abstract class HexaGWTServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 3471403271348698342L;
 
-	private final Logger log = Logger.getLogger( this.getClass().getSimpleName() );
+	private final Logger log = LoggerFactory.getLogger( this.getClass().getSimpleName() );
 
 	HashMap<String, ServiceDescription> services = new HashMap<String, ServiceDescription>();
 
@@ -251,7 +252,7 @@ public abstract class HexaGWTServlet extends HttpServlet
 			Trace.throwable( e );
 			Trace.it( "Call impossible, exception during call !!!" );
 
-			log.log( Level.INFO, Trace.peek() );
+			log.info( Trace.peek() );
 
 			// serialization of the returned value
 			responseSerialized.add( new JsonPrimitive( 3 ) ); // ServerState/Level

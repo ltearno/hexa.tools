@@ -24,20 +24,25 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mavenVersion>3.0</mavenVersion>
-		<gwt.version>3.0.1</gwt.version>
+		<gwt.version>2.7.0-SNAPSHOT</gwt.version>
 <!-- 		3.0.1 -->
 	</properties>
 
-<!-- 	<repositories> -->
-<!-- 		<repository> -->
-<!-- 			<id>gwt-snapshots</id> -->
-<!-- 			<name>Gwt Snapshots Repository</name> -->
-<!-- 			<url>https://oss.sonatype.org/content/repositories/google-snapshots</url> -->
-<!-- 		</repository> -->
-<!-- 	</repositories> -->
+	<repositories>
+		<repository>
+			<id>gwt-snapshots</id>
+			<name>Gwt Snapshots Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/google-snapshots</url>
+		</repository>
+	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.1.2</version>
+			</dependency>
 			<dependency>
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-user</artifactId>

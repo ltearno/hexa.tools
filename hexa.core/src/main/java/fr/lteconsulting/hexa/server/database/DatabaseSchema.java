@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -15,7 +17,7 @@ import fr.lteconsulting.hexa.server.qpath.DatabaseDescriptionInspector;
 
 public class DatabaseSchema
 {
-	private final static Logger log = Logger.getLogger( DatabaseSchema.class.getName() );
+	private final static Logger log = LoggerFactory.getLogger( DatabaseSchema.class );
 
 	public static ArrayList<String> updateDatabaseSchemaFromFile( File file, DatabaseContext ctx, boolean fDoDelete, boolean fReallyExecute )
 	{
@@ -39,7 +41,7 @@ public class DatabaseSchema
 			DatabaseDescription targetDatabase = gson.fromJson( targetJson.toString(), DatabaseDescription.class );
 			if( targetDatabase == null )
 			{
-				log.severe( "Cannot parse " + file.getAbsolutePath() + " to update DB, aborting schema update !" );
+				log.error( "Cannot parse " + file.getAbsolutePath() + " to update DB, aborting schema update !" );
 				return null;
 			}
 
