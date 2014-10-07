@@ -45,7 +45,7 @@ public class StackGenerator extends Generator
 		logger.log( TreeLogger.INFO, imple.length + " implemented interfaces / " + typeArgs.length + " type args:" + typeArgs[0].getName() );
 
 		//
-		String typeFactored = typeArgs[0].getName();
+		String typeFactored = typeArgs[0].getSimpleSourceName();
 		String factoredTypeQualified = typeArgs[0].getQualifiedSourceName();
 
 		ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory( packageName, className );
