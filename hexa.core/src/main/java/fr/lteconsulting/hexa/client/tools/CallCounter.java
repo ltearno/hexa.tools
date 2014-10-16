@@ -27,4 +27,9 @@ public abstract class CallCounter
 	{
 		count = 0;
 	}
+	
+	public int count()
+	{
+		return count;
+	}
 }
