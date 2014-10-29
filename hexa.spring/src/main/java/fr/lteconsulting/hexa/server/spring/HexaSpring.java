@@ -12,16 +12,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.lteconsulting.hexa.server.data.UserDTO;
 import fr.lteconsulting.hexa.server.data.UserSecurityTokenDTO;
 import fr.lteconsulting.hexa.server.database.DatabaseContext;
 import fr.lteconsulting.hexa.server.database.DatabaseContextFactory;
+import fr.lteconsulting.hexa.server.tools.LoggerFactory;
 
+/**
+ * HexaSpring is a singleton instance helping to manage
+ * an application. It has a db factory and handle
+ * some servlet processing.
+ * 
+ * @author Arnaud
+ *
+ */
 public class HexaSpring
 {
-	private static final Logger log = LoggerFactory.getLogger( HexaSpring.class.getName() );
+	private static final Logger log = LoggerFactory.getLogger();
 
 	private static HexaSpring instance = null;
 
@@ -31,6 +39,11 @@ public class HexaSpring
 
 	public static final String USER_TOKEN_URL_PARAM_NAME = "security";
 
+	/**
+	 * Retrieves the HexaSpring instance
+	 * 
+	 * @return HexaSpring instance
+	 */
 	public static HexaSpring hexa()
 	{
 		if( instance == null )
@@ -52,114 +65,20 @@ public class HexaSpring
 		ServletContext c = servletContextEvent.getServletContext();
 		init( c );
 	}
-
-	private void init( ServletContext c )
-	{
-		log.info( "Initialisation..." );
-
-		log.info( " ... Properties" );
-		String hexaSpringProperties = c.getInitParameter( "hexa.spring.properties" );
-		String hexaSpringPropertiesProvider = c.getInitParameter( "hexa.spring.properties-provider" );
-		
-		if( hexaSpringProperties != null )
-			initProperties( hexaSpringProperties );
-		else
-			initPropertiesByProvider( hexaSpringPropertiesProvider );
-
-		if( databaseUri != null )
-		{
-			log.info( " ... DatabaseContext pool" );
-			databaseContextFactory = dbFactory( databaseUri );
-		}
-		else
-		{
-			log.info( " ... Skiping default DatabaseContext pool because not used" );
-		}
-		
-		log.info( "Initialisation Ok." );
-	}
-
-	//
-
+	
 	//private String configurationDirectory;
 	private String rootDataDir;
 	private String databaseUri;
 	private String serverRootUrl;
 	private String administratorEmail;
 
-	private void initProperties( String hexaSpringProperties )
-	{
-		log.info( " ...  Configuring through class " + hexaSpringProperties );
-		
-		//configurationDirectory = System.getProperty( "jboss.server.config.dir" );
-		//String filename = "photo-config.properties";
-		//File f = new File( configurationDirectory, filename );
-		File f = new File( hexaSpringProperties );
-		Properties p = new Properties();
-		try
-		{
-			p.load( new FileInputStream( f ) );
-		}
-		catch( Exception e )
-		{
-			log.info( " ...  Failed ! " + e.getMessage() );
-			e.printStackTrace();
-		}
-
-		rootDataDir = p.getProperty( "root_data_dir" );
-		databaseUri = p.getProperty( "database_uri" );
-		serverRootUrl = p.getProperty( "server_root_url" );
-		administratorEmail = p.getProperty( "administrator_email" );
-		
-		logConfig();
-	}
-	
-	private void initPropertiesByProvider( String hexaSpringPropertiesProvider )
-	{
-		try
-		{
-			log.info( " ...  Configuring through class " + hexaSpringPropertiesProvider );
-			Class<?> cls = Class.forName( hexaSpringPropertiesProvider );
-			Object provider = cls.newInstance();
-			if( provider==null || ! (provider instanceof InitPropertyProvider) )
-				return;
-			
-			InitPropertyProvider p = (InitPropertyProvider) provider;
-			
-			rootDataDir = p.getRootDataDir();
-			databaseUri = p.getDatabaseUri();
-			serverRootUrl = p.getServerRootUrl();
-			administratorEmail = p.getAdministratorEmeail();
-			
-			logConfig();
-		}
-		catch( ClassNotFoundException e )
-		{
-			log.info( " ...  Failed ! " + e.getMessage() );
-			e.printStackTrace();
-		}
-		catch( InstantiationException e )
-		{
-			log.info( " ...  Failed ! " + e.getMessage() );
-			e.printStackTrace();
-		}
-		catch( IllegalAccessException e )
-		{
-			log.info( " ...  Failed ! " + e.getMessage() );
-			e.printStackTrace();
-		}
-	}
-	
-	private void logConfig()
-	{
-		log.info( " ...  root_data_dir: " + rootDataDir );
-		log.info( " ...  database_uri: " + databaseUri );
-		log.info( " ...  server_root_url: " + serverRootUrl );
-		log.info( " ...  administrator_email: " + administratorEmail );
-	}
-
 	// configuration
 
+	/**
+	 * Gets the application's root directory.
+	 * 
+	 * @return
+	 */
 	public String rootDataDirectory()
 	{
 		return rootDataDir;
@@ -326,5 +245,155 @@ public class HexaSpring
 	public UserDTO user()
 	{
 		return (UserDTO) httpSession().getAttribute( LOGGED_USER_ID );
+	}
+
+	private void init( ServletContext c )
+	{
+		log.info( "Initialisation..." );
+	
+		log.info( " ... Properties" );
+		String hexaSpringProperties = c.getInitParameter( "hexa.spring.properties" );
+		String hexaSpringPropertiesProvider = c.getInitParameter( "hexa.spring.properties-provider" );
+		String hexaSpringApplicationBootstrap = c.getInitParameter( "hexa.spring.application-bootstrap" );
+		
+		if( hexaSpringProperties != null )
+			initProperties( hexaSpringProperties );
+		else
+			initPropertiesByProvider( hexaSpringPropertiesProvider );
+	
+		if( databaseUri != null )
+		{
+			log.info( " ... DatabaseContext pool" );
+			databaseContextFactory = dbFactory( databaseUri );
+		}
+		else
+		{
+			log.info( " ... Skiping default DatabaseContext pool because not used" );
+		}
+		
+		initApplicationBootstrap( hexaSpringApplicationBootstrap, c );
+		
+		log.info( "Initialisation Ok." );
+	}
+
+	private void initProperties( String hexaSpringProperties )
+	{
+		if( hexaSpringProperties == null )
+		{
+			log.warn( "No HexaSpring properties given in parameter, aborting configuration." );
+			logConfig();
+			return;
+		}
+		
+		log.info( " ...  Configuring through file " + hexaSpringProperties );
+		
+		//configurationDirectory = System.getProperty( "jboss.server.config.dir" );
+		//String filename = "photo-config.properties";
+		//File f = new File( configurationDirectory, filename );
+		File f = new File( hexaSpringProperties );
+		Properties p = new Properties();
+		try
+		{
+			p.load( new FileInputStream( f ) );
+		}
+		catch( Exception e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+	
+		rootDataDir = p.getProperty( "root_data_dir" );
+		databaseUri = p.getProperty( "database_uri" );
+		serverRootUrl = p.getProperty( "server_root_url" );
+		administratorEmail = p.getProperty( "administrator_email" );
+		
+		logConfig();
+	}
+
+	private void initPropertiesByProvider( String hexaSpringPropertiesProvider )
+	{
+		try
+		{
+			if( hexaSpringPropertiesProvider == null )
+			{
+				log.warn( "No HexaSpring property provider given in parameter, aborting configuration." );
+				logConfig();
+				return;
+			}
+			
+			log.info( " ...  Configuring through class " + hexaSpringPropertiesProvider );
+			Class<?> cls = Class.forName( hexaSpringPropertiesProvider );
+			Object provider = cls.newInstance();
+			if( provider==null || ! (provider instanceof InitPropertyProvider) )
+				return;
+			
+			InitPropertyProvider p = (InitPropertyProvider) provider;
+			
+			rootDataDir = p.getRootDataDir();
+			databaseUri = p.getDatabaseUri();
+			serverRootUrl = p.getServerRootUrl();
+			administratorEmail = p.getAdministratorEmeail();
+			
+			logConfig();
+		}
+		catch( ClassNotFoundException e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+		catch( InstantiationException e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+		catch( IllegalAccessException e )
+		{
+			log.info( " ...  Failed ! " + e.getMessage() );
+			e.printStackTrace();
+		}
+	}
+
+	private void initApplicationBootstrap( String applicationBootstrapClassName, ServletContext c )
+	{
+		if( applicationBootstrapClassName == null )
+		{
+			log.warn( "No application bootstrap class, skipping." );
+			return;
+		}
+		
+		try
+		{
+			Class<?> applicationBootstrapClass = Class.forName( applicationBootstrapClassName );
+			Object object = applicationBootstrapClass.newInstance();
+			if( ! ( object instanceof IApplicationBootstrap ) )
+			{
+				log.error( "Application Bootstrap object is not implementing " + IApplicationBootstrap.class.getName() + ", its class is " + object.getClass().getName() );
+				return;
+			}
+			
+			// proceed the application initialization
+			log.info( "Initializing application through class " + applicationBootstrapClassName );
+			((IApplicationBootstrap)object).onStartup( c );
+		}
+		catch( ClassNotFoundException e )
+		{
+			log.error( "Cannot load application bootstrap class" + applicationBootstrapClassName, e );
+		}
+		catch( InstantiationException e )
+		{
+			log.error( "Cannot instantiate application bootstrap class" + applicationBootstrapClassName, e );
+		}
+		catch( IllegalAccessException e )
+		{
+			log.error( "Cannot access application bootstrap class" + applicationBootstrapClassName, e );
+		}
+	}
+
+	private void logConfig()
+	{
+		log.info( " ...  root_data_dir: " + rootDataDir );
+		log.info( " ...  database_uri: " + databaseUri );
+		log.info( " ...  server_root_url: " + serverRootUrl );
+		log.info( " ...  administrator_email: " + administratorEmail );
 	}
 }

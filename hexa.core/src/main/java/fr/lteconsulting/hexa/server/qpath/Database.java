@@ -8,7 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import fr.lteconsulting.hexa.server.tools.LoggerFactory;
 
 public class Database
 {
@@ -16,7 +17,7 @@ public class Database
 
 	DatabaseMetaData databaseMetaData;
 
-	private static final Logger logger = LoggerFactory.getLogger( Database.class );
+	private static final Logger logger = LoggerFactory.getLogger();
 
 	public boolean init( Connection connection )
 	{

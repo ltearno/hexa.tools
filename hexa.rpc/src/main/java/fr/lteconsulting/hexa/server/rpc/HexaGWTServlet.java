@@ -18,7 +18,6 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -29,13 +28,14 @@ import com.google.gson.JsonPrimitive;
 import fr.lteconsulting.hexa.client.comm.DataProxy;
 import fr.lteconsulting.hexa.client.comm.FieldName;
 import fr.lteconsulting.hexa.client.common.HexaDateTime;
+import fr.lteconsulting.hexa.server.tools.LoggerFactory;
 import fr.lteconsulting.hexa.server.tools.Trace;
 
 public abstract class HexaGWTServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 3471403271348698342L;
 
-	private final Logger log = LoggerFactory.getLogger( this.getClass().getSimpleName() );
+	private final Logger log = LoggerFactory.getLogger();
 
 	HashMap<String, ServiceDescription> services = new HashMap<String, ServiceDescription>();
 

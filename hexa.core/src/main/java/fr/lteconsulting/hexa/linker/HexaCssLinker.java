@@ -5,6 +5,7 @@ import java.util.SortedSet;
 
 import com.google.gwt.core.ext.LinkerContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.linker.AbstractLinker;
 import com.google.gwt.core.ext.linker.ArtifactSet;
@@ -33,8 +34,11 @@ public class HexaCssLinker extends AbstractLinker
 	@Override
 	public ArtifactSet link( TreeLogger logger, LinkerContext context, ArtifactSet artifacts, boolean onePermutation ) throws UnableToCompleteException
 	{
+		logger.log( Type.INFO, "Linking HexaCss files..." );
+		
 		if( onePermutation )
 		{
+			logger.log( Type.INFO, "OnePermutation mode, quit." );
 			return artifacts;
 		}
 		
@@ -56,24 +60,25 @@ public class HexaCssLinker extends AbstractLinker
 			}
 		}
 		
-		if( ! elements.isEmpty() )
+		StringBuilder sb = new StringBuilder();
+		for( String element : elements )
 		{
-			StringBuilder sb = new StringBuilder();
-			for( String element : elements )
-			{
-				sb.append( element );
-				sb.append( "\n" );
-			}
-		
-			SyntheticArtifact createdArtifact = emitString( logger, sb.toString(), "hexas-css.refs" );
-			createdArtifact.setVisibility(Visibility.Public);
-			artifacts.add( createdArtifact );
-			
-			createdArtifact = emitString( logger, filesContents.toString(), "hexas-css.less" );
-			createdArtifact.setVisibility(Visibility.Public);
-			artifacts.add( createdArtifact );
+			sb.append( element );
+			sb.append( "\n" );
 		}
+	
+		SyntheticArtifact createdArtifact = emitString( logger, sb.toString(), "hexas-css.refs" );
+		createdArtifact.setVisibility(Visibility.Public);
+		artifacts.add( createdArtifact );
 		
+		createdArtifact = emitString( logger, filesContents.toString(), "hexas-css.less" );
+		createdArtifact.setVisibility(Visibility.Public);
+		artifacts.add( createdArtifact );
+		
+		logger.log( Type.INFO, filesContents.toString() );
+		
+		logger.log( Type.INFO, "Added artifacts hexa-css.refs and hexa-css.less." );
+	
 		return artifacts;
 	}
 }

@@ -7,16 +7,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.lteconsulting.hexa.server.qpath.QPathResult.QPathResultRow;
+import fr.lteconsulting.hexa.server.tools.LoggerFactory;
 
 public class QPath
 {
 	private Database db = null;
 	private DatabaseHelper dbh = null;
 
-	private final static Logger logger = LoggerFactory.getLogger( QPath.class.getName() );
+	private final static Logger logger = LoggerFactory.getLogger();
 
 	private final HashMap<String, String> singularizations = new HashMap<String, String>();
 	private final HashMap<String, String> pluralizations = new HashMap<String, String>();
