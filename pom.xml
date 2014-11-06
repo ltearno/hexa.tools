@@ -17,25 +17,21 @@
 		<module>hexa.rpc</module>
 		<module>hexa.spring</module>
 		<module>hexa.persistence</module>
-
 		<!--<module>hexa.demo</module> -->
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mavenVersion>3.0</mavenVersion>
-		<gwt.version>2.7.0-SNAPSHOT</gwt.version>
-		<!--<gwt.version>2.7.0-SNAPSHOT</gwt.version>-->
-		<!--<gwt.version>3.0.1</gwt.version> -->
-		<!--3.0.1 -->
+		<gwt.version>2.8.0-SNAPSHOT</gwt.version>
 	</properties>
 
 	<repositories>
-		<!--<repository>
+		<repository>
 			<id>gwt-snapshots</id>
 			<name>Gwt Snapshots Repository</name>
 			<url>https://oss.sonatype.org/content/repositories/google-snapshots</url>
-		</repository>-->
+		</repository>
 	</repositories>
 
 	<dependencyManagement>
