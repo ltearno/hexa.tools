@@ -1,6 +1,7 @@
 package fr.lteconsulting.hexa.linker;
 
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 
 import com.google.gwt.core.ext.LinkerContext;
@@ -34,13 +35,10 @@ public class HexaCssLinker extends AbstractLinker
 	@Override
 	public ArtifactSet link( TreeLogger logger, LinkerContext context, ArtifactSet artifacts, boolean onePermutation ) throws UnableToCompleteException
 	{
-		logger.log( Type.INFO, "Linking HexaCss files..." );
-		
 		if( onePermutation )
-		{
-			logger.log( Type.INFO, "OnePermutation mode, quit." );
 			return artifacts;
-		}
+		
+		logger.log( Type.INFO, "Linking HexaCss files..." );
 		
 		HashSet<String> elements = new HashSet<String>();
 		
@@ -52,26 +50,12 @@ public class HexaCssLinker extends AbstractLinker
 			{
 				elements.addAll( css.getElements() );
 				
-				for( String content : css.getFileContents().values() )
-				{
-					filesContents.append( content );
-					filesContents.append( "\n" );
-				}
+				for( Entry<String,String> entry : css.getReferencesMapping().entrySet() )
+					filesContents.append( entry.getValue() + "=" + entry.getKey() + "\n" );
 			}
 		}
 		
-		StringBuilder sb = new StringBuilder();
-		for( String element : elements )
-		{
-			sb.append( element );
-			sb.append( "\n" );
-		}
-	
-		SyntheticArtifact createdArtifact = emitString( logger, sb.toString(), "hexas-css.refs" );
-		createdArtifact.setVisibility(Visibility.Public);
-		artifacts.add( createdArtifact );
-		
-		createdArtifact = emitString( logger, filesContents.toString(), "hexas-css.less" );
+		SyntheticArtifact createdArtifact = emitString( logger, filesContents.toString(), "hexas-css.mapping" );
 		createdArtifact.setVisibility(Visibility.Public);
 		artifacts.add( createdArtifact );
 		

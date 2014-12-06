@@ -1,10 +1,9 @@
 package fr.lteconsulting.hexa.rebind;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JMethod;
@@ -23,12 +22,11 @@ public class HexaCssGenerator extends AbstractGenerator
 	{
 		String generatedClassName = typeName.replaceAll( "\\.", "_" ) + "_HexaCssImpl";
 		
-		boolean isGenerated = generateClass( generatedClassName );
+		HexaCssArtifact artifact = new HexaCssArtifact();
 		
+		boolean isGenerated = generateClass( generatedClassName, artifact.getReferencesMapping() );
 		if( isGenerated )
 		{
-			HexaCssArtifact artifact = new HexaCssArtifact();
-			generateCssReferences( artifact );
 			try
 			{
 				context.commitArtifact( logger, artifact );
@@ -42,7 +40,7 @@ public class HexaCssGenerator extends AbstractGenerator
 		return type.getPackage().getName() + "." + generatedClassName;
 	}
 	
-	private boolean generateClass( String name )
+	private boolean generateClass( String name, HashMap<String,String> classMapping )
 	{
 		String packageName = type.getPackage().getName();
 		
@@ -65,7 +63,15 @@ public class HexaCssGenerator extends AbstractGenerator
 		String prefix = cssClassPrefix();
 		for( JMethod m : type.getMethods() )
 		{
-			sourceWriter.println( "public String " + m.getName() + "() { return \"" + prefix + m.getName() + "\"; }" );
+			String normalName = prefix + m.getName();
+			String shrinkedName = classMapping.get( normalName );
+			if( shrinkedName == null )
+			{
+				shrinkedName = "h" + generateClassSignature( normalName );
+				classMapping.put( normalName, shrinkedName );
+			}
+			
+			sourceWriter.println( "public String " + m.getName() + "() { return \"" + shrinkedName + "\"; }" );
 		}
 
 		// close generated class
@@ -78,79 +84,41 @@ public class HexaCssGenerator extends AbstractGenerator
 		return true;
 	}
 	
+	private String generateClassSignature( String className )
+	{
+		try
+		{
+			MessageDigest md = MessageDigest.getInstance("SHA1");
+			md.update( className.getBytes() ); 
+	      	byte[] output = md.digest();
+	      	return bytesToHex(output).substring( 0, 6 );
+			
+		}
+		catch( NoSuchAlgorithmException e )
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static String bytesToHex(byte[] b)
+	{
+		char hexDigit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+				'A', 'B', 'C', 'D', 'E', 'F' };
+		StringBuffer buf = new StringBuffer();
+		for( int j = 0; j < b.length; j++ )
+		{
+			buf.append(hexDigit[(b[j] >> 4) & 0x0f]);
+			buf.append(hexDigit[b[j] & 0x0f]);
+		}
+		return buf.toString();
+	}
+	
 	private String cssClassPrefix()
 	{
 		String res = type.getQualifiedSourceName().replaceAll( "\\.", "-" ).replaceAll( "\\$", "-" ) + "-";
 		if( res.endsWith( "Css-" ) )
 			return res.substring( 0, res.length() - 4 );
 		return res;
-	}
-
-	private void generateCssReferences( HexaCssArtifact artifact )
-	{
-		String prefix = cssClassPrefix();
-		
-		try
-		{
-			String fileName = typeName;
-			if( fileName.endsWith( ".Css"  ) )
-				fileName = fileName.substring( 0, fileName.length() - 4 );
-			
-			StringBuilder sb = new StringBuilder();
-			String resource = fileName.replaceAll( "\\.", "/" ) + ".less";
-			InputStream r = context.getResourcesOracle().getResourceAsStream( resource );
-			if( r != null )
-			{
-				InputStreamReader isr = new InputStreamReader( r );
-	        	BufferedReader br = new BufferedReader( isr );
-	        	String line;
-	        	try
-				{
-	        		while( (line = br.readLine()) != null )
-		        	{
-						sb.append( line );
-						sb.append( "\n" );
-					}
-	        	}
-	        	catch( Exception e )
-				{
-					e.printStackTrace();
-				}
-	        	artifact.addFileContent(fileName, sb.toString());
-				
-				OutputStream outStream = context.tryCreateResource( logger, "/hexa-css/" + fileName + ".css.ref" );
-				if( outStream == null )
-					return;
-				
-				PrintWriter outPw = new PrintWriter( outStream );
-				
-				JMethod[] ms = type.getInheritableMethods();
-				for( int i=0; i<ms.length; i++ )
-				{
-					String cssReference = prefix + ms[i].getName();
-					
-					outPw.println( cssReference );
-					artifact.add( cssReference );
-				}
-				
-				outPw.flush();
-				try
-				{
-					context.commitResource( logger, outStream );
-				}
-				catch( UnableToCompleteException e )
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		catch( UnableToCompleteException e1 )
-		{
-			e1.printStackTrace();
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
 	}
 }

@@ -14,11 +14,11 @@ public class HexaCssArtifact extends Artifact<HexaCssArtifact>
 	private static final long serialVersionUID = -2530463324235624279L;
 	
 	HashSet<String> elements = new HashSet<>();
-	HashMap<String, String> fileContents = new HashMap<>();
+	HashMap<String, String> referencesMapping = new HashMap<>();
 	
-	public HashMap<String, String> getFileContents()
+	public HashMap<String, String> getReferencesMapping()
 	{
-		return fileContents;
+		return referencesMapping;
 	}
 
 	public HashSet<String> getElements()
@@ -60,8 +60,8 @@ public class HexaCssArtifact extends Artifact<HexaCssArtifact>
 		elements.add( cssReference );
 	}
 
-	public void addFileContent( String fileName, String content )
+	public void addReferencesMapping( String className, String mappedTo )
 	{
-		fileContents.put( fileName, content );
+		referencesMapping.put( className, mappedTo );
 	}
 }
