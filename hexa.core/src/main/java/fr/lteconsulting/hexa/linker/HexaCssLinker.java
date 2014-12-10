@@ -34,8 +34,8 @@ public class HexaCssLinker extends AbstractLinker
 	@Override
 	public ArtifactSet link( TreeLogger logger, LinkerContext context, ArtifactSet artifacts, boolean onePermutation ) throws UnableToCompleteException
 	{
-		//if( onePermutation )
-		//	return artifacts;
+		if( onePermutation )
+			return artifacts;
 		
 		logger.log( Type.INFO, "Linking HexaCss files..." );
 		
