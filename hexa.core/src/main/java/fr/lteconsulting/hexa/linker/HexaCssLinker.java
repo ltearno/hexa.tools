@@ -1,6 +1,5 @@
 package fr.lteconsulting.hexa.linker;
 
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 
@@ -10,8 +9,8 @@ import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.linker.AbstractLinker;
 import com.google.gwt.core.ext.linker.ArtifactSet;
-import com.google.gwt.core.ext.linker.LinkerOrder;
 import com.google.gwt.core.ext.linker.EmittedArtifact.Visibility;
+import com.google.gwt.core.ext.linker.LinkerOrder;
 import com.google.gwt.core.ext.linker.LinkerOrder.Order;
 import com.google.gwt.core.ext.linker.Shardable;
 import com.google.gwt.core.ext.linker.SyntheticArtifact;
@@ -35,12 +34,10 @@ public class HexaCssLinker extends AbstractLinker
 	@Override
 	public ArtifactSet link( TreeLogger logger, LinkerContext context, ArtifactSet artifacts, boolean onePermutation ) throws UnableToCompleteException
 	{
-		if( onePermutation )
-			return artifacts;
+		//if( onePermutation )
+		//	return artifacts;
 		
 		logger.log( Type.INFO, "Linking HexaCss files..." );
-		
-		HashSet<String> elements = new HashSet<String>();
 		
 		StringBuilder filesContents = new StringBuilder();
 		SortedSet<HexaCssArtifact> csss = artifacts.find( HexaCssArtifact.class );
@@ -48,8 +45,6 @@ public class HexaCssLinker extends AbstractLinker
 		{
 			for( HexaCssArtifact css : csss )
 			{
-				elements.addAll( css.getElements() );
-				
 				for( Entry<String,String> entry : css.getReferencesMapping().entrySet() )
 					filesContents.append( entry.getValue() + "=" + entry.getKey() + "\n" );
 			}
@@ -57,6 +52,8 @@ public class HexaCssLinker extends AbstractLinker
 		
 		SyntheticArtifact createdArtifact = emitString( logger, filesContents.toString(), "hexas-css.mapping" );
 		createdArtifact.setVisibility(Visibility.Public);
+		
+		artifacts = new ArtifactSet( artifacts );
 		artifacts.add( createdArtifact );
 		
 		logger.log( Type.INFO, filesContents.toString() );

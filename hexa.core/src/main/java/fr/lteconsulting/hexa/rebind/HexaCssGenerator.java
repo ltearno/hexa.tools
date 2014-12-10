@@ -22,25 +22,12 @@ public class HexaCssGenerator extends AbstractGenerator
 	{
 		String generatedClassName = typeName.replaceAll( "\\.", "_" ) + "_HexaCssImpl";
 		
-		HexaCssArtifact artifact = new HexaCssArtifact();
-		
-		boolean isGenerated = generateClass( generatedClassName, artifact.getReferencesMapping() );
-		if( isGenerated )
-		{
-			try
-			{
-				context.commitArtifact( logger, artifact );
-			}
-			catch( UnableToCompleteException e )
-			{
-				e.printStackTrace();
-			}
-		}
+		generateClass( generatedClassName );
 		
 		return type.getPackage().getName() + "." + generatedClassName;
 	}
 	
-	private boolean generateClass( String name, HashMap<String,String> classMapping )
+	private boolean generateClass( String name )
 	{
 		String packageName = type.getPackage().getName();
 		
@@ -60,6 +47,7 @@ public class HexaCssGenerator extends AbstractGenerator
 		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );
 
 		// generate the List<String> getMethods(); method
+		HashMap<String,String> classMapping = new HashMap<>();
 		String prefix = cssClassPrefix();
 		for( JMethod m : type.getMethods() )
 		{
@@ -80,6 +68,17 @@ public class HexaCssGenerator extends AbstractGenerator
 
 		// commit generated class
 		context.commit( logger, printWriter );
+		
+		// commit compilation artifact
+		try
+		{
+			HexaCssArtifact artifact = new HexaCssArtifact( classMapping );
+			context.commitArtifact( logger, artifact );
+		}
+		catch( UnableToCompleteException e )
+		{
+			e.printStackTrace();
+		}
 		
 		return true;
 	}

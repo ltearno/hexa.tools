@@ -1,7 +1,6 @@
 package fr.lteconsulting.hexa.rebind;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import com.google.gwt.core.ext.linker.Artifact;
 import com.google.gwt.core.ext.linker.Transferable;
@@ -13,7 +12,6 @@ public class HexaCssArtifact extends Artifact<HexaCssArtifact>
 {
 	private static final long serialVersionUID = -2530463324235624279L;
 	
-	HashSet<String> elements = new HashSet<>();
 	HashMap<String, String> referencesMapping = new HashMap<>();
 	
 	public HashMap<String, String> getReferencesMapping()
@@ -21,43 +19,40 @@ public class HexaCssArtifact extends Artifact<HexaCssArtifact>
 		return referencesMapping;
 	}
 
-	public HashSet<String> getElements()
-	{
-		return elements;
-	}
-
-	protected HexaCssArtifact()
+	protected HexaCssArtifact( HashMap<String, String> referencesMapping )
 	{
 		super( HexaCssLinker.class );
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return elements.hashCode();
+		this.referencesMapping = referencesMapping;
 	}
 
 	@Override
 	protected int compareToComparableArtifact( HexaCssArtifact o )
 	{
-		int r = elements.size() - o.elements.size();
+		int r = referencesMapping.size() - o.referencesMapping.size();
 		if( r != 0 )
 			return r;
-		for( String e : elements )
-			if( ! o.elements.contains( e ) )
+		for( String e : referencesMapping.keySet() )
+			if( ! o.referencesMapping.containsKey( e ) )
 				return -1;
 		return 0;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((referencesMapping == null) ? 0 : referencesMapping
+						.hashCode());
+		return result;
 	}
 
 	@Override
 	protected Class<HexaCssArtifact> getComparableArtifactType()
 	{
 		return HexaCssArtifact.class;
-	}
-
-	public void add( String cssReference )
-	{
-		elements.add( cssReference );
 	}
 
 	public void addReferencesMapping( String className, String mappedTo )
