@@ -9,6 +9,15 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
 import fr.lteconsulting.hexa.client.tools.Action2;
 
+/**
+ * Manages the binding between a source and a destination.
+ * 
+ * <p>The data binding has several options like OneWay,
+ * TwoWay, ...
+ * 
+ * @author Arnaud
+ *
+ */
 public class DataBinding
 {
 	private boolean fActivated;
@@ -65,13 +74,15 @@ public class DataBinding
 		GWT.log( "DATABINDING " + logPrefix + " : " + text );
 	}
 
-	public void activate()
+	public DataBinding activate()
 	{
 		fActivated = true;
 
 		log( "activation" );
 
 		onSourceChanged.exec( null, null );
+		
+		return this;
 	}
 
 	public void deferActivate()
@@ -88,6 +99,11 @@ public class DataBinding
 		} );
 	}
 
+	/**
+	 * Terminates the Data Binding activation and cleans up all related resources.
+	 * You should call this method when you want to free the binding, in order to
+	 * lower memory usage.
+	 */
 	public void term()
 	{
 		log( "term" );

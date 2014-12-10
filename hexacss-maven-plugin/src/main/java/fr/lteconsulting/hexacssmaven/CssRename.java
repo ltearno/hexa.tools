@@ -65,6 +65,9 @@ public class CssRename
 		BufferedWriter writer = Files.newBufferedWriter( outputPath, StandardOpenOption.CREATE );
 		writer.append( input );
 		writer.close();
+		
+		log.debug( "Wrote to file " + outputPath );
+		log.debug( input );
 	}
 
 	private static String pruneUnusedClasses( String input, Set<String> usedClassNames, boolean doPrune, Log log )
@@ -102,7 +105,7 @@ public class CssRename
 			log.debug( (used ? "" : "***NOT_USED*** ") + "selector: " + selector + " content: " + m.group( 2 ) );
 
 			// really prune the class if not used !
-			if( doPrune )
+			if( (!doPrune) || used )
 			{
 				sb.append( selector );
 				sb.append( m.group( 2 ) );
