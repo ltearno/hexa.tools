@@ -75,21 +75,31 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 
 	public static void notify( Object sender, String propertyName )
 	{
-		// GWT.log( "NotifyPptyChanged : " + sender.getClass().getName() + " : "
-		// + propertyName );
-
 		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = handlers.get( sender );
 		if( handlersMap == null )
 			return;
 
+		NotifyPropertyChangedEvent event = null;
+		
 		ArrayList<NotifyPropertyChangedEvent.Handler> handlerList = handlersMap.get( propertyName );
-		if( handlerList == null )
-			return;
-
-		NotifyPropertyChangedEvent event = new NotifyPropertyChangedEvent( sender, propertyName );
-
-		for( NotifyPropertyChangedEvent.Handler handler : handlerList )
-			handler.onNotifyPropertChanged( event );
+		if( handlerList != null )
+		{
+			if( event == null )
+				event = new NotifyPropertyChangedEvent( sender, propertyName );
+	
+			for( NotifyPropertyChangedEvent.Handler handler : handlerList )
+				handler.onNotifyPropertChanged( event );
+		}
+		
+		handlerList = handlersMap.get( "*" );
+		if( handlerList != null )
+		{
+			if( event == null )
+				event = new NotifyPropertyChangedEvent( sender, propertyName );
+	
+			for( NotifyPropertyChangedEvent.Handler handler : handlerList )
+				handler.onNotifyPropertChanged( event );
+		}
 	}
 
 	private final Object sender;
