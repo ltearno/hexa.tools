@@ -6,3 +6,6 @@ hexa.demo/.classpath
 hexa.parent/target/
 .idea/
 *.iml
+hexa.core/${webAppDirectory}/
+hexa.core/gwt-unitCache/
+hexa.core/war/
