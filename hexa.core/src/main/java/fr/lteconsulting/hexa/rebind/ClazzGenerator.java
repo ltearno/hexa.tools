@@ -472,7 +472,7 @@ class OneClazzGenerator
 			sourceWriter.outdent();
 			sourceWriter.println( "} catch( Throwable e ) {" );
 			sourceWriter.indent();
-			sourceWriter.println( "throw new java.lang.RuntimeException(\"CALLED METHOD RAISED AN EXCEPTION " + method.getName() + "\" );" );
+			sourceWriter.println( "throw new java.lang.RuntimeException(\"CALLED METHOD RAISED AN EXCEPTION " + method.getName() + " : \" + e.getMessage() );" );
 			sourceWriter.outdent();
 			sourceWriter.println( "}" );
 		}
