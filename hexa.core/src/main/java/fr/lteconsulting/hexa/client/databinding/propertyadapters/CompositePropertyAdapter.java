@@ -147,5 +147,13 @@ public class CompositePropertyAdapter implements PropertyAdapter
 		clients.remove( client );
 		if( clients.isEmpty() )
 			clients = null;
+		
+		// remove adapters
+		for( int i=0; i<adapters.length; i++ )
+		{
+			if( adapters[i] == null )
+				continue;
+			adapters[i].removePropertyChangedHandler( adapterHandlerRegistrations[i] );
+		}
 	}
 }

@@ -1,6 +1,5 @@
 package fr.lteconsulting.hexa.client.databinding.propertyadapters;
 
-import fr.lteconsulting.hexa.client.databinding.INotifyPropertyChanged;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
 import fr.lteconsulting.hexa.client.tools.Action2;
@@ -37,32 +36,13 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 		this.callback = callback;
 		this.cookie = cookie;
 		
-		// How do we register ?
-		if( source instanceof INotifyPropertyChanged )
-		{
-			// Through object's interface implementation
-			return ((INotifyPropertyChanged) source).registerPropertyChangedEvent( sourceProperty, this );
-		}
-		else
-		{
-			// Ask directly to the property system
-			return NotifyPropertyChangedEvent.registerPropertyChangedEvent( source, sourceProperty, this );
-		}
+		return NotifyPropertyChangedEvent.registerPropertyChangedEvent( source, sourceProperty, this );
 	}
 
 	@Override
 	public void removePropertyChangedHandler( Object registration )
 	{
-		if( source instanceof INotifyPropertyChanged )
-		{
-			// Through object's interface implementation
-			((INotifyPropertyChanged) source).removePropertyChangedHandler( registration );
-		}
-		else
-		{
-			// Ask directly to the property system
-			NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
-		}
+		NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
 	}
 
 	@Override

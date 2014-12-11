@@ -124,6 +124,7 @@ public class WatchableCollection<T> implements List<T>
 			
 			for( Action1<List<Change>> callback : callbacks )
 				callback.exec( scheduledChanges );
+			
 			scheduledChanges.clear();
 		}
 	};
