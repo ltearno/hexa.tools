@@ -6,6 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.Change;
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.ChangeType;
 import fr.lteconsulting.hexa.client.tools.Action1;
 
 /**
@@ -17,59 +22,21 @@ import fr.lteconsulting.hexa.client.tools.Action1;
  *
  * @param <T>
  */
-public class WatchableCollection<T> implements List<T>
+public class WatchableCollectionDeferred<T> implements List<T>
 {
-	public enum ChangeType
-	{
-		ADD,
-		REMOVE;
-	}
-	
-	public static class Change
-	{
-		ChangeType type;
-		Object item;
-		
-		public Change( ChangeType type, Object item )
-		{
-			super();
-			this.type = type;
-			this.item = item;
-		}
-		
-		public static <T> List<Change> ForItems( ChangeType type, Collection<T> items )
-		{
-			List<Change> res = new ArrayList<>();
-			for( T item : items )
-				res.add( new Change( type, item ) );
-			
-			return res;
-		}
-		
-		public ChangeType getType()
-		{
-			return type;
-		}
-		
-		@SuppressWarnings( "unchecked" )
-		public <T> T getItem()
-		{
-			return (T) item;
-		}
-	}
-	
 	private final List<T> list;
 	
+	private boolean scheduled;
 	private List<Change> scheduledChanges = new ArrayList<>();
 	
 	private List<Action1<List<Change>>> callbacks = new ArrayList<>();
 	
-	public WatchableCollection()
+	public WatchableCollectionDeferred()
 	{
 		this( new ArrayList<T>() );
 	}
 	
-	public WatchableCollection( List<T> list )
+	public WatchableCollectionDeferred( List<T> list )
 	{
 		this.list = list;
 	}
@@ -94,21 +61,36 @@ public class WatchableCollection<T> implements List<T>
 	{
 		scheduledChanges.add( change );
 		
-		for( Action1<List<Change>> callback : callbacks )
-			callback.exec( scheduledChanges );
-		
-		scheduledChanges.clear();
+		if( ! scheduled )
+		{
+			Scheduler.get().scheduleDeferred( command );
+			scheduled = true;
+		}
 	}
 	
 	private void scheduleChanges( Collection<Change> changes )
 	{
 		scheduledChanges.addAll( changes );
 		
-		for( Action1<List<Change>> callback : callbacks )
-			callback.exec( scheduledChanges );
-		
-		scheduledChanges.clear();
+		if( ! scheduled )
+		{
+			Scheduler.get().scheduleDeferred( command );
+			scheduled = true;
+		}
 	}
+	
+	private ScheduledCommand command = new ScheduledCommand() {
+		@Override
+		public void execute()
+		{
+			scheduled = false;
+			
+			for( Action1<List<Change>> callback : callbacks )
+				callback.exec( scheduledChanges );
+			
+			scheduledChanges.clear();
+		}
+	};
 	
 	public void add(int arg0, T arg1)
 	{

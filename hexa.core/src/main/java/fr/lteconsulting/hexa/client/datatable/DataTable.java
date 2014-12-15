@@ -335,7 +335,7 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 			
 			updateTreeCell();
 			
-			visitDeepFirst( new Visitor<Row>()
+			visitDepthFirstPre( new AbstractVisitor<Row>()
 			{
 				@Override
 				public void beginVisit( Row node )
@@ -352,16 +352,6 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 					{
 						node.getTr().getStyle().clearDisplay();
 					}
-				}
-
-				@Override
-				public void endVisitChild( Row node, Row child )
-				{
-				}
-
-				@Override
-				public void endVisit( Row node )
-				{
 				}
 			} );
 		}
@@ -380,25 +370,23 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 		}
 
 		@Override
-		public void visitDeepFirst( Visitor<Row> visitor )
+		public Object visitDepthFirstPre( Visitor<Row> visitor )
 		{
 			visitor.beginVisit( this );
 
 			if( hasChildren() )
 			{
-				List<Row> childrend = getChildrenRows();
-				if( childrend != null )
+				for( Row child : getChildrenRows() )
 				{
-					for( Row child : childrend )
-					{
-						((RowImpl) child).visitDeepFirst( visitor );
+					visitor.beginVisitChild( this, child );
+					
+					Object childRes = ((RowImpl) child).visitDepthFirstPre( visitor );
 
-						visitor.endVisitChild( this, child );
-					}
+					visitor.endVisitChild( this, child, childRes );
 				}
 			}
 
-			visitor.endVisit( this );
+			return visitor.endVisit( this );
 		}
 
 		@Override

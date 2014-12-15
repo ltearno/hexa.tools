@@ -9,8 +9,10 @@ package fr.lteconsulting.hexa.client.datatable;
 public interface Visitor<T>
 {
 	void beginVisit( T node );
+	
+	void beginVisitChild( T node, T child );
 
-	void endVisitChild( T node, T child );
+	void endVisitChild( T node, T child, Object childResult );
 
-	void endVisit( T node );
+	Object endVisit( T node );
 }

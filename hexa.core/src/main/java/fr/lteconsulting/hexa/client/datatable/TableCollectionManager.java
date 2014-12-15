@@ -381,14 +381,14 @@ public class TableCollectionManager<T extends IHasIntegerId> implements HasSelec
 			dataPlug.updated( record );
 	}
 	
-	public void visitDeepFirst( Visitor<Row> visitor )
+	public void visitDepthFirstPre( Visitor<Row> visitor )
 	{
-		table.getRootRow().visitDeepFirst( visitor );
+		table.getRootRow().visitDepthFirstPre( visitor );
 	}
 	
 	public void visitDeepFirst( Row initRow, Visitor<Row> visitor )
 	{
-		initRow.visitDeepFirst( visitor );
+		initRow.visitDepthFirstPre( visitor );
 	}
 	
 	XTableListen<T> dataPlug = new XTableListen<T>()

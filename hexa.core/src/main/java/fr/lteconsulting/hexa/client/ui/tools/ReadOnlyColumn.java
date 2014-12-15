@@ -9,12 +9,12 @@ public abstract class ReadOnlyColumn<T> extends SimpleColumn<T>
 	}
 
 	@Override
-	protected void setRecordValue( T record, Object value )
+	protected final void setRecordValue( T record, Object value )
 	{
 	}
 
 	@Override
-	protected Class<?> getPropertyType()
+	protected final Class<?> getPropertyType()
 	{
 		// return null so that no editor is allowed
 		return null;

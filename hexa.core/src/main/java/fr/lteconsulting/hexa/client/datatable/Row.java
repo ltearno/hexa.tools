@@ -133,5 +133,5 @@ public interface Row
 	 * 
 	 * @param visitor
 	 */
-	void visitDeepFirst( Visitor<Row> visitor );
+	Object visitDepthFirstPre( Visitor<Row> visitor );
 }
