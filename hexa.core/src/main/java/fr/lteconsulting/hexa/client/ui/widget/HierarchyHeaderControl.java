@@ -11,9 +11,11 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+
 import fr.lteconsulting.hexa.client.comm.GenericJSO;
 import fr.lteconsulting.hexa.client.comm.HexaFramework;
 import fr.lteconsulting.hexa.client.tools.HierarchySet.IHierarchyLevel;
+import fr.lteconsulting.hexa.client.ui.Styles;
 import fr.lteconsulting.hexa.client.ui.dialog.MyPopupPanel;
 import fr.lteconsulting.hexa.client.ui.treetable.Row;
 import fr.lteconsulting.hexa.client.ui.treetable.TreeTable;
@@ -44,7 +46,7 @@ public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
 		panel.add( addLevel );
 
 		initWidget( panel );
-		addStyleName( "CommentPanel" );
+		addStyleName( Styles.CSS.commentPanel() );
 	}
 
 	public void setCallback( HierarchyHeaderControlCallback<T> callback )

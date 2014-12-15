@@ -1,7 +1,5 @@
 package fr.lteconsulting.hexa.client.ui.Criteria;
 
-import fr.lteconsulting.hexa.client.comm.GenericJSO;
-import fr.lteconsulting.hexa.client.interfaces.ICriteriaFieldMng;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,6 +10,10 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+
+import fr.lteconsulting.hexa.client.comm.GenericJSO;
+import fr.lteconsulting.hexa.client.interfaces.ICriteriaFieldMng;
+import fr.lteconsulting.hexa.client.ui.Styles;
 
 public class Criteria extends Composite
 {
@@ -35,7 +37,7 @@ public class Criteria extends Composite
 	{
 		realCriteria = new CriteriaInternal( criteriaMngs );
 
-		spot.addStyleName( "FramedPanel" );
+		spot.addStyleName( Styles.CSS.framedPanel() );
 		initWidget( spot );
 
 		panel.add( realCriteria, criteriaSpotId );
@@ -45,6 +47,7 @@ public class Criteria extends Composite
 		a.getElement().getStyle().setFloat( Style.Float.RIGHT );
 		a.addClickHandler( new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				event.preventDefault();
@@ -56,6 +59,7 @@ public class Criteria extends Composite
 
 		searchButton.addClickHandler( new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				setMode( true );

@@ -1,5 +1,6 @@
 package fr.lteconsulting.hexa.client.ui.widget;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -10,8 +11,17 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 
+import fr.lteconsulting.hexa.client.css.HexaCss;
+
 public class ImageTextButton extends Widget implements ClickHandler, HasClickHandlers
 {
+	interface Css extends HexaCss
+	{
+		public static final Css CSS = GWT.create( Css.class );
+
+		String main();
+	}
+
 	public interface Callback
 	{
 		void onClick( Object cookie );
@@ -32,7 +42,7 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 		this.title = title;
 
 		button = DOM.createButton();
-		button.setClassName( "buttonV2" );
+		button.setClassName( Css.CSS.main() );
 
 		setText( title );
 

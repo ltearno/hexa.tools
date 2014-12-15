@@ -3,6 +3,7 @@ package fr.lteconsulting.hexa.client.ui.htreetable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,10 +13,19 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import fr.lteconsulting.hexa.client.css.HexaCss;
 import fr.lteconsulting.hexa.client.tools.HexaTools;
 
 public class HTreeTable extends ComplexPanel implements ClickHandler
 {
+	interface Css extends HexaCss
+	{
+		static final Css CSS = GWT.create( Css.class );
+
+		String main();
+	}
+
 	public interface Callback
 	{
 		void onHTableClick( Object item );
@@ -36,7 +46,7 @@ public class HTreeTable extends ComplexPanel implements ClickHandler
 	{
 		m_table = DOM.createTable();
 		m_table.setAttribute( "border", "1" );
-		m_table.addClassName( "HTTable" );
+		m_table.addClassName( Css.CSS.main() );
 
 		setElement( m_table );
 

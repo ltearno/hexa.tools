@@ -26,7 +26,9 @@ import com.google.gwt.user.client.ui.InsertPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.comm.GenericJSO;
+import fr.lteconsulting.hexa.client.css.HexaCss;
 import fr.lteconsulting.hexa.client.interfaces.ICriteriaFieldMng;
 import fr.lteconsulting.hexa.client.tools.HexaTools;
 import fr.lteconsulting.hexa.client.ui.widget.ListBoxEx;
@@ -119,6 +121,13 @@ public class CriteriaInternal extends Composite
 	{
 	}
 
+	interface Css extends HexaCss
+	{
+		public static final Css CSS = GWT.create( Css.class );
+
+		String main();
+	}
+
 	private static CriteriaInternalUiBinder uiBinder = GWT.create( CriteriaInternalUiBinder.class );
 
 	Widget closeButton = null;
@@ -143,7 +152,7 @@ public class CriteriaInternal extends Composite
 
 		initWidget( uiBinder.createAndBindUi( this ) );
 
-		addStyleName( "CriteriaPanel" );
+		addStyleName( Css.CSS.main() );
 
 		andAnchor.addClickHandler( new ClickHandler()
 		{
@@ -288,6 +297,7 @@ public class CriteriaInternal extends Composite
 				lbField.setSelected( curSel );
 			lbField.setCallback( new ListBoxEx.Callback()
 			{
+				@Override
 				public void onListBoxExChange( ListBoxEx listBoxEx, Object cookie )
 				{
 					int sel = listBoxEx.getSelected();
@@ -312,6 +322,7 @@ public class CriteriaInternal extends Composite
 			}
 			lbOp.setCallback( new ListBoxEx.Callback()
 			{
+				@Override
 				public void onListBoxExChange( ListBoxEx listBoxEx, Object cookie )
 				{
 					op = CriteriaOp.values()[listBoxEx.getSelected()].name();

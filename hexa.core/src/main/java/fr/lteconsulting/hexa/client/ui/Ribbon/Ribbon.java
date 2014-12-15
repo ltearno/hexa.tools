@@ -120,7 +120,6 @@ public class Ribbon extends ResizeComposite implements RibbonView
 
 		setStyleName( "Ribbon" );
 		getElement().removeAttribute( "style" );
-		// addStyleName( "FramedPanel" );
 		m_tabPanel.setStyleName( "RibbonPanel" );
 
 		if( m_tabBar.getTabCount() > 0 )
