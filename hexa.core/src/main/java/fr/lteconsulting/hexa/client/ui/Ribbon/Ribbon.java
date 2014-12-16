@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 //import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.Widget;
 
+import fr.lteconsulting.hexa.client.ui.containers.CenterPanel;
+
 /**
  * @author Arnaud
  *
@@ -86,31 +88,11 @@ public class Ribbon extends ResizeComposite implements RibbonView
 				bar.addButton( button, obj );
 			}
 			m_tabs.add( bar );
-
-			/*
-			 * FlexTable table = new FlexTable(); for( int j=0;
-			 * j<conf.tabs.get(i).buttons.size(); j++ ) { final Object obj =
-			 * conf.tabs.get(i).buttons.get(j).obj; Button button = new Button(
-			 * conf.tabs.get(i).buttons.get(j).name, new ClickHandler() { public
-			 * void onClick( ClickEvent event ) { callback.onRibbonChange( obj
-			 * ); } } );
-			 *
-			 * table.setWidget( 0, j, button ); } m_tabs.add( table );
-			 */
 		}
-
-		// listeners for TabBar
-		/*
-		 * m_tabBar.addSelectionHandler( new
-		 * SelectionHandler<java.lang.Integer>() { public void onSelection(
-		 * SelectionEvent<java.lang.Integer> event ) { int tabIndex =
-		 * event.getSelectedItem(); m_tabPanel.setWidget( m_tabs.get( tabIndex )
-		 * ); } } );
-		 */
 
 		DockLayoutPanel me = new DockLayoutPanel( Unit.PX );
 		if( conf.logo != null )
-			me.addWest( new Image( conf.logo ), 70 );
+			me.addWest( new CenterPanel( new Image( conf.logo ) ), 70 );
 		if( conf.additionalWidget != null )
 			me.addEast( conf.additionalWidget, 155 );
 
@@ -132,17 +114,6 @@ public class Ribbon extends ResizeComposite implements RibbonView
 		{
 			ButtonBar bar = (ButtonBar) m_tabs.get( i );
 			bar.setEnabled( obj, fEnabled );
-
-			/*
-			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
-			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
-			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
-			 *
-			 * =======
-			 *
-			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
-			 * == obj ) { button.setEnabled( fEnabled ); return; } }
-			 */
 		}
 	}
 
@@ -161,19 +132,6 @@ public class Ribbon extends ResizeComposite implements RibbonView
 					m_tabBar.selectTab( i );
 				}
 			}
-
-			/*
-			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
-			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
-			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
-			 *
-			 * =======
-			 *
-			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
-			 * == obj ) { m_tabBar.selectTab( i ); button.addStyleName(
-			 * "Ribbon-selected" ); } else { button.removeStyleName(
-			 * "Ribbon-selected" ); } }
-			 */
 		}
 	}
 
@@ -200,17 +158,6 @@ public class Ribbon extends ResizeComposite implements RibbonView
 		{
 			ButtonBar bar = (ButtonBar) m_tabs.get( i );
 			bar.setButtonText( obj, text );
-
-			/*
-			 * FlexTable table = (FlexTable)m_tabs.get( i ); for( int j=0;
-			 * j<m_conf.tabs.get(i).buttons.size(); j++ ) { Button button =
-			 * (Button)table.getWidget( 0, j ); <<<<<<< HEAD
-			 *
-			 * =======
-			 *
-			 * >>>>>>> origin/regsys if( m_conf.tabs.get(i).buttons.get(j).obj
-			 * == obj ) { button.setText( text ); return; } }
-			 */
 		}
 	}
 }
