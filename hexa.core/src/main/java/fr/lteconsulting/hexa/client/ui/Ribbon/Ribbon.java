@@ -6,27 +6,21 @@ package fr.lteconsulting.hexa.client.ui.Ribbon;
 import java.util.ArrayList;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.SimplePanel;
 //import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.Widget;
-
-import fr.lteconsulting.hexa.client.ui.containers.CenterPanel;
 
 /**
  * @author Arnaud
  *
  */
-public class Ribbon extends ResizeComposite implements RibbonView
+public class Ribbon extends Composite implements RibbonView
 {
 	public interface RibbonCallback
 	{
@@ -90,18 +84,10 @@ public class Ribbon extends ResizeComposite implements RibbonView
 			m_tabs.add( bar );
 		}
 
-		DockLayoutPanel me = new DockLayoutPanel( Unit.PX );
-		if( conf.logo != null )
-			me.addWest( new CenterPanel( new Image( conf.logo ) ), 70 );
-		if( conf.additionalWidget != null )
-			me.addEast( conf.additionalWidget, 155 );
-
-		me.add( panel );
-
-		initWidget( me );
+		initWidget( panel );
+		panel.setSize( "100%", "100%" );
 
 		setStyleName( "Ribbon" );
-		getElement().removeAttribute( "style" );
 		m_tabPanel.setStyleName( "RibbonPanel" );
 
 		if( m_tabBar.getTabCount() > 0 )

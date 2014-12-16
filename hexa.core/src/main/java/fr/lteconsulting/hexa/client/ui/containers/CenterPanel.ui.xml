@@ -3,9 +3,9 @@
 	<div>
 		<div style="display:table;width:100%;height:100%">
 			<div style="display:table-row">
-				<div style="display:table-cell;text-align:center">
+				<div style="display:table-cell;text-align:center;vertical-align:middle">
 					<div ui:field="containerElement"
-						style="display:inline-block; text-align:left; height:100%;"></div>
+						style="display:inline-block; text-align:left;"></div>
 				</div>
 			</div>
 		</div>

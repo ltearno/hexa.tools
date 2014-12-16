@@ -1,6 +1,8 @@
 package fr.lteconsulting.hexa.client.ui.Ribbon;
 
-public interface RibbonView
+import com.google.gwt.user.client.ui.IsWidget;
+
+public interface RibbonView extends IsWidget
 {
 	void selectButton( Object obj );
 
