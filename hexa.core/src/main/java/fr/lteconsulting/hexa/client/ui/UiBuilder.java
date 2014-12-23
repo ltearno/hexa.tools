@@ -16,12 +16,12 @@ public class UiBuilder
 		return parent;
 	}
 
-	public static Widget horiz( IsWidget... children )
+	public static HorizontalPanel horiz( IsWidget... children )
 	{
 		return addIn( new HorizontalPanel(), children );
 	}
 
-	public static Widget vert( IsWidget... children )
+	public static VerticalPanel vert( IsWidget... children )
 	{
 		return addIn( new VerticalPanel(), children );
 	}

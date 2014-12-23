@@ -67,6 +67,14 @@ public interface Row
 	 * @return The created row
 	 */
 	Row addRow();
+	
+	/**
+	 * Creates a new {@link Row} and add it at the specified position
+	 * 
+	 * @param position index of the inserted row
+	 * @return The created row
+	 */
+	Row insertRowAt( int position );
 
 	/**
 	 * Returns the tr element underlying to the row
@@ -113,6 +121,16 @@ public interface Row
 	 * @param row
 	 */
 	void acceptAsLastChild( Row row );
+	
+	/**
+	 * Accepts the given Row at the given position.<br/>
+	 * It may imply that the row should be removed from its current parent
+	 * if needed.
+	 * 
+	 * @param row
+	 * @param position The insertion position for the row
+	 */
+	void acceptAsNthChild( Row row, int position );
 
 	/**
 	 * Returns the node level in the tree formed by the table rows.

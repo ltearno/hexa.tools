@@ -190,7 +190,7 @@ public class WatchableCollection<T> implements List<T>
 
 	public T remove(int arg0) {
 		T res = list.remove(arg0);
-		scheduleChange( new Change( ChangeType.REMOVE, arg0 ) );
+		scheduleChange( new Change( ChangeType.REMOVE, res ) );
 		return res;
 	}
 

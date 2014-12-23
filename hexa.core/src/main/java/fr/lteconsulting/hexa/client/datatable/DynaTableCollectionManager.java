@@ -12,6 +12,11 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 {
 	HashMap<Integer, Object> registrations = new HashMap<>();
 	
+	public DynaTableCollectionManager( boolean withDeleteColumn )
+	{
+		super( withDeleteColumn );
+	}
+	
 	protected void onStoredRow( T record, Row row )
 	{
 	}

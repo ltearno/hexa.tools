@@ -286,6 +286,18 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 
 			return child;
 		}
+		
+		@Override
+		public Row insertRowAt( int position )
+		{
+			RowImpl child = new RowImpl();
+
+			insertChildAt( child, position );
+			
+			updateTreeCell();
+			
+			return child;
+		}
 
 		@Override
 		public void acceptAsLastChild( Row row )
@@ -299,6 +311,20 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 			RowImpl child = (RowImpl) row;
 
 			insertLastChild( child );
+		}
+		
+		@Override
+		public void acceptAsNthChild( Row row, int position )
+		{
+			if( row == null )
+				return;
+
+			if( !(row instanceof RowImpl) )
+				throw new RuntimeException( "Row cannot be accept as a child, incompatible implementation." );
+
+			RowImpl child = (RowImpl) row;
+
+			insertChildAt( child, position );
 		}
 		
 		@Override
@@ -423,6 +449,55 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 			// do the logical attach (to the child list)
 			child.parent = this;
 			getChildren().add( child );
+
+			// ensure child's descendants are at a good place
+			class ReplacingVisitor implements Action1<DataTable.RowImpl>
+			{
+				private Element previousTr = null;
+
+				@Override
+				public void exec( RowImpl row )
+				{
+					TableCellElement td = row.tr.getChild( 0 ).cast();
+					td.getStyle().setPaddingLeft( 10 * row.getLevel(), Unit.PX );
+
+					if( previousTr == null )
+					{
+						previousTr = row.tr;
+						return;
+					}
+
+					tbody.insertAfter( row.tr, previousTr );
+					previousTr = row.tr;
+				}
+			}
+
+			child.browseDeep( new ReplacingVisitor() );
+		}
+		
+		private void insertChildAt( RowImpl child, int position )
+		{
+			assert (child != null);
+
+			child.detach();
+
+			// do the DOM attach
+			if( position > 0 )
+			{
+				RowImpl lastChildRow = getChildren().get( position - 1 ).getLastChildDeep();
+				tbody.insertAfter( child.tr, lastChildRow.tr );
+			}
+			else
+			{
+				if( tr != null )
+					tbody.insertAfter( child.tr, tr );
+				else
+					tbody.insertFirst( child.tr );
+			}
+			
+			// do the logical attach (to the child list)
+			child.parent = this;
+			getChildren().add( position, child );
 
 			// ensure child's descendants are at a good place
 			class ReplacingVisitor implements Action1<DataTable.RowImpl>

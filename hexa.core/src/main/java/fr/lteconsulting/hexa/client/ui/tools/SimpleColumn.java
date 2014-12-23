@@ -87,6 +87,24 @@ public abstract class SimpleColumn<T> implements IColumn<T>, HasValueChangeHandl
 			
 			return editor;
 		}
+		else if( propertyType == Double.class || propertyType == double.class )
+		{
+			TextEditor editor = new TextEditor( getValue( record ), true, false )
+			{
+				@Override
+				protected void onValidate( String newValue )
+				{
+					Double doubleValue = Double.parseDouble( newValue );
+					getEditorHost().finishedEdition();
+					
+					setRecordValue( record, doubleValue );
+					
+					ValueChangeEvent.fire( SimpleColumn.this, record );
+				}
+			};
+			
+			return editor;
+		}
 		
 		return null;
 	}
