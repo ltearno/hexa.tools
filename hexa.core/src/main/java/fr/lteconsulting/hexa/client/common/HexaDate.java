@@ -319,7 +319,11 @@ public class HexaDate
 		this.month = month;
 	}
 
-	// sets the day of the month
+	/**
+	 * sets the day of the month
+	 * 
+	 * @param date
+	 */
 	public void setDate( int date )
 	{
 		this.date = date;

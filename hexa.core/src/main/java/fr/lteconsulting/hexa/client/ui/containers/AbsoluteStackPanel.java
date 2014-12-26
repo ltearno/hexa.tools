@@ -13,6 +13,7 @@ public class AbsoluteStackPanel extends Composite implements IStackPanel
 
 	public AbsoluteStackPanel()
 	{
+		m_stack.setWidth( "100%" );
 		initWidget( m_stack );
 	}
 
@@ -23,8 +24,7 @@ public class AbsoluteStackPanel extends Composite implements IStackPanel
 		RowItem()
 		{
 			row = new AbsolutePanel();
-
-			row.setWidth( m_stack.getOffsetWidth() + "px" );
+			row.setWidth( "100%" );
 		}
 
 		@Override
@@ -90,6 +90,4 @@ public class AbsoluteStackPanel extends Composite implements IStackPanel
 	{
 		m_stack.clear();
 	}
-
-	// addSubPanel
 }

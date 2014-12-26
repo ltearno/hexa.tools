@@ -51,7 +51,6 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 	@Override
 	protected void forgetRow( T record )
 	{
-		GWT.log( "FORGET ROW " + record );
 		onForgetRow( record );
 
 		Object registration = registrations.remove( record );
