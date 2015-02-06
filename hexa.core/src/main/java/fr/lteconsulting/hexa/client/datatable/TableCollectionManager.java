@@ -381,6 +381,9 @@ public class TableCollectionManager<T extends IHasIntegerId> implements HasSelec
 		editedRecord = null;
 	}
 	
+	/**
+	 * Redraw all lines of the table, based on the current dataset
+	 */
 	public void redraw()
 	{
 		for( T record : records.values() )

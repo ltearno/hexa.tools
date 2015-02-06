@@ -5,6 +5,7 @@
 	<inherits name='fr.lteconsulting.hexa.HexaCore' />
 
 	<!-- Hexa Modules -->
+	<inherits name='fr.lteconsulting.hexa.HexaCss' />
 	<inherits name='fr.lteconsulting.hexa.HexaRpc' />
 	<inherits name='fr.lteconsulting.hexa.HexaSpring' />
 	<inherits name='fr.lteconsulting.hexa.persistence.HexaPersistence' />

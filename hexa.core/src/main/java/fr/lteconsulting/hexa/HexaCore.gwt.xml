@@ -9,6 +9,8 @@
 	<!-- For using GWTBootstrap and Hexa Utils associated with it, inherit the 
 		following module -->
 	<!-- <inherits name='fr.lteconsulting.hexa.HexaGwtBootstrap'/> -->
+	
+	<inherits name='fr.lteconsulting.hexa.HexaCss' />
 
 	<super-source path="jre" />
 	<source path="client" />
@@ -29,13 +31,6 @@
 	<generate-with class="fr.lteconsulting.hexa.rebind.JSONBrowserGenerator">
 		<when-type-assignable class="fr.lteconsulting.hexa.client.jsonbrowser.JSONBrowser"/>
 	</generate-with>
-	
-	<generate-with class="fr.lteconsulting.hexa.rebind.HexaCssGenerator">
-		<when-type-assignable class="fr.lteconsulting.hexa.client.css.HexaCss"/>
-	</generate-with>
-	
-	<define-linker name="HexaCssLinker" class="fr.lteconsulting.hexa.linker.HexaCssLinker"/>
-	<add-linker name="HexaCssLinker"/>
 
 	<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" />
 

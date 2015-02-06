@@ -5,8 +5,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
+import com.google.gwt.core.ext.Generator;
+import com.google.gwt.core.ext.GeneratorContext;
+import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.NotFoundException;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -15,9 +21,41 @@ import com.google.gwt.user.rebind.SourceWriter;
  * Generates a file reporting use of Css classes
  *
  */
-public class HexaCssGenerator extends AbstractGenerator
+public class HexaCssGenerator extends Generator
 {
+	// Context and logger for code generation
+	protected TreeLogger logger = null;
+	protected GeneratorContext context = null;
+	TypeOracle typeOracle;
+	
+	protected String typeName = null;
+	protected JClassType type = null;
+	
 	@Override
+	public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException
+	{
+		this.logger = logger;
+		this.context = context;
+		this.typeName = typeName;
+		
+		if( typeName == null )
+			return null;
+		
+		typeOracle = context.getTypeOracle();
+		
+		try
+		{
+			type = typeOracle.getType( typeName );
+		}
+		catch( NotFoundException e )
+		{
+			e.printStackTrace();
+			throw new RuntimeException( e );
+		}
+		
+		return generate();
+	}
+	
 	protected String generate()
 	{
 		String generatedClassName = typeName.replaceAll( "\\.", "_" ) + "_HexaCssImpl";

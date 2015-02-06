@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.lteconsulting</groupId>
-	<artifactId>hexacss-maven-plugin</artifactId>
+	<artifactId>hexa.css-maven-plugin</artifactId>
 	<version>1.0</version>
 	<packaging>maven-plugin</packaging>
 

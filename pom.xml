@@ -16,6 +16,7 @@
 		<module>hexa.core</module>
 		<module>hexa.rpc</module>
 		<module>hexa.spring</module>
+		<module>hexa.css</module>
 		<module>hexa.persistence</module>
 		<!--<module>hexa.demo</module> -->
 	</modules>
@@ -25,14 +26,6 @@
 		<mavenVersion>3.0</mavenVersion>
 		<gwt.version>2.7.0</gwt.version>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>gwt-snapshots</id>
-			<name>Gwt Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/google-snapshots</url>
-		</repository>
-	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
