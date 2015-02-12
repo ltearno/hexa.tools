@@ -15,7 +15,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 import fr.lteconsulting.hexa.client.ui.resources.image.ImageResources;
 
@@ -59,9 +61,12 @@ public class DialogBoxForLayoutWidget implements DialogBox, HasCloseHandlers<Dia
 		dock.setWidgetRightWidth( closeWidget, m, Unit.PX, titleSize, Unit.PX );
 		dock.setWidgetTopHeight( closeWidget, m, Unit.PX, titleSize, Unit.PX );
 		
-		dock.add( content.asWidget() );
-		dock.setWidgetLeftRight( content, m, Unit.PX, m, Unit.PX );
-		dock.setWidgetTopBottom( content, m + titleSize, Unit.PX, m, Unit.PX );
+		SimpleLayoutPanel contentPanel = new SimpleLayoutPanel();
+		contentPanel.setWidget( content.asWidget() );
+		contentPanel.addStyleName( ResizablePanel.CSS.content() );
+		dock.add( contentPanel );
+		dock.setWidgetLeftRight( contentPanel, m, Unit.PX, m, Unit.PX );
+		dock.setWidgetTopBottom( contentPanel, m + titleSize, Unit.PX, m, Unit.PX );
 		
 		closeWidget.addClickHandler( new ClickHandler()
 		{

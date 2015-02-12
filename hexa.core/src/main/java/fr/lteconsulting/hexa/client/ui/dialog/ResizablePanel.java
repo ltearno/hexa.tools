@@ -16,5 +16,6 @@ public class ResizablePanel
 		public String main();
 		public String bkgnd();
 		public String title();
+		public String content();
 	}
 }

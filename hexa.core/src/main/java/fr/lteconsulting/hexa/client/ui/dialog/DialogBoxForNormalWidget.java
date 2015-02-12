@@ -66,6 +66,8 @@ class DialogBoxForNormalWidget extends ComplexPanel implements DialogBox, HasClo
 		close = (Element) main.getChild( 1 ).getChild( 0 );
 		close.setAttribute( "src", closeImage.getSafeUri().asString() );
 		content = (Element) main.getChild( 2 );
+		
+		content.addClassName( ResizablePanel.CSS.content() );
 
 		add( contentWidget, content );
 

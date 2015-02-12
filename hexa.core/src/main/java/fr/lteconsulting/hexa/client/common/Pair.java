@@ -15,4 +15,10 @@ public class Pair<T, U>
 		this.first = first;
 		this.last = last;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Pair[" + first + "," + last + "]";
+	}
 }
