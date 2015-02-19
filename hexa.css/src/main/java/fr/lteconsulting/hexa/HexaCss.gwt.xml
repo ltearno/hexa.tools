@@ -4,7 +4,6 @@
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="com.google.gwt.http.HTTP" />
 	<inherits name='com.google.gwt.json.JSON' />
-	<inherits name='com.google.gwt.user.theme.standard.Standard' />
 
 	<source path="client" />
 	

@@ -154,7 +154,7 @@ public class HexaCssGenerator extends Generator
 	private String cssClassPrefix()
 	{
 		String res = type.getQualifiedSourceName().replaceAll( "\\.", "-" ).replaceAll( "\\$", "-" ) + "-";
-		if( res.endsWith( "Css-" ) )
+		if( res.endsWith( "-Css-" ) )
 			return res.substring( 0, res.length() - 4 );
 		return res;
 	}

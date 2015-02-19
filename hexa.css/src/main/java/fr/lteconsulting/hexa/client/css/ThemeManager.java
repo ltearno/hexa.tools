@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.client.ui.tools;
+package fr.lteconsulting.hexa.client.css;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LinkElement;
