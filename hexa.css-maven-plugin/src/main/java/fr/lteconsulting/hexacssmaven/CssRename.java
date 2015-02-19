@@ -52,7 +52,7 @@ public class CssRename
 		input = input.replaceAll( "(?s)/\\*.*?\\*/", "" );
 
 		// replace class names
-		input = replaceClassNames( input, mappingPath, usedClassNames );
+		input = replaceClassNames( input, mappingPath, usedClassNames, log );
 
 		log.debug( usedClassNames.size() + " used css classes in the mapping file" );
 		log.debug( "used css classes : " + usedClassNames );
@@ -117,7 +117,7 @@ public class CssRename
 		return sb.toString();
 	}
 
-	private static String replaceClassNames( String input, Path mappingPath, Set<String> usedClassNames ) throws IOException
+	private static String replaceClassNames( String input, Path mappingPath, Set<String> usedClassNames, Log log ) throws IOException
 	{
 		List<String> lines = Files.readAllLines( mappingPath );
 
@@ -136,6 +136,7 @@ public class CssRename
 
 		for( String[] line : renames )
 		{
+			log.info( line[1] + " => " + line[0] );
 			input = input.replaceAll( line[1], line[0] );
 			usedClassNames.add( line[0] );
 		}
