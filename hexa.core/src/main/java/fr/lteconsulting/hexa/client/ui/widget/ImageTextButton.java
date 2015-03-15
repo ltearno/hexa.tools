@@ -15,7 +15,7 @@ import fr.lteconsulting.hexa.client.css.HexaCss;
 
 public class ImageTextButton extends Widget implements ClickHandler, HasClickHandlers
 {
-	interface Css extends HexaCss
+	public interface Css extends HexaCss
 	{
 		public static final Css CSS = GWT.create( Css.class );
 
@@ -30,7 +30,7 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 	ImageResource resource;
 	String title;
 
-	Element button;
+	protected Element button;
 
 	Object cookie = null;
 	Callback callback = null;
@@ -41,12 +41,17 @@ public class ImageTextButton extends Widget implements ClickHandler, HasClickHan
 		this.resource = resource;
 		this.title = title;
 
-		button = DOM.createButton();
+		button = createButtonElement();
 		button.setClassName( Css.CSS.main() );
 
 		setText( title );
 
 		setElement( button );
+	}
+	
+	protected Element createButtonElement()
+	{
+		return DOM.createButton();
 	}
 
 	public void setCallback( Callback callback, Object cookie )
