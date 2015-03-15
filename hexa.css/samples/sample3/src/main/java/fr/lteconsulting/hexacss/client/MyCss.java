@@ -7,4 +7,5 @@ public interface MyCss extends HexaCss
 	String panel();
 	String table();
 	String button();
+	String form();
 }

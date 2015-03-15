@@ -1,5 +1,9 @@
 @std-border: darken( @std-background, 20% );
 
+body {
+    font: 14px "Raleway" "HelveticaNeue-Light", Arial, sans-serif;
+}
+
 .fr-lteconsulting-hexacss-client-MyCss {
 	// panel() method
 	&-panel {
@@ -27,5 +31,26 @@
     &-button {
         color: @std-background;
 		background-color: @std-color;
+    }
+    
+    &-form {
+        max-width: 50%;
+        
+        >div {
+            height: 50px;
+            
+            color: @std-background;
+		    background-color: @std-color;
+        }
+        
+        label {
+            display: inline-block;
+            font-weight: 200%;
+            width: 60%;
+        }
+        
+        input {
+            width: 30%;
+        }
     }
 }

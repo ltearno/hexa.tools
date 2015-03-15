@@ -53,9 +53,12 @@ public class Application implements EntryPoint
 		Button button = new Button( "A button" );
 		button.setStyleName( css.button() );
 		
+		UiBinderSample uiBinderSample = new UiBinderSample();
+		
 		RootPanel.get().add( listBox );
 		RootPanel.get().add( label );
 		RootPanel.get().add( table );
+		RootPanel.get().add( uiBinderSample );
 		RootPanel.get().add( button );
 	}
 }

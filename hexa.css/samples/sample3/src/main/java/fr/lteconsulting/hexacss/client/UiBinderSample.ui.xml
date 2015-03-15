@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:my='urn:import:rigpa.lerabling.registration.client.ui'>
+	<ui:with field="css" type="fr.lteconsulting.hexacss.client.MyCss" />
+
+	<g:HTMLPanel styleName="{css.form}">
+		<div>
+			<label for="firstname">First name</label>
+			<input id="firstname" type="text"></input>
+		</div>
+		
+		<div>
+			<label for="lastname">Last name</label>
+			<input id="lastname" type="text"></input>
+		</div>
+		
+		<div>
+			<label for="email">Email</label>
+			<input id="email" type="text"></input>
+		</div>
+		
+		<div>
+			<label for="gender">Gender</label>
+			<input id="gender" type="checkbox"></input>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>
