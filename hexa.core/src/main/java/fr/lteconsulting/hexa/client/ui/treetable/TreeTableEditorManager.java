@@ -38,29 +38,34 @@ public class TreeTableEditorManager
 		m_table.addTableCellDoubleClickHandler( tableCellDoubleClickHandler );
 	}
 
+	public void editCell( Row item, int column )
+	{
+		// forget edition if already opened at the same place
+		if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )
+			return;
+
+		// remove any previous edition state
+		_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
+
+		if( m_callback == null )
+			return;
+
+		// now we really register as editing
+		m_currentEditedItem = item;
+		m_currentEditedColumn = column;
+
+		// get any editor for that cell or forget about it
+		IEditor editor = m_callback.editCell( item, column );
+		if( editor != null )
+			useEditor( item, column, editor );
+	}
+
 	TableCellDoubleClickHandler tableCellDoubleClickHandler = new TableCellDoubleClickHandler()
 	{
 		@Override
 		public void onTableCellDoubleClick( Row item, int column, DoubleClickEvent clickEvent )
 		{
-			// forget edition if already opened at the same place
-			if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )
-				return;
-
-			// remove any previous edition state
-			_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
-
-			if( m_callback == null )
-				return;
-
-			// now we really register as editing
-			m_currentEditedItem = item;
-			m_currentEditedColumn = column;
-
-			// get any editor for that cell or forget about it
-			IEditor editor = m_callback.editCell( item, column );
-			if( editor != null )
-				useEditor( item, column, editor );
+			editCell( item, column );
 		}
 	};
 
