@@ -43,7 +43,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.6.1</version>
+				<version>2.7.0</version>
 
 				<executions>
 					<execution>
@@ -78,49 +78,6 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-				<groupId>com.buschmais.jqassistant.scm</groupId>
-				<artifactId>jqassistant-maven-plugin</artifactId>
-				<version>1.0.0-M3</version>
-				<!--<executions>
-					<execution>
-						<id>scan</id>
-						<goals>
-							<goal>scan</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>analyze</id>
-						<goals>
-							<goal>analyze</goal>
-						</goals>
-					</execution>
-				</executions>-->
-			</plugin>
 		</plugins>
 	</build>
-	
-	<!--
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>com.buschmais.jqassistant.scm</groupId>
-				<artifactId>jqassistant-maven-plugin</artifactId>
-				<version>1.0.0-M3</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
-	-->
 </project>

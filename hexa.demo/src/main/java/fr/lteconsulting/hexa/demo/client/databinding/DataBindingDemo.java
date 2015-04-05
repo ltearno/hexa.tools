@@ -105,6 +105,8 @@ public class DataBindingDemo
 		 */		
 		personListWidget.setPersonList( famille );
 		personListWidget.setSelectedPersonne( famille.get( 0 ) );
+		
+		nextButton.addClickHandler( nextButtonClickHandler );
 	}
 	
 	ClickHandler nextButtonClickHandler = new ClickHandler()

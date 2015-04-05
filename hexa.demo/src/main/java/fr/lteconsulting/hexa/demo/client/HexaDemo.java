@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 
 import fr.lteconsulting.hexa.client.tools.HTMLSnip;
 import fr.lteconsulting.hexa.client.ui.containers.CenterPanel;
+import fr.lteconsulting.hexa.demo.client.databinding.DataBindingDemo;
 
 /**
  * The GWT EntryPoint class to demo things from the Hexa Tools library
@@ -26,11 +27,10 @@ public class HexaDemo implements EntryPoint
 	{
 		CenterPanel centerPanel = new CenterPanel();
 		RootLayoutPanel.get().add( centerPanel );
+//		centerPanel.setWidget( new Form() );
 		
-		centerPanel.setWidget( new Form() );
-		
-		//DataBindingDemo dataBindingDemo = new DataBindingDemo();
-		//dataBindingDemo.run( centerPanel );
+		DataBindingDemo dataBindingDemo = new DataBindingDemo();
+		dataBindingDemo.run( centerPanel );
 	}
 }
 

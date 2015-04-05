@@ -9,7 +9,5 @@
 
   <source path="client" />
 
-  <add-linker name="xsiframe" />
-
   <entry-point class="fr.lteconsulting.hexa.demo.client.HexaDemo" />
 </module>
