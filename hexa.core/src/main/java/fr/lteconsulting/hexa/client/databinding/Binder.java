@@ -2,6 +2,7 @@ package fr.lteconsulting.hexa.client.databinding;
 
 import com.google.gwt.user.client.ui.HasValue;
 
+import fr.lteconsulting.hexa.client.classinfo.ClazzBundle;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
@@ -25,6 +26,9 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyA
  * 
  * // selected person's description to Window's title
  * Bind( personListWidget, "selectedPersonne.description" ).Mode( Mode.OneWay ).To( new WriteOnlyPropertyAdapter()
+ * 
+ * In order to support the data binding engine, one has also to declare a {@link ClazzBundle} interface to process
+ * type information of the data-bounded classes. Check the samples for further details.
  * 
  * @author Arnaud Tournier
  *

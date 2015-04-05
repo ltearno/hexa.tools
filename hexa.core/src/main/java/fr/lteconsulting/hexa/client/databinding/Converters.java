@@ -2,8 +2,19 @@ package fr.lteconsulting.hexa.client.databinding;
 
 import fr.lteconsulting.hexa.client.classinfo.ClazzUtils;
 
+/**
+ * A collection of implementations of standard converters.
+ * 
+ * @author Arnaud Tournier
+ * (c) LTE Consulting - 2015
+ * http://www.lteconsulting.fr
+ *
+ */
 public enum Converters implements Converter
 {
+	/**
+	 * A String to Integer converter. Quietly catches conversion exceptions
+	 */
 	StringToInteger
 	{
 		@Override
@@ -32,6 +43,9 @@ public enum Converters implements Converter
 		}
 	},
 
+	/**
+	 * An Integer to String converter. Quietly catches conversion exceptions
+	 */
 	IntegerToString
 	{
 		@Override
@@ -47,6 +61,15 @@ public enum Converters implements Converter
 		}
 	};
 
+	/**
+	 * Dynamically finds the appropriate converter to use between two objects
+	 * of different classes.<br/>
+	 * Returns <code>null</code> if no appropriate converter is found.
+	 * 
+	 * @param from The input class type
+	 * @param to The output class type
+	 * @return
+	 */
 	public static Converter findConverter( Class<?> from, Class<?> to )
 	{
 		from = ClazzUtils.getBoxedType( from );

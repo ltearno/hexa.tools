@@ -32,11 +32,11 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 		public void onNotifyPropertChanged( NotifyPropertyChangedEvent event );
 	}
 	
-	static int nbRegisteredHandlers = 0;
-	static int nbNotifications = 0;
-	static int nbDispatches = 0;
-	static HashMap<String, Integer> counts = new HashMap<>();
-	static HashMap<String, Integer> oldCounts = new HashMap<>();
+	private static int nbRegisteredHandlers = 0;
+	private static int nbNotifications = 0;
+	private static int nbDispatches = 0;
+	private static HashMap<String, Integer> counts = new HashMap<>();
+	private static HashMap<String, Integer> oldCounts = new HashMap<>();
 	
 	/**
 	 * Registers an handler for a specific property change on an object. The object

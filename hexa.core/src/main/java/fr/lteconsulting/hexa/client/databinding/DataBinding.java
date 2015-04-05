@@ -13,9 +13,11 @@ import fr.lteconsulting.hexa.client.tools.Action2;
  * Manages the binding between a source and a destination.
  * 
  * <p>The data binding has several options like OneWay,
- * TwoWay, ...
+ * TwoWay, ...<br/>
+ * The data propagation can happen synchronously after a data changed,
+ * or it can happen asynchronously through a deferred command.
  * 
- * @author Arnaud
+ * @author Arnaud Tournier
  *
  */
 public class DataBinding

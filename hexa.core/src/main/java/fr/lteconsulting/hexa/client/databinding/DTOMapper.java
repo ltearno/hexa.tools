@@ -16,6 +16,14 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertie
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
 
+/**
+ * A data binding utility for the support of automatic DTO binding.
+ * 
+ * @author Arnaud Tournier
+ * (c) LTE Consulting - 2015
+ * http://www.lteconsulting.fr
+ *
+ */
 public class DTOMapper
 {
 	// tries to bind as much fields of source to destination and the other way
