@@ -36,9 +36,9 @@ Now to run the samples you just have to drop each `index.html` file in the targe
 
 You can also directly try those demos here :
 
-- [Demo 1](demo/sample1/index.html), one application with multiple hand made css files loaded through different html pages.
-- [Demo 2](demo/sample2/index.html), one application in one html page loading different themes dynamically.
-- [Demo 3](demo/sample3/index.html), same as above except that the theme css files are generated through Less.
+- [Demo 1](http://www.lteconsulting.fr/hexacss/demo/sample1/index.html), one application with multiple hand made css files loaded through different html pages.
+- [Demo 2](http://www.lteconsulting.fr/hexacss/demo/sample2/index.html), one application in one html page loading different themes dynamically.
+- [Demo 3](http://www.lteconsulting.fr/hexacss/demo/sample3/index.html), same as above except that the theme css files are generated through Less.
 
 
 # Use
