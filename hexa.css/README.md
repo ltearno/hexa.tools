@@ -17,24 +17,20 @@
 
 Clone the hexa.tools repository and build the hexa.css and hexa.css-maven-plugin projects :
 
-{% highlight sh %}
-git clone https://github.com/ltearno/hexa.tools.git
-cd hexa.tools/hexa.css
-mvn install
-cd ../hexa.css-maven-plugin
-mvn install
-{% endhighlight %}
+		git clone https://github.com/ltearno/hexa.tools.git
+		cd hexa.tools/hexa.css
+		mvn install
+		cd ../hexa.css-maven-plugin
+		mvn install
 
 Then to build the samples :
 
-{% highlight sh %}
-cd ../hexa.css/samples/sample1
-mvn install
-cd ../sample2
-mvn install
-cd ../sample3
-mvn install
-{% endhighlight %}
+		cd ../hexa.css/samples/sample1
+		mvn install
+		cd ../sample2
+		mvn install
+		cd ../sample3
+		mvn install
 
 Now to run the samples you just have to drop each `index.html` file in the target directories in a browser !
 
@@ -49,41 +45,33 @@ You can also directly try those demos here :
 
 First, add this to your project's `pom.xml` file :
 
-{% highlight xml %}
-<dependency>
-    <groupId>fr.lteconsulting</groupId>
-    <artifactId>hexacss</artifactId>
-    <version>1.0-SNAPSHOT</version>
-<dependency>
-{% endhighlight %}
+		<dependency>
+			<groupId>fr.lteconsulting</groupId>
+			<artifactId>hexacss</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		<dependency>
 
 You also need to inherit the HexaCss module in your application's module :
 
-{% highlight xml %}
-<inherits src="fr.lteconsulting.hexa.HexaCss"/>
-{% endhighlight %}
+		<inherits src="fr.lteconsulting.hexa.HexaCss"/>
 
 Then you have to define the Java interface through which you'll get CSS class names.
 
-{% highlight java %}
-package my.application;
+		package my.application;
 
-public interface MyCss extends HexaCss
-{
-    String mainWindow();
-    String textInput();
-    ...
-}
-{% endhighlight %}
+		public interface MyCss extends HexaCss
+		{
+			String mainWindow();
+			String textInput();
+			...
+		}
 
 Then you use the CSS classes as in this code:
 
-{% highlight java %}
-MyCss myCss = GWT.create( MyCss.class );
-getElement().addClassName( myCss.mainWindow() );
-// or
-widget.addStyleName( myCss.mainWindow() );
-{% endhighlight %}
+		MyCss myCss = GWT.create( MyCss.class );
+		getElement().addClassName( myCss.mainWindow() );
+		// or
+		widget.addStyleName( myCss.mainWindow() );
 
 Now you need to write your own CSS files. The only thing to know is how method names in HexaCss interfaces are mapped to CSS class names. The CSS class name corresponding to a method is the fully qualified name of the interface appended with the method name where all the dots are replaced by hyphens. 
 
@@ -91,15 +79,12 @@ In this example, the `MyCss` class' package is `my.application` and the method n
 
 Here is an example CSS file that you could use. Of course, you would certainly prefer to generate it with Sass or Less :
 
-{% highlight css %}
-.my-application-MyCss-mainWindow {
-    ...
-}
+		.my-application-MyCss-mainWindow {
+			...
 
-.my-application-MyCss-textInput {
-    ...
-}
-{% endhighlight %}
+		.my-application-MyCss-textInput {
+			...
+		}
 
 With Less you'd have written :
 
@@ -123,41 +108,37 @@ When you build your GWT application, Hexa CSS generates a file that helps during
 
 So here is the chunk you need to add in your pom.xml file to process your CSS file. In this example, it is assumed that the `application.css` and `application-blue.css` files are present in the `sourceDirectory` directory (they may have be generated before). Those files are processed and the result is written in the `outputDirectory` directory :
 
-{% highlight xml %}
-<plugin>
-    <groupId>fr.lteconsulting</groupId>
-    <artifactId>hexacss-maven-plugin</artifactId>
-    <version>1.0</version>
+		<plugin>
+			<groupId>fr.lteconsulting</groupId>
+			<artifactId>hexacss-maven-plugin</artifactId>
+			<version>1.0</version>
 
-    <configuration>
-        <sourceDirectory>${project.build.directory}/css</sourceDirectory>
-        <mappingFile>war/${gwtmodule}/hexas-css.mapping</mappingFile>
-        <outputDirectory>war</outputDirectory>
+			<configuration>
+				<sourceDirectory>${project.build.directory}/css</sourceDirectory>
+				<mappingFile>war/${gwtmodule}/hexas-css.mapping</mappingFile>
+				<outputDirectory>war</outputDirectory>
 
-        <includes>
-            <include>application.css</include>
-            <include>application-blue.css</include>
-        </includes>
-    </configuration>
+				<includes>
+					<include>application.css</include>
+					<include>application-blue.css</include>
+				</includes>
+			</configuration>
 
-    <executions>
-        <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>process</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-{% endhighlight %}
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>process</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
 
 The only last thing is to load the generated CSS file in your page, so the simplest way to do that is to add the `<link>` tag in the html page. Note that HexaCss has a CSS loader that can dynamically load and replace the current application's CSS, we'll see that later.
 
 Here is what you add in your html file :
 
-{% highlight html %}
-<link type="text/css" rel="stylesheet" href="application.css">
-{% endhighlight %}
+		<link type="text/css" rel="stylesheet" href="application.css">
 
 Now your GWT application should work with your generated CSS files !
 
