@@ -1,6 +1,7 @@
 package fr.lteconsulting.hexa.rebind;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.core.ext.linker.Artifact;
 import com.google.gwt.core.ext.linker.Transferable;
@@ -12,17 +13,17 @@ public class HexaCssArtifact extends Artifact<HexaCssArtifact>
 {
 	private static final long serialVersionUID = -2530463324235624279L;
 	
-	HashMap<String, String> referencesMapping = new HashMap<>();
+	Map<String, String> referencesMapping;
 	
-	public HashMap<String, String> getReferencesMapping()
+	public Map<String, String> getReferencesMapping()
 	{
 		return referencesMapping;
 	}
 
-	protected HexaCssArtifact( HashMap<String, String> referencesMapping )
+	protected HexaCssArtifact( Map<String, String> referencesMapping )
 	{
 		super( HexaCssLinker.class );
-		this.referencesMapping = referencesMapping;
+		this.referencesMapping = new HashMap<>( referencesMapping);
 	}
 
 	@Override

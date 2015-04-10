@@ -3,7 +3,7 @@ package fr.lteconsulting.hexa.rebind;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -15,6 +15,8 @@ import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+
+import fr.lteconsulting.hexa.client.css.annotation.HexaCssExtra;
 
 
 /**
@@ -31,6 +33,8 @@ public class HexaCssGenerator extends Generator
 	protected String typeName = null;
 	protected JClassType type = null;
 	
+	private ConcurrentHashMap<String,String> classMapping = new ConcurrentHashMap<>();
+
 	@Override
 	public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException
 	{
@@ -85,17 +89,10 @@ public class HexaCssGenerator extends Generator
 		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );
 
 		// generate the List<String> getMethods(); method
-		HashMap<String,String> classMapping = new HashMap<>();
-		String prefix = cssClassPrefix();
+		
 		for( JMethod m : type.getMethods() )
 		{
-			String normalName = prefix + m.getName();
-			String shrinkedName = classMapping.get( normalName );
-			if( shrinkedName == null )
-			{
-				shrinkedName = "h" + generateClassSignature( normalName );
-				classMapping.put( normalName, shrinkedName );
-			}
+			String shrinkedName = getMethodSignature( m );
 			
 			sourceWriter.println( "public String " + m.getName() + "() { return \"" + shrinkedName + "\"; }" );
 		}
@@ -119,6 +116,26 @@ public class HexaCssGenerator extends Generator
 		}
 		
 		return true;
+	}
+
+	private String getMethodSignature( JMethod method )
+	{
+		String normalName;
+		
+		HexaCssExtra hexaAnnotation = method.getAnnotation( HexaCssExtra.class );
+		if(hexaAnnotation!=null)
+			normalName = hexaAnnotation.name();
+		else
+			normalName = cssClassPrefix() + method.getName();
+		
+		String shrinkedName = classMapping.get( normalName );
+		if( shrinkedName == null )
+		{
+			shrinkedName = "h" + generateClassSignature( normalName );
+			classMapping.put( normalName, shrinkedName );
+		}
+		
+		return shrinkedName;
 	}
 	
 	private String generateClassSignature( String className )

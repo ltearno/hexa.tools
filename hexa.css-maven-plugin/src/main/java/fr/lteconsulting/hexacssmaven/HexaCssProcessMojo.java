@@ -31,6 +31,9 @@ public class HexaCssProcessMojo extends AbstractMojo
 
 	@Parameter( required = true )
 	private File mappingFile;
+	
+	@Parameter( defaultValue = "true" )
+	private Boolean pruneClasses;
 
 	private void checkFileExists( File file ) throws MojoExecutionException
 	{
@@ -61,7 +64,7 @@ public class HexaCssProcessMojo extends AbstractMojo
 				try
 				{
 					getLog().info( "Processing file: " + include );
-					CssRename.processFile( sourceDirectory.getAbsolutePath() + "/" + include, mappingFile.getAbsolutePath(), outputDirectory.getAbsolutePath() + "/" + include, false, getLog() );
+					CssRename.processFile( sourceDirectory.getAbsolutePath() + "/" + include, mappingFile.getAbsolutePath(), outputDirectory.getAbsolutePath() + "/" + include, pruneClasses, getLog() );
 				}
 				catch( IOException e )
 				{

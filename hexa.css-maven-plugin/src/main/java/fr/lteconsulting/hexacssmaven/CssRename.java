@@ -58,7 +58,7 @@ public class CssRename
 		log.debug( "used css classes : " + usedClassNames );
 
 		// prune unused classes
-		input = pruneUnusedClasses( input, usedClassNames, doPrune, log );
+		//input = pruneUnusedClasses( input, usedClassNames, doPrune, log );
 
 		// write output
 		Path outputPath = Paths.get( outputFile );
@@ -72,6 +72,9 @@ public class CssRename
 
 	private static String pruneUnusedClasses( String input, Set<String> usedClassNames, boolean doPrune, Log log )
 	{
+		if(!doPrune)
+			return input;
+		
 		StringBuilder sb = new StringBuilder();
 		Pattern p = Pattern.compile( "([^\\}\\{]+)(\\{[^\\}]+\\})" );
 		Matcher m = p.matcher( input );

@@ -1,0 +1,56 @@
+@std-border: darken( @std-background, 20% );
+
+body {
+    font: 14px "Raleway" "HelveticaNeue-Light", Arial, sans-serif;
+}
+
+.fr-lteconsulting-hexacss-client-MyCss {
+	// panel() method
+	&-panel {
+		background-color: @std-background;
+		color: @std-color;
+		font-size:400%;
+	}
+    
+    &-table {
+        border-collapse: collapse;
+        border: 3px solid @std-border;
+        
+        width: 100%;
+        
+        tr {
+            background-color: darken( @std-background, 10% );
+        }
+        
+        td {
+            width: 50%;
+            color: @std-color;
+        }
+    }
+    
+    &-button {
+        color: @std-background;
+		background-color: @std-color;
+    }
+    
+    &-form {
+        max-width: 50%;
+        
+        >div {
+            height: 50px;
+            
+            color: @std-background;
+		    background-color: @std-color;
+        }
+        
+        label {
+            display: inline-block;
+            font-weight: 200%;
+            width: 60%;
+        }
+        
+        input {
+            width: 30%;
+        }
+    }
+}
