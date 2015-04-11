@@ -6,6 +6,7 @@ import fr.lteconsulting.hexa.client.classinfo.ClazzBundle;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
+import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.

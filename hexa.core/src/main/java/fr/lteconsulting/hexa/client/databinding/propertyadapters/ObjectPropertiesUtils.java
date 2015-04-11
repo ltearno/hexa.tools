@@ -6,6 +6,7 @@ import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.classinfo.Field;
 import fr.lteconsulting.hexa.client.classinfo.Method;
+import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 public class ObjectPropertiesUtils
 {
@@ -59,9 +60,18 @@ public class ObjectPropertiesUtils
 	{
 		Object getPropertyValue();
 	}
+	
+	@SuppressWarnings( "unchecked" )
+	public static Object GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
+	{
+		Object result = GetPropertyImpl( object, name, fTryDirectFieldAccess );
+		if(result instanceof Property)
+			return ((Property<Object>)result).getValue();
+		return result;
+	}
 
 	@SuppressWarnings( "rawtypes" )
-	public static Object GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
+	private static Object GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )
 	{
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 			return ((HasValue) object).getValue();
@@ -84,7 +94,7 @@ public class ObjectPropertiesUtils
 				throw new RuntimeException( "ObjectAdapter [object]." + object.getClass().getName() + "." + getterName + "() : getter call throwed an exception. See cause.", e );
 			}
 		}
-		
+
 		if( !fTryDirectFieldAccess )
 		{
 			assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter for property " + name + " and field not found !";
@@ -133,12 +143,29 @@ public class ObjectPropertiesUtils
 	{
 		return SetProperty( object, name, value, true );
 	}
-
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	
 	public static boolean SetProperty( Object object, String name, Object value, boolean fTryDirectFieldAccess )
 	{
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
+		
+		if( Property.class == GetPropertyType( s, name ) )
+		{
+			@SuppressWarnings( "unchecked" )
+			Property<Object> property = (Property<Object>) GetPropertyImpl( object, name, fTryDirectFieldAccess );
+			if( property != null )
+			{
+				property.setValue( value );
+				return true;
+			}
+			return false;
+		}
+		
+		return SetPropertyImpl( s, object, name, value, fTryDirectFieldAccess );
+	}
 
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	private static boolean SetPropertyImpl( Clazz<?> s, Object object, String name, Object value, boolean fTryDirectFieldAccess )
+	{
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 		{
 			((HasValue) object).setValue( value, true );
@@ -149,6 +176,9 @@ public class ObjectPropertiesUtils
 		Method setter = s.getMethod( setterName );
 		if( setter != null )
 		{
+			if( setter.getParameterTypes().get( 0 ) == Property.class )
+			{
+			}
 			setter.invoke( object, value );
 			return true;
 		}
