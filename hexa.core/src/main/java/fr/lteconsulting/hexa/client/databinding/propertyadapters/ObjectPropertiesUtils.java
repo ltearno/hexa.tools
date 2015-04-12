@@ -1,11 +1,15 @@
 package fr.lteconsulting.hexa.client.databinding.propertyadapters;
 
+import java.util.HashMap;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 
 import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.classinfo.Field;
 import fr.lteconsulting.hexa.client.classinfo.Method;
+import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
 import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 public class ObjectPropertiesUtils
@@ -60,13 +64,14 @@ public class ObjectPropertiesUtils
 	{
 		Object getPropertyValue();
 	}
-	
+
 	@SuppressWarnings( "unchecked" )
 	public static Object GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
 	{
 		Object result = GetPropertyImpl( object, name, fTryDirectFieldAccess );
-		if(result instanceof Property)
-			return ((Property<Object>)result).getValue();
+		if( result instanceof Property )
+			return ((Property<Object>) result).getValue();
+
 		return result;
 	}
 
@@ -78,6 +83,13 @@ public class ObjectPropertiesUtils
 
 		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
 			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
+
+		// if has dynamic-property, return it !
+		if( hasObjectDynamicProperty( object, name ) )
+		{
+			GWT.log( "DataBinding: Uses dynamic property read '" + name + "' for object " + object );
+			return getObjectDynamicProperty( object, name );
+		}
 
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
 
@@ -143,11 +155,11 @@ public class ObjectPropertiesUtils
 	{
 		return SetProperty( object, name, value, true );
 	}
-	
+
 	public static boolean SetProperty( Object object, String name, Object value, boolean fTryDirectFieldAccess )
 	{
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
-		
+
 		if( Property.class == GetPropertyType( s, name ) )
 		{
 			@SuppressWarnings( "unchecked" )
@@ -159,7 +171,7 @@ public class ObjectPropertiesUtils
 			}
 			return false;
 		}
-		
+
 		return SetPropertyImpl( s, object, name, value, fTryDirectFieldAccess );
 	}
 
@@ -183,19 +195,19 @@ public class ObjectPropertiesUtils
 			return true;
 		}
 
-		if( !fTryDirectFieldAccess )
+		if( fTryDirectFieldAccess )
 		{
-			assert false : "ObjectAdapter : no setter " + name + " found on instance of class " + object.getClass().getName();
-			return false;
+			// try direct field access
+			Field field = s.getAllField( name );
+			if( field != null )
+			{
+				field.setValue( object, value );
+				return true;
+			}
 		}
-
-		// try direct field access
-		Field field = s.getAllField( name );
-		if( field != null )
-		{
-			field.setValue( object, value );
-			return true;
-		}
+		
+		GWT.log( "DataBinding: Uses dynamic property write '" + name + "' for object " + object + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !");
+		setObjectDynamicProperty( object, name, value );
 
 		assert false : "ObjectAdapter : no setter nor field " + name + " found on instance of class " + object.getClass().getName();
 		return false;
@@ -209,5 +221,77 @@ public class ObjectPropertiesUtils
 	public static String uncanon( String s )
 	{
 		return s.substring( 0, 1 ).toLowerCase() + s.substring( 1 );
+	}
+
+	private native static void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
+	/*-{
+		object.__hexa_dynamic_ppty_bag = bag;
+	}-*/;
+
+	private native static DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
+	/*-{
+		return object.__hexa_dynamic_ppty_bag || null;
+	}-*/;
+
+	@SuppressWarnings( "unchecked" )
+	public static <T> T getObjectDynamicProperty( Object object, String propertyName )
+	{
+		DynamicPropertyBag bag = getObjectDynamicPropertyBag( object );
+		if( bag == null )
+			return null;
+
+		return (T) bag.get( propertyName );
+	}
+	
+	public static boolean hasObjectDynamicProperty( Object object, String propertyName )
+	{
+		DynamicPropertyBag bag = getObjectDynamicPropertyBag( object );
+		if( bag == null )
+			return false;
+
+		return bag.contains( propertyName );
+	}
+
+	public static void setObjectDynamicProperty( Object object, String propertyName, Object value )
+	{
+		DynamicPropertyBag bag = getObjectDynamicPropertyBag( object );
+		if( bag == null )
+		{
+			bag = new DynamicPropertyBag();
+			setObjectDynamicPropertyBag( object, bag );
+		}
+
+		bag.set( propertyName, value );
+		
+		NotifyPropertyChangedEvent.notify( object, propertyName );
+	}
+
+	private static class DynamicPropertyBag
+	{
+		private HashMap<String, Object> map;
+
+		void set( String propertyName, Object value )
+		{
+			if( map == null )
+				map = new HashMap<>();
+
+			map.put( propertyName, value );
+		}
+
+		Object get( String propertyName )
+		{
+			if( map == null )
+				return null;
+
+			return map.get( propertyName );
+		}
+		
+		boolean contains( String propertyName )
+		{
+			if( map == null )
+				return false;
+			
+			return map.containsKey( propertyName );
+		}
 	}
 }
