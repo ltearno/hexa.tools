@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder">
+<ui:with type="fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss"
+		field="bs"></ui:with>
+	<div class="{bs.panel} {bs.panelDefault}">
+			<div class="{bs.panelHeading}">
+				<h3 ui:field="title" class="{bs.panelTitle}"></h3>
+			</div>
+			<div ui:field="body" class="{bs.panelBody}">
+			</div>
+		</div>
+</ui:UiBinder>
