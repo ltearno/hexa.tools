@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
+
 import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.classinfo.Field;
@@ -15,6 +16,7 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositeProper
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 /**
  * A data binding utility for the support of automatic DTO binding.
@@ -42,9 +44,9 @@ public class DTOMapper
 		HashSet<String> bindedNames = new HashSet<String>();
 
 		// fields wise...
-		for( Field field : sourceClass.getFields() )
+		for( Field field : sourceClass.getAllFields() )
 			bindedNames.add( field.getName() );
-		for( Field field : destinationClass.getFields() )
+		for( Field field : destinationClass.getAllFields() )
 			bindedNames.add( field.getName() );
 
 		// ... and method wise
@@ -67,6 +69,8 @@ public class DTOMapper
 
 		for( String name : bindedNames )
 		{
+			//GWT.log( "$DTOMap: test " + name );
+
 			boolean srcRead = ObjectPropertiesUtils.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
 			boolean srcWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
 
@@ -81,6 +85,7 @@ public class DTOMapper
 			Mode bindingMode = Mode.OneWay;
 			if( srcWrite && destinationRead )
 				bindingMode = Mode.TwoWay;
+			
 
 			DataAdapterInfo sourceAdapterInfo = createDataAdapter( source, name, null );
 			if( sourceAdapterInfo == null )
@@ -156,7 +161,7 @@ public class DTOMapper
 				res.dataType = String.class;
 
 			// try to find a converter if dataType does not match srcPptyType
-			if( srcPptyType != null && res.dataType != null && res.dataType != srcPptyType )
+			if( srcPptyType != null && res.dataType != null && res.dataType != srcPptyType && srcPptyType!=Property.class )
 			{
 				// try to find a converter, if not : fail
 				res.converter = Converters.findConverter( srcPptyType, res.dataType );

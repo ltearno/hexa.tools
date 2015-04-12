@@ -58,6 +58,6 @@ public class ArticleForm extends Composite
 		 * Here, one could have chosen to use dynamic categories !
 		 */
 		for( Category c : Repository.getCategories() )
-			category.addItem( c.name, c );
+			category.addItem( c.name.getValue(), c );
 	}
 }
