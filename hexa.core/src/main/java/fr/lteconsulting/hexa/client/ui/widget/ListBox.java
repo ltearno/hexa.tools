@@ -11,12 +11,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasValue;
 
 /**
- * A ListBox that can handle a generic T type. It is more practical than
- * the text-only GWT ListBox.
+ * A ListBox that can handle a generic T type. It is more practical than the
+ * text-only GWT ListBox.
  * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
+ * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
  * @param <T>
  */
@@ -25,29 +23,32 @@ public class ListBox<T> extends Composite implements HasValue<T>
 	private HashMap<Integer, T> items = new HashMap<>();
 	private com.google.gwt.user.client.ui.ListBox list = new com.google.gwt.user.client.ui.ListBox();
 	private boolean registered = false;
-	
+
 	public ListBox()
 	{
 		initWidget( list );
 	}
-	
-	public void addItem(String text, T value)
+
+	public void addItem( String text, T value )
 	{
 		int hashCode = value.hashCode();
-		list.addItem( text, String.valueOf(hashCode) );
+		list.addItem( text, String.valueOf( hashCode ) );
 		items.put( hashCode, value );
 	}
-	
+
 	public int getItemIndex( T value )
 	{
+		if( value == null )
+			return -1;
+
 		int hashCode = value.hashCode();
 		int count = list.getItemCount();
-		for(int i=0;i<count;i++)
+		for( int i = 0; i < count; i++ )
 		{
-			if(Integer.parseInt( list.getValue( i ) )==hashCode)
+			if( Integer.parseInt( list.getValue( i ) ) == hashCode )
 				return i;
 		}
-		
+
 		return -1;
 	}
 
@@ -73,13 +74,13 @@ public class ListBox<T> extends Composite implements HasValue<T>
 	public T getValue()
 	{
 		String value = list.getSelectedValue();
-		if(value == null )
+		if( value == null )
 			return null;
-		
+
 		int hashCode = Integer.parseInt( value );
-		
+
 		T item = items.get( hashCode );
-		
+
 		return item;
 	}
 
@@ -93,9 +94,9 @@ public class ListBox<T> extends Composite implements HasValue<T>
 	public void setValue( T value, boolean fireEvents )
 	{
 		int toSelect = getItemIndex( value );
-		if(toSelect==list.getSelectedIndex())
+		if( toSelect == list.getSelectedIndex() )
 			return;
-		
+
 		list.setSelectedIndex( toSelect );
 		ValueChangeEvent.fire( this, value );
 	}

@@ -107,18 +107,17 @@ public class ObjectPropertiesUtils
 			}
 		}
 
-		if( !fTryDirectFieldAccess )
+		if( fTryDirectFieldAccess )
 		{
-			assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter for property " + name + " and field not found !";
-			return null;
+			// try direct field access
+			Field field = s.getAllField( name );
+			if( field != null )
+				return field.getValue( object );
 		}
 
-		// try direct field access
-		Field field = s.getAllField( name );
-		if( field != null )
-			return field.getValue( object );
-
-		assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter/field for property " + name + " and field not found !";
+		// Maybe a dynamic property will be set later on
+		GWT.log( "DataBinding: Warning: assuming that the object would in the future have a dynamic property set / Maybe have an opt-in option on the Binding to clarify things" );
+		//assert false : "ObjectAdapter (" + object.getClass().getName() + ") : no getter/field for property " + name + " and field not found !";
 		return null;
 	}
 
@@ -206,10 +205,10 @@ public class ObjectPropertiesUtils
 			}
 		}
 		
-		GWT.log( "DataBinding: Uses dynamic property write '" + name + "' for object " + object + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !");
+		GWT.log( "DataBinding: Uses dynamic property write '" + name + "' for object " + object + " of class " + object.getClass().getName() + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !");
 		setObjectDynamicProperty( object, name, value );
 
-		assert false : "ObjectAdapter : no setter nor field " + name + " found on instance of class " + object.getClass().getName();
+		//assert false : "ObjectAdapter : no setter nor field " + name + " found on instance of class " + object.getClass().getName();
 		return false;
 	}
 
