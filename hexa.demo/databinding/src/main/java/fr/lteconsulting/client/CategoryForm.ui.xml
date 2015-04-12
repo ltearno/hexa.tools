@@ -4,7 +4,7 @@
 	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss"
 		field="bs"></ui:with>
 
-	<g:HTMLPanel>
+	<g:HTMLPanel stylePrimaryName="{bs.well}">
 		<div class="{bs.panel} {bs.panelDefault}">
 			<div class="{bs.panelHeading}">
 				<h3 class="{bs.panelTitle}">Category</h3>

@@ -94,6 +94,9 @@ public interface HexaBootstrapCss extends HexaCss
 
 	@HexaCssExtra( name = "col-md-8" )
 	String colMd8();
+	
+	@HexaCssExtra( name = "container-fluid" )
+	String containerFluid();
 
 	@HexaCssExtra( name = "disabled" )
 	String disabled();

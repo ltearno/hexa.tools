@@ -55,7 +55,7 @@ public class ObjectPropertiesUtils
 		return null;
 	}
 
-	public static Object GetProperty( Object object, String name )
+	public static <T> T GetProperty( Object object, String name )
 	{
 		return GetProperty( object, name, true );
 	}
@@ -66,20 +66,20 @@ public class ObjectPropertiesUtils
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public static Object GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
+	public static <T> T GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
 	{
-		Object result = GetPropertyImpl( object, name, fTryDirectFieldAccess );
+		T result = GetPropertyImpl( object, name, fTryDirectFieldAccess );
 		if( result instanceof Property )
-			return ((Property<Object>) result).getValue();
+			return ((Property<T>) result).getValue();
 
 		return result;
 	}
 
-	@SuppressWarnings( "rawtypes" )
-	private static Object GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )
+	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	private static <T> T GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )
 	{
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
-			return ((HasValue) object).getValue();
+			return (T) ((HasValue) object).getValue();
 
 		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
 			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
@@ -99,7 +99,7 @@ public class ObjectPropertiesUtils
 		{
 			try
 			{
-				return getter.invoke( object );
+				return (T) getter.invoke( object );
 			}
 			catch( Exception e )
 			{

@@ -7,11 +7,22 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
 import fr.lteconsulting.hexa.client.databinding.Binder;
 import fr.lteconsulting.hexa.client.databinding.Mode;
 import fr.lteconsulting.hexa.client.databinding.OneWayConverter;
 
+/**
+ * A very minimalist form of scaffolding which is possible with Hexa Binding.
+ * 
+ * Here the edition form is really just a widget with two fields : name and color. Those can
+ * be used automatically by the binding system when needed. Look at the {@link Application} class
+ * which uses the $DTOMap keyword to bind the selected article's category to this form.
+ * 
+ * @author Arnaud Tournier
+ * (c) LTE Consulting - 2015
+ * http://www.lteconsulting.fr
+ *
+ */
 public class CategoryForm extends Composite
 {
 	@UiField
@@ -29,8 +40,14 @@ public class CategoryForm extends Composite
 	public CategoryForm()
 	{
 		initWidget( uiBinder.createAndBindUi( this ) );
-		setStylePrimaryName( HexaBootstrapCss.CSS.well() );
 		
+		/**
+		 * Bind the color field's value to the form border's color.
+		 * 
+		 * Since the color field's value is just a String, we use a converter
+		 * to generate the correct value for the setBorder" method of 
+		 * the getElement().getStyle() object.
+		 */
 		Binder.Bind( color ).Mode( Mode.OneWay ).WithConverter( new OneWayConverter()
 		{
 			@Override

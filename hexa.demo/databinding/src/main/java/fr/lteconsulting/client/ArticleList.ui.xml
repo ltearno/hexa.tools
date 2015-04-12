@@ -3,27 +3,16 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:hexa="urn:import:fr.lteconsulting.hexa.client.ui.widget">
 	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss"
 		field="bs"></ui:with>
-
 	<g:HTMLPanel stylePrimaryName="{bs.well}">
 		<div class="{bs.panel} {bs.panelDefault}">
 			<div class="{bs.panelHeading}">
-				<h3 class="{bs.panelTitle}">Article</h3>
+				<h3 class="{bs.panelTitle}">Article list</h3>
 			</div>
 			<div class="{bs.panelBody}">
-				<form>
-					<div class="{bs.formGroup}">
-						<label>Name</label>
-						<g:TextBox ui:field="name" stylePrimaryName="{bs.formControl}"></g:TextBox>
-					</div>
-					<div class="{bs.formGroup}">
-						<label>Weight</label>
-						<g:TextBox ui:field="weight" stylePrimaryName="{bs.formControl}"></g:TextBox>
-					</div>
-					<div class="{bs.formGroup}">
-						<label>Category</label>
-						<hexa:ListBox ui:field="category" stylePrimaryName="{bs.formControl}"></hexa:ListBox>
-					</div>
-				</form>
+				<hexa:ListBox ui:field="listBox" stylePrimaryName="{bs.formControl}"></hexa:ListBox>
+				<g:Button ui:field="add" stylePrimaryName="{bs.btn} {bs.btnSuccess}">Add new</g:Button>
+				<g:Button ui:field="delete" stylePrimaryName="{bs.btn} {bs.btnWarning}">Delete</g:Button>
+				<div ui:field="listDiv" class="{bs.listGroup}"></div>
 			</div>
 		</div>
 	</g:HTMLPanel>

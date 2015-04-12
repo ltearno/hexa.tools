@@ -49,7 +49,7 @@ public class WatchableCollectionDeferred<T> implements List<T>
 	public void addCallbackAndSendAll( Action1<List<Change>> callback )
 	{
 		callbacks.add( callback );
-		callback.exec( Change.ForItems( ChangeType.ADD, list ) );
+		callback.exec( Change.ForItems( ChangeType.ADD, list, 0 ) );
 	}
 	
 	public void removeCallback( Action1<List<Change>> callback )
@@ -96,32 +96,33 @@ public class WatchableCollectionDeferred<T> implements List<T>
 	{
 		list.add(arg0, arg1);
 		
-		scheduleChange( new Change( ChangeType.ADD, arg1 ) );
+		scheduleChange( new Change( ChangeType.ADD, arg1, arg0 ) );
 	}
 
 	public boolean add(T arg0)
 	{
 		boolean res = list.add(arg0);
 		
-		scheduleChange( new Change( ChangeType.ADD, arg0 ) );
+		scheduleChange( new Change( ChangeType.ADD, arg0, list.size()-1 ) );
 		
 		return res;
 	}
 
 	public boolean addAll(Collection<? extends T> arg0) {
+		int startIndex = list.size();
 		boolean res = list.addAll(arg0);
-		scheduleChanges( Change.ForItems( ChangeType.ADD, arg0 ) );
+		scheduleChanges( Change.ForItems( ChangeType.ADD, arg0, startIndex ) );
 		return res;
 	}
 
 	public boolean addAll(int arg0, Collection<? extends T> arg1) {
 		boolean res = list.addAll(arg0, arg1);
-		scheduleChanges( Change.ForItems( ChangeType.ADD, arg1 ) );
+		scheduleChanges( Change.ForItems( ChangeType.ADD, arg1, arg0 ) );
 		return res;
 	}
 
 	public void clear() {
-		Collection<Change> changes = Change.ForItems( ChangeType.REMOVE, list );
+		Collection<Change> changes = Change.ForItems( ChangeType.REMOVE, list, 0 );
 		list.clear();
 		scheduleChanges( changes );
 	}
@@ -172,19 +173,21 @@ public class WatchableCollectionDeferred<T> implements List<T>
 
 	public T remove(int arg0) {
 		T res = list.remove(arg0);
-		scheduleChange( new Change( ChangeType.REMOVE, arg0 ) );
+		scheduleChange( new Change( ChangeType.REMOVE, res, arg0 ) );
 		return res;
 	}
 
 	public boolean remove(Object arg0) {
+		int index = list.indexOf( arg0 );
 		boolean res = list.remove(arg0);
-		scheduleChange( new Change( ChangeType.REMOVE, arg0 ) );
+		scheduleChange( new Change( ChangeType.REMOVE, arg0, index ) );
 		return res;
 	}
 
 	public boolean removeAll(Collection<?> arg0) {
+		assert false : "This implementation is bugged";
 		boolean res = list.removeAll(arg0);
-		scheduleChanges( Change.ForItems( ChangeType.REMOVE, arg0 ) );
+		scheduleChanges( Change.ForItems( ChangeType.REMOVE, arg0, 0 ) );
 		return res;
 	}
 
@@ -193,9 +196,10 @@ public class WatchableCollectionDeferred<T> implements List<T>
 	}
 
 	public T set(int index, T element) {
-		// TODO maybe have a better and clearer behavior for that
-		if( ! list.contains(element) )
-			scheduleChange( new Change( ChangeType.ADD, element ) );
+		if(list.size()>index)
+			scheduleChange( new Change( ChangeType.REMOVE, list.get(index), index ) );
+		scheduleChange( new Change( ChangeType.ADD, element, index ) );
+		
 		return list.set(index, element);
 	}
 

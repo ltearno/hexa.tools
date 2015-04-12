@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.HasValue;
 
 /**
  * A ListBox that can handle a generic T type. It is more practical than the
- * text-only GWT ListBox.
+ * text-only GWT ListBox. But it is only a very light thin layer above it.
  * 
  * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
@@ -29,11 +29,24 @@ public class ListBox<T> extends Composite implements HasValue<T>
 		initWidget( list );
 	}
 
-	public void addItem( String text, T value )
+	public void addItem( String text, T item )
 	{
-		int hashCode = value.hashCode();
+		int hashCode = item.hashCode();
 		list.addItem( text, String.valueOf( hashCode ) );
-		items.put( hashCode, value );
+		items.put( hashCode, item );
+	}
+
+	public void removeItem( T item )
+	{
+		if( item == null )
+			return;
+
+		int index = getItemIndex( item );
+		if( index >= 0 )
+			list.removeItem( index );
+
+		int hashCode = item.hashCode();
+		items.remove( hashCode );
 	}
 
 	public int getItemIndex( T value )
@@ -96,7 +109,7 @@ public class ListBox<T> extends Composite implements HasValue<T>
 		int toSelect = getItemIndex( value );
 		if( toSelect == list.getSelectedIndex() )
 			return;
-
+		
 		list.setSelectedIndex( toSelect );
 		ValueChangeEvent.fire( this, value );
 	}
