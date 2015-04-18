@@ -118,6 +118,8 @@
 					<mappingFile>${project.build.directory}/${project.build.finalName}/sample4/hexas-css.mapping</mappingFile>
 
 					<outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+					
+					<pruneClasses>false</pruneClasses>
 
 					<includes>
 						<include>bootstrap.min.css</include>

@@ -57,8 +57,7 @@ public class CssRename
 		log.debug( usedClassNames.size() + " used css classes in the mapping file" );
 		log.debug( "used css classes : " + usedClassNames );
 
-		// prune unused classes
-		//input = pruneUnusedClasses( input, usedClassNames, doPrune, log );
+		input = minifyCss( input, usedClassNames, doPrune, log );
 
 		// write output
 		Path outputPath = Paths.get( outputFile );
@@ -70,9 +69,9 @@ public class CssRename
 		log.debug( input );
 	}
 
-	private static String pruneUnusedClasses( String input, Set<String> usedClassNames, boolean doPrune, Log log )
+	private static String minifyCss( String input, Set<String> usedClassNames, boolean doPrune, Log log )
 	{
-		if(!doPrune)
+		if( ! doPrune)
 			return input;
 		
 		StringBuilder sb = new StringBuilder();
