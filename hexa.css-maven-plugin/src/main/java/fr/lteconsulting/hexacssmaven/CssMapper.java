@@ -62,7 +62,9 @@ public class CssMapper
 
 		// write output
 		Path outputPath = Paths.get( outputFile );
-		BufferedWriter writer = Files.newBufferedWriter( outputPath, StandardOpenOption.CREATE );
+		if(Files.exists( outputPath ))
+			Files.delete( outputPath );
+		BufferedWriter writer = Files.newBufferedWriter( outputPath, StandardOpenOption.CREATE_NEW );
 		writer.append( input );
 		writer.close();
 
@@ -90,7 +92,7 @@ public class CssMapper
 		for( String[] line : renames )
 		{
 			log.info( line[1] + " => " + line[0] );
-			input = input.replaceAll( line[1], line[0] );
+			input = input.replaceAll( "\\." + line[1], "." + line[0] );
 			usedClassNames.add( line[0] );
 		}
 
