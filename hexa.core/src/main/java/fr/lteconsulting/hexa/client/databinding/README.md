@@ -6,7 +6,7 @@ For example, you will be able to write :
 
 		Binder.Bind(listBox).Mode(Mode.OneWay).To(personForm);
 
-With this, you get a one way data binding between the `listBox` and the `personForm` wich displays the selected person.
+With this, you get a one way data binding between the `listBox` and the `personForm` wich displays and edits the selected person.
 
 But there's more, there are plenty of options you can use ! For example :
 

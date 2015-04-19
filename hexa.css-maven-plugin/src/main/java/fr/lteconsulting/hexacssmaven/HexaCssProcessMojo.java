@@ -64,7 +64,7 @@ public class HexaCssProcessMojo extends AbstractMojo
 				try
 				{
 					getLog().info( "Processing file: " + include );
-					CssRename.processFile( sourceDirectory.getAbsolutePath() + "/" + include, mappingFile.getAbsolutePath(), outputDirectory.getAbsolutePath() + "/" + include, pruneClasses, getLog() );
+					CssMapper.processFile( sourceDirectory.getAbsolutePath() + "/" + include, mappingFile.getAbsolutePath(), outputDirectory.getAbsolutePath() + "/" + include, pruneClasses, getLog() );
 				}
 				catch( IOException e )
 				{
