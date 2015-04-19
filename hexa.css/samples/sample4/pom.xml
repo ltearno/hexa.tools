@@ -119,6 +119,9 @@
 
 					<outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
 					
+					<!-- Since the bootstrap file contains many tag CSS specifiers,
+					we are not interested in pruning the CSS class names, only
+					minifying -->
 					<pruneClasses>false</pruneClasses>
 
 					<includes>
