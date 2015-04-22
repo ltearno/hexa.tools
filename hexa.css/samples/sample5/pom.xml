@@ -114,7 +114,7 @@
 				<version>1.0</version>
 
 				<configuration>
-					<sourceDirectory>src/main/css</sourceDirectory>
+					<sourceDirectory>classpath:fr/lteconsulting/hexa/client/css/bindings</sourceDirectory>
 					<mappingFile>${project.build.directory}/${project.build.finalName}/sample5/hexas-css.mapping</mappingFile>
 
 					<outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
