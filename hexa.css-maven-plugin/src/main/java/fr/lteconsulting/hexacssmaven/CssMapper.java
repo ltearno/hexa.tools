@@ -65,7 +65,7 @@ public class CssMapper
 
 	private static String replaceClassNames( String input, String mappingPath, Set<String> usedClassNames, Log log ) throws IOException
 	{
-		List<String> lines = Files.readAllLines( Paths.get( mappingPath ) );
+		List<String> lines = Files.readAllLines( Paths.get( mappingPath ), StandardCharsets.UTF_8 );
 
 		List<String[]> renames = new ArrayList<>();
 		for( String line : lines )
