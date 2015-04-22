@@ -8,6 +8,7 @@
   <packaging>maven-archetype</packaging>
 
   <name>gwt.archetype</name>
+  <url>http://www.lteconsulting.fr</url>
 
   <build>
     <extensions>
@@ -27,6 +28,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
-  <url>http://www.lteconsulting.fr</url>
 </project>
