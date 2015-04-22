@@ -1,5 +1,7 @@
 # Hexa Tools
 
+[![Build Status](https://travis-ci.org/ltearno/hexa.tools.svg?branch=master)](https://travis-ci.org/ltearno/hexa.tools)
+
 [![Join the chat at https://gitter.im/ltearno/hexa.tools](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ltearno/hexa.tools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a Java library which helps the developper's productivity. It is mainly related to GWT.
