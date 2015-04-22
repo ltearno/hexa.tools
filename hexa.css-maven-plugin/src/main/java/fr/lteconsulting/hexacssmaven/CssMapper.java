@@ -2,6 +2,7 @@ package fr.lteconsulting.hexacssmaven;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,7 +54,7 @@ public class CssMapper
 		Path outputPath = Paths.get( path );
 		if(Files.exists( outputPath ))
 			Files.delete( outputPath );
-		BufferedWriter writer = Files.newBufferedWriter( outputPath, StandardOpenOption.CREATE_NEW );
+		BufferedWriter writer = Files.newBufferedWriter( outputPath, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW );
 		writer.append( content );
 		writer.close();
 		
