@@ -1,23 +1,41 @@
 package fr.lteconsulting.hexacssmaven;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.codehaus.classworlds.ClassRealm;
+import org.codehaus.classworlds.ClassWorld;
+import org.codehaus.classworlds.DuplicateRealmException;
 
 /**
  * Process a CSS file, rename classes according to the mapping file and prune
  * all unused classes
+ * 
+ * @requiresDependencyResolution compile
  */
-@Mojo( name = "process", defaultPhase = LifecyclePhase.PROCESS_SOURCES )
+@Mojo( name = "process", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDependencyResolution=ResolutionScope.COMPILE )
 public class HexaCssProcessMojo extends AbstractMojo
 {
-	@Parameter( defaultValue = "${project.build.directory}/${project.build.finalName}" )
+	private static final String CLASSPATH_MAKER = "classpath:";
+
+	@Parameter( defaultValue = "${project.build.directory}" )
 	private File sourceDirectory;
 
 	@Parameter( defaultValue = "${project.build.directory}/${project.build.finalName}" )
@@ -31,9 +49,13 @@ public class HexaCssProcessMojo extends AbstractMojo
 
 	@Parameter( required = true )
 	private File mappingFile;
-	
+
 	@Parameter( defaultValue = "true" )
 	private Boolean pruneClasses;
+
+	// Only used internally to get a reference to the current dependencies
+	@Parameter( defaultValue = "${project.dependencyArtifacts}", required = true, readonly = true )
+	private Set<Artifact> dependencyArtifacts;
 
 	private void checkFileExists( File file ) throws MojoExecutionException
 	{
@@ -47,13 +69,10 @@ public class HexaCssProcessMojo extends AbstractMojo
 	@Override
 	public void execute() throws MojoExecutionException
 	{
-		getLog().info( "HexaCss - Process Css files" );
-		getLog().info( "===========================" );
-		getLog().info( "Source dir: " + sourceDirectory.getAbsolutePath() );
+		getLog().info( "Source directory: " + maybeClasspathPath( sourceDirectory.getAbsolutePath() ) );
 		getLog().info( "Mapping file: " + mappingFile.getAbsolutePath() );
-		getLog().info( "Output dir: " + outputDirectory.getAbsolutePath() );
+		getLog().info( "Output directory: " + outputDirectory.getAbsolutePath() );
 
-		checkFileExists( sourceDirectory );
 		checkFileExists( mappingFile );
 		checkFileExists( outputDirectory );
 
@@ -64,9 +83,19 @@ public class HexaCssProcessMojo extends AbstractMojo
 				try
 				{
 					getLog().info( "Processing file: " + include );
-					CssMapper.processFile( sourceDirectory.getAbsolutePath() + "/" + include, mappingFile.getAbsolutePath(), outputDirectory.getAbsolutePath() + "/" + include, pruneClasses, getLog() );
+
+					String sourcePath = maybeClasspathPath( sourceDirectory.getAbsolutePath() + "/" + include );
+
+					String sourceFile = loadFile( sourcePath );
+					if( sourceFile == null )
+					{
+						getLog().error( "Cannot load file : " + sourcePath + ". Aborting." );
+						throw new MojoExecutionException( "Canoot load file : " + sourcePath );
+					}
+
+					CssMapper.processFile( sourceFile, mappingFile.getAbsolutePath(), outputDirectory.getAbsolutePath() + "/" + include, pruneClasses, getLog() );
 				}
-				catch( IOException e )
+				catch( IOException | URISyntaxException e )
 				{
 					getLog().error( "Error when processing the file", e );
 				}
@@ -78,5 +107,102 @@ public class HexaCssProcessMojo extends AbstractMojo
 		{
 			getLog().info( "No file specified for processing, nothing to do..." );
 		}
+	}
+
+	private String loadFile( String sourcePath ) throws URISyntaxException, MojoExecutionException
+	{
+		final String sourceContent;
+
+		if( sourcePath.startsWith( CLASSPATH_MAKER ) )
+		{
+			sourcePath = sourcePath.replaceAll( "\\\\", "/" );
+			
+			ClassWorld world = new ClassWorld();
+			ClassRealm realm;
+			try
+			{
+				realm = world.newRealm( "hexacss", null );
+				for( Artifact artifact : dependencyArtifacts )
+				{
+					getLog().debug( "Analysing Artifact " + artifact.getGroupId() + ":" + artifact.getId() + "-" + artifact.getClassifier() );
+					
+					if( !artifact.getArtifactHandler().isAddedToClasspath() )
+						continue;
+					
+					File artifactFile = artifact.getFile();
+					if(artifactFile==null)
+					{
+						getLog().error( "Artifact file is null, maybe dependency resolution has not taken place ! try just 'mvn install' on the whole project" );
+					}
+					else
+					{
+						URI uri = artifactFile.toURI();
+						realm.addConstituent( uri.toURL() );
+						getLog().debug( "Added to realm : " + uri );
+					}
+				}
+			}
+			catch( DuplicateRealmException e )
+			{
+				throw new MojoExecutionException( "Duplicate realm when reading resource " + sourcePath, e );
+			}
+			catch( MalformedURLException e )
+			{
+				throw new MojoExecutionException( "Malformed URL for resource " + sourcePath, e );
+			}
+
+			String resourceName = sourcePath.substring( CLASSPATH_MAKER.length() );
+			
+			getLog().info( "Processing a classpath resource : " + resourceName );
+			
+			try(InputStream is = realm.getResourceAsStream( resourceName );)
+			{
+				if(is==null)
+					throw new MojoExecutionException( "Cannot read resource stream " + resourceName );
+				
+				sourceContent = new Scanner(is,"UTF-8").useDelimiter("\\A").next();
+			}
+			catch( IOException e )
+			{
+				throw new MojoExecutionException( "Cannot read resource " + resourceName, e );
+			}
+		}
+		else
+		{
+			File file = new File(sourcePath);
+			checkFileExists( file );
+			
+			try
+			{
+				sourceContent = readFile( file );
+			}
+			catch( IOException e )
+			{
+				throw new MojoExecutionException( "Cannot read file " + sourcePath, e );
+			}
+		}
+
+		return sourceContent;
+	}
+	
+	private static String readFile( File file ) throws IOException, UnsupportedEncodingException, FileNotFoundException
+	{
+		String str = "";
+		try( FileInputStream fis = new FileInputStream( file ) )
+		{
+			byte[] data = new byte[(int) file.length()];
+			fis.read( data );
+			str = new String( data, "UTF-8" );
+		}
+		return str;
+	}
+
+	private String maybeClasspathPath( String path )
+	{
+		int i = path.indexOf( CLASSPATH_MAKER );
+		if( i >= 0 )
+			path = path.substring( i );
+
+		return path;
 	}
 }
