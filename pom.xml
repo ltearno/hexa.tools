@@ -17,6 +17,7 @@
 		<module>hexa.rpc</module>
 		<module>hexa.spring</module>
 		<module>hexa.css</module>
+		<module>hexa.css-maven-plugin</module>
 		<module>hexa.persistence</module>
 		<!--<module>hexa.demo</module> -->
 	</modules>
