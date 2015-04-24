@@ -4,7 +4,7 @@
 
 	<groupId>fr.lteconsulting</groupId>
 	<artifactId>hexacss-maven-plugin</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>HexaCss Maven Plugin</name>
