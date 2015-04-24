@@ -27,8 +27,6 @@ import org.codehaus.classworlds.DuplicateRealmException;
 /**
  * Process a CSS file, rename classes according to the mapping file and prune
  * all unused classes
- * 
- * @requiresDependencyResolution compile
  */
 @Mojo( name = "process", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDependencyResolution=ResolutionScope.COMPILE )
 public class HexaCssProcessMojo extends AbstractMojo
