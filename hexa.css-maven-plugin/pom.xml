@@ -138,6 +138,7 @@
                 </executions>
             </plugin>
             
+            <!-- For release only !
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -151,7 +152,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
