@@ -23,6 +23,8 @@ public @interface HexaCssExtra
 	 * the CSS class name will be forced to the value of this field.
 	 * 
 	 * Note that obfuscation will still happen.
+	 * 
+	 * @return The name of the CSS class
 	 */
 	String name() default "";
 }
