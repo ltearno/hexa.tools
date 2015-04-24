@@ -9,7 +9,6 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Position;
@@ -33,8 +32,6 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -154,30 +151,6 @@ public class DataTable extends Composite implements RequiresResize, ProvidesResi
 		initWidget( customPanel );
 
 		setStylePrimaryName( CSS.main() );
-
-		addDomHandler( new ScrollHandler()
-		{
-			@Override
-			public void onScroll( ScrollEvent event )
-			{
-				Style style = thead.getStyle();
-
-				int position = getElement().getScrollTop();
-				if( position == 0 )
-				{
-					style.clearPosition();
-					style.clearTop();
-					style.clearLeft();
-				}
-				else
-				{
-					style.setPosition( Position.ABSOLUTE );
-					style.setTop( 0, Unit.PX );
-					style.setLeft( 0, Unit.PX );
-					style.setWidth( 100, Unit.PCT );
-				}
-			}
-		}, ScrollEvent.getType() );
 	}
 
 	public int addColumn( String html, String width )
