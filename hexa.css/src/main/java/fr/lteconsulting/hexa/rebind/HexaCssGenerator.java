@@ -13,6 +13,7 @@ import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.resources.client.CssResource.ClassName;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
@@ -122,11 +123,19 @@ public class HexaCssGenerator extends Generator
 	{
 		String normalName;
 		
-		HexaCssExtra hexaAnnotation = method.getAnnotation( HexaCssExtra.class );
-		if(hexaAnnotation!=null)
-			normalName = hexaAnnotation.name();
+		ClassName classNameAnnotation = method.getAnnotation( ClassName.class );
+		if( classNameAnnotation != null )
+		{
+			normalName = classNameAnnotation.value();
+		}
 		else
-			normalName = cssClassPrefix() + method.getName();
+		{
+			HexaCssExtra hexaAnnotation = method.getAnnotation( HexaCssExtra.class );
+			if(hexaAnnotation!=null)
+				normalName = hexaAnnotation.name();
+			else
+				normalName = cssClassPrefix() + method.getName();
+		}
 		
 		String shrinkedName = classMapping.get( normalName );
 		if( shrinkedName == null )
