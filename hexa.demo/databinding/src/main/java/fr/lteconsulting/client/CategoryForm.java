@@ -15,8 +15,8 @@ import fr.lteconsulting.hexa.client.databinding.OneWayConverter;
  * A very minimalist form of scaffolding which is possible with Hexa Binding.
  * 
  * Here the edition form is really just a widget with two fields : name and color. Those can
- * be used automatically by the binding system when needed. Look at the {@link Application} class
- * which uses the $DTOMap keyword to bind the selected article's category to this form.
+ * be used automatically by the binding system when needed. The {@link Application} class
+ * maps this form on the selected user's category.
  * 
  * @author Arnaud Tournier
  * (c) LTE Consulting - 2015

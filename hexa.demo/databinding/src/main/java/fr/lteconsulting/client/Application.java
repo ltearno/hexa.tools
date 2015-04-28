@@ -44,10 +44,9 @@ public class Application implements EntryPoint
 		Binder.Bind( Repository.getArticles(), "selected" ).Mode( Mode.OneWay ).To( articleForm, "article" );
 
 		/**
-		 * Bind the selected article's category on the category form $DTOMap is
-		 * a scaffolding tool that auto-maps a DTO to any widget
+		 * Bind the selected article's category on the category form. All properties will be two-way bound.
 		 */
-		Binder.Bind( Repository.getArticles(), "selected.category" ).Mode( Mode.OneWay ).To( categoryForm, "$DTOMap" );
+		Binder.Bind( Repository.getArticles(), "selected.category" ).MapTo( categoryForm );
 
 		/**
 		 * Select the first article

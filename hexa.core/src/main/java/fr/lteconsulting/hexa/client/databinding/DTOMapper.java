@@ -69,8 +69,6 @@ public class DTOMapper
 
 		for( String name : bindedNames )
 		{
-			//GWT.log( "$DTOMap: test " + name );
-
 			boolean srcRead = ObjectPropertiesUtils.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
 			boolean srcWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
 

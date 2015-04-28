@@ -87,8 +87,8 @@ public class DataBindingDemo
 		// selectedPerson to person form
 		Bind( personListWidget, "selectedPersonne" ).Mode( Mode.OneWay ).Log("PERSONNEFORM").To( personneForm, "personne" );
 		
-		// selected person's category to category form
-		Bind( personListWidget, "selectedPersonne.category" ).Mode( Mode.OneWay ).To( categoryForm, "$DTOMap" );
+		// maps the selected person's category to the category form
+		Bind( personListWidget, "selectedPersonne.category" ).Mode( Mode.OneWay ).MapTo( categoryForm );
 		
 		// selected person's description to Window's title
 		Bind( personListWidget, "selectedPersonne.description" ).Mode( Mode.OneWay ).To( new WriteOnlyPropertyAdapter()
