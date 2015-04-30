@@ -1,6 +1,8 @@
 # Hexa Binding
 
-HexaBinding is a tool allowing dynamic binding between DTOs, Widgets, and any other Java objects in GWT applications. It is open and you can add your own property adapters to the binding engine.
+## A sometimes useful non-invasive data binding library for GWT
+
+HexaBinding is a tool allowing dynamic binding between values, DTOs, Widgets, and any other Java objects in GWT applications. It is open and you can add your own property adapters to the binding engine.
 
 For example, you will be able to write :
 
