@@ -12,11 +12,13 @@
 
 	<modules>
 		<module>hexa.artifact</module>
+		<module>hexa.binding</module>
+		<module>hexa.css</module>
+		<module>hexa.css-maven-plugin</module>
 		<module>hexa.core</module>
 		<module>hexa.rpc</module>
 		<module>hexa.spring</module>
-		<module>hexa.css</module>
-		<module>hexa.css-maven-plugin</module>
+		<module>hexa.utils</module>
 		<!--<module>hexa.all</module> -->
 		<!--<module>hexa.persistence</module> -->
 		<!--<module>hexa.demo</module> -->

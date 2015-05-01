@@ -7,7 +7,7 @@
 	<version>1.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
-	<name>HexaCss Maven Plugin</name>
+	<name>hexa.css - maven plugin</name>
 	<description>HexaCss is a tool to efficiently integrate CSS frameworks (like Less, Sass, GSS, ...) with GWT. This is the associated Maven plugin</description>
 	<url>http://www.lteconsulting.fr/hexacss</url>
 

@@ -17,7 +17,8 @@ import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
-import fr.lteconsulting.hexa.client.classinfo.ReflectedClasses;
+
+import fr.lteconsulting.hexa.client.classinfo.gwt.ReflectedClasses;
 
 public class ClazzBundleGenerator extends Generator
 {

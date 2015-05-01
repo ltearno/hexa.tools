@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>fr.lteconsulting</groupId>
-	<artifactId>hexa.css</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<artifactId>hexa.utils</artifactId>
+	<version>1.0-SNAPSHOT</version>
 
-	<name>hexa.css</name>
-	<description>HexaCss is a tool to efficiently integrate CSS frameworks (like Less, Sass, GSS, ...) with GWT</description>
-	<url>http://www.lteconsulting.fr/hexacss</url>
+	<name>hexa.utils</name>
+	<description>HexaUtils is a set of tools in Java.</description>
+	<url>http://www.lteconsulting.fr</url>
 	
 	<licenses>
         <license>
@@ -36,7 +36,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<gwt.version>[2.5.0,)</gwt.version>
 	</properties>
 	
 	<distributionManagement>
@@ -49,24 +48,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt-user</artifactId>
-				<version>${gwt.version}</version>
-				<scope>provided</scope>
-			</dependency>
-           
-            <dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt-dev</artifactId>
-				<version>${gwt.version}</version>
-				<scope>provided</scope>
-			</dependency>
-        </dependencies>
-    </dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -74,16 +55,6 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -161,7 +132,6 @@
 				<directory>src/main/java</directory>
 				<includes>
 					<include>**/*.java</include>
-                    <include>**/*.gwt.xml</include>
 				</includes>
 			</resource>
 		</resources>

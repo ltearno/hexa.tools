@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>fr.lteconsulting</groupId>
-	<artifactId>hexa.css</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<artifactId>hexa.binding</artifactId>
+	<version>1.0-SNAPSHOT</version>
 
-	<name>hexa.css</name>
-	<description>HexaCss is a tool to efficiently integrate CSS frameworks (like Less, Sass, GSS, ...) with GWT</description>
-	<url>http://www.lteconsulting.fr/hexacss</url>
+	<name>hexa.binding</name>
+	<description>HexaBinding is a tool used when some data binding repetitive glue code is written by the developper. This library does it instead.</description>
+	<url>http://www.lteconsulting.fr/hexabinding</url>
 	
 	<licenses>
         <license>
@@ -36,7 +36,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<gwt.version>[2.5.0,)</gwt.version>
 	</properties>
 	
 	<distributionManagement>
@@ -49,24 +48,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt-user</artifactId>
-				<version>${gwt.version}</version>
-				<scope>provided</scope>
-			</dependency>
-           
-            <dependency>
-				<groupId>com.google.gwt</groupId>
-				<artifactId>gwt-dev</artifactId>
-				<version>${gwt.version}</version>
-				<scope>provided</scope>
-			</dependency>
-        </dependencies>
-    </dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -77,13 +58,16 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
+			<groupId>fr.lteconsulting</groupId>
+			<artifactId>hexa.utils</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
+			<artifactId>gwt-user</artifactId>
+			<version>2.7.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
@@ -126,6 +110,9 @@
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                	<failOnError>false</failOnError>
+               	</configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -161,7 +148,6 @@
 				<directory>src/main/java</directory>
 				<includes>
 					<include>**/*.java</include>
-                    <include>**/*.gwt.xml</include>
 				</includes>
 			</resource>
 		</resources>
