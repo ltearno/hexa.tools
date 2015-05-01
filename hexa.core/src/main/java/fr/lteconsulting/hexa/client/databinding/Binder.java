@@ -6,6 +6,7 @@ import fr.lteconsulting.hexa.client.classinfo.ClazzBundle;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
+import fr.lteconsulting.hexa.client.tools.Action2;
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.
@@ -22,8 +23,8 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyA
  * "selectedPersonne.category" ).Mode( Mode.OneWay ).To( categoryForm, "$DTOMap"
  * );
  * 
- * // map selectedPerson to a personne form Bind( personListWidget, "selectedPersonne"
- * ).MapTo( personneForm );
+ * // map selectedPerson to a personne form Bind( personListWidget,
+ * "selectedPersonne" ).MapTo( personneForm );
  * 
  * // selected person's description to Window's title Bind( personListWidget,
  * "selectedPersonne.description" ).Mode( Mode.OneWay ).To( new
@@ -105,6 +106,58 @@ public class Binder
 		b.source = source;
 
 		return b;
+	}
+
+	/**
+	 * First step, accepts a data binding source definition and creates a binder
+	 * 
+	 * Accepts a source object as the value provided for the binding.
+	 * <b>Note</b> that the provided source must be bound in one way mode,
+	 * because the source cannot be modified in that mode
+	 * 
+	 * @param source
+	 *            The object that will be given as a value for that binding
+	 * @return The Binder to continue specifying the data binding
+	 */
+	public static Binder Bind( final Object source )
+	{
+		return Bind( new PropertyAdapter()
+		{
+			@Override
+			public void setValue( Object object )
+			{
+				throw new IllegalStateException( "setValue impossible !" );
+			}
+
+			@Override
+			public void removePropertyChangedHandler( Object handlerRegistration )
+			{
+			}
+
+			@Override
+			public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
+			{
+				return null;
+			}
+
+			@Override
+			public Object getValue()
+			{
+				return source;
+			}
+		} );
+	}
+	
+	/**
+	 * Maps two objects together. All matching fields will then be two-way data-bound.
+	 * 
+	 * @param source
+	 * @param destination
+	 * @return
+	 */
+	public static DataBinding Map( Object source, Object destination )
+	{
+		return Bind( source ).MapTo( destination );
 	}
 
 	/**
@@ -214,10 +267,10 @@ public class Binder
 	 * Final step, defines the data binding destination and activates the
 	 * binding
 	 * 
-	 * The object used as the binding's destination will be mapped to the 
-	 * source object. Each of the matching properties of the source and destination 
-	 * will be two-way bound, so that a change in one gets written in the
-	 * other one.
+	 * The object used as the binding's destination will be mapped to the source
+	 * object. Each of the matching properties of the source and destination
+	 * will be two-way bound, so that a change in one gets written in the other
+	 * one.
 	 * 
 	 * @param destination
 	 *            The object that will be mapped to the source

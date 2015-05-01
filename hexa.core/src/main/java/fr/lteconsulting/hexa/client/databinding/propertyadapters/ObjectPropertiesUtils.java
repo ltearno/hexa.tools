@@ -1,5 +1,8 @@
 package fr.lteconsulting.hexa.client.databinding.propertyadapters;
 
+import java.util.HashMap;
+import java.util.logging.Logger;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 
@@ -16,13 +19,15 @@ import fr.lteconsulting.hexa.client.databinding.tools.Property;
  * A Property on an object is a value that can be get and/or set through either
  * a getter/setter or directly through the object's field.
  * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
+ * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
  */
 public class ObjectPropertiesUtils
 {
+	private final static Logger LOGGER = Logger.getLogger( ObjectPropertiesUtils.class.getName() );
+
+	private final static DynamicPropertyBagAccess propertyBagAccess = GWT.isClient() ? new DynamicPropertyBagAccessGwt() : new DynamicPropertyBagAccessJre();
+
 	/**
 	 * Whether a getter or a field is available with that name
 	 * 
@@ -77,9 +82,11 @@ public class ObjectPropertiesUtils
 
 	/**
 	 * Gets the property's value from an object
-	 *  
-	 * @param object The object
-	 * @param name Property name
+	 * 
+	 * @param object
+	 *            The object
+	 * @param name
+	 *            Property name
 	 * @return
 	 */
 	public static <T> T GetProperty( Object object, String name )
@@ -89,10 +96,13 @@ public class ObjectPropertiesUtils
 
 	/**
 	 * Gets the property's value from an object
-	 *  
-	 * @param object The object
-	 * @param name Property name
-	 * @param fTryDirectFieldAccess specifies if direct field access should be used
+	 * 
+	 * @param object
+	 *            The object
+	 * @param name
+	 *            Property name
+	 * @param fTryDirectFieldAccess
+	 *            specifies if direct field access should be used
 	 * @return
 	 */
 	public static <T> T GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
@@ -111,8 +121,10 @@ public class ObjectPropertiesUtils
 	/**
 	 * Whether there is a setter or a field to write this property
 	 * 
-	 * @param clazz Class
-	 * @param name Property name
+	 * @param clazz
+	 *            Class
+	 * @param name
+	 *            Property name
 	 * @return
 	 */
 	public static boolean HasSomethingToSetField( Clazz<?> clazz, String name )
@@ -121,8 +133,8 @@ public class ObjectPropertiesUtils
 	}
 
 	/**
-	 * Returns the class of the setter property. It can be this of the setter
-	 * or of the field
+	 * Returns the class of the setter property. It can be this of the setter or
+	 * of the field
 	 * 
 	 * @param clazz
 	 * @param name
@@ -138,7 +150,7 @@ public class ObjectPropertiesUtils
 		Field field = clazz.getAllField( name );
 		if( field != null )
 			return field.getType();
-		
+
 		return null;
 	}
 
@@ -192,13 +204,13 @@ public class ObjectPropertiesUtils
 	 */
 	public static <T> T GetObjectDynamicProperty( Object object, String propertyName )
 	{
-		DynamicPropertyBag bag = getObjectDynamicPropertyBag( object );
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
 		if( bag == null )
 			return null;
-	
+
 		@SuppressWarnings( "unchecked" )
 		T result = (T) bag.get( propertyName );
-		
+
 		return result;
 	}
 
@@ -211,10 +223,10 @@ public class ObjectPropertiesUtils
 	 */
 	public static boolean HasObjectDynamicProperty( Object object, String propertyName )
 	{
-		DynamicPropertyBag bag = getObjectDynamicPropertyBag( object );
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
 		if( bag == null )
 			return false;
-	
+
 		return bag.contains( propertyName );
 	}
 
@@ -227,15 +239,15 @@ public class ObjectPropertiesUtils
 	 */
 	public static void SetObjectDynamicProperty( Object object, String propertyName, Object value )
 	{
-		DynamicPropertyBag bag = getObjectDynamicPropertyBag( object );
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
 		if( bag == null )
 		{
 			bag = new DynamicPropertyBag();
-			setObjectDynamicPropertyBag( object, bag );
+			propertyBagAccess.setObjectDynamicPropertyBag( object, bag );
 		}
-	
+
 		bag.set( propertyName, value );
-		
+
 		NotifyPropertyChangedEvent.notify( object, propertyName );
 	}
 
@@ -247,19 +259,19 @@ public class ObjectPropertiesUtils
 			T result = (T) ((HasValue) object).getValue();
 			return result;
 		}
-	
+
 		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
 			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
-	
+
 		// if has dynamic-property, return it !
 		if( HasObjectDynamicProperty( object, name ) )
 		{
-			GWT.log( "DataBinding: Uses dynamic property read '" + name + "' for object " + object );
+			LOGGER.fine( "'" + name + "' read dynamic property on object " + object );
 			return GetObjectDynamicProperty( object, name );
 		}
-	
+
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
-	
+
 		String getterName = "get" + capitalizeFirstLetter( name );
 		Method getter = s.getMethod( getterName );
 		if( getter != null )
@@ -275,7 +287,7 @@ public class ObjectPropertiesUtils
 				throw new RuntimeException( "ObjectAdapter [object]." + object.getClass().getName() + "." + getterName + "() : getter call throwed an exception. See cause.", e );
 			}
 		}
-	
+
 		if( fTryDirectFieldAccess )
 		{
 			// try direct field access
@@ -283,9 +295,9 @@ public class ObjectPropertiesUtils
 			if( field != null )
 				return field.getValue( object );
 		}
-	
+
 		// Maybe a dynamic property will be set later on
-		GWT.log( "DataBinding: Warning: assuming that the object would in the future have a dynamic property set / Maybe have an opt-in option on the Binding to clarify things" );
+		LOGGER.warning( "DataBinding: Warning: assuming that the object would in the future have a dynamic property set / Maybe have an opt-in option on the Binding to clarify things" );
 
 		return null;
 	}
@@ -295,15 +307,15 @@ public class ObjectPropertiesUtils
 		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
 		{
 			assert object instanceof HasValue : "Object should be implementing HasValue<?> !";
-			
+
 			@SuppressWarnings( "unchecked" )
 			HasValue<Object> hasValue = ((HasValue<Object>) object);
-			
+
 			hasValue.setValue( value, true );
-			
+
 			return true;
 		}
-	
+
 		String setterName = "set" + capitalizeFirstLetter( name );
 		Method setter = s.getMethod( setterName );
 		if( setter != null )
@@ -314,7 +326,7 @@ public class ObjectPropertiesUtils
 			setter.invoke( object, value );
 			return true;
 		}
-	
+
 		if( fTryDirectFieldAccess )
 		{
 			Field field = s.getAllField( name );
@@ -324,26 +336,52 @@ public class ObjectPropertiesUtils
 				return true;
 			}
 		}
-		
-		GWT.log( "DataBinding: Uses dynamic property write '" + name + "' for object " + object + " of class " + object.getClass().getName() + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !");
-		
+
+		if( !HasObjectDynamicProperty( object, name ) )
+			LOGGER.warning( "'" + name + "' write dynamic property on object " + object + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !" );
+
 		SetObjectDynamicProperty( object, name, value );
 
 		return false;
 	}
 
-	private native static DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
-	/*-{
-		return object.__hexa_dynamic_ppty_bag || null;
-	}-*/;
-
-	private native static void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
-	/*-{
-		object.__hexa_dynamic_ppty_bag = bag;
-	}-*/;
-
 	private static String capitalizeFirstLetter( String s )
 	{
 		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
+	}
+
+	interface DynamicPropertyBagAccess
+	{
+		DynamicPropertyBag getObjectDynamicPropertyBag( Object object );
+
+		void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag );
+	}
+
+	private static class DynamicPropertyBagAccessGwt implements DynamicPropertyBagAccess
+	{
+		public native DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
+		/*-{
+			return object.__hexa_dynamic_ppty_bag || null;
+		}-*/;
+
+		public native void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
+		/*-{
+			object.__hexa_dynamic_ppty_bag = bag;
+		}-*/;
+	}
+
+	private static class DynamicPropertyBagAccessJre implements DynamicPropertyBagAccess
+	{
+		private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
+
+		public void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
+		{
+			propertyBags.put( System.identityHashCode( object ), bag );
+		}
+
+		public DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
+		{
+			return propertyBags.get( System.identityHashCode( object ) );
+		}
 	}
 }

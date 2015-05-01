@@ -2,6 +2,15 @@ package fr.lteconsulting.hexa.client.classinfo;
 
 import java.util.List;
 
+/**
+ * Runtime type information interface about a class
+ * 
+ * @author Arnaud Tournier
+ * (c) LTE Consulting - 2015
+ * http://www.lteconsulting.fr
+ *
+ * @param <T> The class for which runtime type information is provided
+ */
 public interface Clazz<T>
 {
 	String getClassName();

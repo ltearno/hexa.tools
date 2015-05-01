@@ -2,20 +2,8 @@ package fr.lteconsulting.hexa.client.classinfo;
 
 import java.util.Set;
 
-import com.google.gwt.core.client.GWT;
-
-/**
- * Frontal singleton entry point providing the Reflection system API
- * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
- *
- */
-public class ClassInfo
+interface IClassInfo
 {
-	private static IClassInfo impl = GWT.isClient() ? new ClassInfoGwt() : ClassInfoJre.get();
-	
 	/**
 	 * Obtain a runtime type information on a class.<br/><br/>
 	 * 
@@ -24,49 +12,34 @@ public class ClassInfo
 	 * @param clazz The class object for which type information is required
 	 * @return The runtime information interface
 	 */
-	public static <T> Clazz<T> Clazz( Class<T> clazz )
-	{
-		return impl.Clazz( clazz );
-	}
-
+	<T> Clazz<T> Clazz( Class<T> clazz );
+	
 	/**
 	 * Register a runtime type information provider
 	 * 
 	 * @param clazz
 	 */
-	public static <T> void RegisterClazz( Clazz<T> clazz )
-	{
-		impl.RegisterClazz( clazz );
-	}
-
+	<T> void RegisterClazz( Clazz<T> clazz );
+	
 	/**
 	 * Obtain a runtime type information on a class.
 	 * 
 	 * @param name Name of the class for which type information is required
 	 * @return The runtime information interface
 	 */
-	public static Clazz<?> FindClazz( String name )
-	{
-		return impl.FindClazz( name );
-	}
-
+	Clazz<?> FindClazz( String name );
+	
 	/**
 	 * Obtain a runtime type information on a class.
 	 * 
 	 * @param clazz The class object for which type information is required
 	 * @return The runtime information interface
 	 */
-	public static <T> Clazz<T> FindClazz( Class<T> clazz )
-	{
-		return impl.FindClazz( clazz );
-	}
-
+	<T> Clazz<T> FindClazz( Class<T> clazz );
+	
 	/**
 	 * Retrieve the set of registered type information providers
 	 * @return
 	 */
-	public static Set<Class<?>> GetRegisteredClazz()
-	{
-		return impl.GetRegisteredClazz();
-	}
+	Set<Class<?>> GetRegisteredClazz();
 }

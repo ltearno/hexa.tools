@@ -1,9 +1,11 @@
 package fr.lteconsulting.hexa.client.databinding;
 
+import java.util.logging.Logger;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasValue;
+
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.WidgetPropertyAdapter;
@@ -12,16 +14,18 @@ import fr.lteconsulting.hexa.client.tools.Action2;
 /**
  * Manages the binding between a source and a destination.
  * 
- * <p>The data binding has several options like OneWay,
- * TwoWay, ...<br/>
- * The data propagation can happen synchronously after a data changed,
- * or it can happen asynchronously through a deferred command.
+ * <p>
+ * The data binding has several options like OneWay, TwoWay, ...<br/>
+ * The data propagation can happen synchronously after a data changed, or it can
+ * happen asynchronously through a deferred command.
  * 
  * @author Arnaud Tournier
  *
  */
 public class DataBinding
 {
+	private static final Logger LOGGER = Logger.getLogger( DataBinding.class.getName() );
+
 	private boolean fActivated;
 
 	private PropertyAdapter source;
@@ -73,7 +77,7 @@ public class DataBinding
 		if( logPrefix == null )
 			return;
 
-		GWT.log( "DATABINDING " + logPrefix + " : " + text );
+		LOGGER.info( "DATABINDING " + logPrefix + " : " + text );
 	}
 
 	public DataBinding activate()
@@ -83,7 +87,7 @@ public class DataBinding
 		log( "activation" );
 
 		onSourceChanged.exec( null, null );
-		
+
 		return this;
 	}
 
@@ -102,9 +106,9 @@ public class DataBinding
 	}
 
 	/**
-	 * Terminates the Data Binding activation and cleans up all related resources.
-	 * You should call this method when you want to free the binding, in order to
-	 * lower memory usage.
+	 * Terminates the Data Binding activation and cleans up all related
+	 * resources. You should call this method when you want to free the binding,
+	 * in order to lower memory usage.
 	 */
 	public void term()
 	{
@@ -138,18 +142,20 @@ public class DataBinding
 				return;
 
 			Object value = source.getValue();
+			log(" - source value : " + value);
 
 			if( converter != null )
 			{
 				log( "... converting value ..." );
 				value = converter.convert( value );
+				log(" - converted to : " + value);
 			}
 
 			fSettingDestination = true;
 			destination.setValue( value );
 			fSettingDestination = false;
 
-			log( "done setting source to " + value );
+			log( " - done propagating source" );
 		}
 	};
 

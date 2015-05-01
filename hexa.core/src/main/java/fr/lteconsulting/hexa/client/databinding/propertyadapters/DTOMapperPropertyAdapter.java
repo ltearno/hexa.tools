@@ -18,7 +18,6 @@ public class DTOMapperPropertyAdapter extends WriteOnlyPropertyAdapter
 		if( mapperResources != null )
 			DTOMapper.FreeMapping( mapperResources );
 
-		// object is the new selected category
 		if( object != null )
 			mapperResources = DTOMapper.Map( object, destinationOfMapping );
 	}

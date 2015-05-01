@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.Window;
@@ -24,6 +25,8 @@ import com.google.gwt.user.client.Window;
  */
 public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEvent.Handler>
 {
+	private final static MetadataAccess metadataAccess = GWT.isClient() ? new MetadataAccessGwt() : new MetadataAccessJre();
+	
 	/**
 	 * Interface through which one receives {@link PropertyChangedEvent}
 	 */
@@ -60,11 +63,11 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 			return info;
 		}
 		
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = getObjectMetadata( source );
+		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = metadataAccess.getObjectMetadata( source );
 		if( handlersMap == null )
 		{
 			handlersMap = new HashMap<>();
-			setObjectMetadata( source, handlersMap );
+			metadataAccess.setObjectMetadata( source, handlersMap );
 		}
 	
 		ArrayList<NotifyPropertyChangedEvent.Handler> handlerList = handlersMap.get( propertyName );
@@ -106,7 +109,7 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 		
 		HandlerInfo info = (HandlerInfo) handlerRegistration;
 	
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = getObjectMetadata( info.source );
+		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = metadataAccess.getObjectMetadata( info.source );
 		if( handlersMap == null )
 			return;
 	
@@ -120,7 +123,7 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 			handlersMap.remove( info.propertyName );
 	
 		if( handlersMap.isEmpty() )
-			setObjectMetadata( info.source, null );
+			metadataAccess.setObjectMetadata( info.source, null );
 		
 		statsRemovedRegistration( info );
 	
@@ -140,7 +143,7 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 	{
 		nbNotifications++;
 		
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = getObjectMetadata( sender );
+		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = metadataAccess.getObjectMetadata( sender );
 		if( handlersMap == null )
 			return;
 	
@@ -283,14 +286,40 @@ public class NotifyPropertyChangedEvent extends GwtEvent<NotifyPropertyChangedEv
 		String key = info.propertyName + "@" + info.source.getClass().getSimpleName();
 		counts.put( key, counts.get( key ) - 1 );
 	}
-
-	private native static void setObjectMetadata( Object object, Object metadata )
-	/*-{
-		object.__hexa_metadata = metadata;
-	}-*/;
-
-	private native static <T> T getObjectMetadata( Object object )
-	/*-{
-		return object.__hexa_metadata || null;
-	}-*/;
+	
+	interface MetadataAccess
+	{
+		void setObjectMetadata( Object object, Object metadata );
+		<T> T getObjectMetadata( Object object );
+	}
+	
+	private static class MetadataAccessGwt implements MetadataAccess
+	{
+		public native void setObjectMetadata( Object object, Object metadata )
+		/*-{
+			object.__hexa_metadata = metadata;
+		}-*/;
+	
+		public native <T> T getObjectMetadata( Object object )
+		/*-{
+			return object.__hexa_metadata || null;
+		}-*/;
+	}
+	
+	private static class MetadataAccessJre implements MetadataAccess
+	{
+		private static HashMap<Integer, Object> metadatas = new HashMap<>();
+		
+		public void setObjectMetadata( Object object, Object metadata )
+		{
+			metadatas.put( System.identityHashCode( object ), metadata );
+		}
+		
+		public <T> T getObjectMetadata( Object object )
+		{
+			@SuppressWarnings( "unchecked" )
+			T result = (T) metadatas.get( System.identityHashCode( object ) );
+			return result;
+		}
+	}
 }
