@@ -18,51 +18,6 @@ import fr.lteconsulting.hexa.client.tools.Action1;
  */
 public class WatchableCollection<T> implements List<T>
 {
-	public enum ChangeType
-	{
-		ADD,
-		REMOVE;
-	}
-
-	public static class Change
-	{
-		final ChangeType type;
-		final Object item;
-		final int index;
-
-		public Change( ChangeType type, Object item, int index )
-		{
-			this.type = type;
-			this.item = item;
-			this.index = index;
-		}
-
-		public static <T> List<Change> ForItems( ChangeType type, Collection<T> items, int startIndex )
-		{
-			List<Change> res = new ArrayList<>();
-			for( T item : items )
-				res.add( new Change( type, item, startIndex++ ) );
-
-			return res;
-		}
-
-		public ChangeType getType()
-		{
-			return type;
-		}
-
-		@SuppressWarnings( "unchecked" )
-		public <T> T getItem()
-		{
-			return (T) item;
-		}
-		
-		public int getIndex()
-		{
-			return index;
-		}
-	}
-
 	private final List<T> list;
 
 	private List<Change> scheduledChanges = new ArrayList<>();

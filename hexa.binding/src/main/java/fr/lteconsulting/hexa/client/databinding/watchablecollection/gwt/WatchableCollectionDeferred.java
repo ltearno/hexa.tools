@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.client.databinding.watchablecollection;
+package fr.lteconsulting.hexa.client.databinding.watchablecollection.gwt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,8 @@ import java.util.ListIterator;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.Change;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.ChangeType;
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.Change;
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.ChangeType;
 import fr.lteconsulting.hexa.client.tools.Action1;
 
 /**

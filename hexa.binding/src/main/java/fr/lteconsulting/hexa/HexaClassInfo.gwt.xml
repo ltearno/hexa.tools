@@ -3,8 +3,9 @@
 <module>
 	<inherits name='com.google.gwt.user.User' />
 
-	<!-- <super-source path="jre" /> -->
-	<source path="classinfo" excludes="classinfo/gwt/rebind" />
+	<super-source path="classinfo/gwt/emul" />
+	
+	<source path="classinfo" excludes="classinfo/gwt/rebind,classinfo/gwt/emul" />
 
 	<generate-with
 		class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzGenerator">

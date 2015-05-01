@@ -3,8 +3,8 @@ package fr.lteconsulting.hexa.client.databinding;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Logger;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -28,6 +28,8 @@ import fr.lteconsulting.hexa.client.databinding.tools.Property;
  */
 public class DTOMapper
 {
+	private static final Logger LOGGER = Logger.getLogger( DTOMapper.class.getName() );
+	
 	// tries to bind as much fields of source to destination and the other way
 	// around
 	// returns mapping resources handle that were created for this mapping
@@ -35,7 +37,7 @@ public class DTOMapper
 	{
 		List<DataBinding> res = new ArrayList<DataBinding>();
 
-		GWT.log( "Binding object of class " + getSimpleName( source.getClass() ) + " to another of class " + getSimpleName( destination.getClass() ) );
+		LOGGER.fine( "Binding object of class " + getSimpleName( source.getClass() ) + " to another of class " + getSimpleName( destination.getClass() ) );
 
 		Clazz<?> sourceClass = ClassInfo.Clazz( source.getClass() );
 		Clazz<?> destinationClass = ClassInfo.Clazz( destination.getClass() );
@@ -108,7 +110,7 @@ public class DTOMapper
 					break;
 			}
 
-			GWT.log( "[" + getSimpleName( sourceAdapterInfo.dataType ) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
+			LOGGER.fine( "[" + getSimpleName( sourceAdapterInfo.dataType ) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
 
 			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter, null );
 			binding.activate();

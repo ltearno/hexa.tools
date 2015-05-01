@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.user.client.Window;
 
 /**
  * This class is part of the Hexa DataBinding and provides :
@@ -15,10 +12,6 @@ import com.google.gwt.user.client.Window;
  * <li>registering to object's property change
  * <li>notifying when a property changes in an object
  * </ol>
- * 
- * The mechanism for dispatching change events is the
- * GWT standard mechanism so this class extends the
- * {@link GwtEvent} class.
  * 
  * @author Arnaud Tournier
  *
@@ -30,7 +23,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 	/**
 	 * Interface through which one receives {@link PropertyChangedEvent}
 	 */
-	public interface Handler extends EventHandler
+	public interface Handler// extends EventHandler
 	{
 		public void onNotifyPropertChanged( NotifyPropertyChangedEvent event );
 	}
@@ -181,7 +174,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 	 * shows how many registrations happened since last call ; that's useful
 	 * to detect registration leaks.
 	 */
-	public static void showStats()
+	public static String getStats()
 	{
 		String msg = "NotifyPropertyChanged stats :\r\n"
 				+ "# registered handlers : " + nbRegisteredHandlers + "\r\n"
@@ -202,7 +195,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 		
 		oldCounts = new HashMap<>( counts );
 		
-		Window.alert( msg + details.toString() );
+		return msg + details.toString();
 	}
 
 	private final Object sender;
@@ -239,21 +232,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 	{
 		return propertyName;
 	}
-
-//	@Override
-//	protected void dispatch( NotifyPropertyChangedEvent.Handler handler )
-//	{
-//		handler.onNotifyPropertChanged( this );
-//	}
-//
-//	@Override
-//	public GwtEvent.Type<NotifyPropertyChangedEvent.Handler> getAssociatedType()
-//	{
-//		return TYPE;
-//	}
-
-	public static final GwtEvent.Type<NotifyPropertyChangedEvent.Handler> TYPE = new GwtEvent.Type<NotifyPropertyChangedEvent.Handler>();
-
+	
 	private static class DirectHandlerInfo
 	{
 		INotifyPropertyChanged source;

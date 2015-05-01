@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.HasValue;
 
+import fr.lteconsulting.hexa.client.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
 import fr.lteconsulting.hexa.client.tools.Action2;
 
 public class CompositePropertyAdapter implements PropertyAdapter

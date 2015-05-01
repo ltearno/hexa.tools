@@ -1,10 +1,11 @@
-package fr.lteconsulting.hexa.client.databinding.propertyadapters;
+package fr.lteconsulting.hexa.client.databinding.propertyadapters.gwt;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
 
+import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.client.tools.Action2;
 
 /**

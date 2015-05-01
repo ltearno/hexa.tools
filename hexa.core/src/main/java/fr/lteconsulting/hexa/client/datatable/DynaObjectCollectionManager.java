@@ -8,8 +8,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.Change;
 import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.Change;
 import fr.lteconsulting.hexa.client.tools.Action1;
 
 public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
