@@ -1,6 +1,7 @@
-package fr.lteconsulting.hexa.client.databinding.watchablecollection;
+package fr.lteconsulting.hexa.client.databinding.test.watchablecollection;
 
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
 
 public class A
 {

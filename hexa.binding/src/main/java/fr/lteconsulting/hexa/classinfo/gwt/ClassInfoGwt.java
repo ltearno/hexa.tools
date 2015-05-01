@@ -1,22 +1,24 @@
-package fr.lteconsulting.hexa.client.classinfo.gwt;
+package fr.lteconsulting.hexa.classinfo.gwt;
 
 import java.util.HashMap;
 import java.util.Set;
 
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.IClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.internal.ObjectClazz;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.IClassInfo;
+import fr.lteconsulting.hexa.classinfo.internal.ObjectClazz;
 
 public class ClassInfoGwt implements IClassInfo
 {
 	private HashMap<Class<?>, Clazz<?>> clazzz;
-	
+
 	/**
-	 * Obtain a runtime type information on a class.<br/><br/>
+	 * Obtain a runtime type information on a class.<br/>
+	 * <br/>
 	 * 
 	 * Throws a RuntimeException if the type information provider is not found.
 	 * 
-	 * @param clazz The class object for which type information is required
+	 * @param clazz
+	 *            The class object for which type information is required
 	 * @return The runtime information interface
 	 */
 	public <T> Clazz<T> Clazz( Class<T> clazz )
@@ -49,11 +51,15 @@ public class ClassInfoGwt implements IClassInfo
 	/**
 	 * Obtain a runtime type information on a class.
 	 * 
-	 * @param name Name of the class for which type information is required
+	 * @param name
+	 *            Name of the class for which type information is required
 	 * @return The runtime information interface
 	 */
 	public Clazz<?> FindClazz( String name )
 	{
+		if( clazzz == null )
+			return null;
+
 		for( Clazz<?> c : clazzz.values() )
 			if( c.getClassName().equals( name ) )
 				return c;
@@ -64,16 +70,20 @@ public class ClassInfoGwt implements IClassInfo
 	/**
 	 * Obtain a runtime type information on a class.
 	 * 
-	 * @param clazz The class object for which type information is required
+	 * @param clazz
+	 *            The class object for which type information is required
 	 * @return The runtime information interface
 	 */
 	public <T> Clazz<T> FindClazz( Class<T> clazz )
 	{
+		if( clazzz == null )
+			return null;
+
 		for( Clazz<?> c : clazzz.values() )
 			if( c.getReflectedClass() == clazz )
 			{
 				@SuppressWarnings( "unchecked" )
-				Clazz<T> result = (Clazz<T>)c;
+				Clazz<T> result = (Clazz<T>) c;
 				return result;
 			}
 
@@ -82,10 +92,14 @@ public class ClassInfoGwt implements IClassInfo
 
 	/**
 	 * Retrieve the set of registered type information providers
+	 * 
 	 * @return
 	 */
 	public Set<Class<?>> GetRegisteredClazz()
 	{
+		if( clazzz == null )
+			return null;
+
 		return clazzz.keySet();
 	}
 

@@ -1,6 +1,6 @@
-package fr.lteconsulting.hexa.client.classinfo.internal;
+package fr.lteconsulting.hexa.classinfo.internal;
 
-import fr.lteconsulting.hexa.client.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Field;
 
 public abstract class FieldBase implements Field
 {
@@ -45,6 +45,6 @@ public abstract class FieldBase implements Field
 	// @Override
 	// public native void setValue( T object, Object value )
 	// /*-{
-	// object@fr.lteconsulting.hexa.client.classinfo.internal.T::FIELD = value;
+	// object@fr.lteconsulting.hexa.classinfo.internal.T::FIELD = value;
 	// }-*/;
 }

@@ -6,10 +6,10 @@ import java.util.logging.Logger;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 
-import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Field;
-import fr.lteconsulting.hexa.client.classinfo.Method;
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Method;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
 import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
@@ -305,7 +305,7 @@ public class ObjectPropertiesUtils
 		}
 
 		if( !HasObjectDynamicProperty( object, name ) )
-			LOGGER.warning( "'" + name + "' write dynamic property on object " + object + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !" );
+			LOGGER.warning( "'" + name + "' write dynamic property on object " + object.getClass().getName() + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !" );
 
 		SetObjectDynamicProperty( object, name, value );
 

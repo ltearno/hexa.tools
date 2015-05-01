@@ -1,20 +1,13 @@
-package fr.lteconsulting.hexa.client.databinding.watchablecollection;
+package fr.lteconsulting.hexa.client.databinding.test.watchablecollection;
 
-import java.util.List;
-
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.junit.client.GWTTestCase;
 
-import fr.lteconsulting.hexa.client.databinding.Binder;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.Change;
-import fr.lteconsulting.hexa.client.tools.Action1;
-
-public class WatchableCollectionTest extends GWTTestCase
+public class WatchableCollectionGwtTest extends GWTTestCase
 {
 	@Override
 	public String getModuleName()
 	{
-		return "fr.lteconsulting.hexa.HexaTest";
+		return "fr.lteconsulting.hexa.client.databinding.HexaBindingTest";
 	}
 	
 	public void testA()

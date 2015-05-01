@@ -3,7 +3,7 @@ package fr.lteconsulting.hexa.client.sql;
 import java.util.Date;
 import java.util.HashMap;
 
-import fr.lteconsulting.hexa.client.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Field;
 
 public class SQLiteTypeManagerManager
 {

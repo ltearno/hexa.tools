@@ -1,7 +1,7 @@
 package fr.lteconsulting.hexa.client.ui.tools;
 
-import static fr.lteconsulting.hexa.client.classinfo.ClassInfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
+import static fr.lteconsulting.hexa.classinfo.ClassInfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 
 

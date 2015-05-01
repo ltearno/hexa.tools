@@ -1,12 +1,13 @@
-package fr.lteconsulting.hexa.client.classinfo.internal.gwt;
+package fr.lteconsulting.hexa.classinfo.gwt.internal;
 
 import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Field;
-import fr.lteconsulting.hexa.client.classinfo.Method;
+
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Method;
 
 public class JavaScriptObjectClazz implements Clazz<JavaScriptObject>
 {

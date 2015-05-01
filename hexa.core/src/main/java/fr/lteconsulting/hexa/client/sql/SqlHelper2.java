@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.shared.GWT;
-import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Field;
+
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
 import fr.lteconsulting.hexa.client.tools.Func2;
 

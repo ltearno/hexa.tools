@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.sql.SqlParser.SqlParseInfo;
 import fr.lteconsulting.hexa.client.tools.Action;
 import fr.lteconsulting.hexa.shared.dto.PagedResults;

@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.client.classinfo.gwt;
+package fr.lteconsulting.hexa.classinfo.gwt;
 
 
 /**

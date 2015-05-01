@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.client.classinfo;
+package fr.lteconsulting.hexa.classinfo;
 
 public interface Field
 {

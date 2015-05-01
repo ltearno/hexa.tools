@@ -1,14 +1,14 @@
 package fr.lteconsulting.hexa.client.sql;
 
-import static fr.lteconsulting.hexa.client.classinfo.ClassInfo.Clazz;
+import static fr.lteconsulting.hexa.classinfo.ClassInfo.Clazz;
 
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
 import fr.lteconsulting.hexa.client.sql.SqlParser.SqlParseInfo;
 import fr.lteconsulting.hexa.client.tools.Action;

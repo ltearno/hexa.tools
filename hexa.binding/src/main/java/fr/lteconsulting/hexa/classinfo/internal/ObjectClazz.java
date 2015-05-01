@@ -1,12 +1,12 @@
-package fr.lteconsulting.hexa.client.classinfo.internal;
+package fr.lteconsulting.hexa.classinfo.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.lteconsulting.hexa.client.classinfo.Field;
-import fr.lteconsulting.hexa.client.classinfo.Method;
+import fr.lteconsulting.hexa.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Method;
 
-public class ObjectClazz extends fr.lteconsulting.hexa.client.classinfo.internal.ClazzBase<java.lang.Object>
+public class ObjectClazz extends fr.lteconsulting.hexa.classinfo.internal.ClazzBase<java.lang.Object>
 {
 	public ObjectClazz()
 	{

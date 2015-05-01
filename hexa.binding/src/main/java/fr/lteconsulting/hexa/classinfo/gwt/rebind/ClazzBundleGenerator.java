@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.rebind;
+package fr.lteconsulting.hexa.classinfo.gwt.rebind;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
-import fr.lteconsulting.hexa.client.classinfo.gwt.ReflectedClasses;
+import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 
 public class ClazzBundleGenerator extends Generator
 {
@@ -107,8 +107,8 @@ public class ClazzBundleGenerator extends Generator
 		// which extends the asked type
 		composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );
 
-		composer.addImport( "fr.lteconsulting.hexa.client.classinfo.Clazz" );
-		composer.addImport( "fr.lteconsulting.hexa.client.classinfo.ClassInfo" );
+		composer.addImport( "fr.lteconsulting.hexa.classinfo.Clazz" );
+		composer.addImport( "fr.lteconsulting.hexa.classinfo.ClassInfo" );
 		composer.addImport( "com.google.gwt.core.shared.GWT" );
 
 		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );

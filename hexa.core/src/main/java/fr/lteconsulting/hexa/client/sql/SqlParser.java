@@ -1,14 +1,14 @@
 package fr.lteconsulting.hexa.client.sql;
 
-import static fr.lteconsulting.hexa.client.classinfo.ClassInfo.FindClazz;
+import static fr.lteconsulting.hexa.classinfo.ClassInfo.FindClazz;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
 
 public class SqlParser

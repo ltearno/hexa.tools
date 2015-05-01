@@ -8,10 +8,10 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 
-import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.classinfo.Field;
-import fr.lteconsulting.hexa.client.classinfo.Method;
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Method;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;

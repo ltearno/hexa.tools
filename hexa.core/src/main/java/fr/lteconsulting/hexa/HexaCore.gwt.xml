@@ -8,8 +8,10 @@
 	<!-- For using GWTBootstrap and Hexa Utils associated with it, inherit the 
 		following module -->
 	<!-- <inherits name='fr.lteconsulting.hexa.HexaGwtBootstrap'/> -->
-	
+
+	<!-- Inherit other Hexa modules -->
 	<inherits name='fr.lteconsulting.hexa.HexaCss' />
+	<inherits name='fr.lteconsulting.hexa.HexaClassInfo' />
 
 	<super-source path="jre" />
 	<source path="client" />
@@ -19,25 +21,18 @@
 		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.Stack" />
 	</generate-with>
 
-	<generate-with class="fr.lteconsulting.hexa.rebind.ClazzGenerator">
-		<when-type-assignable class="fr.lteconsulting.hexa.client.classinfo.Clazz" />
-	</generate-with>
-
-	<generate-with class="fr.lteconsulting.hexa.rebind.ClazzBundleGenerator">
-		<when-type-assignable class="fr.lteconsulting.hexa.client.classinfo.ClazzBundle" />
-	</generate-with>
-	
 	<generate-with class="fr.lteconsulting.hexa.rebind.JSONBrowserGenerator">
-		<when-type-assignable class="fr.lteconsulting.hexa.client.jsonbrowser.JSONBrowser"/>
+		<when-type-assignable
+			class="fr.lteconsulting.hexa.client.jsonbrowser.JSONBrowser" />
 	</generate-with>
 
-	<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" />
+	<define-linker name="AppCacheLinker"
+		class="fr.lteconsulting.hexa.linker.AppCacheLinker" />
 
 	<!-- You can add that in your own app module, to support HTML5 AppCache 
 		manifest -->
 	<!--<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" 
 		/> <add-linker name="AppCacheLinker" /> -->
-	
+
 	<add-linker name="xsiframe" />
-<!-- 	<set-property name="compiler.useSourceMaps" value="true"/> -->
 </module>

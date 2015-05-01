@@ -1,7 +1,7 @@
-package fr.lteconsulting.hexa.client.classinfo.test;
+package fr.lteconsulting.hexa.classinfo.test;
 
-import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
 import junit.framework.TestCase;
 
 public class ClassInfoTest extends TestCase
@@ -15,7 +15,6 @@ public class ClassInfoTest extends TestCase
 	public void test002()
 	{
 		Clazz<?> clz = ClassInfo.FindClazz( A.class );
-		
 		assertEquals( clz.getAllFields().size(), 2 );
 	}
 }

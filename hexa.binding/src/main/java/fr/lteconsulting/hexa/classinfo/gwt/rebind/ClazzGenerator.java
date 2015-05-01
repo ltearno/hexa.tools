@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.rebind;
+package fr.lteconsulting.hexa.classinfo.gwt.rebind;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class ClazzGenerator extends Generator
 		JClassType[] interfaces = askedType.getImplementedInterfaces();
 		for( int i = 0; i < interfaces.length; i++ )
 		{
-			if( !interfaces[i].getQualifiedSourceName().equals( "fr.lteconsulting.hexa.client.classinfo.Clazz" ) )
+			if( !interfaces[i].getQualifiedSourceName().equals( "fr.lteconsulting.hexa.classinfo.Clazz" ) )
 				continue;
 
 			JParameterizedType parametrized = interfaces[i].isParameterized();
@@ -117,9 +117,9 @@ class OneClazzGenerator
 		reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
 
 		if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
-			return "fr.lteconsulting.hexa.client.classinfo.internal.JavaScriptObjectClazz";
+			return "fr.lteconsulting.hexa.classinfo.internal.JavaScriptObjectClazz";
 		if( reflectedTypeName.equals( "java.lang.Object" ) )
-			return "fr.lteconsulting.hexa.client.classinfo.internal.ObjectClazz";
+			return "fr.lteconsulting.hexa.classinfo.internal.ObjectClazz";
 
 		packageName = reflectedType.getPackage().getName();
 		generatedClassName = reflectedType.getSimpleSourceName() + "ClazzImpl";
@@ -146,11 +146,11 @@ class OneClazzGenerator
 
 		// output a class "typeName" + "Impl"
 		// which extends the asked type
-		composer.setSuperclass( "fr.lteconsulting.hexa.client.classinfo.internal.ClazzBase<" + reflectedTypeName + ">" );
+		composer.setSuperclass( "fr.lteconsulting.hexa.classinfo.internal.ClazzBase<" + reflectedTypeName + ">" );
 		composer.addImport( "java.util.List" );
 		composer.addImport( "java.util.ArrayList" );
-		composer.addImport( "fr.lteconsulting.hexa.client.classinfo.Field" );
-		composer.addImport( "fr.lteconsulting.hexa.client.classinfo.Method" );
+		composer.addImport( "fr.lteconsulting.hexa.classinfo.Field" );
+		composer.addImport( "fr.lteconsulting.hexa.classinfo.Method" );
 
 		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );
 
@@ -198,7 +198,7 @@ class OneClazzGenerator
 		sourceWriter.println( "{" );
 		sourceWriter.indent();
 		if( superclassGeneratedClazz != null )
-			sourceWriter.println( "fr.lteconsulting.hexa.client.classinfo.ClassInfo.RegisterClazz( new " + superclassGeneratedClazz + "() );" );
+			sourceWriter.println( "fr.lteconsulting.hexa.classinfo.ClassInfo.RegisterClazz( new " + superclassGeneratedClazz + "() );" );
 		sourceWriter.outdent();
 		sourceWriter.println( "}" );
 		sourceWriter.println( "" );
@@ -332,7 +332,7 @@ class OneClazzGenerator
 	{
 		String fieldClassName = field.getName() + "_FieldImpl";
 
-		sourceWriter.println( "static class " + fieldClassName + " extends fr.lteconsulting.hexa.client.classinfo.internal.FieldBase {" );
+		sourceWriter.println( "static class " + fieldClassName + " extends fr.lteconsulting.hexa.classinfo.internal.FieldBase {" );
 		sourceWriter.indent();
 		sourceWriter.println( "public " + fieldClassName + "()" );
 		sourceWriter.println( "{" );
@@ -419,7 +419,7 @@ class OneClazzGenerator
 		}
 		sb.append( "}" );
 
-		sourceWriter.println( "static class " + methodClassName + " extends fr.lteconsulting.hexa.client.classinfo.internal.MethodBase {" );
+		sourceWriter.println( "static class " + methodClassName + " extends fr.lteconsulting.hexa.classinfo.internal.MethodBase {" );
 		sourceWriter.indent();
 		sourceWriter.println( "public " + methodClassName + "()" );
 		sourceWriter.println( "{" );

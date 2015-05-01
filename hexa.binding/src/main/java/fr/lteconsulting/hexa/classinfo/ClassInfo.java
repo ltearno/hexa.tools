@@ -1,6 +1,10 @@
-package fr.lteconsulting.hexa.client.classinfo;
+package fr.lteconsulting.hexa.classinfo;
 
 import java.util.Set;
+
+import com.google.gwt.core.client.GWT;
+
+import fr.lteconsulting.hexa.classinfo.gwt.ClassInfoGwt;
 
 /**
  * Frontal singleton entry point providing the Reflection system API
@@ -12,9 +16,7 @@ import java.util.Set;
  */
 public class ClassInfo
 {
-	// TODO
-	//private static IClassInfo impl = GWT.isClient() ? new ClassInfoGwt() : ClassInfoJre.get();
-	private static IClassInfo impl = ClassInfoJre.get();
+	private static IClassInfo impl = GWT.isClient() ? new ClassInfoGwt() : ClassInfoJre.get();
 	
 	/**
 	 * Obtain a runtime type information on a class.<br><br>

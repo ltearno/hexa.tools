@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.client.ui.tools;
 
-import static fr.lteconsulting.hexa.client.classinfo.ClassInfo.Clazz;
+import static fr.lteconsulting.hexa.classinfo.ClassInfo.Clazz;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -10,7 +10,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.SimpleEventBus;
 
-import fr.lteconsulting.hexa.client.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.databinding.TypedConverter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;

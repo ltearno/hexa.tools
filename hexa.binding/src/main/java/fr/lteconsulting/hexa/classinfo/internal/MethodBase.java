@@ -1,9 +1,9 @@
-package fr.lteconsulting.hexa.client.classinfo.internal;
+package fr.lteconsulting.hexa.classinfo.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.lteconsulting.hexa.client.classinfo.Method;
+import fr.lteconsulting.hexa.classinfo.Method;
 
 public abstract class MethodBase implements Method
 {
