@@ -11,8 +11,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.SimpleEventBus;
 
 import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.TypedConverter;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 import fr.lteconsulting.hexa.client.ui.widget.TextEditor;
 

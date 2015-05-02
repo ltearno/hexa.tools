@@ -6,7 +6,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import fr.lteconsulting.hexa.client.databinding.Binder;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.test.dto.Person;
 import fr.lteconsulting.hexa.client.databinding.test.dto.Workplace;
 

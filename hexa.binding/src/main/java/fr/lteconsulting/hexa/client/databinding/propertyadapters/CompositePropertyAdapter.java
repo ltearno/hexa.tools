@@ -2,9 +2,7 @@ package fr.lteconsulting.hexa.client.databinding.propertyadapters;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.ui.HasValue;
-
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
+import fr.lteconsulting.hexa.client.databinding.PlatformSpecificProvider;
 import fr.lteconsulting.hexa.client.tools.Action2;
 
 public class CompositePropertyAdapter implements PropertyAdapter
@@ -50,8 +48,8 @@ public class CompositePropertyAdapter implements PropertyAdapter
 				// context is the 'object' value (ie the value of the previous
 				// pathItem or the root context)
 				// path item is path[p]
-				if( CompositePropertyAdapter.HASVALUE_TOKEN.equals( pathItem ) )
-					adapters[p] = new WidgetPropertyAdapter( (HasValue<?>) object );
+				if( PlatformSpecificProvider.get().isBindingToken( pathItem ) )
+					adapters[p] = PlatformSpecificProvider.get().createPropertyAdapter(object);
 				else if( CompositePropertyAdapter.DTOMAP_TOKEN.equals( pathItem ) )
 					adapters[p] = new DTOMapperPropertyAdapter( object );
 				else

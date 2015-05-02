@@ -1,8 +1,8 @@
-package fr.lteconsulting.hexa.client.databinding.propertyadapters;
+package fr.lteconsulting.hexa.client.databinding;
 
 import java.util.HashMap;
 
-class DynamicPropertyBag
+public class DynamicPropertyBag
 {
 	private HashMap<String, Object> map;
 

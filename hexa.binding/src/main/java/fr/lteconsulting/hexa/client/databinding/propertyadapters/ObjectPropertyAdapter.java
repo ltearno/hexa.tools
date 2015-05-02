@@ -1,6 +1,7 @@
 package fr.lteconsulting.hexa.client.databinding.propertyadapters;
 
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
 import fr.lteconsulting.hexa.client.tools.Action2;
 

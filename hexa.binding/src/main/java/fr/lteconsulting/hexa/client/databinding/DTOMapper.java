@@ -5,31 +5,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
-
 import fr.lteconsulting.hexa.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.classinfo.Method;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertyAdapter;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
-import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 /**
  * A data binding utility for the support of automatic DTO binding.
  * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
+ * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
  */
 public class DTOMapper
 {
 	private static final Logger LOGGER = Logger.getLogger( DTOMapper.class.getName() );
-	
+
 	// tries to bind as much fields of source to destination and the other way
 	// around
 	// returns mapping resources handle that were created for this mapping
@@ -85,7 +76,6 @@ public class DTOMapper
 			Mode bindingMode = Mode.OneWay;
 			if( srcWrite && destinationRead )
 				bindingMode = Mode.TwoWay;
-			
 
 			DataAdapterInfo sourceAdapterInfo = createDataAdapter( source, name, null );
 			if( sourceAdapterInfo == null )
@@ -136,15 +126,6 @@ public class DTOMapper
 		return path[path.length - 1];
 	}
 
-	static class DataAdapterInfo
-	{
-		PropertyAdapter adapter;
-		Converter converter;
-		Class<?> dataType;
-
-		String debugString;
-	}
-
 	static DataAdapterInfo createDataAdapter( Object context, String property, Class<?> srcPptyType )
 	{
 		DataAdapterInfo res = new DataAdapterInfo();
@@ -153,27 +134,9 @@ public class DTOMapper
 
 		// test to see if the asked property is in fact a HasValue widget
 		Object widget = ObjectPropertiesUtils.GetProperty( context, property );
-		if( widget != null && (widget instanceof HasValue) )
+		if( PlatformSpecificProvider.get().isSpecificDataAdapter( widget ) )
 		{
-			// try to guess the HasValue type
-			res.dataType = null;
-			if( widget instanceof TextBox )
-				res.dataType = String.class;
-
-			// try to find a converter if dataType does not match srcPptyType
-			if( srcPptyType != null && res.dataType != null && res.dataType != srcPptyType && srcPptyType!=Property.class )
-			{
-				// try to find a converter, if not : fail
-				res.converter = Converters.findConverter( srcPptyType, res.dataType );
-				if( res.converter == null )
-					return null;
-
-				res.debugString = "[" + getSimpleName( srcPptyType ) + ">" + getSimpleName( res.dataType ) + "] " + res.debugString;
-			}
-
-			res.debugString += "\"" + property + ".$HasValue\"";
-
-			res.adapter = new CompositePropertyAdapter( context, property + ".$HasValue" );
+			PlatformSpecificProvider.get().fillSpecificDataAdapter( widget, context, property, srcPptyType, res );
 		}
 		else
 		{
@@ -181,6 +144,9 @@ public class DTOMapper
 
 			res.adapter = new ObjectPropertyAdapter( context, property );
 		}
+
+		if( res.adapter == null )
+			return null;
 
 		return res;
 	}

@@ -1,9 +1,9 @@
 package fr.lteconsulting.hexa.client.databinding.test;
 
-import static fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils.GetProperty;
-import static fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils.SetProperty;
+import static fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils.GetProperty;
+import static fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils.SetProperty;
 import junit.framework.TestCase;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 /**

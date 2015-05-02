@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.google.gwt.core.client.GWT;
-
 /**
  * This class is part of the Hexa DataBinding and provides :
  * <ol>
@@ -16,14 +14,12 @@ import com.google.gwt.core.client.GWT;
  * @author Arnaud Tournier
  *
  */
-public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChangedEvent.Handler>
+public class NotifyPropertyChangedEvent
 {
-	private final static MetadataAccess metadataAccess = GWT.isClient() ? new MetadataAccessGwt() : new MetadataAccessJre();
-	
 	/**
 	 * Interface through which one receives {@link PropertyChangedEvent}
 	 */
-	public interface Handler// extends EventHandler
+	public interface Handler
 	{
 		public void onNotifyPropertChanged( NotifyPropertyChangedEvent event );
 	}
@@ -46,7 +42,6 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 	 */
 	public static Object registerPropertyChangedEvent( Object source, String propertyName, NotifyPropertyChangedEvent.Handler handler )
 	{
-		// Through object's interface implementation
 		if( source instanceof INotifyPropertyChanged )
 		{
 			DirectHandlerInfo info = new DirectHandlerInfo();
@@ -56,11 +51,11 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 			return info;
 		}
 		
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = metadataAccess.getObjectMetadata( source );
+		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( source );
 		if( handlersMap == null )
 		{
 			handlersMap = new HashMap<>();
-			metadataAccess.setObjectMetadata( source, handlersMap );
+			PlatformSpecificProvider.get().setObjectMetadata( source, handlersMap );
 		}
 	
 		ArrayList<NotifyPropertyChangedEvent.Handler> handlerList = handlersMap.get( propertyName );
@@ -102,7 +97,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 		
 		HandlerInfo info = (HandlerInfo) handlerRegistration;
 	
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = metadataAccess.getObjectMetadata( info.source );
+		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( info.source );
 		if( handlersMap == null )
 			return;
 	
@@ -116,7 +111,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 			handlersMap.remove( info.propertyName );
 	
 		if( handlersMap.isEmpty() )
-			metadataAccess.setObjectMetadata( info.source, null );
+			PlatformSpecificProvider.get().setObjectMetadata( info.source, null );
 		
 		statsRemovedRegistration( info );
 	
@@ -136,7 +131,7 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 	{
 		nbNotifications++;
 		
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = metadataAccess.getObjectMetadata( sender );
+		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( sender );
 		if( handlersMap == null )
 			return;
 	
@@ -264,41 +259,5 @@ public class NotifyPropertyChangedEvent// extends GwtEvent<NotifyPropertyChanged
 		
 		String key = info.propertyName + "@" + info.source.getClass().getSimpleName();
 		counts.put( key, counts.get( key ) - 1 );
-	}
-	
-	interface MetadataAccess
-	{
-		void setObjectMetadata( Object object, Object metadata );
-		<T> T getObjectMetadata( Object object );
-	}
-	
-	private static class MetadataAccessGwt implements MetadataAccess
-	{
-		public native void setObjectMetadata( Object object, Object metadata )
-		/*-{
-			object.__hexa_metadata = metadata;
-		}-*/;
-	
-		public native <T> T getObjectMetadata( Object object )
-		/*-{
-			return object.__hexa_metadata || null;
-		}-*/;
-	}
-	
-	private static class MetadataAccessJre implements MetadataAccess
-	{
-		private static HashMap<Integer, Object> metadatas = new HashMap<>();
-		
-		public void setObjectMetadata( Object object, Object metadata )
-		{
-			metadatas.put( System.identityHashCode( object ), metadata );
-		}
-		
-		public <T> T getObjectMetadata( Object object )
-		{
-			@SuppressWarnings( "unchecked" )
-			T result = (T) metadatas.get( System.identityHashCode( object ) );
-			return result;
-		}
 	}
 }

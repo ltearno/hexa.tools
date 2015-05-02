@@ -1,8 +1,15 @@
-package fr.lteconsulting.hexa.client.databinding;
+package fr.lteconsulting.hexa.client.databinding.gwt;
 
+import com.google.gwt.user.client.ui.HasValue;
+
+import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
+import fr.lteconsulting.hexa.client.databinding.BindingCreation;
+import fr.lteconsulting.hexa.client.databinding.DataBinding;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectAsValuePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter;
+import fr.lteconsulting.hexa.client.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
+
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.
@@ -31,16 +38,15 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter
  * this : "person.category.creationDate" and the binding tool will automatically
  * follow the property's value.
  * 
+ * In order to support the data binding engine, one has also to declare a
+ * {@link ClazzBundle} interface to process type information of the data-bounded
+ * classes. Check the samples for further details.
+ * 
  * @author Arnaud Tournier
  *
  */
 public class Binder
 {
-	private static BindingCreation createBinder( PropertyAdapter source )
-	{
-		return new BindingCreation( source );
-	}
-	
 	/**
 	 * First step, accepts a data binding source definition and creates a binder
 	 * 
@@ -50,7 +56,7 @@ public class Binder
 	 * For example : <i>...To( customer, "company.address.city" )</i> can be
 	 * used to access data at different depths. If all intermediary steps
 	 * provide a correct implementation for the Data Binding mechanism, any
-	 * change at any depth will be catched.
+	 * change at any depth will be catch.
 	 * 
 	 * @param source
 	 *            The source object
@@ -60,7 +66,7 @@ public class Binder
 	 */
 	public static BindingCreation Bind( Object source, String propertyPath )
 	{
-		return createBinder( new CompositePropertyAdapter( source, propertyPath ) );
+		return new BindingCreation( new CompositePropertyAdapter( source, propertyPath ) );
 	}
 
 	/**
@@ -76,10 +82,24 @@ public class Binder
 	 */
 	public static BindingCreation Bind( PropertyAdapter source )
 	{
-		BindingCreation b = createBinder( source );
+		BindingCreation b = new BindingCreation( source );
 		return b;
 	}
 	
+	/**
+	 * First step, accepts a data binding source definition and creates a binder
+	 * 
+	 * @param widget
+	 *            The HasValue widget, like a TextBox. The binding system will
+	 *            the use setValue, getValue and adValueChangeHandler methods to
+	 *            set, get and get change notifications on the widget.
+	 * @return The Binder to continue specifying the data binding
+	 */
+	public static BindingCreation Bind( HasValue<?> widget )
+	{
+		return Bind( new WidgetPropertyAdapter( widget ) );
+	}
+
 	/**
 	 * First step, accepts a data binding source definition and creates a binder
 	 * 

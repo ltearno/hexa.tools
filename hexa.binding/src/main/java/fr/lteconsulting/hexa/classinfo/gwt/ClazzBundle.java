@@ -1,6 +1,7 @@
 package fr.lteconsulting.hexa.classinfo.gwt;
 
 
+
 /**
  * To be used with {@link ReflectedClasses} annotation
  * 

@@ -1,16 +1,12 @@
-package fr.lteconsulting.hexa.client.databinding.propertyadapters;
+package fr.lteconsulting.hexa.client.databinding;
 
-import java.util.HashMap;
 import java.util.logging.Logger;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.HasValue;
 
 import fr.lteconsulting.hexa.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.classinfo.Method;
-import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 /**
@@ -26,7 +22,7 @@ public class ObjectPropertiesUtils
 {
 	private final static Logger LOGGER = Logger.getLogger( ObjectPropertiesUtils.class.getName() );
 
-	private final static DynamicPropertyBagAccess propertyBagAccess = GWT.isClient() ? new DynamicPropertyBagAccessGwt() : new DynamicPropertyBagAccessJre();
+	private final static PlatformSpecific propertyBagAccess = PlatformSpecificProvider.get();
 
 	/**
 	 * Whether a getter or a field is available with that name
@@ -220,11 +216,9 @@ public class ObjectPropertiesUtils
 
 	private static <T> T GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )
 	{
-		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
+		if( PlatformSpecificProvider.get().isBindingToken( name ) )
 		{
-			@SuppressWarnings( { "rawtypes", "unchecked" } )
-			T result = (T) ((HasValue) object).getValue();
-			return result;
+			return PlatformSpecificProvider.get().getBindingValue( object, name );
 		}
 
 		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
@@ -271,16 +265,9 @@ public class ObjectPropertiesUtils
 
 	private static boolean SetPropertyImpl( Clazz<?> s, Object object, String name, Object value, boolean fTryDirectFieldAccess )
 	{
-		if( name.equals( CompositePropertyAdapter.HASVALUE_TOKEN ) )
+		if( PlatformSpecificProvider.get().isBindingToken( name ) )
 		{
-			assert object instanceof HasValue : "Object should be implementing HasValue<?> !";
-
-			@SuppressWarnings( "unchecked" )
-			HasValue<Object> hasValue = ((HasValue<Object>) object);
-
-			hasValue.setValue( value, true );
-
-			return true;
+			return PlatformSpecificProvider.get().setBindingValue( object, name, value );
 		}
 
 		String setterName = "set" + capitalizeFirstLetter( name );
@@ -315,40 +302,5 @@ public class ObjectPropertiesUtils
 	private static String capitalizeFirstLetter( String s )
 	{
 		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
-	}
-
-	interface DynamicPropertyBagAccess
-	{
-		DynamicPropertyBag getObjectDynamicPropertyBag( Object object );
-
-		void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag );
-	}
-
-	private static class DynamicPropertyBagAccessGwt implements DynamicPropertyBagAccess
-	{
-		public native DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
-		/*-{
-			return object.__hexa_dynamic_ppty_bag || null;
-		}-*/;
-
-		public native void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
-		/*-{
-			object.__hexa_dynamic_ppty_bag = bag;
-		}-*/;
-	}
-
-	private static class DynamicPropertyBagAccessJre implements DynamicPropertyBagAccess
-	{
-		private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
-
-		public void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
-		{
-			propertyBags.put( System.identityHashCode( object ), bag );
-		}
-
-		public DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
-		{
-			return propertyBags.get( System.identityHashCode( object ) );
-		}
 	}
 }

@@ -1,8 +1,8 @@
 package fr.lteconsulting.hexa.classinfo.test;
 
+import junit.framework.TestCase;
 import fr.lteconsulting.hexa.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.classinfo.Clazz;
-import junit.framework.TestCase;
 
 public class ClassInfoTest extends TestCase
 {
