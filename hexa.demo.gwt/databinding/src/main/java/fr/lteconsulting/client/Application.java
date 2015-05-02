@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
 import fr.lteconsulting.hexa.client.databinding.Binder;
 import fr.lteconsulting.hexa.client.databinding.Mode;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
 
 /**
  * The GWT EntryPoint class to the application

@@ -6,8 +6,8 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 
-import fr.lteconsulting.hexa.client.classinfo.ClazzBundle;
-import fr.lteconsulting.hexa.client.classinfo.ReflectedClasses;
+import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
+import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 import fr.lteconsulting.hexa.demo.client.databinding.data.Category;
 import fr.lteconsulting.hexa.demo.client.databinding.data.Person;
 import fr.lteconsulting.hexa.demo.client.databinding.ui.CategoryForm;

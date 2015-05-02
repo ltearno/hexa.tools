@@ -6,7 +6,7 @@
 	<artifactId>hexacss-sample2</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
-	<name>Hexa Css - Sample 02</name>
+	<name>hexa.css.sample2</name>
 
 	<packaging>war</packaging>
 

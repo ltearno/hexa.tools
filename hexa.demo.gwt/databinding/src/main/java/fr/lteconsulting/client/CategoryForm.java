@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import fr.lteconsulting.hexa.client.databinding.Binder;
+import fr.lteconsulting.hexa.client.databinding.gwt.Binder;
 import fr.lteconsulting.hexa.client.databinding.Mode;
 import fr.lteconsulting.hexa.client.databinding.OneWayConverter;
 

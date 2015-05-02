@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.lteconsulting</groupId>
-    <artifactId>databinding-demo</artifactId>
+    <artifactId>hexa.demo.gwt.databinding</artifactId>
 
-    <name>! Hexa Data Binding Demo !</name>
+    <name>hexa.demo.gwt.databinding</name>
     <url>http://www.lteconsulting.fr</url>
     <version>1.0-SNAPSHOT</version>
 
@@ -44,7 +44,7 @@
 
         <dependency>
             <groupId>fr.lteconsulting</groupId>
-            <artifactId>hexa.all</artifactId>
+            <artifactId>hexa.core</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

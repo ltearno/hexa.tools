@@ -17,13 +17,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
 import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
-import fr.lteconsulting.hexa.client.databinding.Binder;
+import fr.lteconsulting.hexa.client.databinding.gwt.Binder;
 import fr.lteconsulting.hexa.client.databinding.Mode;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
 import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
-import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.client.databinding.watchablecollection.Change;
 import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection.Change;
 import fr.lteconsulting.hexa.client.tools.Action1;
 import fr.lteconsulting.hexa.client.ui.widget.ListBox;
 

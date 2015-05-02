@@ -117,7 +117,7 @@ class OneClazzGenerator
 		reflectedTypeName = reflectedType.getParameterizedQualifiedSourceName();
 
 		if( reflectedTypeName.equals( "com.google.gwt.core.client.JavaScriptObject" ) )
-			return "fr.lteconsulting.hexa.classinfo.internal.JavaScriptObjectClazz";
+			return "fr.lteconsulting.hexa.classinfo.gwt.internal.JavaScriptObjectClazz";
 		if( reflectedTypeName.equals( "java.lang.Object" ) )
 			return "fr.lteconsulting.hexa.classinfo.internal.ObjectClazz";
 

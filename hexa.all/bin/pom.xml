@@ -21,9 +21,9 @@
 		<module>../hexa.css/samples</module>
 		<module>../hexa.css-maven-plugin</module>
 		<module>../hexa.core</module>
-		<!--<module>../hexa.demo.gwt</module>-->
+		<module>../hexa.demo.gwt</module>
 		<module>../hexa.demo.gwt/databinding</module>
-		<!--<module>../hexa.persistence</module>-->
+		<module>../hexa.persistence</module>
 		<module>../hexa.rpc</module>
 		<module>../hexa.spring</module>
 		<module>../hexa.utils</module>

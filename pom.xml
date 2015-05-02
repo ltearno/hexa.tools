@@ -11,7 +11,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>hexa.artifact</module>
+		<module>hexa.archetype</module>
 		<module>hexa.binding</module>
 		<module>hexa.binding.gwt</module>
 		<module>hexa.css</module>

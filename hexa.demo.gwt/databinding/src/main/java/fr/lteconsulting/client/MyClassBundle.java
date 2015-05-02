@@ -6,8 +6,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.TextBox;
 
-import fr.lteconsulting.hexa.client.classinfo.ClazzBundle;
-import fr.lteconsulting.hexa.client.classinfo.ReflectedClasses;
+import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
+import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 import fr.lteconsulting.hexa.client.databinding.tools.Property;
 import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
 
