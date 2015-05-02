@@ -6,18 +6,18 @@ import fr.lteconsulting.hexa.client.databinding.propertyadapters.PropertyAdapter
 
 class PlatformSpecificJre implements PlatformSpecific
 {
-	private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
-	
 	private static final PlatformSpecificJre INSTANCE = new PlatformSpecificJre();
-	
+
 	public static PlatformSpecificJre get()
 	{
 		return INSTANCE;
 	}
-	
+
 	private PlatformSpecificJre()
 	{
 	}
+	
+	private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
 
 	public void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
 	{
@@ -52,17 +52,17 @@ class PlatformSpecificJre implements PlatformSpecific
 	{
 		return null;
 	}
-	
+
 	// Metadata
-	
+
 	private static HashMap<Integer, Object> metadatas = new HashMap<>();
-	
+
 	@Override
 	public void setObjectMetadata( Object object, Object metadata )
 	{
 		metadatas.put( System.identityHashCode( object ), metadata );
 	}
-	
+
 	@Override
 	public <T> T getObjectMetadata( Object object )
 	{
@@ -70,7 +70,7 @@ class PlatformSpecificJre implements PlatformSpecific
 		T result = (T) metadatas.get( System.identityHashCode( object ) );
 		return result;
 	}
-	
+
 	// DTOMapper
 
 	@Override

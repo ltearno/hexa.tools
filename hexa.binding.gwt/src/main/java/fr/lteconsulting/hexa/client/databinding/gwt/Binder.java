@@ -3,7 +3,6 @@ package fr.lteconsulting.hexa.client.databinding.gwt;
 import com.google.gwt.user.client.ui.HasValue;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
-import fr.lteconsulting.hexa.client.databinding.BindingCreation;
 import fr.lteconsulting.hexa.client.databinding.DataBinding;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.client.databinding.propertyadapters.ObjectAsValuePropertyAdapter;

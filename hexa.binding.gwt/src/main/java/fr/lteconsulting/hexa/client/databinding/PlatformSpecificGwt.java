@@ -1,5 +1,9 @@
 package fr.lteconsulting.hexa.client.databinding;
 
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -10,12 +14,63 @@ import fr.lteconsulting.hexa.client.databinding.tools.Property;
 
 class PlatformSpecificGwt implements PlatformSpecific
 {
-	public native DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
+	private static final PlatformSpecificGwt INSTANCE;
+	
+	static
+	{
+		Logger.getLogger( PlatformSpecificGwt.class.getName() ).info( "PlatformSpecificGwt STARTED" );
+		
+		INSTANCE = new PlatformSpecificGwt();
+	}
+	
+	public static PlatformSpecificGwt get()
+	{
+		return INSTANCE;
+	}
+	
+	private PlatformSpecificGwt()
+	{
+	}
+	
+	private static class DynamicPropertyBagAccessJre
+	{
+		private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
+
+		static void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
+		{
+			propertyBags.put( System.identityHashCode( object ), bag );
+		}
+
+		static DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
+		{
+			return propertyBags.get( System.identityHashCode( object ) );
+		}
+	}
+	
+	@Override
+	public DynamicPropertyBag getObjectDynamicPropertyBag( Object object )
+	{
+		if( GWT.isScript() )
+			return getObjectDynamicPropertyBagImpl( object );
+		else
+			return DynamicPropertyBagAccessJre.getObjectDynamicPropertyBag( object );
+	}
+	
+	private native DynamicPropertyBag getObjectDynamicPropertyBagImpl( Object object )
 	/*-{
 		return object.__hexa_dynamic_ppty_bag || null;
 	}-*/;
 
-	public native void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
+	@Override
+	public void setObjectDynamicPropertyBag( Object object, DynamicPropertyBag bag )
+	{
+		if( GWT.isScript() )
+			setObjectDynamicPropertyBagImpl( object, bag );
+		else
+			DynamicPropertyBagAccessJre.setObjectDynamicPropertyBag( object, bag );
+	}
+	
+	private native void setObjectDynamicPropertyBagImpl( Object object, DynamicPropertyBag bag )
 	/*-{
 		object.__hexa_dynamic_ppty_bag = bag;
 	}-*/;
@@ -54,15 +109,48 @@ class PlatformSpecificGwt implements PlatformSpecific
 	}
 
 	// Metadata
+	
+	private static class MetatdataJre
+	{
+		private static final HashMap<Integer, Object> metadatas = new HashMap<>();
+
+		static void setObjectMetadata( Object object, Object metadata )
+		{
+			metadatas.put( System.identityHashCode( object ), metadata );
+		}
+
+		static <T> T getObjectMetadata( Object object )
+		{
+			@SuppressWarnings( "unchecked" )
+			T result = (T) metadatas.get( System.identityHashCode( object ) );
+			return result;
+		}
+	}
 
 	@Override
-	public native void setObjectMetadata( Object object, Object metadata )
+	public void setObjectMetadata( Object object, Object metadata )
+	{
+		if(GWT.isScript())
+			setObjectMetadataImpl( object, metadata );
+		else
+			MetatdataJre.setObjectMetadata( object, metadata );
+	}
+	
+	private native void setObjectMetadataImpl( Object object, Object metadata )
 	/*-{
 		object.__hexa_metadata = metadata;
 	}-*/;
-
+	
 	@Override
-	public native <T> T getObjectMetadata( Object object )
+	public <T> T getObjectMetadata( Object object )
+	{
+		if(GWT.isScript())
+			return getObjectMetadataImpl( object );
+		else
+			return MetatdataJre.getObjectMetadata( object );
+	}
+	
+	private native <T> T getObjectMetadataImpl( Object object )
 	/*-{
 		return object.__hexa_metadata || null;
 	}-*/;

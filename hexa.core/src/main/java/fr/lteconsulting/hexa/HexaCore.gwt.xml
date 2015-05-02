@@ -12,6 +12,7 @@
 	<!-- Inherit other Hexa modules -->
 	<inherits name='fr.lteconsulting.hexa.HexaCss' />
 	<inherits name='fr.lteconsulting.hexa.HexaClassInfo' />
+	<inherits name='fr.lteconsulting.hexa.HexaBinding' />
 
 	<super-source path="jre" />
 	<source path="client" />
