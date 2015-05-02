@@ -11,9 +11,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
-import fr.lteconsulting.hexa.client.databinding.Binder;
-import fr.lteconsulting.hexa.client.databinding.Mode;
-import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.Mode;
+import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.gwt.Binder;
 
 /**
  * The GWT EntryPoint class to the application

@@ -17,15 +17,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
 import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
-import fr.lteconsulting.hexa.client.databinding.gwt.Binder;
-import fr.lteconsulting.hexa.client.databinding.Mode;
-import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
-import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent.Handler;
-import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.Change;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
 import fr.lteconsulting.hexa.client.tools.Action1;
 import fr.lteconsulting.hexa.client.ui.widget.ListBox;
+import fr.lteconsulting.hexa.databinding.Mode;
+import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent.Handler;
+import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.gwt.Binder;
+import fr.lteconsulting.hexa.databinding.watchablecollection.Change;
+import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
 /**
  * This widget presents the different Articles and allow to select one

@@ -2,7 +2,7 @@ package fr.lteconsulting.hexa.client.ui.tools;
 
 import static fr.lteconsulting.hexa.classinfo.ClassInfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Clazz;
-import fr.lteconsulting.hexa.client.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
 
 
 public class AutoColumn<T> extends SimpleColumn<T>

@@ -1,6 +1,6 @@
 package fr.lteconsulting.client;
 
-import fr.lteconsulting.hexa.client.databinding.tools.Property;
+import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
  * A very simple dynamic DTO.

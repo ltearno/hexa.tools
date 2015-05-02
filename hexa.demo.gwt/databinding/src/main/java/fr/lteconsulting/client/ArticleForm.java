@@ -7,9 +7,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import fr.lteconsulting.hexa.client.databinding.Binder;
-import fr.lteconsulting.hexa.client.databinding.tools.Property;
 import fr.lteconsulting.hexa.client.ui.widget.ListBox;
+import fr.lteconsulting.hexa.databinding.gwt.Binder;
+import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
  * This very simple class is just what is needed to use a Widget

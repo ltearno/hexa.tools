@@ -7,10 +7,10 @@ import java.util.List;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 
-import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.Change;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
 import fr.lteconsulting.hexa.client.tools.Action1;
+import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.watchablecollection.Change;
+import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
 public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 {

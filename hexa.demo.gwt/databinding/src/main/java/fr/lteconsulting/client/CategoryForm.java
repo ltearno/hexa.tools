@@ -7,9 +7,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import fr.lteconsulting.hexa.client.databinding.gwt.Binder;
-import fr.lteconsulting.hexa.client.databinding.Mode;
-import fr.lteconsulting.hexa.client.databinding.OneWayConverter;
+import fr.lteconsulting.hexa.databinding.Mode;
+import fr.lteconsulting.hexa.databinding.OneWayConverter;
+import fr.lteconsulting.hexa.databinding.gwt.Binder;
 
 /**
  * A very minimalist form of scaffolding which is possible with Hexa Binding.

@@ -8,8 +8,8 @@ import com.google.gwt.user.client.ui.TextBox;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
-import fr.lteconsulting.hexa.client.databinding.tools.Property;
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
+import fr.lteconsulting.hexa.databinding.tools.Property;
+import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
 /**
  * Registers the classes that are needed by the introspection module

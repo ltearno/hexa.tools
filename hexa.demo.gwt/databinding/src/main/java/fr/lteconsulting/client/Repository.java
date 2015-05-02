@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.lteconsulting.hexa.client.databinding.watchablecollection.WatchableCollection;
+import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
 /**
  * Class which holds the application data.

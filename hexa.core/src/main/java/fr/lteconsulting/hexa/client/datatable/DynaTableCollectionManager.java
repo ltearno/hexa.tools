@@ -5,8 +5,8 @@ import java.util.HashSet;
 
 import com.google.gwt.core.client.Scheduler;
 
-import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
 import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
+import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
 
 public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCollectionManager<T>
 {

@@ -1,7 +1,7 @@
 package fr.lteconsulting.client;
 
-import fr.lteconsulting.hexa.client.databinding.NotifyPropertyChangedEvent;
-import fr.lteconsulting.hexa.client.databinding.tools.Property;
+import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
  * The main model of the application.
