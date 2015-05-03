@@ -61,11 +61,18 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 
 	private void createObservableFor( TypeElement factoredType )
 	{
-		String factoredTypeName = factoredType.getSimpleName().toString();
-
 		String pkgName = elementUtils.getPackageOf( factoredType ).getQualifiedName().toString();
 
-		String targetTypeName = "Observable" + capitalizeFirstLetter( factoredTypeName );
+		String factoredTypeName = factoredType.getSimpleName().toString();
+
+		String targetTypeName;
+		String SUFFIX = "Internal";
+		if( factoredTypeName.endsWith( SUFFIX ) )
+			targetTypeName = capitalizeFirstLetter( factoredTypeName ).substring( 0, factoredTypeName.length() - SUFFIX.length() );
+		else
+			targetTypeName= "Observable" + capitalizeFirstLetter( factoredTypeName );
+		
+//		String targetTypeName = "Observable" + capitalizeFirstLetter( factoredTypeName );
 
 		try
 		{
