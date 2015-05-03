@@ -7,14 +7,14 @@ import java.util.List;
 import junit.framework.TestCase;
 import fr.lteconsulting.hexa.databinding.Binder;
 import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.test.dto.ObservableWorkplace;
 import fr.lteconsulting.hexa.databinding.test.dto.Person;
-import fr.lteconsulting.hexa.databinding.test.dto.Workplace;
 
 public class PathBindingTest extends TestCase
 {
 	public void test()
 	{
-		List<Workplace> places = new ArrayList<>();
+		List<ObservableWorkplace> places = new ArrayList<>();
 		for( int i = 0; i < 10; i++ )
 			places.add( workplace() );
 
@@ -22,7 +22,7 @@ public class PathBindingTest extends TestCase
 		for( int i = 0; i < 100; i++ )
 			persons.add( person( places ) );
 
-		for( Workplace w : places )
+		for( ObservableWorkplace w : places )
 			w.setOwner( persons.get( (int) (Math.random() * persons.size()) ) );
 		
 		Person personCopy = new Person();
@@ -39,9 +39,9 @@ public class PathBindingTest extends TestCase
 		}
 	}
 
-	private Workplace workplace()
+	private ObservableWorkplace workplace()
 	{
-		Workplace r = new Workplace();
+		ObservableWorkplace r = new ObservableWorkplace();
 
 		r.setName( TestUtils.randomName() );
 		r.setColor( TestUtils.randomColor() );
@@ -49,7 +49,7 @@ public class PathBindingTest extends TestCase
 		return r;
 	}
 
-	private Person person( List<Workplace> places )
+	private Person person( List<ObservableWorkplace> places )
 	{
 		Person p = new Person();
 

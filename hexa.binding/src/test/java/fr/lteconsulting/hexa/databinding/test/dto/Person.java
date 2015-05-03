@@ -7,7 +7,7 @@ import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
 public class Person
 {
 	private String name;
-	private Workplace workplace;
+	private ObservableWorkplace workplace;
 	private Date birthDate;
 
 	public String getName()
@@ -21,12 +21,12 @@ public class Person
 		NotifyPropertyChangedEvent.notify( this, "name" );
 	}
 
-	public Workplace getWorkplace()
+	public ObservableWorkplace getWorkplace()
 	{
 		return workplace;
 	}
 
-	public void setWorkplace( Workplace workplace )
+	public void setWorkplace( ObservableWorkplace workplace )
 	{
 		this.workplace = workplace;
 		NotifyPropertyChangedEvent.notify( this, "workplace" );

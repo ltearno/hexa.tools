@@ -6,7 +6,7 @@
 	<artifactId>hexa.binding.gwt</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
-	<name>hexa.binding</name>
+	<name>hexa.binding.gwt</name>
 	<description>HexaBinding (gwt version) is a tool used when some data binding repetitive glue code is written by the developper. This library does it instead.</description>
 	<url>http://www.lteconsulting.fr/hexabinding</url>
 
