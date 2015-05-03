@@ -11,10 +11,10 @@ This is a Java library which helps the developper's productivity. It is mainly r
 At the moment, although HexaTools is used in several production applications, yet it does not have a good documentation. Parts that are documented are here :
 
 - [HexaCss](hexa.css/README.md)
+- [HexaBinding](hexa.binding/README.md)
 
 And those which are not (yet) :
 
-- DataBinding,
 - Reflection engine,
 - JPA for GWT,
 - ...

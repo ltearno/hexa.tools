@@ -21,7 +21,7 @@ public class NotifyPropertyChangedEvent
 	 */
 	public interface Handler
 	{
-		public void onNotifyPropertChanged( NotifyPropertyChangedEvent event );
+		void onNotifyPropertChanged( NotifyPropertyChangedEvent event );
 	}
 	
 	private static int nbRegisteredHandlers = 0;
