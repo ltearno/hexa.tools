@@ -6,7 +6,9 @@ import java.util.HashSet;
 import com.google.gwt.core.client.Scheduler;
 
 import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 
 public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCollectionManager<T>
 {
@@ -34,7 +36,7 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 	{
 		super.storeRow( record, row );
 		
-		Object registration = NotifyPropertyChangedEvent.registerPropertyChangedEvent( record, "*", propertyChangeHandler );
+		Object registration = Properties.registerPropertyChangedEvent( record, "*", propertyChangeHandler );
 		registrations.put( record.getId(), registration );
 		
 		onStoredRow( record, row );
@@ -46,7 +48,7 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 		onForgetRow( recordId );
 		
 		Object registration = registrations.remove( recordId );
-		NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
+		Properties.removePropertyChangedHandler( registration );
 		
 		super.forgetRow( recordId );
 	}
@@ -57,16 +59,16 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 		onForgotAllRows();
 		
 		for( Object registration : registrations.values() )
-			NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
+			Properties.removePropertyChangedHandler( registration );
 		registrations.clear();
 		
 		super.forgetAllRows();
 	}
 	
-	private NotifyPropertyChangedEvent.Handler propertyChangeHandler = new NotifyPropertyChangedEvent.Handler()
+	private PropertyChangedHandler propertyChangeHandler = new PropertyChangedHandler()
 	{	
 		@Override
-		public void onNotifyPropertChanged( NotifyPropertyChangedEvent event )
+		public void onPropertyChanged( PropertyChangedEvent event )
 		{
 			@SuppressWarnings( "unchecked" )
 			T record = (T) event.getSender();

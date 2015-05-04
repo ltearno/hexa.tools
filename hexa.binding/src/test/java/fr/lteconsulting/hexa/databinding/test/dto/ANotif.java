@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.databinding.test.dto;
 
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.Properties;
 
 public class ANotif
 {
@@ -21,12 +21,12 @@ public class ANotif
 	public void setFirstName( String firstName )
 	{
 		this.firstName = firstName;
-		NotifyPropertyChangedEvent.notify( this, "firstName" );
+		Properties.notify( this, "firstName" );
 	}
 
 	public void setLastName( String lastName )
 	{
 		this.lastName = lastName;
-		NotifyPropertyChangedEvent.notify( this, "lastName" );
+		Properties.notify( this, "lastName" );
 	}
 }

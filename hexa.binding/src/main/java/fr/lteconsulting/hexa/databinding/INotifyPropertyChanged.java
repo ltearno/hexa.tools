@@ -12,7 +12,7 @@ public interface INotifyPropertyChanged
 	 * @param handler Instance of the handler that will receive notifications
 	 * @return An opaque object that can be used for unregistration
 	 */
-	Object registerPropertyChangedEvent( String propertyName, NotifyPropertyChangedEvent.Handler handler );
+	Object registerPropertyChangedEvent( String propertyName, PropertyChangedHandler handler );
 
 	/**
 	 * Unregister a property change handler

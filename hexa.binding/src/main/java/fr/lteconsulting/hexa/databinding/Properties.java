@@ -14,16 +14,8 @@ import java.util.Map.Entry;
  * @author Arnaud Tournier
  *
  */
-public class NotifyPropertyChangedEvent
+public class Properties
 {
-	/**
-	 * Interface through which one receives {@link PropertyChangedEvent}
-	 */
-	public interface Handler
-	{
-		void onNotifyPropertChanged( NotifyPropertyChangedEvent event );
-	}
-	
 	private static int nbRegisteredHandlers = 0;
 	private static int nbNotifications = 0;
 	private static int nbDispatches = 0;
@@ -40,7 +32,7 @@ public class NotifyPropertyChangedEvent
 	 * @param handler
 	 * @return
 	 */
-	public static Object registerPropertyChangedEvent( Object source, String propertyName, NotifyPropertyChangedEvent.Handler handler )
+	public static Object registerPropertyChangedEvent( Object source, String propertyName, PropertyChangedHandler handler )
 	{
 		if( source instanceof INotifyPropertyChanged )
 		{
@@ -51,17 +43,17 @@ public class NotifyPropertyChangedEvent
 			return info;
 		}
 		
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( source );
+		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( source );
 		if( handlersMap == null )
 		{
 			handlersMap = new HashMap<>();
 			PlatformSpecificProvider.get().setObjectMetadata( source, handlersMap );
 		}
 	
-		ArrayList<NotifyPropertyChangedEvent.Handler> handlerList = handlersMap.get( propertyName );
+		ArrayList<PropertyChangedHandler> handlerList = handlersMap.get( propertyName );
 		if( handlerList == null )
 		{
-			handlerList = new ArrayList<NotifyPropertyChangedEvent.Handler>();
+			handlerList = new ArrayList<PropertyChangedHandler>();
 			handlersMap.put( propertyName, handlerList );
 		}
 	
@@ -97,11 +89,11 @@ public class NotifyPropertyChangedEvent
 		
 		HandlerInfo info = (HandlerInfo) handlerRegistration;
 	
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( info.source );
+		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( info.source );
 		if( handlersMap == null )
 			return;
 	
-		ArrayList<NotifyPropertyChangedEvent.Handler> handlerList = handlersMap.get( info.propertyName );
+		ArrayList<PropertyChangedHandler> handlerList = handlersMap.get( info.propertyName );
 		if( handlerList == null )
 			return;
 	
@@ -131,21 +123,21 @@ public class NotifyPropertyChangedEvent
 	{
 		nbNotifications++;
 		
-		HashMap<String, ArrayList<NotifyPropertyChangedEvent.Handler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( sender );
+		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( sender );
 		if( handlersMap == null )
 			return;
 	
-		NotifyPropertyChangedEvent event = null;
+		PropertyChangedEvent event = null;
 		
-		ArrayList<NotifyPropertyChangedEvent.Handler> handlerList = handlersMap.get( propertyName );
+		ArrayList<PropertyChangedHandler> handlerList = handlersMap.get( propertyName );
 		if( handlerList != null )
 		{
 			if( event == null )
-				event = new NotifyPropertyChangedEvent( sender, propertyName );
+				event = new PropertyChangedEvent( sender, propertyName );
 	
-			for( NotifyPropertyChangedEvent.Handler handler : handlerList )
+			for( PropertyChangedHandler handler : handlerList )
 			{
-				handler.onNotifyPropertChanged( event );
+				handler.onPropertyChanged( event );
 				nbDispatches++;
 			}
 		}
@@ -154,11 +146,11 @@ public class NotifyPropertyChangedEvent
 		if( handlerList != null )
 		{
 			if( event == null )
-				event = new NotifyPropertyChangedEvent( sender, propertyName );
+				event = new PropertyChangedEvent( sender, propertyName );
 	
-			for( NotifyPropertyChangedEvent.Handler handler : handlerList )
+			for( PropertyChangedHandler handler : handlerList )
 			{
-				handler.onNotifyPropertChanged( event );
+				handler.onPropertyChanged( event );
 				nbDispatches++;
 			}
 		}
@@ -192,41 +184,6 @@ public class NotifyPropertyChangedEvent
 		
 		return msg + details.toString();
 	}
-
-	private final Object sender;
-
-	private final String propertyName;
-
-	/**
-	 * Private constructor, can only be created by the
-	 * {@link notify} method.
-	 * @param sender
-	 * @param propertyName
-	 */
-	private NotifyPropertyChangedEvent( Object sender, String propertyName )
-	{
-		this.sender = sender;
-		this.propertyName = propertyName;
-	}
-
-	/**
-	 * Returns the object that sent the event
-	 * 
-	 * @return The object that sent the event
-	 */
-	public Object getSender()
-	{
-		return sender;
-	}
-
-	/**
-	 * Returns the name of the property that changed
-	 * @return The name of the property that changed
-	 */
-	public String getPropertyName()
-	{
-		return propertyName;
-	}
 	
 	private static class DirectHandlerInfo
 	{
@@ -238,7 +195,7 @@ public class NotifyPropertyChangedEvent
 	{
 		Object source;
 		String propertyName;
-		NotifyPropertyChangedEvent.Handler handler;
+		PropertyChangedHandler handler;
 	}
 
 	private static void statsAddedRegistration( HandlerInfo info )

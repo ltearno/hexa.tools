@@ -8,7 +8,9 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 
 import fr.lteconsulting.hexa.client.tools.Action1;
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 import fr.lteconsulting.hexa.databinding.watchablecollection.Change;
 import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
@@ -42,7 +44,7 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 	{
 		super.storeRow( record, row );
 
-		Object registration = NotifyPropertyChangedEvent.registerPropertyChangedEvent( record, "*", propertyChangeHandler );
+		Object registration = Properties.registerPropertyChangedEvent( record, "*", propertyChangeHandler );
 		registrations.put( record, registration );
 
 		onStoredRow( record, row );
@@ -54,7 +56,7 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 		onForgetRow( record );
 
 		Object registration = registrations.remove( record );
-		NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
+		Properties.removePropertyChangedHandler( registration );
 
 		super.forgetRow( record );
 	}
@@ -65,16 +67,16 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 		onForgotAllRows();
 
 		for( Object registration : registrations.values() )
-			NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
+			Properties.removePropertyChangedHandler( registration );
 		registrations.clear();
 
 		super.forgetAllRows();
 	}
 
-	private NotifyPropertyChangedEvent.Handler propertyChangeHandler = new NotifyPropertyChangedEvent.Handler()
+	private PropertyChangedHandler propertyChangeHandler = new PropertyChangedHandler()
 	{
 		@Override
-		public void onNotifyPropertChanged( NotifyPropertyChangedEvent event )
+		public void onPropertyChanged( PropertyChangedEvent event )
 		{
 			@SuppressWarnings( "unchecked" )
 			T record = (T) event.getSender();

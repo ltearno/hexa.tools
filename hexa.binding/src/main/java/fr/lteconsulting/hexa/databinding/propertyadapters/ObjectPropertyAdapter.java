@@ -1,9 +1,10 @@
 package fr.lteconsulting.hexa.databinding.propertyadapters;
 
 import fr.lteconsulting.hexa.client.tools.Action2;
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.Properties;
 import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent.Handler;
+import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 
 /**
  * A PropertyAdapter implementation which is able to work with an object's field or property
@@ -14,7 +15,7 @@ import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent.Handler;
  * @author Arnaud
  *
  */
-public class ObjectPropertyAdapter implements PropertyAdapter, Handler
+public class ObjectPropertyAdapter implements PropertyAdapter, PropertyChangedHandler
 {
 	private final Object source;
 	private final String sourceProperty;
@@ -37,13 +38,13 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 		this.callback = callback;
 		this.cookie = cookie;
 		
-		return NotifyPropertyChangedEvent.registerPropertyChangedEvent( source, sourceProperty, this );
+		return Properties.registerPropertyChangedEvent( source, sourceProperty, this );
 	}
 
 	@Override
 	public void removePropertyChangedHandler( Object registration )
 	{
-		NotifyPropertyChangedEvent.removePropertyChangedHandler( registration );
+		Properties.removePropertyChangedHandler( registration );
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class ObjectPropertyAdapter implements PropertyAdapter, Handler
 	}
 
 	@Override
-	public void onNotifyPropertChanged( NotifyPropertyChangedEvent event )
+	public void onPropertyChanged( PropertyChangedEvent event )
 	{
 		if( callback == null )
 			return;

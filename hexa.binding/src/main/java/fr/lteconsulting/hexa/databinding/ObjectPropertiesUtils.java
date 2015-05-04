@@ -211,7 +211,7 @@ public class ObjectPropertiesUtils
 
 		bag.set( propertyName, value );
 
-		NotifyPropertyChangedEvent.notify( object, propertyName );
+		Properties.notify( object, propertyName );
 	}
 
 	private static <T> T GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )

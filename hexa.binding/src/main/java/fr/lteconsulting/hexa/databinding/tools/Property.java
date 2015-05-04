@@ -1,8 +1,9 @@
 package fr.lteconsulting.hexa.databinding.tools;
 
 import fr.lteconsulting.hexa.client.tools.Action2;
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent.Handler;
+import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 /**
@@ -41,26 +42,26 @@ public class Property<T> implements PropertyAdapter
 
 		this.value = (T) value;
 
-		NotifyPropertyChangedEvent.notify( owner, name );
+		Properties.notify( owner, name );
 	}
 	
-	public Object register( NotifyPropertyChangedEvent.Handler handler )
+	public Object register( PropertyChangedHandler handler )
 	{
-		return NotifyPropertyChangedEvent.registerPropertyChangedEvent( owner, name, handler );
+		return Properties.registerPropertyChangedEvent( owner, name, handler );
 	}
 	
 	public void removeRegistration( Object handlerRegistration )
 	{
-		NotifyPropertyChangedEvent.removePropertyChangedHandler( handlerRegistration );
+		Properties.removePropertyChangedHandler( handlerRegistration );
 	}
 
 	@Override
 	public Object registerPropertyChanged( final Action2<PropertyAdapter, Object> callback, final Object cookie )
 	{
-		return register( new Handler()
+		return register( new PropertyChangedHandler()
 		{
 			@Override
-			public void onNotifyPropertChanged( NotifyPropertyChangedEvent event )
+			public void onPropertyChanged(PropertyChangedEvent event)
 			{
 				callback.exec( Property.this, cookie );
 			}
