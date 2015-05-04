@@ -13,7 +13,7 @@
 	<modules>
 		<module>hexa.archetype</module>
 		<module>hexa.binding</module>
-		<module>hexa.binding.processor</module>
+		<module>hexa.binding/processor</module>
 		<module>hexa.binding.gwt</module>
 		<module>hexa.css</module>
 		<module>hexa.css-maven-plugin</module>
