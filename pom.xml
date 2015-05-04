@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.lteconsulting</groupId>
-	<artifactId>hexa.parent</artifactId>
+	<artifactId>hexa.tools</artifactId>
 
 	<version>1.0-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>hexa.archetype</module>
+		<!--<module>hexa.archetype</module>-->
 		<module>hexa.binding</module>
 		<module>hexa.binding/processor</module>
 		<module>hexa.binding.gwt</module>
@@ -24,71 +23,128 @@
 		<!--<module>hexa.all</module> -->
 		<!--<module>hexa.persistence</module> -->
 		<!--<module>hexa.demo</module> -->
-	</modules>
+  	</modules>
 
-	<properties>
+  	<licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <name>Arnaud Tournier</name>
+            <email>ltearno@gmail.com</email>
+            <organization>LTE Consulting</organization>
+            <organizationUrl>http://www.lteconsulting.fr</organizationUrl>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:git@github.com:ltearno/hexa.tools</connection>
+        <developerConnection>scm:git:git@github.com:ltearno/hexa.tools</developerConnection>
+        <url>git@github.com:ltearno/hexa.tools</url>
+    </scm>
+
+  	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mavenVersion>3.0</mavenVersion>
-		<gwt.version>2.7.0</gwt.version>
+		<gwt.version>[2.5.0,)</gwt.version>
 	</properties>
 
+	<distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>1.1.2</version>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>3.8.1</version>
+				<scope>test</scope>
 			</dependency>
+
 			<dependency>
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-user</artifactId>
 				<version>${gwt.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			<dependency>
+           
+            <dependency>
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-dev</artifactId>
 				<version>${gwt.version}</version>
 				<scope>provided</scope>
 			</dependency>
+
 			<dependency>
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-servlet</artifactId>
 				<version>${gwt.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-codeserver</artifactId>
 				<version>${gwt.version}</version>
+				<scope>runtime</scope>
 			</dependency>
+
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>2.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.maven.plugin-tools</groupId>
+				<artifactId>maven-plugin-annotations</artifactId>
+				<version>3.2</version>
 				<scope>provided</scope>
 			</dependency>
+			
 			<dependency>
-				<groupId>org.hsqldb</groupId>
-				<artifactId>hsqldb</artifactId>
-				<version>2.3.2</version>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-utils</artifactId>
+				<version>3.0.8</version>
 			</dependency>
+			
 			<dependency>
-				<groupId>ch.vorburger.mariaDB4j</groupId>
-				<artifactId>mariaDB4j</artifactId>
-				<version>2.0-SNAPSHOT</version>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-project</artifactId>
+				<version>2.2.1</version>
+				<scope>compile</scope>
 			</dependency>
+			
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
+				<groupId>com.helger</groupId>
+				<artifactId>ph-css</artifactId>
+				<version>3.9.1</version>
 			</dependency>
+
 			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.30</version>
+				<groupId>com.squareup</groupId>
+				<artifactId>javapoet</artifactId>
+				<version>1.0.0</version>
 			</dependency>
-		</dependencies>
-	</dependencyManagement>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.1.2</version>
+			</dependency>
+        </dependencies>
+    </dependencyManagement>
 
 	<build>
 		<pluginManagement>
@@ -101,103 +157,107 @@
 						<target>1.7</target>
 					</configuration>
 				</plugin>
+
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>1.8</version>
+				    <groupId>org.apache.maven.plugins</groupId>
+				    <artifactId>maven-source-plugin</artifactId>
+	                <executions>
+	                    <execution>
+	                        <id>attach-sources</id>
+	                        <goals>
+	                            <goal>jar-no-fork</goal>
+	                        </goals>
+	                    </execution>
+	                </executions>
 				</plugin>
+
 				<plugin>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-maven-plugin</artifactId>
-					<version>9.1.2.v20140210</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>gwt-maven-plugin</artifactId>
-<!-- 					<version>${gwt.version}</version> -->
-<version>2.6.0</version>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.12.4</version>
 					<configuration>
-						<deploy>${project.build.directory}/gwtc/extra</deploy>
-						<extra>${project.build.directory}/gwtc/extra</extra>
-						<gen>${project.build.directory}/gwtc/gen</gen>
-						<!-- There's an issue on Mac: see http://code.google.com/p/google-web-toolkit/issues/detail?id=7474 
-							<workDir>${project.build.directory}/gwtc/work</workDir> <codeServerWorkDir>${project.build.directory}/gwtc/superDevMode</codeServerWorkDir> -->
+						<excludes>
+							<exclude>**/*GwtTest.java</exclude>
+						</excludes>
 					</configuration>
-					<executions>
-						<execution>
-							<id>gwt-compile</id>
-							<phase>prepare-package</phase>
-							<goals>
-								<goal>compile</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
+				
+				<!-- For release only ! -->
+
 				<plugin>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.2.1</version>
-					<executions>
-						<execution>
-							<id>attach-sources</id>
-							<phase>package</phase>
-							<goals>
-								<goal>jar-no-fork</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>com.buschmais.jqassistant.scm</groupId>
-					<artifactId>jqassistant-maven-plugin</artifactId>
-					<version>1.0.0-M3</version>
-					<executions>
-						<execution>
-							<id>scan</id>
-							<goals>
-								<goal>scan</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>analyze</id>
-							<goals>
-								<goal>analyze</goal>
-							</goals>
-							<!-- <configuration> <groups> <group>default</group> </groups> <failOnConstraintViolations>true</failOnConstraintViolations> 
-								</configuration> -->
-						</execution>
-					</executions>
-					<!-- <dependencies> <dependency> <groupId>com.buschmais.jqassistant.plugin</groupId> 
-						<artifactId>jqassistant.plugin.jpa2</artifactId> <version>1.0.0-M3</version> 
-						</dependency> </dependencies> -->
-				</plugin>
+	                <groupId>org.sonatype.plugins</groupId>
+	                <artifactId>nexus-staging-maven-plugin</artifactId>
+	                <version>1.6.3</version>
+	                <extensions>true</extensions>
+	                <configuration>
+	                    <serverId>ossrh</serverId>
+	                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+	                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+	                </configuration>
+	            </plugin>
+
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-gpg-plugin</artifactId>
+	                <version>1.5</version>
+	                <executions>
+	                    <execution>
+	                        <id>sign-artifacts</id>
+	                        <phase>verify</phase>
+	                        <goals>
+	                            <goal>sign</goal>
+	                        </goals>
+	                    </execution>
+	                </executions>
+	            </plugin>
 			</plugins>
 		</pluginManagement>
 
-		<finalName>${project.artifactId}-${project.version}</finalName>
-
-		<!--<sourceDirectory>${basedir}/src</sourceDirectory> <testSourceDirectory>${basedir}/test</testSourceDirectory> 
-			<outputDirectory>${basedir}/target/classes</outputDirectory> <testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory> -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.java</include>
+                    <include>**/*.gwt.xml</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>com.buschmais.jqassistant.scm</groupId>
-				<artifactId>jqassistant-maven-plugin</artifactId>
-				<version>1.0.0-M3</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
+	<profiles>
+	  <profile>
+	  	<id>official</id>
+	    <build>
+	    	<plugins>
+	    		<plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-gpg-plugin</artifactId>
+	            </plugin>
 
+	            <plugin>
+	                <groupId>org.sonatype.plugins</groupId>
+	                <artifactId>nexus-staging-maven-plugin</artifactId>
+	            </plugin>
+
+	            <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-javadoc-plugin</artifactId>
+	                <executions>
+	                    <execution>
+	                        <id>attach-javadocs</id>
+	                        <configuration>
+			                	<failOnError>false</failOnError>
+			               	</configuration>
+	                        <goals>
+	                            <goal>jar</goal>
+	                        </goals>
+	                    </execution>
+	                </executions>
+	            </plugin>
+	    	</plugins>
+	    </build>
+	  </profile>
+	</profiles>
 </project>
