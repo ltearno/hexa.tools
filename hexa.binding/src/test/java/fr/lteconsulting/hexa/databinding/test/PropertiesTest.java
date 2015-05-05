@@ -1,9 +1,9 @@
 package fr.lteconsulting.hexa.databinding.test;
 
-import static fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils.GetProperty;
-import static fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils.SetProperty;
+import static fr.lteconsulting.hexa.databinding.Properties.GetProperty;
+import static fr.lteconsulting.hexa.databinding.Properties.SetProperty;
 import junit.framework.TestCase;
-import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.Properties;
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
@@ -31,7 +31,7 @@ public class PropertiesTest extends TestCase
 {
 	/**
 	 * We cannot access the private member a of class {@link DTO},
-	 * but we can use the {@link ObjectPropertiesUtils} class
+	 * but we can use the {@link Properties} class
 	 * to help us.
 	 */
 	public void testPrivateMember()

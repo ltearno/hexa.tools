@@ -62,11 +62,11 @@ public class DTOMapper
 
 		for( String name : bindedNames )
 		{
-			boolean srcRead = ObjectPropertiesUtils.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
-			boolean srcWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcRead = Properties.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcWrite = Properties.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
 
-			boolean destinationRead = ObjectPropertiesUtils.HasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
-			boolean destinationWrite = ObjectPropertiesUtils.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationRead = Properties.HasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationWrite = Properties.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
 
 			// ensure both have necessary methods or field
 			if( !srcRead || !destinationWrite )
@@ -129,11 +129,11 @@ public class DTOMapper
 	static DataAdapterInfo createDataAdapter( Object context, String property, Class<?> srcPptyType )
 	{
 		DataAdapterInfo res = new DataAdapterInfo();
-		res.dataType = ObjectPropertiesUtils.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
+		res.dataType = Properties.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
 		res.debugString = getSimpleName( context.getClass() ) + ", ";
 
 		// test to see if the asked property is in fact a HasValue widget
-		Object widget = ObjectPropertiesUtils.GetProperty( context, property );
+		Object widget = Properties.GetProperty( context, property );
 		if( PlatformSpecificProvider.get().isSpecificDataAdapter( widget ) )
 		{
 			PlatformSpecificProvider.get().fillSpecificDataAdapter( widget, context, property, srcPptyType, res );

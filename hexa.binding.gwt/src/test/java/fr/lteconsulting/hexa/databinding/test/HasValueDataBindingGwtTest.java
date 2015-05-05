@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.TextBox;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChanges;
 import fr.lteconsulting.hexa.databinding.gwt.Binder;
 
 /**
@@ -106,6 +106,6 @@ class DTO
 	public void setName( String name )
 	{
 		this.name = name;
-		Properties.notify( this, "name" );
+		PropertyChanges.notify( this, "name" );
 	}
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import fr.lteconsulting.hexa.databinding.Binder;
-import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.Properties;
 import fr.lteconsulting.hexa.databinding.test.dto.A;
 import fr.lteconsulting.hexa.databinding.test.dto.ANotif;
 import fr.lteconsulting.hexa.databinding.test.dto.B;
@@ -48,8 +48,8 @@ public class BinderTest extends TestCase
 	{
 		List<String> list = Arrays.asList( "zero", "one", "two", "three", "four" );
 
-		ObjectPropertiesUtils.SetProperty( list, "selected", 3 );
-		assertEquals( 3, ObjectPropertiesUtils.GetProperty( list, "selected" ) );
+		Properties.SetProperty( list, "selected", 3 );
+		assertEquals( 3, Properties.GetProperty( list, "selected" ) );
 	}
 
 	public void test004()

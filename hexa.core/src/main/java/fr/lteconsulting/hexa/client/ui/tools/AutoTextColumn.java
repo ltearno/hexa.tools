@@ -13,7 +13,7 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 import fr.lteconsulting.hexa.client.ui.widget.TextEditor;
-import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
+import fr.lteconsulting.hexa.databinding.Properties;
 import fr.lteconsulting.hexa.databinding.TypedConverter;
 
 public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
@@ -42,7 +42,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 		this.fieldName = fieldName;
 		
 		dtoClazz = Clazz( dtoClass );
-		if( ! ObjectPropertiesUtils.HasSomethingToGetField( dtoClazz, fieldName ) )
+		if( ! Properties.HasSomethingToGetField( dtoClazz, fieldName ) )
 			throw new RuntimeException( "Cannot handle property " + fieldName + " of class " + dtoClass.getSimpleName() );
 		
 		if( displayConverter != null )
@@ -53,7 +53,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 	
 	private TypedConverter<Object, String> createDefaultDisplayConverter()
 	{
-		Class<?> propertyType = ObjectPropertiesUtils.GetPropertyType( dtoClazz, fieldName );
+		Class<?> propertyType = Properties.GetPropertyType( dtoClazz, fieldName );
 		if( propertyType == String.class )
 		{
 			return new TypedConverter<Object, String>()
@@ -121,7 +121,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 	
 	private String getValue( T record )
 	{
-		Object value = ObjectPropertiesUtils.GetProperty( record, fieldName );
+		Object value = Properties.GetProperty( record, fieldName );
 		
 		String display = displayConverter.convert( value );
 		
@@ -138,7 +138,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 			{
 				Object realValue = displayConverter.convertBack( newValue );
 				
-				ObjectPropertiesUtils.SetProperty( record, fieldName, realValue );
+				Properties.SetProperty( record, fieldName, realValue );
 				
 				getEditorHost().finishedEdition();
 				

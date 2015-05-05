@@ -8,7 +8,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 
 import fr.lteconsulting.hexa.client.tools.Action1;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChanges;
 import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
 import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 import fr.lteconsulting.hexa.databinding.watchablecollection.Change;
@@ -44,7 +44,7 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 	{
 		super.storeRow( record, row );
 
-		Object registration = Properties.registerPropertyChangedEvent( record, "*", propertyChangeHandler );
+		Object registration = PropertyChanges.register( record, "*", propertyChangeHandler );
 		registrations.put( record, registration );
 
 		onStoredRow( record, row );
@@ -56,7 +56,7 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 		onForgetRow( record );
 
 		Object registration = registrations.remove( record );
-		Properties.removePropertyChangedHandler( registration );
+		PropertyChanges.removeHandler( registration );
 
 		super.forgetRow( record );
 	}
@@ -67,7 +67,7 @@ public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
 		onForgotAllRows();
 
 		for( Object registration : registrations.values() )
-			Properties.removePropertyChangedHandler( registration );
+			PropertyChanges.removeHandler( registration );
 		registrations.clear();
 
 		super.forgetAllRows();

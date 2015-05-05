@@ -225,10 +225,10 @@ TODO : show how to configure Eclipse and how to write an Observable (with the tw
 
 TODO : show how this can ease the notification management
 
-### Example with Converter
+### To do
 
-### Example WriteOnlyPropertyAdapter
-
-### DOC WhenChangesHappen
-
-### WatchableCollection
+- Example with Converter
+- Example WriteOnlyPropertyAdapter
+- DOC WhenChangesHappen
+- WatchableCollection
+- Maven integration

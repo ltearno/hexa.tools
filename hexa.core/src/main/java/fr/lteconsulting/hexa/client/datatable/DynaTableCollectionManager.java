@@ -6,7 +6,7 @@ import java.util.HashSet;
 import com.google.gwt.core.client.Scheduler;
 
 import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChanges;
 import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
 import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 
@@ -36,7 +36,7 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 	{
 		super.storeRow( record, row );
 		
-		Object registration = Properties.registerPropertyChangedEvent( record, "*", propertyChangeHandler );
+		Object registration = PropertyChanges.register( record, "*", propertyChangeHandler );
 		registrations.put( record.getId(), registration );
 		
 		onStoredRow( record, row );
@@ -48,7 +48,7 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 		onForgetRow( recordId );
 		
 		Object registration = registrations.remove( recordId );
-		Properties.removePropertyChangedHandler( registration );
+		PropertyChanges.removeHandler( registration );
 		
 		super.forgetRow( recordId );
 	}
@@ -59,7 +59,7 @@ public class DynaTableCollectionManager<T extends IHasIntegerId> extends TableCo
 		onForgotAllRows();
 		
 		for( Object registration : registrations.values() )
-			Properties.removePropertyChangedHandler( registration );
+			PropertyChanges.removeHandler( registration );
 		registrations.clear();
 		
 		super.forgetAllRows();

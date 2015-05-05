@@ -1,220 +1,306 @@
 package fr.lteconsulting.hexa.databinding;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.logging.Logger;
+
+import fr.lteconsulting.hexa.classinfo.ClassInfo;
+import fr.lteconsulting.hexa.classinfo.Clazz;
+import fr.lteconsulting.hexa.classinfo.Field;
+import fr.lteconsulting.hexa.classinfo.Method;
+import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
+import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
- * This class is part of the Hexa DataBinding and provides :
- * <ol>
- * <li>registering to object's property change
- * <li>notifying when a property changes in an object
- * </ol>
+ * Utility class supporting the concept of Property.
  * 
- * @author Arnaud Tournier
+ * A Property on an object is a value that can be get and/or set through either
+ * a getter/setter or directly through the object's field.
+ * 
+ * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
  */
 public class Properties
 {
-	private static int nbRegisteredHandlers = 0;
-	private static int nbNotifications = 0;
-	private static int nbDispatches = 0;
-	private static HashMap<String, Integer> counts = new HashMap<>();
-	private static HashMap<String, Integer> oldCounts = new HashMap<>();
-	
+	private final static Logger LOGGER = Logger.getLogger( Properties.class.getName() );
+
+	private final static PlatformSpecific propertyBagAccess = PlatformSpecificProvider.get();
+
 	/**
-	 * Registers an handler for a specific property change on an object. The object
-	 * itself does not need to implement anything. But at least it should call the 
-	 * {@link notify(Object, String)} method when its internal property changes.
+	 * Whether a getter or a field is available with that name
 	 * 
-	 * @param source The object from which one wants notifications
-	 * @param propertyName The property subscribed. You can use "*" to subscribe to all properties in one time
-	 * @param handler
+	 * @param clazz
+	 * @param name
 	 * @return
 	 */
-	public static Object registerPropertyChangedEvent( Object source, String propertyName, PropertyChangedHandler handler )
+	public static boolean HasSomethingToGetField( Clazz<?> clazz, String name )
 	{
-		if( source instanceof INotifyPropertyChanged )
-		{
-			DirectHandlerInfo info = new DirectHandlerInfo();
-			info.source = (INotifyPropertyChanged) source;
-			info.registrationObject = info.source.registerPropertyChangedEvent( propertyName, handler );
-			
-			return info;
-		}
-		
-		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( source );
-		if( handlersMap == null )
-		{
-			handlersMap = new HashMap<>();
-			PlatformSpecificProvider.get().setObjectMetadata( source, handlersMap );
-		}
-	
-		ArrayList<PropertyChangedHandler> handlerList = handlersMap.get( propertyName );
-		if( handlerList == null )
-		{
-			handlerList = new ArrayList<PropertyChangedHandler>();
-			handlersMap.put( propertyName, handlerList );
-		}
-	
-		handlerList.add( handler );
-	
-		HandlerInfo info = new HandlerInfo();
-		info.source = source;
-		info.propertyName = propertyName;
-		info.handler = handler;
-		
-		statsAddedRegistration( info );
-		
-		return info;
+		return GetGetterPropertyType( clazz, name ) != null;
 	}
 
 	/**
-	 * Unregisters a handler, freeing associated resources
+	 * Returns the class of the property
 	 * 
-	 * @param handlerRegistration The object received after a call to {@link registerPropertyChangedEvent}
+	 * @param clazz
+	 * @param name
+	 * @return
 	 */
-	public static void removePropertyChangedHandler( Object handlerRegistration )
+	public static Class<?> GetPropertyType( Clazz<?> clazz, String name )
 	{
-		// Through object's interface implementation
-		if( handlerRegistration instanceof DirectHandlerInfo )
-		{
-			DirectHandlerInfo info = (DirectHandlerInfo) handlerRegistration;
-			info.source.removePropertyChangedHandler( info.registrationObject );
-			return;
-		}
-		
-		if( ! ( handlerRegistration instanceof HandlerInfo ) )
-			return;
-		
-		HandlerInfo info = (HandlerInfo) handlerRegistration;
-	
-		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( info.source );
-		if( handlersMap == null )
-			return;
-	
-		ArrayList<PropertyChangedHandler> handlerList = handlersMap.get( info.propertyName );
-		if( handlerList == null )
-			return;
-	
-		handlerList.remove( info.handler );
-	
-		if( handlerList.isEmpty() )
-			handlersMap.remove( info.propertyName );
-	
-		if( handlersMap.isEmpty() )
-			PlatformSpecificProvider.get().setObjectMetadata( info.source, null );
-		
-		statsRemovedRegistration( info );
-	
-		info.handler = null;
-		info.propertyName = null;
-		info.source = null;
+		Class<?> getterType = GetGetterPropertyType( clazz, name );
+		Class<?> setterType = GetSetterPropertyType( clazz, name );
+
+		if( getterType == setterType )
+			return getterType;
+
+		return null;
 	}
 
 	/**
-	 * Notifies the Hexa event system of an object changing one of
-	 * its properties.
+	 * Return the property getter type
 	 * 
-	 * @param sender The object whom property changed
-	 * @param propertyName The changed property name
+	 * @param clazz
+	 * @param name
+	 * @return
 	 */
-	public static void notify( Object sender, String propertyName )
+	public static Class<?> GetGetterPropertyType( Clazz<?> clazz, String name )
 	{
-		nbNotifications++;
-		
-		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( sender );
-		if( handlersMap == null )
-			return;
-	
-		PropertyChangedEvent event = null;
-		
-		ArrayList<PropertyChangedHandler> handlerList = handlersMap.get( propertyName );
-		if( handlerList != null )
+		String getterName = "get" + capitalizeFirstLetter( name );
+		Method getter = clazz.getMethod( getterName );
+		if( getter != null )
+			return getter.getReturnType();
+
+		// try direct field access
+		Field field = clazz.getAllField( name );
+		if( field != null )
+			return field.getType();
+
+		return null;
+	}
+
+	/**
+	 * Gets the property's value from an object
+	 * 
+	 * @param object
+	 *            The object
+	 * @param name
+	 *            Property name
+	 * @return
+	 */
+	public static <T> T GetProperty( Object object, String name )
+	{
+		return GetProperty( object, name, true );
+	}
+
+	/**
+	 * Gets the property's value from an object
+	 * 
+	 * @param object
+	 *            The object
+	 * @param name
+	 *            Property name
+	 * @param fTryDirectFieldAccess
+	 *            specifies if direct field access should be used
+	 * @return
+	 */
+	public static <T> T GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
+	{
+		T result = GetPropertyImpl( object, name, fTryDirectFieldAccess );
+		if( result instanceof Property )
 		{
-			if( event == null )
-				event = new PropertyChangedEvent( sender, propertyName );
-	
-			for( PropertyChangedHandler handler : handlerList )
+			@SuppressWarnings( "unchecked" )
+			Property<T> property = ((Property<T>) result);
+			return property.getValue();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Whether there is a setter or a field to write this property
+	 */
+	public static boolean HasSomethingToSetField( Clazz<?> clazz, String name )
+	{
+		return GetSetterPropertyType( clazz, name ) != null;
+	}
+
+	/**
+	 * Returns the class of the setter property. It can be this of the setter or
+	 * of the field
+	 */
+	public static Class<?> GetSetterPropertyType( Clazz<?> clazz, String name )
+	{
+		String setterName = "set" + capitalizeFirstLetter( name );
+		Method setter = clazz.getMethod( setterName );
+		if( setter != null && setter.getParameterTypes().size() == 1 )
+			return setter.getParameterTypes().get( 0 );
+
+		Field field = clazz.getAllField( name );
+		if( field != null )
+			return field.getType();
+
+		return null;
+	}
+
+	/**
+	 * Sets a value on an object's property
+	 */
+	public static boolean SetProperty( Object object, String propertyName, Object value )
+	{
+		return SetProperty( object, propertyName, value, true );
+	}
+
+	/**
+	 * Sets a value on an object's property
+	 */
+	public static boolean SetProperty( Object object, String propertyName, Object value, boolean fTryDirectFieldAccess )
+	{
+		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
+
+		if( Property.class == GetPropertyType( s, propertyName ) )
+		{
+			@SuppressWarnings( "unchecked" )
+			Property<Object> property = (Property<Object>) GetPropertyImpl( object, propertyName, fTryDirectFieldAccess );
+			if( property != null )
 			{
-				handler.onPropertyChanged( event );
-				nbDispatches++;
+				property.setValue( value );
+				return true;
+			}
+			return false;
+		}
+
+		return SetPropertyImpl( s, object, propertyName, value, fTryDirectFieldAccess );
+	}
+
+	/**
+	 * Gets a dynamic property value on an object
+	 */
+	public static <T> T GetObjectDynamicProperty( Object object, String propertyName )
+	{
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
+		if( bag == null )
+			return null;
+
+		@SuppressWarnings( "unchecked" )
+		T result = (T) bag.get( propertyName );
+
+		return result;
+	}
+
+	/**
+	 * Whether a dynamic property value has already been set on this object
+	 */
+	public static boolean HasObjectDynamicProperty( Object object, String propertyName )
+	{
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
+		if( bag == null )
+			return false;
+
+		return bag.contains( propertyName );
+	}
+
+	/**
+	 * Sets a dynamic property value on an object.
+	 */
+	public static void SetObjectDynamicProperty( Object object, String propertyName, Object value )
+	{
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
+		if( bag == null )
+		{
+			bag = new DynamicPropertyBag();
+			propertyBagAccess.setObjectDynamicPropertyBag( object, bag );
+		}
+
+		bag.set( propertyName, value );
+
+		PropertyChanges.notify( object, propertyName );
+	}
+
+	private static <T> T GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )
+	{
+		if( PlatformSpecificProvider.get().isBindingToken( name ) )
+		{
+			return PlatformSpecificProvider.get().getBindingValue( object, name );
+		}
+
+		if( name.equals( CompositePropertyAdapter.DTOMAP_TOKEN ) )
+			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
+
+		// if has dynamic-property, return it !
+		if( HasObjectDynamicProperty( object, name ) )
+		{
+			LOGGER.fine( "'" + name + "' read dynamic property on object " + object );
+			return GetObjectDynamicProperty( object, name );
+		}
+
+		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
+
+		String getterName = "get" + capitalizeFirstLetter( name );
+		Method getter = s.getMethod( getterName );
+		if( getter != null )
+		{
+			try
+			{
+				@SuppressWarnings( "unchecked" )
+				T result = (T) getter.invoke( object );
+				return result;
+			}
+			catch( Exception e )
+			{
+				throw new RuntimeException( "ObjectAdapter [object]." + object.getClass().getName() + "." + getterName + "() : getter call throwed an exception. See cause.", e );
 			}
 		}
-		
-		handlerList = handlersMap.get( "*" );
-		if( handlerList != null )
+
+		if( fTryDirectFieldAccess )
 		{
-			if( event == null )
-				event = new PropertyChangedEvent( sender, propertyName );
-	
-			for( PropertyChangedHandler handler : handlerList )
+			// try direct field access
+			Field field = s.getAllField( name );
+			if( field != null )
+				return field.getValue( object );
+		}
+
+		// Maybe a dynamic property will be set later on
+		LOGGER.warning( "DataBinding: Warning: assuming that the object would in the future have a dynamic property set / Maybe have an opt-in option on the Binding to clarify things" );
+
+		return null;
+	}
+
+	private static boolean SetPropertyImpl( Clazz<?> s, Object object, String name, Object value, boolean fTryDirectFieldAccess )
+	{
+		if( PlatformSpecificProvider.get().isBindingToken( name ) )
+		{
+			return PlatformSpecificProvider.get().setBindingValue( object, name, value );
+		}
+
+		String setterName = "set" + capitalizeFirstLetter( name );
+		Method setter = s.getMethod( setterName );
+		if( setter != null )
+		{
+			if( setter.getParameterTypes().get( 0 ) == Property.class )
 			{
-				handler.onPropertyChanged( event );
-				nbDispatches++;
+			}
+			setter.invoke( object, value );
+			return true;
+		}
+
+		if( fTryDirectFieldAccess )
+		{
+			Field field = s.getAllField( name );
+			if( field != null )
+			{
+				field.setValue( object, value );
+				return true;
 			}
 		}
+
+		if( !HasObjectDynamicProperty( object, name ) )
+			LOGGER.warning( "'" + name + "' write dynamic property on object " + object.getClass().getName() + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !" );
+
+		SetObjectDynamicProperty( object, name, value );
+
+		return false;
 	}
 
-	/**
-	 * Show an alert containing useful information for debugging. It also
-	 * shows how many registrations happened since last call ; that's useful
-	 * to detect registration leaks.
-	 */
-	public static String getStats()
+	private static String capitalizeFirstLetter( String s )
 	{
-		String msg = "NotifyPropertyChanged stats :\r\n"
-				+ "# registered handlers : " + nbRegisteredHandlers + "\r\n"
-				+ "# notifications       : " + nbNotifications + "\r\n"
-				+ "# dispatches          : " + nbDispatches + "\r\n";
-		
-		StringBuilder details = new StringBuilder();
-		for( Entry<String, Integer> e : counts.entrySet() )
-		{
-			details.append( e.getKey() + " => " + e.getValue() );
-			
-			Integer oldCount = oldCounts.get( e.getKey() );
-			if( oldCount!=null )
-				details.append( " (diff: " + (e.getValue()-oldCount) + ")" );
-			
-			details.append( "\n" );
-		}
-		
-		oldCounts = new HashMap<>( counts );
-		
-		return msg + details.toString();
-	}
-	
-	private static class DirectHandlerInfo
-	{
-		INotifyPropertyChanged source;
-		Object registrationObject;
-	}
-
-	private static class HandlerInfo
-	{
-		Object source;
-		String propertyName;
-		PropertyChangedHandler handler;
-	}
-
-	private static void statsAddedRegistration( HandlerInfo info )
-	{
-		nbRegisteredHandlers++;
-		
-		String key = info.propertyName + "@" + info.source.getClass().getSimpleName();
-		Integer count = counts.get( key );
-		if( count == null )
-			count = 0;
-		count++;
-		counts.put( key, count );
-	}
-
-	private static void statsRemovedRegistration( HandlerInfo info )
-	{
-		nbRegisteredHandlers--;
-		
-		String key = info.propertyName + "@" + info.source.getClass().getSimpleName();
-		counts.put( key, counts.get( key ) - 1 );
+		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
 	}
 }

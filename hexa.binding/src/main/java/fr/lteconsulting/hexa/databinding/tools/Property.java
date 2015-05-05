@@ -1,7 +1,7 @@
 package fr.lteconsulting.hexa.databinding.tools;
 
 import fr.lteconsulting.hexa.client.tools.Action2;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChanges;
 import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
 import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
@@ -42,17 +42,17 @@ public class Property<T> implements PropertyAdapter
 
 		this.value = (T) value;
 
-		Properties.notify( owner, name );
+		PropertyChanges.notify( owner, name );
 	}
 	
 	public Object register( PropertyChangedHandler handler )
 	{
-		return Properties.registerPropertyChangedEvent( owner, name, handler );
+		return PropertyChanges.register( owner, name, handler );
 	}
 	
 	public void removeRegistration( Object handlerRegistration )
 	{
-		Properties.removePropertyChangedHandler( handlerRegistration );
+		PropertyChanges.removeHandler( handlerRegistration );
 	}
 
 	@Override

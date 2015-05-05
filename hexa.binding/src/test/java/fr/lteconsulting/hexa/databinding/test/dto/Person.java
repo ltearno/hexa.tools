@@ -2,7 +2,7 @@ package fr.lteconsulting.hexa.databinding.test.dto;
 
 import java.util.Date;
 
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.PropertyChanges;
 
 public class Person
 {
@@ -18,7 +18,7 @@ public class Person
 	public void setName( String name )
 	{
 		this.name = name;
-		Properties.notify( this, "name" );
+		PropertyChanges.notify( this, "name" );
 	}
 
 	public ObservableWorkplace getWorkplace()
@@ -29,7 +29,7 @@ public class Person
 	public void setWorkplace( ObservableWorkplace workplace )
 	{
 		this.workplace = workplace;
-		Properties.notify( this, "workplace" );
+		PropertyChanges.notify( this, "workplace" );
 	}
 
 	public Date getBirthDate()
@@ -40,7 +40,7 @@ public class Person
 	public void setBirthDate( Date birthDate )
 	{
 		this.birthDate = birthDate;
-		Properties.notify( this, "birthDate" );
+		PropertyChanges.notify( this, "birthDate" );
 	}
 	
 	@Override
