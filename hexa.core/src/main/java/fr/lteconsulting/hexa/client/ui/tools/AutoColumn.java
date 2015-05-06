@@ -2,7 +2,7 @@ package fr.lteconsulting.hexa.client.ui.tools;
 
 import static fr.lteconsulting.hexa.classinfo.ClassInfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Clazz;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 
 public class AutoColumn<T> extends SimpleColumn<T>
@@ -24,19 +24,19 @@ public class AutoColumn<T> extends SimpleColumn<T>
 		
 		dtoClazz = Clazz( dtoClass );
 		
-		propertyType = Properties.GetPropertyType( dtoClazz, fieldName );
+		propertyType = Properties.getPropertyType( dtoClazz, fieldName );
 	}
 
 	@Override
 	protected Object getRecordValue( T record )
 	{
-		return Properties.GetProperty( record, fieldName );
+		return Properties.getProperty( record, fieldName );
 	}
 
 	@Override
 	protected void setRecordValue( T record, Object value )
 	{
-		Properties.SetProperty( record, fieldName, value );
+		Properties.setProperty( record, fieldName, value );
 	}
 	
 	@Override

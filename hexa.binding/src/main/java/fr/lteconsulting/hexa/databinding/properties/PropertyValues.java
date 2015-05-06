@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.databinding;
+package fr.lteconsulting.hexa.databinding.properties;
 
 import java.util.logging.Logger;
 
@@ -6,35 +6,16 @@ import fr.lteconsulting.hexa.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.classinfo.Method;
+import fr.lteconsulting.hexa.databinding.PlatformSpecific;
+import fr.lteconsulting.hexa.databinding.PlatformSpecificProvider;
 import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
-/**
- * Utility class supporting the concept of Property.
- * 
- * A Property on an object is a value that can be get and/or set through either
- * a getter/setter or directly through the object's field.
- * 
- * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
- *
- */
-public class Properties
+class PropertyValues
 {
-	private final static Logger LOGGER = Logger.getLogger( Properties.class.getName() );
+	private final static Logger LOGGER = Logger.getLogger( PropertyValues.class.getName() );
 
 	private final static PlatformSpecific propertyBagAccess = PlatformSpecificProvider.get();
-
-	/**
-	 * Whether a getter or a field is available with that name
-	 * 
-	 * @param clazz
-	 * @param name
-	 * @return
-	 */
-	public static boolean HasSomethingToGetField( Clazz<?> clazz, String name )
-	{
-		return GetGetterPropertyType( clazz, name ) != null;
-	}
 
 	/**
 	 * Returns the class of the property
@@ -43,15 +24,27 @@ public class Properties
 	 * @param name
 	 * @return
 	 */
-	public static Class<?> GetPropertyType( Clazz<?> clazz, String name )
+	Class<?> getPropertyType( Clazz<?> clazz, String name )
 	{
-		Class<?> getterType = GetGetterPropertyType( clazz, name );
-		Class<?> setterType = GetSetterPropertyType( clazz, name );
-
+		Class<?> getterType = getGetterPropertyType( clazz, name );
+		Class<?> setterType = getSetterPropertyType( clazz, name );
+	
 		if( getterType == setterType )
 			return getterType;
-
+	
 		return null;
+	}
+
+	/**
+	 * Whether a getter or a field is available with that name
+	 * 
+	 * @param clazz
+	 * @param name
+	 * @return
+	 */
+	boolean hasSomethingToGetField( Clazz<?> clazz, String name )
+	{
+		return getGetterPropertyType( clazz, name ) != null;
 	}
 
 	/**
@@ -61,7 +54,7 @@ public class Properties
 	 * @param name
 	 * @return
 	 */
-	public static Class<?> GetGetterPropertyType( Clazz<?> clazz, String name )
+	Class<?> getGetterPropertyType( Clazz<?> clazz, String name )
 	{
 		String getterName = "get" + capitalizeFirstLetter( name );
 		Method getter = clazz.getMethod( getterName );
@@ -85,25 +78,9 @@ public class Properties
 	 *            Property name
 	 * @return
 	 */
-	public static <T> T GetProperty( Object object, String name )
+	<T> T getProperty( Object object, String name )
 	{
-		return GetProperty( object, name, true );
-	}
-
-	/**
-	 * Gets the property's value from an object
-	 * 
-	 * @param object
-	 *            The object
-	 * @param name
-	 *            Property name
-	 * @param fTryDirectFieldAccess
-	 *            specifies if direct field access should be used
-	 * @return
-	 */
-	public static <T> T GetProperty( Object object, String name, boolean fTryDirectFieldAccess )
-	{
-		T result = GetPropertyImpl( object, name, fTryDirectFieldAccess );
+		T result = getPropertyImpl( object, name );
 		if( result instanceof Property )
 		{
 			@SuppressWarnings( "unchecked" )
@@ -117,16 +94,16 @@ public class Properties
 	/**
 	 * Whether there is a setter or a field to write this property
 	 */
-	public static boolean HasSomethingToSetField( Clazz<?> clazz, String name )
+	boolean hasSomethingToSetField( Clazz<?> clazz, String name )
 	{
-		return GetSetterPropertyType( clazz, name ) != null;
+		return getSetterPropertyType( clazz, name ) != null;
 	}
 
 	/**
 	 * Returns the class of the setter property. It can be this of the setter or
 	 * of the field
 	 */
-	public static Class<?> GetSetterPropertyType( Clazz<?> clazz, String name )
+	Class<?> getSetterPropertyType( Clazz<?> clazz, String name )
 	{
 		String setterName = "set" + capitalizeFirstLetter( name );
 		Method setter = clazz.getMethod( setterName );
@@ -142,38 +119,38 @@ public class Properties
 
 	/**
 	 * Sets a value on an object's property
+	 * 
+	 * @param object the object on which the property is set
+	 * @param propertyName the name of the property value to be set
+	 * @param value the new value of the property
 	 */
-	public static boolean SetProperty( Object object, String propertyName, Object value )
-	{
-		return SetProperty( object, propertyName, value, true );
-	}
-
-	/**
-	 * Sets a value on an object's property
-	 */
-	public static boolean SetProperty( Object object, String propertyName, Object value, boolean fTryDirectFieldAccess )
+	boolean setProperty( Object object, String propertyName, Object value )
 	{
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
 
-		if( Property.class == GetPropertyType( s, propertyName ) )
+		if( Property.class == getPropertyType( s, propertyName ) )
 		{
 			@SuppressWarnings( "unchecked" )
-			Property<Object> property = (Property<Object>) GetPropertyImpl( object, propertyName, fTryDirectFieldAccess );
+			Property<Object> property = (Property<Object>) getPropertyImpl( object, propertyName );
 			if( property != null )
 			{
 				property.setValue( value );
 				return true;
 			}
+			
 			return false;
 		}
 
-		return SetPropertyImpl( s, object, propertyName, value, fTryDirectFieldAccess );
+		return setPropertyImpl( s, object, propertyName, value );
 	}
 
 	/**
 	 * Gets a dynamic property value on an object
+	 * 
+	 * @param object the object from which one wants to get the property value
+	 * @param propertyName the property name
 	 */
-	public static <T> T GetObjectDynamicProperty( Object object, String propertyName )
+	<T> T getObjectDynamicProperty( Object object, String propertyName )
 	{
 		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
 		if( bag == null )
@@ -188,7 +165,7 @@ public class Properties
 	/**
 	 * Whether a dynamic property value has already been set on this object
 	 */
-	public static boolean HasObjectDynamicProperty( Object object, String propertyName )
+	boolean hasObjectDynamicProperty( Object object, String propertyName )
 	{
 		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
 		if( bag == null )
@@ -200,7 +177,7 @@ public class Properties
 	/**
 	 * Sets a dynamic property value on an object.
 	 */
-	public static void SetObjectDynamicProperty( Object object, String propertyName, Object value )
+	void setObjectDynamicProperty( Object object, String propertyName, Object value )
 	{
 		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag( object );
 		if( bag == null )
@@ -211,10 +188,10 @@ public class Properties
 
 		bag.set( propertyName, value );
 
-		PropertyChanges.notify( object, propertyName );
+		Properties.notify( object, propertyName );
 	}
 
-	private static <T> T GetPropertyImpl( Object object, String name, boolean fTryDirectFieldAccess )
+	private <T> T getPropertyImpl( Object object, String name )
 	{
 		if( PlatformSpecificProvider.get().isBindingToken( name ) )
 		{
@@ -225,10 +202,10 @@ public class Properties
 			throw new RuntimeException( "Property of type $DTOMap cannot be readden !" );
 
 		// if has dynamic-property, return it !
-		if( HasObjectDynamicProperty( object, name ) )
+		if( hasObjectDynamicProperty( object, name ) )
 		{
 			LOGGER.fine( "'" + name + "' read dynamic property on object " + object );
-			return GetObjectDynamicProperty( object, name );
+			return getObjectDynamicProperty( object, name );
 		}
 
 		Clazz<?> s = ClassInfo.Clazz( object.getClass() );
@@ -249,13 +226,10 @@ public class Properties
 			}
 		}
 
-		if( fTryDirectFieldAccess )
-		{
-			// try direct field access
-			Field field = s.getAllField( name );
-			if( field != null )
-				return field.getValue( object );
-		}
+		// try direct field access
+		Field field = s.getAllField( name );
+		if( field != null )
+			return field.getValue( object );
 
 		// Maybe a dynamic property will be set later on
 		LOGGER.warning( "DataBinding: Warning: assuming that the object would in the future have a dynamic property set / Maybe have an opt-in option on the Binding to clarify things" );
@@ -263,43 +237,35 @@ public class Properties
 		return null;
 	}
 
-	private static boolean SetPropertyImpl( Clazz<?> s, Object object, String name, Object value, boolean fTryDirectFieldAccess )
+	private boolean setPropertyImpl( Clazz<?> s, Object object, String name, Object value )
 	{
 		if( PlatformSpecificProvider.get().isBindingToken( name ) )
-		{
 			return PlatformSpecificProvider.get().setBindingValue( object, name, value );
-		}
 
 		String setterName = "set" + capitalizeFirstLetter( name );
 		Method setter = s.getMethod( setterName );
 		if( setter != null )
 		{
-			if( setter.getParameterTypes().get( 0 ) == Property.class )
-			{
-			}
 			setter.invoke( object, value );
 			return true;
 		}
 
-		if( fTryDirectFieldAccess )
+		Field field = s.getAllField( name );
+		if( field != null )
 		{
-			Field field = s.getAllField( name );
-			if( field != null )
-			{
-				field.setValue( object, value );
-				return true;
-			}
+			field.setValue( object, value );
+			return true;
 		}
 
-		if( !HasObjectDynamicProperty( object, name ) )
+		if( !hasObjectDynamicProperty( object, name ) )
 			LOGGER.warning( "'" + name + "' write dynamic property on object " + object.getClass().getName() + " with value " + value + " WARNING : THAT MEANS THERE IS NO GETTER/SETTER/FIELD FOR THAT CLASS ! PLEASE CHECK THAT IT IS REALLY INTENTIONAL !" );
 
-		SetObjectDynamicProperty( object, name, value );
+		setObjectDynamicProperty( object, name, value );
 
 		return false;
 	}
 
-	private static String capitalizeFirstLetter( String s )
+	private String capitalizeFirstLetter( String s )
 	{
 		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
 	}

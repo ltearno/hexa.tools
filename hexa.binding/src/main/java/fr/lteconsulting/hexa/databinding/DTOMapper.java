@@ -9,6 +9,7 @@ import fr.lteconsulting.hexa.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.classinfo.Method;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.propertyadapters.ObjectPropertyAdapter;
 
 /**
@@ -62,11 +63,11 @@ public class DTOMapper
 
 		for( String name : bindedNames )
 		{
-			boolean srcRead = Properties.HasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
-			boolean srcWrite = Properties.HasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcRead = Properties.hasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcWrite = Properties.hasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
 
-			boolean destinationRead = Properties.HasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
-			boolean destinationWrite = Properties.HasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationRead = Properties.hasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationWrite = Properties.hasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
 
 			// ensure both have necessary methods or field
 			if( !srcRead || !destinationWrite )
@@ -111,7 +112,7 @@ public class DTOMapper
 		return res;
 	}
 
-	public static void FreeMapping( Object mappingResourceHandle )
+	public static void freeMapping( Object mappingResourceHandle )
 	{
 		@SuppressWarnings( "unchecked" )
 		List<DataBinding> bindings = (List<DataBinding>) mappingResourceHandle;
@@ -129,11 +130,11 @@ public class DTOMapper
 	static DataAdapterInfo createDataAdapter( Object context, String property, Class<?> srcPptyType )
 	{
 		DataAdapterInfo res = new DataAdapterInfo();
-		res.dataType = Properties.GetPropertyType( ClassInfo.Clazz( context.getClass() ), property );
+		res.dataType = Properties.getPropertyType( ClassInfo.Clazz( context.getClass() ), property );
 		res.debugString = getSimpleName( context.getClass() ) + ", ";
 
 		// test to see if the asked property is in fact a HasValue widget
-		Object widget = Properties.GetProperty( context, property );
+		Object widget = Properties.getProperty( context, property );
 		if( PlatformSpecificProvider.get().isSpecificDataAdapter( widget ) )
 		{
 			PlatformSpecificProvider.get().fillSpecificDataAdapter( widget, context, property, srcPptyType, res );

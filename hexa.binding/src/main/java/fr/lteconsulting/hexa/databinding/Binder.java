@@ -36,11 +36,6 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
  */
 public class Binder
 {
-	private static BindingCreation createBinder( PropertyAdapter source )
-	{
-		return new BindingCreation( source );
-	}
-	
 	/**
 	 * First step, accepts a data binding source definition and creates a binder
 	 * 
@@ -58,7 +53,7 @@ public class Binder
 	 *            The source object's property path
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation Bind( Object source, String propertyPath )
+	public static BindingCreation bind( Object source, String propertyPath )
 	{
 		return createBinder( new CompositePropertyAdapter( source, propertyPath ) );
 	}
@@ -74,7 +69,7 @@ public class Binder
 	 * @param propertyName
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation Bind( PropertyAdapter source )
+	public static BindingCreation bind( PropertyAdapter source )
 	{
 		BindingCreation b = createBinder( source );
 		return b;
@@ -90,9 +85,9 @@ public class Binder
 	 *            in that mode.
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation BindObject( final Object source )
+	public static BindingCreation bindObject( final Object source )
 	{
-		return Bind( new ObjectAsValuePropertyAdapter( source ) );
+		return bind( new ObjectAsValuePropertyAdapter( source ) );
 	}
 
 	/**
@@ -103,8 +98,13 @@ public class Binder
 	 * @param destination
 	 * @return
 	 */
-	public static DataBinding Map( Object source, Object destination )
+	public static DataBinding map( Object source, Object destination )
 	{
-		return BindObject( source ).MapTo( destination );
+		return bindObject( source ).mapTo( destination );
+	}
+
+	private static BindingCreation createBinder( PropertyAdapter source )
+	{
+		return new BindingCreation( source );
 	}
 }

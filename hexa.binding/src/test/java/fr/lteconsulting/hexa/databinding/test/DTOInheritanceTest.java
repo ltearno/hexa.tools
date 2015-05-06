@@ -1,8 +1,8 @@
 package fr.lteconsulting.hexa.databinding.test;
 
-import fr.lteconsulting.hexa.databinding.Binder;
-import fr.lteconsulting.hexa.databinding.PropertyChanges;
 import junit.framework.TestCase;
+import fr.lteconsulting.hexa.databinding.Binder;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 public class DTOInheritanceTest extends TestCase
 {
@@ -11,7 +11,7 @@ public class DTOInheritanceTest extends TestCase
 		A a = new SubA();
 		A b = new SubA();
 		
-		Binder.Bind( a, "firstName" ).To( b, "firstName" );
+		Binder.bind( a, "firstName" ).to( b, "firstName" );
 		
 		a.setFirstName( "titi" );
 		assertEquals( "titi", b.getFirstName() );
@@ -42,6 +42,6 @@ class SubA extends A
 	{
 		super.setFirstName( firstName );
 		
-		PropertyChanges.notify( this, "firstName" );
+		Properties.notify( this, "firstName" );
 	}
 }

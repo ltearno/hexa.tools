@@ -34,7 +34,7 @@ public class BindingCreation
 	 * @param mode
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public BindingCreation Mode( Mode mode )
+	public BindingCreation mode( Mode mode )
 	{
 		this.mode = mode;
 
@@ -49,7 +49,7 @@ public class BindingCreation
 	 * @param prefix
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public BindingCreation Log( String prefix )
+	public BindingCreation log( String prefix )
 	{
 		this.logPrefix = prefix;
 
@@ -65,7 +65,7 @@ public class BindingCreation
 	 * @param mode
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public BindingCreation WithConverter( Converter converter )
+	public BindingCreation withConverter( Converter converter )
 	{
 		this.converter = converter;
 
@@ -81,7 +81,7 @@ public class BindingCreation
 	 * @param mode
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public BindingCreation DeferActivate()
+	public BindingCreation deferActivate()
 	{
 		fDeferActivate = true;
 
@@ -106,9 +106,9 @@ public class BindingCreation
 	 *            The destination object's property path
 	 * @return The DataBinding object
 	 */
-	public DataBinding To( Object destination, String propertyPath )
+	public DataBinding to( Object destination, String propertyPath )
 	{
-		return To( new CompositePropertyAdapter( destination, propertyPath ) );
+		return to( new CompositePropertyAdapter( destination, propertyPath ) );
 	}
 
 	/**
@@ -124,9 +124,9 @@ public class BindingCreation
 	 *            The object that will be mapped to the source
 	 * @return The DataBinding object
 	 */
-	public DataBinding MapTo( Object destination )
+	public DataBinding mapTo( Object destination )
 	{
-		return Mode( Mode.OneWay ).To( new CompositePropertyAdapter( destination, "$DTOMap" ) );
+		return mode( Mode.OneWay ).to( new CompositePropertyAdapter( destination, "$DTOMap" ) );
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class BindingCreation
 	 *            The destination property adapter
 	 * @return The DataBinding object
 	 */
-	public DataBinding To( PropertyAdapter destination )
+	public DataBinding to( PropertyAdapter destination )
 	{
 		// create the binding according to the parameters
 		DataBinding binding = new DataBinding( source, destination, mode, converter, logPrefix );

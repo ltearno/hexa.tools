@@ -63,7 +63,7 @@ public class Binder
 	 *            The source object's property path
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation Bind( Object source, String propertyPath )
+	public static BindingCreation bind( Object source, String propertyPath )
 	{
 		return new BindingCreation( new CompositePropertyAdapter( source, propertyPath ) );
 	}
@@ -79,7 +79,7 @@ public class Binder
 	 * @param propertyName
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation Bind( PropertyAdapter source )
+	public static BindingCreation bind( PropertyAdapter source )
 	{
 		BindingCreation b = new BindingCreation( source );
 		return b;
@@ -94,9 +94,9 @@ public class Binder
 	 *            set, get and get change notifications on the widget.
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation Bind( HasValue<?> widget )
+	public static BindingCreation bind( HasValue<?> widget )
 	{
-		return Bind( new WidgetPropertyAdapter( widget ) );
+		return bind( new WidgetPropertyAdapter( widget ) );
 	}
 
 	/**
@@ -109,9 +109,9 @@ public class Binder
 	 *            in that mode.
 	 * @return The Binder to continue specifying the data binding
 	 */
-	public static BindingCreation BindObject( final Object source )
+	public static BindingCreation bindObject( final Object source )
 	{
-		return Bind( new ObjectAsValuePropertyAdapter( source ) );
+		return bind( new ObjectAsValuePropertyAdapter( source ) );
 	}
 
 	/**
@@ -122,8 +122,8 @@ public class Binder
 	 * @param destination
 	 * @return
 	 */
-	public static DataBinding Map( Object source, Object destination )
+	public static DataBinding map( Object source, Object destination )
 	{
-		return BindObject( source ).MapTo( destination );
+		return bindObject( source ).mapTo( destination );
 	}
 }

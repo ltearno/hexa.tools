@@ -53,8 +53,8 @@ public class WatchableCollectionGwtTest extends GWTTestCase
 		A a = new A();
 		A b = new A();
 		
-		Binder.Bind( a, "value" ).To( b, "value" );
-		Binder.Bind( a, "children" ).To( b, "children" );
+		Binder.bind( a, "value" ).to( b, "value" );
+		Binder.bind( a, "children" ).to( b, "children" );
 		
 		a.setValue( 55 );
 		b.setChildren( new WatchableCollection<A>() );

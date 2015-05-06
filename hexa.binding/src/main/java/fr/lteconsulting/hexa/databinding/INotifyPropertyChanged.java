@@ -1,5 +1,7 @@
 package fr.lteconsulting.hexa.databinding;
 
+import fr.lteconsulting.hexa.databinding.properties.PropertyChangedHandler;
+
 /**
  * Interface for objects which let others subscribe to property change events
  */

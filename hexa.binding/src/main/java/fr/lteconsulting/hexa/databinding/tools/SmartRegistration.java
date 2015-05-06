@@ -44,7 +44,7 @@ public class SmartRegistration
 	{
 		unregister();
 		
-		dataBinding = Binder.Bind( source, path ).Mode( Mode.OneWay ).To( adapter ).activate();
+		dataBinding = Binder.bind( source, path ).mode( Mode.OneWay ).to( adapter ).activate();
 	}
 	
 	/**

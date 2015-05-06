@@ -36,8 +36,8 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	 *            The widget
 	 * @return The DataBinding object
 	 */
-	public DataBinding To( HasValue<?> widget )
+	public DataBinding to( HasValue<?> widget )
 	{
-		return To( new WidgetPropertyAdapter( widget ) );
+		return to( new WidgetPropertyAdapter( widget ) );
 	}
 }

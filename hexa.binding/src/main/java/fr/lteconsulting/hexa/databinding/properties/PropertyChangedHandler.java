@@ -1,4 +1,5 @@
-package fr.lteconsulting.hexa.databinding;
+package fr.lteconsulting.hexa.databinding.properties;
+
 
 /**
  * Interface through which one receives {@link PropertyChangedEvent}

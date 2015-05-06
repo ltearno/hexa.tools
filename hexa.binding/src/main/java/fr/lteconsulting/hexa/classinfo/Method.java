@@ -2,6 +2,12 @@ package fr.lteconsulting.hexa.classinfo;
 
 import java.util.List;
 
+/**
+ * Represents a Java method
+ * 
+ * @author Arnaud
+ *
+ */
 public interface Method
 {
 	String getName();

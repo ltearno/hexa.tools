@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.databinding;
+package fr.lteconsulting.hexa.databinding.properties;
 
 /**
  * Holds necessary information to process a property changed event

@@ -169,7 +169,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 					    .addParameter( ClassName.get( method.getParameters().get( 0 ).asType() ), propertyName )
 					    .addModifiers( modifiers )
 					    .addStatement( "super." + methodName + "( " + propertyName + " )" )
-					    .addStatement( "fr.lteconsulting.hexa.databinding.PropertyChanges.notify(this, \""+propertyName+"\")")
+					    .addStatement( "fr.lteconsulting.hexa.databinding.properties.Properties.notify(this, \""+propertyName+"\")")
 					    .build();
 				
 				builder.addMethod( setter );
@@ -200,7 +200,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 					    .returns(void.class)
 					    .addParameter( ClassName.get( field.asType() ), propertyName )
 					    .addStatement( "this." + propertyName + " = " + propertyName )
-					    .addStatement( "fr.lteconsulting.hexa.databinding.PropertyChanges.notify( this, \"" + propertyName+"\" )" )
+					    .addStatement( "fr.lteconsulting.hexa.databinding.properties.Properties.notify( this, \"" + propertyName+"\" )" )
 					    .build();
 				
 				builder.addMethod( setter );

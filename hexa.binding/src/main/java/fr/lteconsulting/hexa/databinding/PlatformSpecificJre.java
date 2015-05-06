@@ -2,6 +2,7 @@ package fr.lteconsulting.hexa.databinding;
 
 import java.util.HashMap;
 
+import fr.lteconsulting.hexa.databinding.properties.DynamicPropertyBag;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 class PlatformSpecificJre implements PlatformSpecific

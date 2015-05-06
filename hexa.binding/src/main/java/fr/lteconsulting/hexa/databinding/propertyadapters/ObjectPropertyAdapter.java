@@ -1,10 +1,9 @@
 package fr.lteconsulting.hexa.databinding.propertyadapters;
 
 import fr.lteconsulting.hexa.client.tools.Action2;
-import fr.lteconsulting.hexa.databinding.PropertyChanges;
-import fr.lteconsulting.hexa.databinding.Properties;
-import fr.lteconsulting.hexa.databinding.PropertyChangedEvent;
-import fr.lteconsulting.hexa.databinding.PropertyChangedHandler;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
+import fr.lteconsulting.hexa.databinding.properties.PropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.properties.PropertyChangedHandler;
 
 /**
  * A PropertyAdapter implementation which is able to work with an object's field or property
@@ -38,25 +37,25 @@ public class ObjectPropertyAdapter implements PropertyAdapter, PropertyChangedHa
 		this.callback = callback;
 		this.cookie = cookie;
 		
-		return PropertyChanges.register( source, sourceProperty, this );
+		return Properties.register( source, sourceProperty, this );
 	}
 
 	@Override
 	public void removePropertyChangedHandler( Object registration )
 	{
-		PropertyChanges.removeHandler( registration );
+		Properties.removeHandler( registration );
 	}
 
 	@Override
 	public Object getValue()
 	{
-		return Properties.GetProperty( source, sourceProperty, true );
+		return Properties.getProperty( source, sourceProperty );
 	}
 
 	@Override
 	public void setValue( Object value )
 	{
-		Properties.SetProperty( source, sourceProperty, value, true );
+		Properties.setProperty( source, sourceProperty, value );
 	}
 
 	@Override

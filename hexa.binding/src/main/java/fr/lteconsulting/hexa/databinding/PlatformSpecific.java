@@ -1,5 +1,6 @@
 package fr.lteconsulting.hexa.databinding;
 
+import fr.lteconsulting.hexa.databinding.properties.DynamicPropertyBag;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 public interface PlatformSpecific

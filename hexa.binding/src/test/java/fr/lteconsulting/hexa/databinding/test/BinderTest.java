@@ -5,7 +5,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import fr.lteconsulting.hexa.databinding.Binder;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.test.dto.A;
 import fr.lteconsulting.hexa.databinding.test.dto.ANotif;
 import fr.lteconsulting.hexa.databinding.test.dto.B;
@@ -20,7 +20,7 @@ public class BinderTest extends TestCase
 
 		a.firstName = "Hello";
 
-		Binder.Bind( a, "firstName" ).To( b, "firstName" );
+		Binder.bind( a, "firstName" ).to( b, "firstName" );
 
 		assertEquals( "Hello", b.firstName );
 	}
@@ -31,7 +31,7 @@ public class BinderTest extends TestCase
 		BNotif destination = new BNotif();
 
 		// Binds the source and destination with default options (bidirectional)
-		Binder.Bind( source, "firstName" ).To( destination, "firstName" );
+		Binder.bind( source, "firstName" ).to( destination, "firstName" );
 
 		// Check source to destination
 		String value = "Hello";
@@ -48,8 +48,8 @@ public class BinderTest extends TestCase
 	{
 		List<String> list = Arrays.asList( "zero", "one", "two", "three", "four" );
 
-		Properties.SetProperty( list, "selected", 3 );
-		assertEquals( 3, Properties.GetProperty( list, "selected" ) );
+		Properties.setProperty( list, "selected", 3 );
+		assertEquals( 3, Properties.getProperty( list, "selected" ) );
 	}
 
 	public void test004()
@@ -58,7 +58,7 @@ public class BinderTest extends TestCase
 		BNotif destination = new BNotif();
 
 		// Binds the source and destination
-		Binder.Map( source, destination );
+		Binder.map( source, destination );
 
 		// Check the firstName field
 

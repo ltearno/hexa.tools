@@ -6,8 +6,8 @@ import com.google.gwt.user.client.ui.TextBox;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
-import fr.lteconsulting.hexa.databinding.PropertyChanges;
 import fr.lteconsulting.hexa.databinding.gwt.Binder;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 /**
  * In addition to the normal binding adapters that are found in HexaBinding, the
@@ -50,7 +50,7 @@ public class HasValueDataBindingGwtTest extends GWTTestCase
 
 		TextBox box = new TextBox();
 
-		Binder.Bind( dto, "name" ).To( box );
+		Binder.bind( dto, "name" ).to( box );
 
 		dto.setName( "toto" );
 		assertEquals( "toto", box.getValue() );
@@ -77,7 +77,7 @@ public class HasValueDataBindingGwtTest extends GWTTestCase
 		TextBox b1 = new TextBox();
 		TextBox b2 = new TextBox();
 
-		Binder.Bind( b1 ).To( b2 );
+		Binder.bind( b1 ).to( b2 );
 
 		b2.setValue( "titi", true );
 		assertEquals( "titi", b1.getText() );
@@ -106,6 +106,6 @@ class DTO
 	public void setName( String name )
 	{
 		this.name = name;
-		PropertyChanges.notify( this, "name" );
+		Properties.notify( this, "name" );
 	}
 }

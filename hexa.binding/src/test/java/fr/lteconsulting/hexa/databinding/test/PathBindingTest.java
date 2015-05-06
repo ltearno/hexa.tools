@@ -6,7 +6,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import fr.lteconsulting.hexa.databinding.Binder;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.test.dto.ObservableWorkplace;
 import fr.lteconsulting.hexa.databinding.test.dto.Person;
 
@@ -27,13 +27,13 @@ public class PathBindingTest extends TestCase
 		
 		Person personCopy = new Person();
 		
-		Properties.SetProperty( persons, "selected", persons.get( 0 ) );
+		Properties.setProperty( persons, "selected", persons.get( 0 ) );
 		
-		Binder.Bind( persons, "selected" ).MapTo( personCopy );
+		Binder.bind( persons, "selected" ).mapTo( personCopy );
 		
 		for( int i=0; i<persons.size(); i++)
 		{
-			Properties.SetProperty( persons, "selected", persons.get( i ) );
+			Properties.setProperty( persons, "selected", persons.get( i ) );
 			
 			assertEquals( persons.get( i ), personCopy );
 		}

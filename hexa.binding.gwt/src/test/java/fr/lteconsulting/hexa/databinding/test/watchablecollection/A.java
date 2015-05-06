@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.databinding.test.watchablecollection;
 
-import fr.lteconsulting.hexa.databinding.PropertyChanges;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
 public class A
@@ -26,7 +26,7 @@ public class A
 
 	public void setChildren(WatchableCollection<A> children) {
 		this.children = children;
-		PropertyChanges.notify( this, "children" );
+		Properties.notify( this, "children" );
 	}
 
 	public int getValue() {
@@ -35,6 +35,6 @@ public class A
 
 	public void setValue(int value) {
 		this.value = value;
-		PropertyChanges.notify( this, "value" );
+		Properties.notify( this, "value" );
 	}
 }

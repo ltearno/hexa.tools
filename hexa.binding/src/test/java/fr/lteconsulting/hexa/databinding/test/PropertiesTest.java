@@ -1,9 +1,9 @@
 package fr.lteconsulting.hexa.databinding.test;
 
-import static fr.lteconsulting.hexa.databinding.Properties.GetProperty;
-import static fr.lteconsulting.hexa.databinding.Properties.SetProperty;
+import static fr.lteconsulting.hexa.databinding.properties.Properties.getProperty;
+import static fr.lteconsulting.hexa.databinding.properties.Properties.setProperty;
 import junit.framework.TestCase;
-import fr.lteconsulting.hexa.databinding.Properties;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
@@ -39,10 +39,10 @@ public class PropertiesTest extends TestCase
 		DTO dto = new DTO();
 		
 		// Sets the property value
-		SetProperty( dto, "a", 31 );
+		setProperty( dto, "a", 31 );
 		
 		// Gets the property value
-		Integer a = GetProperty( dto, "a" );
+		Integer a = getProperty( dto, "a" );
 		assertEquals( 31, (int) a );
 	}
 	
@@ -58,11 +58,11 @@ public class PropertiesTest extends TestCase
 		dto.setB( "Hello" );
 		
 		// Gets the property value with the Property getter
-		String b = GetProperty( dto, "b" );
+		String b = getProperty( dto, "b" );
 		assertEquals( "Hello", b );
 		
 		// Sets the property value with the Property setter
-		SetProperty( dto, "b", "By property" );
+		setProperty( dto, "b", "By property" );
 		
 		// Gets the property value with the normal getter
 		b = dto.getB();
@@ -83,12 +83,12 @@ public class PropertiesTest extends TestCase
 		
 		// Gets the value. Note how the {@link Property} class is 
 		// "transparent" to the Property system
-		Integer c = GetProperty( dto, "c" );
+		Integer c = getProperty( dto, "c" );
 		assertEquals( 42, (int) c );
 		
 		// Sets the value. Once again, note that the {@link} property
 		// class is "transparent" to the Property system
-		SetProperty( dto, "c", 81 );
+		setProperty( dto, "c", 81 );
 		
 		// Gets the value
 		c = dto.getC();
@@ -112,10 +112,10 @@ public class PropertiesTest extends TestCase
 		// Sets the value with the Property system. Since no member of the DTO 
 		// class has a name 'd', a dynamic property value holder will be
 		// automatically provided
-		SetProperty( dto, "d", value );
+		setProperty( dto, "d", value );
 		
 		// Gets the value with the Property system.
-		String d = GetProperty( dto, "d" );
+		String d = getProperty( dto, "d" );
 		assertEquals( value, d );
 	}
 }

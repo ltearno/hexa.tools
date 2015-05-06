@@ -13,8 +13,8 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 import fr.lteconsulting.hexa.client.ui.widget.TextEditor;
-import fr.lteconsulting.hexa.databinding.Properties;
 import fr.lteconsulting.hexa.databinding.TypedConverter;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 {
@@ -42,7 +42,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 		this.fieldName = fieldName;
 		
 		dtoClazz = Clazz( dtoClass );
-		if( ! Properties.HasSomethingToGetField( dtoClazz, fieldName ) )
+		if( ! Properties.hasSomethingToGetField( dtoClazz, fieldName ) )
 			throw new RuntimeException( "Cannot handle property " + fieldName + " of class " + dtoClass.getSimpleName() );
 		
 		if( displayConverter != null )
@@ -53,7 +53,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 	
 	private TypedConverter<Object, String> createDefaultDisplayConverter()
 	{
-		Class<?> propertyType = Properties.GetPropertyType( dtoClazz, fieldName );
+		Class<?> propertyType = Properties.getPropertyType( dtoClazz, fieldName );
 		if( propertyType == String.class )
 		{
 			return new TypedConverter<Object, String>()
@@ -121,7 +121,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 	
 	private String getValue( T record )
 	{
-		Object value = Properties.GetProperty( record, fieldName );
+		Object value = Properties.getProperty( record, fieldName );
 		
 		String display = displayConverter.convert( value );
 		
@@ -138,7 +138,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 			{
 				Object realValue = displayConverter.convertBack( newValue );
 				
-				Properties.SetProperty( record, fieldName, realValue );
+				Properties.setProperty( record, fieldName, realValue );
 				
 				getEditorHost().finishedEdition();
 				

@@ -1,5 +1,11 @@
 package fr.lteconsulting.hexa.classinfo;
 
+/**
+ * Represents a Java field
+ * 
+ * @author Arnaud
+ *
+ */
 public interface Field
 {
 	String getName();

@@ -1,8 +1,10 @@
-package fr.lteconsulting.hexa.databinding;
+package fr.lteconsulting.hexa.databinding.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
+
+import fr.lteconsulting.hexa.databinding.INotifyPropertyChanged;
+import fr.lteconsulting.hexa.databinding.PlatformSpecificProvider;
 
 /**
  * This class is part of the Hexa DataBinding and provides :
@@ -16,11 +18,7 @@ import java.util.Map.Entry;
  */
 public class PropertyChanges
 {
-	private static int nbRegisteredHandlers = 0;
-	private static int nbNotifications = 0;
-	private static int nbDispatches = 0;
-	private static HashMap<String, Integer> counts = new HashMap<>();
-	private static HashMap<String, Integer> oldCounts = new HashMap<>();
+	private final PropertyChangesStatistics stats = new PropertyChangesStatistics();
 	
 	/**
 	 * Registers an handler for a specific property change on an object. The object
@@ -32,7 +30,7 @@ public class PropertyChanges
 	 * @param handler
 	 * @return
 	 */
-	public static Object register( Object source, String propertyName, PropertyChangedHandler handler )
+	Object register( Object source, String propertyName, PropertyChangedHandler handler )
 	{
 		if( source instanceof INotifyPropertyChanged )
 		{
@@ -64,7 +62,7 @@ public class PropertyChanges
 		info.propertyName = propertyName;
 		info.handler = handler;
 		
-		statsAddedRegistration( info );
+		stats.statsAddedRegistration( info );
 		
 		return info;
 	}
@@ -74,7 +72,7 @@ public class PropertyChanges
 	 * 
 	 * @param handlerRegistration The object received after a call to {@link PropertyChanges}
 	 */
-	public static void removeHandler( Object handlerRegistration )
+	void removeHandler( Object handlerRegistration )
 	{
 		// Through object's interface implementation
 		if( handlerRegistration instanceof DirectHandlerInfo )
@@ -105,7 +103,7 @@ public class PropertyChanges
 		if( handlersMap.isEmpty() )
 			PlatformSpecificProvider.get().setObjectMetadata( info.source, null );
 		
-		statsRemovedRegistration( info );
+		stats.statsRemovedRegistration( info );
 	
 		info.handler = null;
 		info.propertyName = null;
@@ -119,9 +117,9 @@ public class PropertyChanges
 	 * @param sender The object whom property changed
 	 * @param propertyName The changed property name
 	 */
-	public static void notify( Object sender, String propertyName )
+	void notify( Object sender, String propertyName )
 	{
-		nbNotifications++;
+		stats.addNotification();
 		
 		HashMap<String, ArrayList<PropertyChangedHandler>> handlersMap = PlatformSpecificProvider.get().getObjectMetadata( sender );
 		if( handlersMap == null )
@@ -138,7 +136,7 @@ public class PropertyChanges
 			for( PropertyChangedHandler handler : handlerList )
 			{
 				handler.onPropertyChanged( event );
-				nbDispatches++;
+				stats.addDispatch();
 			}
 		}
 		
@@ -151,70 +149,31 @@ public class PropertyChanges
 			for( PropertyChangedHandler handler : handlerList )
 			{
 				handler.onPropertyChanged( event );
-				nbDispatches++;
+				stats.addDispatch();
 			}
 		}
 	}
-
+	
 	/**
 	 * Show an alert containing useful information for debugging. It also
 	 * shows how many registrations happened since last call ; that's useful
 	 * to detect registration leaks.
 	 */
-	public static String getStatistics()
+	String getStatistics()
 	{
-		String msg = "PropertyChanges stats :\r\n"
-				+ "# registered handlers : " + nbRegisteredHandlers + "\r\n"
-				+ "# notifications       : " + nbNotifications + "\r\n"
-				+ "# dispatches          : " + nbDispatches + "\r\n";
-		
-		StringBuilder details = new StringBuilder();
-		for( Entry<String, Integer> e : counts.entrySet() )
-		{
-			details.append( e.getKey() + " => " + e.getValue() );
-			
-			Integer oldCount = oldCounts.get( e.getKey() );
-			if( oldCount!=null )
-				details.append( " (diff: " + (e.getValue()-oldCount) + ")" );
-			
-			details.append( "\n" );
-		}
-		
-		oldCounts = new HashMap<>( counts );
-		
-		return msg + details.toString();
+		return stats.getStatistics();
 	}
-	
+
 	private static class DirectHandlerInfo
 	{
 		INotifyPropertyChanged source;
 		Object registrationObject;
 	}
 
-	private static class HandlerInfo
+	public static class HandlerInfo
 	{
-		Object source;
-		String propertyName;
-		PropertyChangedHandler handler;
-	}
-
-	private static void statsAddedRegistration( HandlerInfo info )
-	{
-		nbRegisteredHandlers++;
-		
-		String key = info.propertyName + "@" + info.source.getClass().getSimpleName();
-		Integer count = counts.get( key );
-		if( count == null )
-			count = 0;
-		count++;
-		counts.put( key, count );
-	}
-
-	private static void statsRemovedRegistration( HandlerInfo info )
-	{
-		nbRegisteredHandlers--;
-		
-		String key = info.propertyName + "@" + info.source.getClass().getSimpleName();
-		counts.put( key, counts.get( key ) - 1 );
+		public Object source;
+		public String propertyName;
+		public PropertyChangedHandler handler;
 	}
 }

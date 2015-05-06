@@ -7,6 +7,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 
+import fr.lteconsulting.hexa.databinding.properties.DynamicPropertyBag;
 import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;

@@ -27,45 +27,6 @@ public class CompositePropertyAdapter implements PropertyAdapter
 		adapterHandlerRegistrations = new Object[this.path.length];
 	}
 
-	// create adapaters from the root context object to the end of the path, if
-	// possible...
-	private void tryCreateAdapters()
-	{
-		Object object = context;
-
-		for( int p = 0; p < path.length; p++ )
-		{
-			if( object == null )
-				return;
-
-			// if no adapter has yet been created for this pathItem
-			if( adapters[p] == null )
-			{
-				String pathItem = path[p];
-
-				// try to find an adapter, otherwise create one or return null
-				// to create an adapter, we need a context and a path item
-				// context is the 'object' value (ie the value of the previous
-				// pathItem or the root context)
-				// path item is path[p]
-				if( PlatformSpecificProvider.get().isBindingToken( pathItem ) )
-					adapters[p] = PlatformSpecificProvider.get().createPropertyAdapter(object);
-				else if( CompositePropertyAdapter.DTOMAP_TOKEN.equals( pathItem ) )
-					adapters[p] = new DTOMapperPropertyAdapter( object );
-				else
-					adapters[p] = new ObjectPropertyAdapter( object, pathItem );
-
-				// we should subscribe to the value changes so that we can
-				// subscribe to
-				// new values when anything on the path changes
-				adapterHandlerRegistrations[p] = adapters[p].registerPropertyChanged( onPropertyChanged, p );
-			}
-
-			if( p < path.length - 1 )
-				object = adapters[p].getValue();
-		}
-	}
-
 	private Action2<PropertyAdapter, Object> onPropertyChanged = new Action2<PropertyAdapter, Object>()
 	{
 		@Override
@@ -157,6 +118,45 @@ public class CompositePropertyAdapter implements PropertyAdapter
 			if( adapters[i] == null )
 				continue;
 			adapters[i].removePropertyChangedHandler( adapterHandlerRegistrations[i] );
+		}
+	}
+
+	// create adapaters from the root context object to the end of the path, if
+	// possible...
+	private void tryCreateAdapters()
+	{
+		Object object = context;
+	
+		for( int p = 0; p < path.length; p++ )
+		{
+			if( object == null )
+				return;
+	
+			// if no adapter has yet been created for this pathItem
+			if( adapters[p] == null )
+			{
+				String pathItem = path[p];
+	
+				// try to find an adapter, otherwise create one or return null
+				// to create an adapter, we need a context and a path item
+				// context is the 'object' value (ie the value of the previous
+				// pathItem or the root context)
+				// path item is path[p]
+				if( PlatformSpecificProvider.get().isBindingToken( pathItem ) )
+					adapters[p] = PlatformSpecificProvider.get().createPropertyAdapter(object);
+				else if( CompositePropertyAdapter.DTOMAP_TOKEN.equals( pathItem ) )
+					adapters[p] = new DTOMapperPropertyAdapter( object );
+				else
+					adapters[p] = new ObjectPropertyAdapter( object, pathItem );
+	
+				// we should subscribe to the value changes so that we can
+				// subscribe to
+				// new values when anything on the path changes
+				adapterHandlerRegistrations[p] = adapters[p].registerPropertyChanged( onPropertyChanged, p );
+			}
+	
+			if( p < path.length - 1 )
+				object = adapters[p].getValue();
 		}
 	}
 }
