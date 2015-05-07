@@ -82,7 +82,7 @@
 					<compileReport>true</compileReport>
 					<runTarget>${runTarget}</runTarget>
 					<gen>${basedir}/target/gwt-gen</gen>
-					<module>fr.lteconsulting.hexacss.sample3</module>
+					<module>fr.lteconsulting.hexacss.Sample3</module>
 					<persistentunitcache>true</persistentunitcache>
 					<persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
 					<jsInteropMode>JS</jsInteropMode>
