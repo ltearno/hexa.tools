@@ -6,19 +6,19 @@ HexaBinding does dynamic binding between values, DTOs, Widgets (for GWT), and an
 
 Suppose you have two classes `A` and `B`, each one having a `Name` field. Imagine you have two instances `a` and `b` of thoses classes. You can write :
 
-		Binder.Bind( a, "name" ).To( b, "name" );
+		Binder.bind( a, "name" ).to( b, "name" );
 
 With this one line of code, you have bound the two fields dynamically in a two-way data binding mode.
 
 Now imagine, you have a `Person` and a `Workplace` classes. You can write :
 
-		Binder.Bind( person, "workplace.address" ).To( form, "address" );
+		Binder.bind( person, "workplace.address" ).to( form, "address" );
 
 This will bind the person.getWorkplace().getAddress() value to the form.getAddress() value. Still in a two-way fashion.
 
 In a UI code, you will typically write :
 
-		Binder.Bind(listBox).Mode(Mode.OneWay).MapTo(personForm);
+		Binder.bind(listBox).mode(Mode.OneWay).mapTo(personForm);
 
 This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. In this case, the person form will be inspected to find matching fields with the object selected in the listBox.
 
@@ -28,7 +28,7 @@ There's more, there are plenty of options you can use !
 
 You can write :
 
-		Binder.Bind( personDto, "category.color" ).To( view, "borderColor" );
+		Binder.bind( personDto, "category.color" ).to( view, "borderColor" );
 
 And the binding system will automatically follow the color of the category of the person. If the person changes its category or if the category's color changes, the view's borderColor will automatically be updated. And since the binding is by defaut two-way, if the view's borderColor changes, the person's category's color will be also updated.
 
@@ -49,19 +49,19 @@ This is done through the fluent Binder API.
 
 There are three possible methods to specify the value source :
 
-		public static Binder Bind( Object source, String propertyPath )
+		public static Binder bind( Object source, String propertyPath )
 
 The first parameter (*source*) is the object on which properties are watched. The second parameter (*propertyPath*) is the path to the property value, starting from the source.
 
-		public static Binder Bind( HasValue<?> widget )
+		public static Binder bind( HasValue<?> widget )
 
 This one is use with GWT. `HasValue` is a standard interface of this framework. When using a HasValue as a data source, the binding system will use the standard GWT mechanism to get and subscribe to the value.
 
-		public static Binder BindObject( Object source )
+		public static Binder bindObject( Object source )
 
 When using this method, the source data of the binding will be fixed and will be the source object itself.
 
-		public static Binder Bind( PropertyAdapter source )
+		public static Binder bind( PropertyAdapter source )
 
 This is the more general way to specify a data source. With this method, you have to implement the `PropertyAdapter` by yourself. Note that several implementations are available for common use case (*WriteOnlyPropertyAdapter*, *DTOMapperPropertyAdapter*, ...).
 
@@ -69,19 +69,19 @@ This is the more general way to specify a data source. With this method, you hav
 
 After specifying the source, you have an opportunity to customize the options on the data binding.
 
-		public Binder Mode( Mode mode )
+		public Binder mode( Mode mode )
 
 With this you specify the data binding mode. There are three values : `OneWay`, `TwoWay` and `OneWayToSource`.
 
-		public Binder Log( String prefix )
+		public Binder log( String prefix )
 
 The Log method accepts a prefix. When an event will occur on this binding, it will be logged, using the prefix so you can identify easily when things go wrong !
 
-		public Binder WithConverter( Converter converter )
+		public Binder withConverter( Converter converter )
 
 Sometimes, you need to convert values between the source and the destination. This is done with this method, to which you provide an implementation of the `Converter` interface. You will have the opportunity to implement the conversion for the two ways the data binding can happen.
 
-		public Binder DeferActivate()
+		public Binder deferActivate()
 
 By default, the databinding is synchronous. For whatever reason, you may want it to be deferred. In that case, you just have to call this method.
 
@@ -89,19 +89,19 @@ By default, the databinding is synchronous. For whatever reason, you may want it
 
 At the end of the fluent call, you have to specify the destination of the data binding.
 
-		public DataBinding To( Object destination, String propertyPath )
+		public DataBinding to( Object destination, String propertyPath )
 
 As for the source, this specifies an object and a property path to walk in order to get or set the value.
 
-		public DataBinding To( HasValue<?> widget )
+		public DataBinding to( HasValue<?> widget )
 
 When your destination is an instance of the `HasValue` interface (GWT applications), you can use this method.
 
-		public DataBinding To( PropertyAdapter destination )
+		public DataBinding to( PropertyAdapter destination )
 
 Once again, you can provide your own `PropertyAdapter` for the destination of the binding.
 
-		public DataBinding MapTo( Object destination )
+		public DataBinding mapTo( Object destination )
 
 The MapTo method will use the source value of the data binding to create a new two-way databinding between each field of the source and each field of the destination.
 
@@ -109,7 +109,7 @@ The MapTo method will use the source value of the data binding to create a new t
 
 There is one left method in the Binder which is :
 
-		public DataBinding Map( Object source, Object destination )
+		public DataBinding map( Object source, Object destination )
 
 This method will create a two-way data binding between all matching properties of the two objects.
 
@@ -209,11 +209,14 @@ Often it is needed to maintain a list of objects, together with a currently sele
 
 The standard ArrayList class does not have the concept of the "selected item". That's OK, because we will use the dynamic property of HexaBinding :
 
+		// A normal Java list creation
+		java.util.List<MyPojo> list = new ArrayList<>();
+		...
 		// We set the "selected" property of the list instance
-		ObjectPropertyUtils.SetProperty( list, "selected", value );
+		Properties.setProperty( list, "selected", value );
 	
 		// We bind (two-way) each field of the selected value to each field of the editing view
-		Binder.Bind( list, "selected" ).MapTo( view );
+		Binder.bind( list, "selected" ).mapTo( view );
 
 That may seem a little, and that's really a little written code for a lot of things done !
 
