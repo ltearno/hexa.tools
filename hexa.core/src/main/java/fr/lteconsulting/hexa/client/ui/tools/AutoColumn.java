@@ -30,13 +30,13 @@ public class AutoColumn<T> extends SimpleColumn<T>
 	@Override
 	protected Object getRecordValue( T record )
 	{
-		return Properties.getProperty( record, fieldName );
+		return Properties.getValue( record, fieldName );
 	}
 
 	@Override
 	protected void setRecordValue( T record, Object value )
 	{
-		Properties.setProperty( record, fieldName, value );
+		Properties.setValue( record, fieldName, value );
 	}
 	
 	@Override

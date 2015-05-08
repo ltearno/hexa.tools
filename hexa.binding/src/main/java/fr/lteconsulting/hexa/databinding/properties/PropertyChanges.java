@@ -32,6 +32,8 @@ public class PropertyChanges
 	 */
 	Object register( Object source, String propertyName, PropertyChangedHandler handler )
 	{
+		assert source != null;
+		
 		if( source instanceof INotifyPropertyChanged )
 		{
 			DirectHandlerInfo info = new DirectHandlerInfo();

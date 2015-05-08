@@ -10,3 +10,4 @@ hexa.core/${webAppDirectory}/
 hexa.core/gwt-unitCache/
 hexa.core/war/
 hexa.binding/.factorypath
+/target/

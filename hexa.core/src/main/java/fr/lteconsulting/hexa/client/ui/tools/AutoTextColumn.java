@@ -121,7 +121,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 	
 	private String getValue( T record )
 	{
-		Object value = Properties.getProperty( record, fieldName );
+		Object value = Properties.getValue( record, fieldName );
 		
 		String display = displayConverter.convert( value );
 		
@@ -138,7 +138,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 			{
 				Object realValue = displayConverter.convertBack( newValue );
 				
-				Properties.setProperty( record, fieldName, realValue );
+				Properties.setValue( record, fieldName, realValue );
 				
 				getEditorHost().finishedEdition();
 				

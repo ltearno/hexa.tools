@@ -49,13 +49,13 @@ public class ObjectPropertyAdapter implements PropertyAdapter, PropertyChangedHa
 	@Override
 	public Object getValue()
 	{
-		return Properties.getProperty( source, sourceProperty );
+		return Properties.getValue( source, sourceProperty );
 	}
 
 	@Override
 	public void setValue( Object value )
 	{
-		Properties.setProperty( source, sourceProperty, value );
+		Properties.setValue( source, sourceProperty, value );
 	}
 
 	@Override

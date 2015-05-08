@@ -29,30 +29,6 @@ public class Properties
 	}
 
 	/**
-	 * Whether a getter or a field is available with that name
-	 * 
-	 * @param clazz
-	 * @param name
-	 * @return
-	 */
-	public static boolean hasSomethingToGetField( Clazz<?> clazz, String name )
-	{
-		return propertyValues.hasSomethingToGetField(clazz, name);
-	}
-
-	/**
-	 * Return the property getter type
-	 * 
-	 * @param clazz
-	 * @param name
-	 * @return
-	 */
-	public static Class<?> getGetterPropertyType( Clazz<?> clazz, String name )
-	{
-		return propertyValues.getGetterPropertyType(clazz, name);
-	}
-
-	/**
 	 * Gets the property's value from an object
 	 * 
 	 * @param object
@@ -61,26 +37,9 @@ public class Properties
 	 *            Property name
 	 * @return
 	 */
-	public static <T> T getProperty( Object object, String name )
+	public static <T> T getValue( Object object, String name )
 	{
-		return propertyValues.getProperty(object, name);
-	}
-
-	/**
-	 * Whether there is a setter or a field to write this property
-	 */
-	public static boolean hasSomethingToSetField( Clazz<?> clazz, String name )
-	{
-		return propertyValues.hasSomethingToSetField(clazz, name);
-	}
-
-	/**
-	 * Returns the class of the setter property. It can be this of the setter or
-	 * of the field
-	 */
-	public static Class<?> getSetterPropertyType( Clazz<?> clazz, String name )
-	{
-		return propertyValues.getSetterPropertyType(clazz, name);
+		return propertyValues.getValue(object, name);
 	}
 
 	/**
@@ -90,38 +49,11 @@ public class Properties
 	 * @param propertyName the name of the property value to be set
 	 * @param value the new value of the property
 	 */
-	public static boolean setProperty( Object object, String propertyName, Object value )
+	public static boolean setValue( Object object, String propertyName, Object value )
 	{
-		return propertyValues.setProperty(object, propertyName, value);
+		return propertyValues.setValue(object, propertyName, value);
 	}
 
-	/**
-	 * Gets a dynamic property value on an object
-	 * 
-	 * @param object the object from which one wants to get the property value
-	 * @param propertyName the property name
-	 */
-	public static <T> T getObjectDynamicProperty( Object object, String propertyName )
-	{
-		return propertyValues.getObjectDynamicProperty(object, propertyName);
-	}
-
-	/**
-	 * Whether a dynamic property value has already been set on this object
-	 */
-	public static boolean hasObjectDynamicProperty( Object object, String propertyName )
-	{
-		return propertyValues.hasObjectDynamicProperty(object, propertyName);
-	}
-
-	/**
-	 * Sets a dynamic property value on an object.
-	 */
-	public static void setObjectDynamicProperty( Object object, String propertyName, Object value )
-	{
-		propertyValues.setObjectDynamicProperty(object, propertyName, value);
-	}
-	
 	/**
 	 * Registers an handler for a specific property change on an object. The object
 	 * itself does not need to implement anything. But at least it should call the 
@@ -158,14 +90,84 @@ public class Properties
 	{
 		propertyChanges.notify( sender, propertyName );
 	}
-	
+
 	/**
 	 * Show an alert containing useful information for debugging. It also
 	 * shows how many registrations happened since last call ; that's useful
 	 * to detect registration leaks.
 	 */
-	public String getStatistics()
+	public static String getStatistics()
 	{
 		return propertyChanges.getStatistics();
+	}
+
+	/**
+	 * Whether a getter or a field is available with that name
+	 * 
+	 * @param clazz
+	 * @param name
+	 * @return
+	 */
+	public static boolean hasSomethingToGetField( Clazz<?> clazz, String name )
+	{
+		return propertyValues.hasSomethingToGetField(clazz, name);
+	}
+
+	/**
+	 * Return the property getter type
+	 * 
+	 * @param clazz
+	 * @param name
+	 * @return
+	 */
+	public static Class<?> getGetterPropertyType( Clazz<?> clazz, String name )
+	{
+		return propertyValues.getGetterPropertyType(clazz, name);
+	}
+
+	/**
+	 * Whether there is a setter or a field to write this property
+	 */
+	public static boolean hasSomethingToSetField( Clazz<?> clazz, String name )
+	{
+		return propertyValues.hasSomethingToSetField(clazz, name);
+	}
+
+	/**
+	 * Returns the class of the setter property. It can be the class of the first 
+	 * argument in the setter or the class of the field if no setter is found.
+	 * If a virtual property is used, it returns null or the class of the current
+	 * property's value
+	 */
+	public static Class<?> getSetterPropertyType( Clazz<?> clazz, String name )
+	{
+		return propertyValues.getSetterPropertyType(clazz, name);
+	}
+
+	/**
+	 * Gets a dynamic property value on an object
+	 * 
+	 * @param object the object from which one wants to get the property value
+	 * @param propertyName the property name
+	 */
+	public static <T> T getObjectDynamicProperty( Object object, String propertyName )
+	{
+		return propertyValues.getObjectDynamicProperty(object, propertyName);
+	}
+
+	/**
+	 * Whether a dynamic property value has already been set on this object
+	 */
+	public static boolean hasObjectDynamicProperty( Object object, String propertyName )
+	{
+		return propertyValues.hasObjectDynamicProperty(object, propertyName);
+	}
+
+	/**
+	 * Sets a dynamic property value on an object.
+	 */
+	public static void setObjectDynamicProperty( Object object, String propertyName, Object value )
+	{
+		propertyValues.setObjectDynamicProperty(object, propertyName, value);
 	}
 }

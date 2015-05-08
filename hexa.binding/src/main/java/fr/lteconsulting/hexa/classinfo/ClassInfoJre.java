@@ -3,6 +3,7 @@ package fr.lteconsulting.hexa.classinfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ClassInfoJre implements IClassInfo
@@ -75,6 +76,7 @@ class ClazzJre<T> implements Clazz<T>
 	private Class<T> classs;
 	private List<Field> fields;
 	private List<Method> methods;
+	private Map<String, Method> methodsByName;
 
 	public ClazzJre( Class<T> classs )
 	{
@@ -175,13 +177,13 @@ class ClazzJre<T> implements Clazz<T>
 	@Override
 	public Method getMethod( String methodName )
 	{
-		for( Method m : getMethods() )
-		{
-			if( m.getName().equals( methodName ) )
-				return m;
+		if( methodsByName == null ){
+			methodsByName = new HashMap<>();
+			for( Method m : getMethods() )
+				methodsByName.put(m.getName(), m);
 		}
-
-		return null;
+		
+		return methodsByName.get(methodName);
 	}
 
 	@Override

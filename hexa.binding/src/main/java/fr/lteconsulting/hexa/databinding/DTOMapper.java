@@ -134,7 +134,7 @@ public class DTOMapper
 		res.debugString = getSimpleName( context.getClass() ) + ", ";
 
 		// test to see if the asked property is in fact a HasValue widget
-		Object widget = Properties.getProperty( context, property );
+		Object widget = Properties.getValue( context, property );
 		if( PlatformSpecificProvider.get().isSpecificDataAdapter( widget ) )
 		{
 			PlatformSpecificProvider.get().fillSpecificDataAdapter( widget, context, property, srcPptyType, res );

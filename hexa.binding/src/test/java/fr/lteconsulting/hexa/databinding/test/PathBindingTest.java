@@ -27,13 +27,13 @@ public class PathBindingTest extends TestCase
 		
 		Person personCopy = new Person();
 		
-		Properties.setProperty( persons, "selected", persons.get( 0 ) );
+		Properties.setValue( persons, "selected", persons.get( 0 ) );
 		
 		Binder.bind( persons, "selected" ).mapTo( personCopy );
 		
 		for( int i=0; i<persons.size(); i++)
 		{
-			Properties.setProperty( persons, "selected", persons.get( i ) );
+			Properties.setValue( persons, "selected", persons.get( i ) );
 			
 			assertEquals( persons.get( i ), personCopy );
 		}

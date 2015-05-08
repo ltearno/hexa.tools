@@ -127,26 +127,31 @@ public class DataBinding
 			if( fSettingSource )
 				return;
 
-			log( "source changed, propagating to destination ..." );
+			if( logPrefix != null )
+				log( "source changed, propagating to destination ..." );
 
 			if( !fActivated )
 				return;
 
 			Object value = source.getValue();
-			log(" - source value : " + value);
+			if( logPrefix != null )
+				log(" - source value : " + value);
 
 			if( converter != null )
 			{
-				log( "... converting value ..." );
+				if( logPrefix != null )
+					log( "... converting value ..." );
 				value = converter.convert( value );
-				log(" - converted to : " + value);
+				if( logPrefix != null )
+					log(" - converted to : " + value);
 			}
 
 			fSettingDestination = true;
 			destination.setValue( value );
 			fSettingDestination = false;
 
-			log( " - done propagating source" );
+			if( logPrefix != null )
+				log( " - done propagating source" );
 		}
 	};
 

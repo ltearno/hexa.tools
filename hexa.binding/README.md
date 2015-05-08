@@ -1,10 +1,12 @@
 # Hexa Binding
 
-## A sometimes useful data binding non-invasive library for Java (and GWT)
+## A sometimes useful data binding non-invasive library for Java and GWT
 
-HexaBinding does dynamic binding between values, DTOs, Widgets (for GWT), and any other objects in Java applications. It is open and extensible with possibility for new property adapters added to the binding engine. The library supports vanilla Java and also has a version for GWT.
+HexaBinding does dynamic binding between values, DTOs, Widgets (with the GWT add-on artifact), and any other objects in Java applications. It is open and extensible with the possibility to add new property adapters to the binding engine. The library supports standard Java and also has a version for GWT.
 
-Suppose you have two classes `A` and `B`, each one having a `Name` field. Imagine you have two instances `a` and `b` of thoses classes. You can write :
+It might also work on Android and with JavaFX, although it wasn't tested on it. Any feedback is appreciated !
+
+Suppose you have two classes `A` and `B`, each one having a `Name` field. Imagine you have two instances `a` and `b` of those classes. You can write :
 
 		Binder.bind( a, "name" ).to( b, "name" );
 
@@ -12,30 +14,53 @@ With this one line of code, you have bound the two fields dynamically in a two-w
 
 Now imagine, you have a `Person` and a `Workplace` classes. You can write :
 
-		Binder.bind( person, "workplace.address" ).to( form, "address" );
+		Binder.bind(person, "workplace.address").to(form, "address");
 
 This will bind the person.getWorkplace().getAddress() value to the form.getAddress() value. Still in a two-way fashion.
 
-In a UI code, you will typically write :
+In a UI code for instance, you will typically write :
 
 		Binder.bind(listBox).mode(Mode.OneWay).mapTo(personForm);
 
 This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. In this case, the person form will be inspected to find matching fields with the object selected in the listBox.
 
+Inside a GWT application you can write :
+
+		Binder.bind( personDto, "category.color" ).to( widget, "style.borderColor" );
+
+to bind the person's category's color to the widget's border color.
+
 There's more, there are plenty of options you can use !
 
-## Path binding
+## Quick start
 
-You can write :
+Here is a short step by step guide to use the HexaBinding library in a Java project. For a GWT application, check the GWT Quick start **TODO**.
 
-		Binder.bind( personDto, "category.color" ).to( view, "borderColor" );
+First create a Java project. Then add this dependency in your pom.xml (you can use the snapshot version if you want) :
 
-And the binding system will automatically follow the color of the category of the person. If the person changes its category or if the category's color changes, the view's borderColor will automatically be updated. And since the binding is by defaut two-way, if the view's borderColor changes, the person's category's color will be also updated.
+	<dependency>
+		<groupId>fr.lteconsulting</groupId>
+		<artifactId>hexa.binding</artifactId>
+		<version>1.0</version>
+	</dependency>
+
+Then, specify at least the Java 6 language level :
+
+	<plugin>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.1</version>
+		<configuration>
+			<source>1.8</source>
+			<target>1.8</target>
+		</configuration>
+	</plugin>
+
+In your application, create one pojo class all by hand
+
+Then in the application's main, bind two instances of those classes
 
 
-
-
-## How do I create a binding ?
+## How to create a binding ?
 
 There are three phases when constructing a data binding :
 
@@ -53,17 +78,17 @@ There are three possible methods to specify the value source :
 
 The first parameter (*source*) is the object on which properties are watched. The second parameter (*propertyPath*) is the path to the property value, starting from the source.
 
-		public static Binder bind( HasValue<?> widget )
-
-This one is use with GWT. `HasValue` is a standard interface of this framework. When using a HasValue as a data source, the binding system will use the standard GWT mechanism to get and subscribe to the value.
-
 		public static Binder bindObject( Object source )
 
 When using this method, the source data of the binding will be fixed and will be the source object itself.
 
+		public static Binder bind( HasValue<?> widget )
+
+This one is used with GWT. `HasValue` is a standard interface of this framework. When using a HasValue as a data source, the binding system will use the standard GWT mechanism to get and subscribe to the value (that is, the addValueChangeHandler method).
+
 		public static Binder bind( PropertyAdapter source )
 
-This is the more general way to specify a data source. With this method, you have to implement the `PropertyAdapter` by yourself. Note that several implementations are available for common use case (*WriteOnlyPropertyAdapter*, *DTOMapperPropertyAdapter*, ...).
+This is the more general way to specify a data source. With this method, you have to implement the `PropertyAdapter` by yourself. Note that several implementations are available for common use cases (*WriteOnlyPropertyAdapter*, *DTOMapperPropertyAdapter*, ...).
 
 ### The options
 
@@ -75,19 +100,19 @@ With this you specify the data binding mode. There are three values : `OneWay`, 
 
 		public Binder log( String prefix )
 
-The Log method accepts a prefix. When an event will occur on this binding, it will be logged, using the prefix so you can identify easily when things go wrong !
+The Log method accepts a prefix. When an event will occur on this binding, it will be logged using this prefix so you can identify easily when things go wrong !
 
 		public Binder withConverter( Converter converter )
 
-Sometimes, you need to convert values between the source and the destination. This is done with this method, to which you provide an implementation of the `Converter` interface. You will have the opportunity to implement the conversion for the two ways the data binding can happen.
+Sometimes, you need to convert values between the source and the destination. This is done by calling this method, to which you provide an implementation of the `Converter` interface. You will able to implement the backward and forward conversions.
 
 		public Binder deferActivate()
 
-By default, the databinding is synchronous. For whatever reason, you may want it to be deferred. In that case, you just have to call this method.
+By default, the data binding is synchronous. For whatever reason, you may want it to be deferred. In that case, you just have to call this method (*it just works with GWT right now*).
 
 ### The destination
 
-At the end of the fluent call, you have to specify the destination of the data binding.
+At the end of the fluent call, you specify the destination of the data binding. You have several possibilities :
 
 		public DataBinding to( Object destination, String propertyPath )
 
@@ -103,15 +128,13 @@ Once again, you can provide your own `PropertyAdapter` for the destination of th
 
 		public DataBinding mapTo( Object destination )
 
-The MapTo method will use the source value of the data binding to create a new two-way databinding between each field of the source and each field of the destination.
+The MapTo method will use the source value of the data binding to create a new two-way data binding between each field of the source and each field of the destination.
 
 ### Mapping two objects
 
-There is one left method in the Binder which is :
+There is one left method in the Binder that will create a two-way data binding between all matching properties of the objects on the two sides of the data binding. Here is the method :
 
 		public DataBinding map( Object source, Object destination )
-
-This method will create a two-way data binding between all matching properties of the two objects.
 
 
 
@@ -122,31 +145,31 @@ This method will create a two-way data binding between all matching properties o
 The binding system bases itself on two things :
 
 - The concept of Property,
-- The notification system.
+- And the notification system.
 
 ### Property
 
-A Property is just a simplified way to look at Java objects' methods and fields. Concerning data access, it can be done through direct field access or through the usual getter/getter methods.
+A Property is just a simplified way to look at Java objects' methods and fields. It is a named value belonging to an object, that can be read, written and subscribed for.
 
-So a Property is a named value belonging to an object, that can be readden and written.
+The HexaBinding library can use the getters and setters of the objects. It can also directly use the object's field if no getter or getter is found. It will even create *virtual* fields if there is no field in the class with the same name as the property. This adds a very dynamic aspect to the data binding. It is very useful to enhance existing classes dynamically, and allow to attach virtual properties to arbitrary objects. For example one can add the "selected" property to a `java.util.ArrayList` object.
 
-If there is a getter or a setter for a property, those are used. But if none are found, direct field access is used.
+#### Virtual properties
 
-When there is no getter/setter nor a field to hold a property value, a dynamic property bag is created for the object, allowing the property value to be accessed. So the Property system will allow to store and read values, even if they were not written in the original class.
+To set a virtual property value, you just have to call :
 
-TODO : show set/get property value
+	Properties.setValue( object, "propertyName", value );
+
+If the object does not already have a "propertyName" property, a virtual one will be created.
+
+To get its value, you call :
+
+	String value = Properties.getValue( object, "propertyName" );
 
 ### Notification system
 
-The notification system allows to register for object property values and to notify when a change occur on them. There is no need to implement anything in the client application classes.
+The notification system allows to register for object property value changes and to notify clients when a change occurs on them.
 
-To notify a change in a property :
-
-		Properties.notify( this, "propertyName" );
-
-This will update all registered clients for that property of that object.
-
-To register for changes from a property on an object :
+To register for value changes from a property on an object :
 
 		Properties.registerPropertyChangedEvent( source, "propertyName", new PropertyChangedHandler()
 		{
@@ -162,18 +185,81 @@ To register for changes from a property on an object :
 
 To register on all properties of an object, `"*"` can be passed instead of the property name.
 
-The library maintains live a singleton managing all the objects going through a data binding. One thing you need to  do is to let the binding system know when one of your data-bound object property has changed. This is done by executing the following code :
+To notify a change of the property value :
 
-		// Here the object on which the property 'name' changes is 'this'
+		// Notifies that the "propertyName" value
+		// in the 'this' object was just modified
+		Properties.notify( this, "propertyName" );
+
+This will update all registered clients for that property of that object. This method should be called by your application's objects in order for the data binding system to work. That's typically the method you will have call in your DTO's setters.
+
+### Integrating your Java objects with the binding system
+
+Any object of any class can be used with the data binding.
+
+If your object has a setter method, then it should calls the `notify(...)` method. Like this :
+
+	// Setter in a java class
+	public void setName( String name )
+	{
+		this.name = name;
 		Properties.notify( this, "name" );
+	}
 
-That's typically what you will have to add in your DTO's setters.
+If you cannot modify the object's class, you can always call the `notify` method after calling its setter :
 
-## The reflection system
+	pojo.setName( value );
+	Properties.notify( pojo, "name" );
 
-**This is only useful for GWT users, others don't mind !**
+If the object has no getter, you can call :
 
-The data binding library is built upon an internal reflection system which allows runtime type information availability. To ensure minimum generated codesize, the reflection system needs to know on which classes it needs to work on at *compile* time. This is done by adding this *glue* code :
+	Properties.setValue( pojo, "name", value );
+
+But for performance reasons, you may prefer to just write :
+
+	pojo.name = value;
+	Properties.notify( pojo, "name" );
+
+Appart from that there is no special things to call to have the data binding library to work with your classes.
+
+#### The @Observable annotation
+
+The HexaBinding library can create observable POJOs for you. This is done by defining a very reduced specification of the desired POJO, with the @Observable annotation on the class. For example :
+
+	@Observable
+	class MyPojo
+	{
+		String name;
+		int weight;
+		double value;
+	}
+
+The HexaBinding annotation processor will process the class and generate a `ObservableMyPojo` class inheriting from `MyPojo` with all the correct getters and setters, along with the constructors calling the super class one's. When the annotated class name ends with 'Internal', the generated class name will be the annotated class name without the 'Internal' suffix. This allows you to choose your naming schema.
+
+*Note :* For your project to work with the Java annotation processing, it must be at least Java 7 and your IDE might need to be configured (*TO BE EXMPLAINED*).
+
+#### The Property class
+
+The Property class can also help you reducing the amount of boilerplate code. It stores a value and exposes a getter and a setter which calls the `notify(...)` method.
+
+An example :
+
+	class MyPojo
+	{
+		Property<String> name = new Property( ... );
+	}
+	
+	MyPojo pojo = new MyPojo();
+	
+	Binder.bind( pojo, "name" ).to( otherObject, pptyPath );
+
+
+
+
+
+## Using the HexaBinding library with GWT
+
+The data binding library is built upon an internal introspection system which allows runtime type information availability. To ensure minimum generated code size, the introspection system needs to know on which classes it needs to work on at *compile* time. This is done by adding this *glue* code :
 
 		// to be declared somewhere :
 		interface MyClassBundle extends ClazzBundle
@@ -192,22 +278,27 @@ The data binding library is built upon an internal reflection system which allow
 		MyClassBundle bundle = GWT.create( MyClassBundle.class );
 		bundle.register();
 
-From there onwards, you can use the data binding tool !
+From there onwards, you can use the data binding on objects of those classes !
 
-Note that this can happen at several places in the code, the reflected set of classes will just grow accordingly.
+Note that you can create `ClazzBundle`s at several places in the code, the reflected set of classes will just grow accordingly.
+
+
+
+
+## Annex
 
 
 ## Notes
 
-### How to write POJO that interact well with the binding system ?
+### Sample :
 
-TODO : Explain better how to add the Properties.notify( this, "toto" );
+maven, eclipse, ... : configuration !
 
 ### Using the dynamic properties to manage the currently selected item.
 
-Often it is needed to maintain a list of objects, together with a currently selected object. The selected object is then often edited in some view.
+It is quite usual to maintain a list of objects together with the currently selected object in the list. The selected object is then often edited by the user in some UI component.
 
-The standard ArrayList class does not have the concept of the "selected item". That's OK, because we will use the dynamic property of HexaBinding :
+The standard `java.util.ArrayList` class does not have the concept of a "selected item". That's OK, because we will use the dynamic property functionality of HexaBinding :
 
 		// A normal Java list creation
 		java.util.List<MyPojo> list = new ArrayList<>();
@@ -220,16 +311,9 @@ The standard ArrayList class does not have the concept of the "selected item". T
 
 That may seem a little, and that's really a little written code for a lot of things done !
 
-### Using the @Observable annotation to create watchable POJO easily
-
-TODO : show how to configure Eclipse and how to write an Observable (with the two naming conventions), and what to expect from it.
-
-### The Property class
-
-TODO : show how this can ease the notification management
-
 ### To do
 
+- getStatistics
 - Example with Converter
 - Example WriteOnlyPropertyAdapter
 - DOC WhenChangesHappen
