@@ -1,7 +1,6 @@
 package fr.lteconsulting;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import fr.lteconsulting.hexa.client.tools.Action;
@@ -14,10 +13,10 @@ import fr.lteconsulting.hexa.databinding.properties.Properties;
  */
 public class App {
 	public static void main(String[] args) {
-		new App().go();
+		new App().go2();
 	}
 
-	void go() {
+	void go1() {
 		DTO1 src = new DTO1();
 
 		final List<DTO1> list1 = new ArrayList<>();
@@ -34,8 +33,32 @@ public class App {
 			for (int i = 0; i < nb; i++)
 				src.setA(2);
 		});
-		
+
 		System.out.println(Properties.getStatistics());
+	}
+
+	void go2() {
+		DTO1 c = new DTO1();
+		int nb = 100;
+
+		DTO1 first = c;
+
+		for (int i = 0; i < nb; i++) {
+			DTO1 d = new DTO1();
+
+			Binder.bind(c, "a").to(d, "a");
+
+			c = d;
+		}
+
+		DTO1 last = c;
+
+		stamp("changing source", () -> {
+			for (int i = 0; i < 10000; i++) {
+				first.setA(i);
+				last.setA(i + 1);
+			}
+		});
 	}
 
 	void stamp(String title, Action action) {
@@ -45,6 +68,6 @@ public class App {
 		action.exec();
 		long end = System.nanoTime();
 
-		System.out.println("duration: " + (end - start)/1000 + "us");
+		System.out.println("duration: " + (end - start) / 1000 + "us");
 	}
 }

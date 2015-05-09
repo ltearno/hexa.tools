@@ -1,5 +1,7 @@
 package fr.lteconsulting.hexa.client.css.bindings;
 
+import com.google.gwt.core.shared.GWT;
+
 import fr.lteconsulting.hexa.client.css.HexaCss;
 import fr.lteconsulting.hexa.client.css.annotation.HexaCssExtra;
 
@@ -13,8 +15,10 @@ import fr.lteconsulting.hexa.client.css.annotation.HexaCssExtra;
  * (c) LTE Consulting - 2015
  * http://www.lteconsulting.fr
  */
-public interface HexaSkeletonCss extends HexaCss
+public interface SkeletonHexaCss extends HexaCss
 {
+	public static final SkeletonHexaCss CSS = GWT.create( SkeletonHexaCss.class );
+	
 	@HexaCssExtra( name = "container" )
 	String container();
 

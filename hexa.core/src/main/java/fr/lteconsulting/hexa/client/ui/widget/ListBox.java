@@ -1,5 +1,6 @@
 package fr.lteconsulting.hexa.client.ui.widget;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -27,6 +28,17 @@ public class ListBox<T> extends Composite implements HasValue<T>
 	public ListBox()
 	{
 		initWidget( list );
+	}
+	
+	public void addAll( Collection<T> items)
+	{
+		for( T item : items )
+			addItem( item );
+	}
+
+	public void addItem( T item )
+	{
+		addItem( ""+item, item );
 	}
 
 	public void addItem( String text, T item )

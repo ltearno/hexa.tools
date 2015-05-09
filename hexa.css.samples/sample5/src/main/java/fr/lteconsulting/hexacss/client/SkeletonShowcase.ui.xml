@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.HexaSkeletonCss"
+	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.SkeletonHexaCss"
 		field="s"></ui:with>
 	<ui:with type="fr.lteconsulting.hexacss.client.Css" field="css"></ui:with>
 	<g:ScrollPanel>

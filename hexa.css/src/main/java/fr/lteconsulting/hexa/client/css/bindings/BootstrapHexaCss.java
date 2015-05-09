@@ -16,9 +16,9 @@ import fr.lteconsulting.hexa.client.css.annotation.HexaCssExtra;
  * http://www.lteconsulting.fr
  *
  */
-public interface HexaBootstrapCss extends HexaCss
+public interface BootstrapHexaCss extends HexaCss
 {
-	static final HexaBootstrapCss CSS = GWT.create( HexaBootstrapCss.class );
+	static final BootstrapHexaCss CSS = GWT.create( BootstrapHexaCss.class );
 
 	@HexaCssExtra( name = "active" )
 	String active();

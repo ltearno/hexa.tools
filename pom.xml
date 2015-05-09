@@ -10,20 +10,22 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<!--<module>hexa.all</module> -->
 		<!--<module>hexa.archetype</module>-->
 		<module>hexa.binding</module>
 		<module>hexa.binding/processor</module>
 		<module>hexa.binding.gwt</module>
+		<module>hexa.binding.samples</module>
+		<module>hexa.core</module>
 		<module>hexa.css</module>
 		<module>hexa.css.samples</module>
 		<module>hexa.css-maven-plugin</module>
-		<module>hexa.core</module>
+		<!--<module>hexa.demo.gwt</module> -->
+		<!--<module>hexa.gwt.archetype</module>-->
+		<!--<module>hexa.persistence</module> -->
 		<module>hexa.rpc</module>
 		<module>hexa.spring</module>
 		<module>hexa.utils</module>
-		<!--<module>hexa.all</module> -->
-		<!--<module>hexa.persistence</module> -->
-		<!--<module>hexa.demo</module> -->
   	</modules>
 
   	<licenses>

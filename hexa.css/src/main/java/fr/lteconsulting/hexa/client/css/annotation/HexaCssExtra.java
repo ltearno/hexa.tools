@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.client.css.annotation;
 
-import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
+import fr.lteconsulting.hexa.client.css.bindings.BootstrapHexaCss;
 
 /**
  * This annotation allows to force a CSS class name over
@@ -9,7 +9,7 @@ import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
  * This allows to use existing CSS stylesheets.
  * 
  * For example it has been used to bind Bootstrap through
- * HexaCss. See {@link HexaBootstrapCss} for detail on how to use.
+ * HexaCss. See {@link BootstrapHexaCss} for detail on how to use.
  * 
  * @author Arnaud Tournier
  * (c) LTE Consulting - 2015

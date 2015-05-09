@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:my='urn:import:rigpa.lerabling.registration.client.ui'>
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 	<ui:with field="css" type="fr.lteconsulting.hexacss.client.MyCss" />
 
 	<g:HTMLPanel styleName="{css.form}">

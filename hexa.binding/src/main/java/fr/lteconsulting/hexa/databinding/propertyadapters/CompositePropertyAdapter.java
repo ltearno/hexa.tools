@@ -142,12 +142,17 @@ public class CompositePropertyAdapter implements PropertyAdapter
 				// context is the 'object' value (ie the value of the previous
 				// pathItem or the root context)
 				// path item is path[p]
-				if( PlatformSpecificProvider.get().isBindingToken( pathItem ) )
-					adapters[p] = PlatformSpecificProvider.get().createPropertyAdapter(object);
-				else if( CompositePropertyAdapter.DTOMAP_TOKEN.equals( pathItem ) )
-					adapters[p] = new DTOMapperPropertyAdapter( object );
+				if(pathItem.charAt(0)=='$')
+				{
+					if( PlatformSpecificProvider.get().isBindingToken( pathItem ) )
+						adapters[p] = PlatformSpecificProvider.get().createPropertyAdapter(object);
+					else if( CompositePropertyAdapter.DTOMAP_TOKEN.equals( pathItem ) )
+						adapters[p] = new DTOMapperPropertyAdapter( object );
+				}
 				else
+				{
 					adapters[p] = new ObjectPropertyAdapter( object, pathItem );
+				}
 	
 				// we should subscribe to the value changes so that we can
 				// subscribe to

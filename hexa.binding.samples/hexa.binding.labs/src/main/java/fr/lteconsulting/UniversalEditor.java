@@ -6,6 +6,7 @@ import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.properties.PropertyChangedEvent;
 import fr.lteconsulting.hexa.databinding.properties.PropertyChangedHandler;
 
+
 public class UniversalEditor {
 	private Object value;
 	private Object registration;
@@ -40,8 +41,7 @@ public class UniversalEditor {
 	}
 
 	private PropertyChangedHandler handlePropertyChange = new PropertyChangedHandler() {
-		@Override
-		public void onPropertyChanged(PropertyChangedEvent event) {
+		public void onPropertyChanged( PropertyChangedEvent event ) {
 			String ptyName = event.getPropertyName();
 			Object sender = event.getSender();
 			System.out.println("Show property " + ptyName + " of object "

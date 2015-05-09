@@ -1,0 +1,11 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	</ui:style>
+	<g:HTMLPanel>
+		<div>First name : <g:TextBox ui:field="firstName"></g:TextBox></div>
+		<div>Last name : <g:TextBox ui:field="lastName"></g:TextBox></div>
+		<div>Preferred color : <g:TextBox ui:field="preferredColor"></g:TextBox></div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

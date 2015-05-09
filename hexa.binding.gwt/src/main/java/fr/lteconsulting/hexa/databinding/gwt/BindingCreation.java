@@ -2,7 +2,9 @@ package fr.lteconsulting.hexa.databinding.gwt;
 
 import com.google.gwt.user.client.ui.HasValue;
 
+import fr.lteconsulting.hexa.databinding.Converter;
 import fr.lteconsulting.hexa.databinding.DataBinding;
+import fr.lteconsulting.hexa.databinding.Mode;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
 
@@ -39,5 +41,29 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	public DataBinding to( HasValue<?> widget )
 	{
 		return to( new WidgetPropertyAdapter( widget ) );
+	}
+	
+	@Override
+	public BindingCreation log(String prefix) {
+		super.log(prefix);
+		return this;
+	}
+	
+	@Override
+	public BindingCreation deferActivate() {
+		super.deferActivate();
+		return this;
+	}
+	
+	@Override
+	public BindingCreation mode(Mode mode) {
+		super.mode(mode);
+		return this;
+	}
+	
+	@Override
+	public fr.lteconsulting.hexa.databinding.BindingCreation withConverter( Converter converter) {
+		super.withConverter(converter);
+		return this;
 	}
 }
