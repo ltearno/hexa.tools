@@ -117,7 +117,7 @@ public class DTOMapper
 		@SuppressWarnings( "unchecked" )
 		List<DataBinding> bindings = (List<DataBinding>) mappingResourceHandle;
 		for( DataBinding binding : bindings )
-			binding.term();
+			binding.terminate();
 		bindings.clear();
 	}
 

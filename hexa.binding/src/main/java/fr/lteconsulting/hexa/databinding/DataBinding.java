@@ -101,7 +101,7 @@ public class DataBinding
 	 * resources. You should call this method when you want to free the binding,
 	 * in order to lower memory usage.
 	 */
-	public void term()
+	public void terminate()
 	{
 		log( "term" );
 

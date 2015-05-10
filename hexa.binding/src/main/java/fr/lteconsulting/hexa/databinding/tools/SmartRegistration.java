@@ -54,7 +54,7 @@ public class SmartRegistration
 	{
 		if( dataBinding != null )
 		{
-			dataBinding.term();
+			dataBinding.terminate();
 			dataBinding = null;
 		}
 	}
