@@ -45,7 +45,7 @@ public class Application implements EntryPoint
 				sb.appendEscaped( value.getName() );
 			}
 		} );
-
+		
 		// create the list's selection model
 		SingleSelectionModel<Person> model = new SingleSelectionModel<>();
 		cellList.setSelectionModel( model );

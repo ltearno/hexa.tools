@@ -1,5 +1,6 @@
 package fr.lteconsulting.hexabinding.sample;
 
+import fr.lteconsulting.hexa.databinding.annotation.Observable;
 import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 /**
@@ -11,7 +12,8 @@ import fr.lteconsulting.hexa.databinding.properties.Properties;
  * @author Arnaud Tournier
  *
  */
-public class Person
+@Observable
+class PersonInternal
 {
 	/**
 	 * The observable fields
@@ -20,7 +22,7 @@ public class Person
 	String lastName;
 	String preferredColor;
 
-	public Person( String firstName, String lastName )
+	public PersonInternal( String firstName, String lastName )
 	{
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -31,32 +33,18 @@ public class Person
 	{
 		this.firstName = firstName;
 
-		Properties.notify( this, "firstName" );
-		
 		// since the first name is part of the name,
 		// we notify that the "name" changes also
 		Properties.notify( this, "name" );
-	}
-
-	public String getFirstName()
-	{
-		return this.firstName;
 	}
 
 	public void setLastName( String lastName )
 	{
 		this.lastName = lastName;
 
-		Properties.notify( this, "lastName" );
-
 		// since the last name is part of the name,
 		// we notify that the "name" changes also
 		Properties.notify( this, "name" );
-	}
-
-	public String getLastName()
-	{
-		return this.lastName;
 	}
 
 	/**
@@ -70,16 +58,5 @@ public class Person
 	public String getName()
 	{
 		return firstName + " " + lastName;
-	}
-
-	public void setPreferredColor( String preferredColor )
-	{
-		this.preferredColor = preferredColor;
-		Properties.notify( this, "preferredColor" );
-	}
-
-	public String getPreferredColor()
-	{
-		return this.preferredColor;
 	}
 }
