@@ -92,8 +92,7 @@ public class Properties
 	}
 
 	/**
-	 * Show an alert containing useful information for debugging. It also
-	 * shows how many registrations happened since last call ; that's useful
+	 * Obtain useful information for debugging. That's useful
 	 * to detect registration leaks.
 	 */
 	public static String getStatistics()
