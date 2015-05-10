@@ -261,15 +261,5 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-
-		<resources>
-			<!-- bundle generated sources with the jar, so they are visible to GWT'scompiler -->
-			<resource>
-				<directory>${generated-sources}</directory>
-				<includes>
-					<include>**/*.java</include>
-				</includes>
-			</resource>
-		</resources>
 	</build>
 </project>
