@@ -17,6 +17,7 @@ import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 import fr.lteconsulting.hexa.client.css.bindings.SkeletonHexaCss;
 import fr.lteconsulting.hexa.databinding.gwt.Binder;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.propertyadapters.ChangeDetector;
 import fr.lteconsulting.hexa.databinding.propertyadapters.WriteOnlyPropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.SelectionModelAdapter;
@@ -90,6 +91,9 @@ public class Application implements EntryPoint
 			}
 		} );
 		
+		// We do a first call to the getStatistics method
+		Properties.getStatistics();
+		
 		// bind the selected person's preferred color to the form's element's border style.
 		Binder.bind( persons, "selected.preferredColor" ).to( form.getElement().getStyle(), "borderColor" );
 		
@@ -106,6 +110,8 @@ public class Application implements EntryPoint
 				Window.setTitle( object == null ? "Hexa Binding demo" : (String)object );
 			}
 		} );
+		
+		Window.alert( Properties.getStatistics() );
 	}
 
 	/**

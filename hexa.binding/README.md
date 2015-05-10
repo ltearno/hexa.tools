@@ -2,9 +2,9 @@
 
 ## A sometimes useful data binding non-invasive library for Java and GWT
 
-HexaBinding does dynamic binding between values, DTOs, Widgets (with the GWT add-on artifact), and any other objects in Java applications. It is open and extensible with the possibility to add new property adapters to the binding engine. The library supports standard Java and also has a version for GWT.
+HexaBinding does fast dynamic binding between values, DTOs, Widgets (with the GWT add-on artifact), and any other objects in Java applications. It is open and extensible with the possibility to add new property adapters to the binding engine. The library supports standard Java and also has a version for GWT.
 
-It might also work on Android and with JavaFX, although it wasn't tested on it. Any feedback is appreciated !
+*It might also work on Android and with JavaFX, although it wasn't tested on it. Any feedback is appreciated !*
 
 Suppose you have two classes `A` and `B`, each one having a `Name` field. Imagine you have two instances `a` and `b` of those classes. You can write :
 
@@ -14,13 +14,13 @@ With this one line of code, you have bound the two fields dynamically in a two-w
 
 Now imagine, you have a `Person` and a `Workplace` classes. You can write :
 
-		Binder.bind(person, "workplace.address").to(form, "address");
+		Binder.bind( person, "workplace.address" ).to( form, "address" );
 
 This will bind the person.getWorkplace().getAddress() value to the form.getAddress() value. Still in a two-way fashion.
 
 In a UI code for instance, you will typically write :
 
-		Binder.bind(listBox).mode(Mode.OneWay).mapTo(personForm);
+		Binder.bind( listBox ).mode(Mode.OneWay ).mapTo( personForm );
 
 This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. In this case, the person form will be inspected to find matching fields with the object selected in the listBox.
 
@@ -32,11 +32,13 @@ to bind the person's category's color to the widget's border color.
 
 There's more, there are plenty of options you can use !
 
+
+
 ## Quick start
 
-Here is a short step by step guide to use the HexaBinding library in a Java project. For a GWT application, check the GWT Quick start **TODO**.
+Here is a short step by step guide to use the HexaBinding library in a Java project. For a GWT application, check the GWT Quick start.
 
-First create a Java project. Then add this dependency in your pom.xml (you can use the snapshot version if you want) :
+First create a Java project. Then add this dependency in your pom.xml :
 
 	<dependency>
 		<groupId>fr.lteconsulting</groupId>
@@ -57,7 +59,48 @@ Then, specify at least the Java 6 language level :
 
 In your application, create one pojo class all by hand
 
+	import fr.lteconsulting.hexa.databinding.properties.Properties;
+	
+	public class Person {
+		private String name;
+	
+		public void setName(String name) {
+			this.name = name;
+			
+			Properties.notify(this, "name");
+		}
+	
+		public String getName() {
+			return this.name;
+		}
+	}
+
 Then in the application's main, bind two instances of those classes
+
+	Person a = new Person();
+	Person b = new Person();
+	
+	// bind the name property
+	Binder.bind( a, "name" ).to( b, "name" );
+	
+	a.setName( 'jack' );
+	
+	// will print 'jack'
+	System.out.println( b.getName() );
+	
+	b.setName( 'paul' );
+	
+	// will print 'paul'
+	System.out.println( a.getName() );
+
+That's really a first step. You can do many other things ! Now, you can read the other part of the manual or investigate into the samples :
+
+- Sample 1, a simple data binding hellow world in pure Java
+- Sample 2, a simple data binding master/detail view in Java with GWT
+
+
+
+
 
 
 ## How to create a binding ?
@@ -140,6 +183,26 @@ There is one left method in the Binder that will create a two-way data binding b
 
 
 
+## Freeing a data binding
+
+To free all resources associated with a data binding, you just have to call the `terminate()` method on it :
+
+		DataBinding binding = Binder.bind(...)...to(...);
+		
+		...
+		
+		binding.terminate();
+
+This will desactivate the binding and unregister all the data handlers. That's a good practice to check whether an application
+leaks memory because it will run faster and smoother if less resource is consumed. Refer to the statistics paragraph to see how
+it is possible to detect resource leaks with HexaBinding.
+
+
+
+
+
+
+
 ## The binding system
 
 The binding system bases itself on two things :
@@ -164,6 +227,23 @@ If the object does not already have a "propertyName" property, a virtual one wil
 To get its value, you call :
 
 	String value = Properties.getValue( object, "propertyName" );
+
+##### Sample : using the dynamic properties to manage the currently selected item.
+
+It is quite usual to maintain a list of objects together with the currently selected object in the list. The selected object is then often edited by the user in some UI component.
+
+The standard `java.util.ArrayList` class does not have the concept of a "selected item". That's OK, because we will use the dynamic property functionality of HexaBinding :
+
+		// A normal Java list creation
+		java.util.List<MyPojo> list = new ArrayList<>();
+		...
+		// We set the "selected" property of the list instance
+		Properties.setProperty( list, "selected", value );
+	
+		// We bind (two-way) each field of the selected value to each field of the editing view
+		Binder.bind( list, "selected" ).mapTo( view );
+
+That may seem a little, and that's really a little written code for a lot of things done !
 
 ### Notification system
 
@@ -257,6 +337,35 @@ An example :
 
 
 
+## Using the statistics to detect resource leak
+
+It is possible to forget to unregister a binding when it is not used anymore. In that case, the application leaks resources and after a sufficiently long execution, the whole thing could crash.
+
+In order to help the developper in the search of the code which causes binding leaks, one can call the `getStatistics()` method :
+
+		Window.alert( Properties.getStatistics() );
+
+This will show a message looking like this :
+
+		PropertyChanges stats :
+		# registered handlers : 6
+		# notifications       : 2
+		# dispatches          : 2
+		
+		selected@ArrayList 				=> 5 (diff: 2)
+		borderColor@JavaScriptObject$ 	=> 1
+
+First there is three stats numbers : the total number of registered handlers (used to subscribe to property changes), the total number of notifications of property changes that happened so far, and the total number of dispatches that were executed.
+
+Next, comes the number of handlers for each type of property that's watched. In the above example, the 6 registered handlers are in fact 5 handlers on the `selected` property of the `ArrayList` class (that's a virtual property, because the ArrayList class does not have a 'selected' property), and 1 handler on a `borderColor` property of a `JavaScriptObject`object.
+
+The `(diff: 2)` text means that the number of those handlers increased by 2 since the last call of the `getStatistics` method. That's very useful to check whether a part of an application leaks or not. Call the method before opening a view and just after closing it. Inspect the differences and it will give you a clue about which part of the code forgot to call the `terminate()` method and on wich data binding.
+
+
+
+
+
+
 ## Using the HexaBinding library with GWT
 
 The data binding library is built upon an internal introspection system which allows runtime type information availability. To ensure minimum generated code size, the introspection system needs to know on which classes it needs to work on at *compile* time. This is done by adding this *glue* code :
@@ -285,37 +394,83 @@ Note that you can create `ClazzBundle`s at several places in the code, the refle
 
 
 
-## Annex
+## GWT Quick start
 
+GWT is a very good tool to write web applications in Java. Hopefully the HexaBinding library is compatible with GWT and leverage the
+compiler architecture to produce efficient data binding.
 
-## Notes
+Here is a quick start guide to create a GWT application using HexaBinding. You can also checkout the Sample 2, which is a very basic application showing a master detail edition view.
 
-### Sample :
+First create a Java GWT project. Then add those dependencies in your pom.xml :
 
-maven, eclipse, ... : configuration !
-
-### Using the dynamic properties to manage the currently selected item.
-
-It is quite usual to maintain a list of objects together with the currently selected object in the list. The selected object is then often edited by the user in some UI component.
-
-The standard `java.util.ArrayList` class does not have the concept of a "selected item". That's OK, because we will use the dynamic property functionality of HexaBinding :
-
-		// A normal Java list creation
-		java.util.List<MyPojo> list = new ArrayList<>();
-		...
-		// We set the "selected" property of the list instance
-		Properties.setProperty( list, "selected", value );
+	<dependency>
+		<groupId>fr.lteconsulting</groupId>
+		<artifactId>hexa.binding</artifactId>
+		<version>1.0</version>
+	</dependency>
 	
-		// We bind (two-way) each field of the selected value to each field of the editing view
-		Binder.bind( list, "selected" ).mapTo( view );
+	<dependency>
+		<groupId>fr.lteconsulting</groupId>
+		<artifactId>hexa.binding.gwt</artifactId>
+		<version>1.0</version>
+	</dependency>
 
-That may seem a little, and that's really a little written code for a lot of things done !
+Then, specify at least the Java 6 language level :
 
-### To do
+	<plugin>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.1</version>
+		<configuration>
+			<source>1.8</source>
+			<target>1.8</target>
+		</configuration>
+	</plugin>
 
-- getStatistics
+Our project will be using the `@Observable` annotation and thus annotation processing. To give the generated classes to the gwt maven compiler plugin, you will need to add that :
+
+	<properties>
+		<generated-sources>${project.build.directory}/generated-sources/annotations</generated-sources>
+	</properties>
+	
+	<plugin>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.1</version>
+		<configuration>
+			<generatedSourcesDirectory>${generated-sources}</generatedSourcesDirectory>
+		</configuration>
+	</plugin>
+	
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<version>1.9.1</version>
+		<executions>
+			<execution>
+				<id>add-source</id>
+				<phase>process-classes</phase>
+				<goals>
+					<goal>add-source</goal>
+				</goals>
+				<configuration>
+					<sources>
+						<source>${generated-sources}</source>
+					</sources>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
+
+Then you can create your POJOs with the @Observable annotation or simply by hand. In this case, don't forget to call the notify() method
+in the setters, so that the binding system knows when data propagation needs to happen :
+
+	Properties.notify( this, "propertyName" );
+
+To go further, you can also checkout the Sample 2, which is a very basic application showing a master detail edition view.
+
+## To do
+
 - Example with Converter
 - Example WriteOnlyPropertyAdapter
-- DOC WhenChangesHappen
+- Documentation on WhenChangesHappen
 - WatchableCollection
-- Maven integration
+- @ObservableGwt for adding the ClazzBundle automatically
