@@ -25,7 +25,7 @@
 		<!--<module>hexa.css.samples</module>-->
 		<module>hexa.css-maven-plugin</module>
 		<!--<module>hexa.demo.gwt</module> -->
-		<!--<module>hexa.gwt.archetype</module>-->
+		<module>hexa.gwt.archetype</module>
 		<!--<module>hexa.persistence</module>-->
 		<!--<module>hexa.rpc</module>-->
 		<!--<module>hexa.spring</module>-->

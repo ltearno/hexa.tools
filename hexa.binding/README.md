@@ -95,8 +95,8 @@ Then in the application's main, bind two instances of those classes
 
 That's really a first step. You can do many other things ! Now, you can read the other part of the manual or investigate into the samples :
 
-- [Sample 1](../hexa.binding.samples/hexa.binding.sample1/pom.xml), a simple data binding hellow world in pure Java
-- [Sample 2](../hexa.binding.samples/hexa.binding.sample1/pom.xml), a simple data binding master/detail view in Java with GWT
+- [Sample 1](../hexa.binding.samples/hexa.binding.sample1/), a simple data binding hellow world in pure Java
+- [Sample 2](../hexa.binding.samples/hexa.binding.sample2/), a simple data binding master/detail view in Java with GWT
 
 
 
@@ -316,7 +316,7 @@ The HexaBinding library can create observable POJOs for you. This is done by def
 
 The HexaBinding annotation processor will process the class and generate a `ObservableMyPojo` class inheriting from `MyPojo` with all the correct getters and setters, along with the constructors calling the super class one's. When the annotated class name ends with 'Internal', the generated class name will be the annotated class name without the 'Internal' suffix. This allows you to choose your naming schema.
 
-*Note :* For your project to work with the Java annotation processing, it must be at least Java 7 and your IDE might need to be configured (*TO BE EXMPLAINED*).
+*Note :* For your project to work with the Java annotation processing, it must be at least Java 6 and your IDE needs to be correctly configured.
 
 #### The Property class
 
@@ -391,6 +391,7 @@ From there onwards, you can use the data binding on objects of those classes !
 
 Note that you can create `ClazzBundle`s at several places in the code, the set of reflected classes will just grow accordingly.
 
+Note also that you don't have to declare subclasses of the JavaScriptObject classes, they are managed automatically. But if you need to use a JavaScriptObject class or subclass, then you need to register the JavaScriptObject class.
 
 
 
@@ -399,7 +400,9 @@ Note that you can create `ClazzBundle`s at several places in the code, the set o
 GWT is a very good tool to write web applications in Java. Hopefully the HexaBinding library is compatible with GWT and leverage the
 compiler architecture to produce efficient data binding.
 
-Here is a quick start guide to create a GWT application using HexaBinding. You can also checkout the Sample 2, which is a very basic application showing a master detail edition view.
+Here is a quick start guide to create a GWT application using HexaBinding. The code that is discussed here can be found [here](../hexa.binding.samples/hexa.binding.quickstart/).
+
+### Maven
 
 First create a Java GWT project. Then add those dependencies in your pom.xml :
 
@@ -407,12 +410,14 @@ First create a Java GWT project. Then add those dependencies in your pom.xml :
 		<groupId>fr.lteconsulting</groupId>
 		<artifactId>hexa.binding</artifactId>
 		<version>1.0</version>
+		<scope>compile</scope>
 	</dependency>
 	
 	<dependency>
 		<groupId>fr.lteconsulting</groupId>
 		<artifactId>hexa.binding.gwt</artifactId>
 		<version>1.0</version>
+		<scope>compile</scope>
 	</dependency>
 
 Then, specify at least the Java 6 language level :
@@ -421,8 +426,8 @@ Then, specify at least the Java 6 language level :
 		<artifactId>maven-compiler-plugin</artifactId>
 		<version>3.1</version>
 		<configuration>
-			<source>1.8</source>
-			<target>1.8</target>
+			<source>1.7</source>
+			<target>1.7</target>
 		</configuration>
 	</plugin>
 
@@ -460,17 +465,143 @@ Our project will be using the `@Observable` annotation and thus annotation proce
 		</executions>
 	</plugin>
 
-Then you can create your POJOs with the @Observable annotation or simply by hand. In this case, don't forget to call the notify() method
-in the setters, so that the binding system knows when data propagation needs to happen :
+### GWT Module
 
-	Properties.notify( this, "propertyName" );
+In your gwt module file, add this line :
+
+	<inherits name='fr.lteconsulting.hexa.HexaBinding'/>
+
+### First sample
+
+We will begin by a very simple binding between two text boxes and a label. This will go like this :
+
+	Label label = new Label();
+	TextBox textBox = new TextBox();
+	TextBox textBox2 = new TextBox();
+
+	RootPanel.get().add( textBox );
+	RootPanel.get().add( textBox2 );
+	RootPanel.get().add( label );
+
+	Binder.bind( textBox ).to( label, "text" );
+	Binder.bind( textBox ).to( textBox2 );
+
+The binding system needs to get one information from you : the classes of the objects that you will use at runtime with the data binding. This will allow HexaBinding to optimize the generated code at compile time. Here the classes used in the data binding are Label and TextBox. We have to create an interface and call the `register` method on it. Here is the interface :
+
+	// Declares the classes used with data binding
+	interface MyClassBundle extends ClazzBundle
+	{
+		@ReflectedClasses( classes = { 
+			Label.class,
+			TextBox.class
+		} )
+		void register();
+	}
+
+Then before using those classes, we have to register the Label and TextBox types runtime information, like this :
+
+	((MyClassBundle) GWT.create( MyClassBundle.class )).register();
+
+You can now start the application. Typing a value in one textbox should be replicated in the other text box and in the label.
+
+### Second sample
+
+In the second sample, we will bind a TextBox and a Label to a field of a Java POJO.
+
+First, let's define the POJO :
+
+	public class Person
+	{
+		private String name;
+
+		public void setName( String name )
+		{
+			this.name = name;
+			Properties.notify( this, "name" );
+.		}
+
+		public String getName()
+		{
+			return this.name;
+		}
+	}
+
+That's a really simple POJO. The only thing asking explanation is the line `Properties.notify( this, "name" );`. It is located in the setter after the modification of the "name" field. It notifies the binding system that the property value has changed. This is required if you want the binding system to be able to watch your values. If you don't call this method, the binding will work, but won't react on your property changes.
+
+To help your productivity, the `@Observable` annotation can be used to generate the Person class. Instead of writing the Person class by hand, you could write a reduced PersonInternal class annotated with @Observable :
+
+	@Observable
+	class PersonInternal
+	{
+		String name;
+	}
+
+And the Person class will be generated automatically. This feature uses the annotation processing mechanism, so if you want to use that, you should have correctly configured your IDE.
+
+To use that POJO class, let's first add it in the set of @ReflectedClasses :
+
+	@ReflectedClasses( classes = { 
+			Label.class,
+			TextBox.class,
+			Person.class
+		} )
+
+In the main code, we first create the pojo, the widgets and add them into the DOM :
+
+	Person p = new Person();
+	HTML html = new HTML();
+	TextBox nameBox = new TextBox();
+	RootPanel.get().add( html );
+	RootPanel.get().add( nameBox );
+
+Then we bind things together. First let's bind the TextBox value to the person's name :
+
+	Binder.bind( p, "name" ).to( nameBox );
+
+Then, let's bind the person's name to the html widget, adding a converter in order to format the string :
+
+	Binder.bind( p, "name" ).withConverter( new OneWayConverter()
+	{
+		@Override
+		public Object convert( Object value )
+		{
+			return "You are editing person <b>'" + value + "'</b>";
+		}
+	} ).to( html, "HTML" );
+
+The converter accepts the value that is currently transferring between the two sides of the binding and must return the converted value. Here the `value` parameter receives the person's name and returns the String that will be set as the HTML of the html widget.
+
+Now, launch the application and look at how things go...
+
+### Third example
+
+The third example is much simpler. We are going to bind a TextBox's value to the body's background color :
+
+	TextBox colorBox = new TextBox();
+		
+	Binder.bind( colorBox ).to( Document.get().getBody().getStyle(), "backgroundColor" );
+	
+	RootPanel.get().add( colorBox );
+
+For this to work, we have to add the `JavaScript` object in the set of reflected classes. That's because the getStyle() method returns a Style object which is a subclass of the JavaScriptObject class.
+
+Now let's try a last thing. What if we want to bind the text box value to the window's title ? Since the Window class in GWT only has static methods, we cannot use an instance of set property values on. So we need to create a custom adapter :
+
+	Binder.bind( colorBox ).to( new WriteOnlyPropertyAdapter()
+	{
+		@Override
+		public void setValue( Object object )
+		{
+			Window.setTitle( (String) object );
+		}
+	} );
+
+Each time the colorBox value changes, the binding system propagates this change and calls the `setValue( Object object )` method with the propagated value. Here we use the abstract class `WriteOnlyPropertAdapter` which allows us to only implement the setValue.
+
+## Going further
 
 To go further, you can also checkout the Sample 2, which is a very basic application showing a master detail edition view.
 
-## To do
+If you have questions, remarks or ideas, you can push a pull request or a comment !
 
-- Example with Converter
-- Example WriteOnlyPropertyAdapter
-- Documentation on WhenChangesHappen
-- WatchableCollection
-- @ObservableGwt for adding the ClazzBundle automatically
+Thanks !
