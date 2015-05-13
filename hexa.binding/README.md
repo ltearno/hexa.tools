@@ -20,9 +20,9 @@ This will bind the person.getWorkplace().getAddress() value to the form.getAddre
 
 Another example. In a UI code you will typically use the data binding library like this :
 
-		Binder.bind( listBox ).mode(Mode.OneWay ).mapTo( personForm );
+		Binder.bind( listBox ).mapTo( personForm );
 
-This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. Then, each matching fields between the selected object and the form will be two-way data bound. Isn't that cool ?
+This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. Then, each matching fields between the selected object and the form will be two-way data bound. Isn't that cool ?!
 
 Inside a GWT application you can write :
 
