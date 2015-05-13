@@ -36,7 +36,7 @@ But there's more, there are plenty of options you can use !
 
 ## Quick start
 
-Here is a short step by step guide to use the HexaBinding library in a Java project. For a GWT application, check the GWT Quick start.
+Here is a short step by step guide to use the HexaBinding library in a Java project. **For a GWT application, check the GWT Quick start**, it is written later in the document.
 
 First create a Java project. Then add this dependency in your pom.xml :
 
@@ -600,7 +600,7 @@ Each time the colorBox value changes, the binding system propagates this change 
 
 ## Going further
 
-To go further, you can also checkout the Sample 2, which is a very basic application showing a master detail edition view.
+To go further, you can also checkout the [Sample 2](../hexa.binding.samples/hexa.binding.sample2/), which is a very basic application showing a master detail edition view.
 
 If you have questions, remarks or ideas, you can push a pull request or a comment !
 
