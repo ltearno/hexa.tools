@@ -1,6 +1,6 @@
 # Hexa Binding
 
-## A sometimes useful data binding non-invasive library for Java and GWT
+## A sometimes useful non-invasive data binding library for Java and GWT
 
 HexaBinding does fast dynamic binding between values, DTOs, Widgets (with the GWT add-on artifact), and any other objects in Java applications. It is open and extensible with the possibility to add new property adapters to the binding engine. The library supports standard Java and also has a version for GWT.
 
