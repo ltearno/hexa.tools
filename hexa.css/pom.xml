@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>fr.lteconsulting</groupId>
 		<artifactId>hexa.tools</artifactId>
-		<version>1.0</version>
+		<version>1.2-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>hexa.css</artifactId>
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
 	
 	<name>hexa.css</name>
 	<description>HexaCss is a tool to efficiently integrate CSS frameworks (like Less, Sass, GSS, ...) with GWT</description>
@@ -33,26 +33,4 @@
 			<artifactId>gwt-dev</artifactId>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <configuration>
-		                	<failOnError>false</failOnError>
-		               	</configuration>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-		</plugins>
-	</build>
 </project>

@@ -4,7 +4,7 @@
 
   <groupId>fr.lteconsulting</groupId>
   <artifactId>hexa.binding.labs</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>hexa.binding.labs</name>
@@ -25,7 +25,7 @@
     <dependency>
     	<groupId>fr.lteconsulting</groupId>
     	<artifactId>hexa.binding</artifactId>
-    	<version>1.0-SNAPSHOT</version>
+    	<version>1.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
