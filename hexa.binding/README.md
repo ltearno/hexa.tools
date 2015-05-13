@@ -95,8 +95,8 @@ Then in the application's main, bind two instances of those classes
 
 That's really a first step. You can do many other things ! Now, you can read the other part of the manual or investigate into the samples :
 
-- Sample 1, a simple data binding hellow world in pure Java
-- Sample 2, a simple data binding master/detail view in Java with GWT
+- [Sample 1](../hexa.binding.samples/hexa.binding.sample1/pom.xml), a simple data binding hellow world in pure Java
+- [Sample 2](../hexa.binding.samples/hexa.binding.sample1/pom.xml), a simple data binding master/detail view in Java with GWT
 
 
 
@@ -389,7 +389,7 @@ The data binding library is built upon an internal introspection system which al
 
 From there onwards, you can use the data binding on objects of those classes !
 
-Note that you can create `ClazzBundle`s at several places in the code, the reflected set of classes will just grow accordingly.
+Note that you can create `ClazzBundle`s at several places in the code, the set of reflected classes will just grow accordingly.
 
 
 
