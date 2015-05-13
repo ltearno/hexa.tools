@@ -1,14 +1,14 @@
 # Hexa Binding
 
-## A sometimes useful data binding non-invasive library for Java and GWT
+## A sometimes useful non-invasive data binding library for Java and GWT
 
 HexaBinding does fast dynamic binding between values, DTOs, Widgets (with the GWT add-on artifact), and any other objects in Java applications. It is open and extensible with the possibility to add new property adapters to the binding engine. The library supports standard Java and also has a version for GWT.
 
 *It might also work on Android and with JavaFX, although it wasn't tested on it. Any feedback is appreciated !*
 
-Suppose you have two classes `A` and `B`, each one having a `Name` field. Imagine you have two instances `a` and `b` of those classes. You can write :
+Suppose you have two classes `A` and `B`, one having a `name` field and the other having a `fullName`. Imagine you have two instances `a` and `b` of those classes. You can write :
 
-		Binder.bind( a, "name" ).to( b, "name" );
+		Binder.bind( a, "name" ).to( b, "fullName" );
 
 With this one line of code, you have bound the two fields dynamically in a two-way data binding mode.
 
@@ -18,11 +18,11 @@ Now imagine, you have a `Person` and a `Workplace` classes. You can write :
 
 This will bind the person.getWorkplace().getAddress() value to the form.getAddress() value. Still in a two-way fashion.
 
-In a UI code for instance, you will typically write :
+Another example. In a UI code you will typically use the data binding library like this :
 
-		Binder.bind( listBox ).mode(Mode.OneWay ).mapTo( personForm );
+		Binder.bind( listBox ).mapTo( personForm );
 
-This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. In this case, the person form will be inspected to find matching fields with the object selected in the listBox.
+This will build a one way data binding between the `listBox` and the `personForm` which displays and edits the selected person. Then, each matching fields between the selected object and the form will be two-way data bound. Isn't that cool ?!
 
 Inside a GWT application you can write :
 
@@ -30,7 +30,7 @@ Inside a GWT application you can write :
 
 to bind the person's category's color to the widget's border color.
 
-There's more, there are plenty of options you can use !
+But there's more, there are plenty of options you can use !
 
 
 
