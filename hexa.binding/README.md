@@ -605,3 +605,9 @@ To go further, you can also checkout the [Sample 2](../hexa.binding.samples/hexa
 If you have questions, remarks or ideas, you can push a pull request or a comment !
 
 Thanks !
+
+## Contributions
+
+Hexa Tools is developped with love by [LTE Consulting](http://www.lteconsulting.fr). If you want to contribute, have suggestions or ideas, please feel free to submit pull requests or to contact me.
+
+(c) LTE Consulting - 2015
