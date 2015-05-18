@@ -397,7 +397,7 @@ Note also that you don't have to declare subclasses of the JavaScriptObject clas
 
 ## GWT Quick start
 
-GWT is a very good tool to write web applications in Java. Hopefully the HexaBinding library is compatible with GWT and leverage the
+GWT is a very good tool to write web applications in Java. Luckily the HexaBinding library is compatible with GWT and leverage the
 compiler architecture to produce efficient data binding.
 
 Here is a quick start guide to create a GWT application using HexaBinding. The code that is discussed here can be found [here](../hexa.binding.samples/hexa.binding.quickstart/).
