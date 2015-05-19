@@ -12,30 +12,31 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeSpec.Builder;
-
 import fr.lteconsulting.hexa.databinding.annotation.Observable;
+import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
 
-@SupportedAnnotationTypes( { "fr.lteconsulting.hexa.databinding.annotation.Observable" } )
+@SupportedAnnotationTypes( { "fr.lteconsulting.hexa.databinding.annotation.Observable", 
+	"fr.lteconsulting.hexa.databinding.annotation.ObservableGwt" } )
 @SupportedSourceVersion( SourceVersion.RELEASE_7 )
 public class ObservableAnnotationProcessor extends AbstractProcessor
 {
 	private Elements elementUtils;
 	private Filer filer;
+	private Types types;
+	private TypeSimplifier typeSimplifier;
+
+	private static final String TEMPLATE_NAME = "fr/lteconsulting/hexa/databinding/annotation/processor/TemplateClass.txt";
+	private static final String GWT_TEMPLATE_NAME = "fr/lteconsulting/hexa/databinding/annotation/processor/TemplateClassGwt.txt";
 
 	@Override
 	public synchronized void init( ProcessingEnvironment processingEnv )
@@ -44,6 +45,8 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 
 		elementUtils = processingEnv.getElementUtils();
 		filer = processingEnv.getFiler();
+		types = processingEnv.getTypeUtils();
+		typeSimplifier = new TypeSimplifier( types );
 	}
 
 	@Override
@@ -51,47 +54,41 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 	{
 		if( !roundEnv.processingOver() )
 		{
-			final Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith( Observable.class );
+			for( final TypeElement annotatedElement : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( Observable.class ) ) )
+				createObservableFor( annotatedElement, TEMPLATE_NAME );
 
-			for( final TypeElement annotatedElement : ElementFilter.typesIn( annotatedElements ) )
-				createObservableFor( annotatedElement );
+			for( final TypeElement annotatedElement : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( ObservableGwt.class ) ) )
+				createObservableFor( annotatedElement, GWT_TEMPLATE_NAME );
 		}
 		return true;
 	}
 
-	private void createObservableFor( TypeElement factoredType )
+	private void createObservableFor( TypeElement sourceType, String templateName )
 	{
-		String pkgName = elementUtils.getPackageOf( factoredType ).getQualifiedName().toString();
+		String pkgName = elementUtils.getPackageOf( sourceType ).getQualifiedName().toString();
 
-		String factoredTypeName = factoredType.getSimpleName().toString();
+		String sourceTypeName = sourceType.getSimpleName().toString();
 
 		String targetTypeName;
 		String SUFFIX = "Internal";
-		if( factoredTypeName.endsWith( SUFFIX ) )
-			targetTypeName = capitalizeFirstLetter( factoredTypeName ).substring( 0, factoredTypeName.length() - SUFFIX.length() );
+		if( sourceTypeName.endsWith( SUFFIX ) )
+			targetTypeName = capitalizeFirstLetter( sourceTypeName ).substring( 0, sourceTypeName.length() - SUFFIX.length() );
 		else
-			targetTypeName= "Observable" + capitalizeFirstLetter( factoredTypeName );
+			targetTypeName = "Observable" + capitalizeFirstLetter( sourceTypeName );
+
+		Template targetClass = Template.fromResource( templateName, 0 ).replace( "$SourceClassFqn", sourceType.getQualifiedName().toString() ).replace( "$SourceClassName", sourceType.getSimpleName().toString() + TypeSimplifier.actualTypeParametersString( sourceType ) )
+				.replace( "$PackageName", pkgName ).replace( "$TargetClassNameParametrized", targetTypeName + typeSimplifier.formalTypeParametersString( sourceType ) ).replace( "$TargetClassName", targetTypeName );
 
 		try
 		{
 			JavaFileObject jfo = filer.createSourceFile( pkgName + "." + targetTypeName );
 			Writer writer = jfo.openWriter();
 
-			Builder builder = TypeSpec.classBuilder( targetTypeName ).addModifiers( Modifier.PUBLIC, Modifier.FINAL ).superclass(ClassName.get( factoredType ) );
-			
-			processConstructors( factoredType, builder );
+			targetClass.replace( "$Constructors", processConstructors( targetTypeName, sourceType, templateName ) );
 
-			processFieldsAndMethods( factoredType, builder );
-			
-			TypeSpec target = builder.build();
+			targetClass.replace( "$FieldsAndMethods", processFieldsAndMethods( sourceType, templateName ) );
 
-			JavaFile javaFile = JavaFile.builder( pkgName, target )
-					.addFileComment( "Observable class generated from " + factoredTypeName + " (in package "+pkgName + ")" )
-					.addFileComment( "Generated by HexaBinding" )
-					.addFileComment( "Made by LTE Consulting" )
-					.build();
-
-			javaFile.writeTo( writer );
+			writer.write( targetClass.toString() );
 
 			writer.close();
 		}
@@ -102,124 +99,155 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 		}
 	}
 
-	private void processConstructors( TypeElement factoredType, Builder builder )
+	private String processConstructors( String targetTypeName, TypeElement factoredType, String templateName )
 	{
+		StringBuilder result = new StringBuilder();
+
 		for( ExecutableElement constr : ElementFilter.constructorsIn( factoredType.getEnclosedElements() ) )
 		{
-			if( ! constr.getModifiers().contains( Modifier.PUBLIC ) )
+			if( !constr.getModifiers().contains( Modifier.PUBLIC ) )
 				continue;
-			
-			MethodSpec.Builder mb = MethodSpec.constructorBuilder().addModifiers( Modifier.PUBLIC );
-			
-			for( VariableElement parameter : constr.getParameters() )
-				mb.addParameter( ClassName.get( parameter.asType() ), parameter.getSimpleName().toString() );
-			
-			StringBuilder body = new StringBuilder();
-			body.append( "super( " );
+
+			Template ctr = Template.fromResource( templateName, 1 ).replace( "$TargetClassName", targetTypeName );
+
+			StringBuilder formalParameters = new StringBuilder();
 			boolean addComa = false;
 			for( VariableElement parameter : constr.getParameters() )
 			{
-				if( addComa)
-					body.append( ", " );
+				String paramTypeName = Utils.getTypeQualifiedName( parameter.asType() );
+
+				if( addComa )
+					formalParameters.append( ", " );
 				else
 					addComa = true;
-				body.append( parameter.getSimpleName() );
+
+				formalParameters.append( paramTypeName );
+				formalParameters.append( " " );
+				formalParameters.append( parameter.getSimpleName() );
 			}
-			body.append( ");" );
-			
-			mb.addCode( body.toString() );
-			
-			builder.addMethod( mb.build() );
+			ctr.replace( "$FormalParameters", formalParameters.toString() );
+
+			StringBuilder parameters = new StringBuilder();
+			addComa = false;
+			for( VariableElement parameter : constr.getParameters() )
+			{
+				if( addComa )
+					parameters.append( ", " );
+				else
+					addComa = true;
+				parameters.append( parameter.getSimpleName() );
+			}
+			ctr.replace( "$Parameters", parameters.toString() );
+
+			result.append( ctr.toString() );
 		}
+
+		return result.toString();
 	}
 
-	private void processFieldsAndMethods( TypeElement factoredType, Builder builder )
+	private String processFieldsAndMethods( TypeElement factoredType, String templateName )
 	{
 		Set<String> settersDone = new HashSet<>();
 		Set<String> gettersDone = new HashSet<>();
-		
-		processMethods( factoredType, builder, settersDone, gettersDone );
-		
-		processFields( factoredType, builder, settersDone, gettersDone );
+
+		String methods = processMethods( factoredType, settersDone, gettersDone, templateName );
+
+		String fields = processFields( factoredType, settersDone, gettersDone, templateName );
+
+		return methods + fields;
 	}
 
-	private void processMethods( TypeElement factoredType, Builder builder, Set<String> settersDone, Set<String> gettersDone )
+	private String processMethods( TypeElement factoredType, Set<String> settersDone, Set<String> gettersDone, String templateName )
 	{
+		StringBuilder result = new StringBuilder();
+
 		for( ExecutableElement method : ElementFilter.methodsIn( factoredType.getEnclosedElements() ) )
 		{
 			String methodName = method.getSimpleName().toString();
-			
+
 			if( method.getModifiers().contains( Modifier.PRIVATE ) )
 				continue;
-			
-			String propertyName = lowerFirstLetter(methodName.substring( 3 ));
-			
+
+			String propertyName = lowerFirstLetter( methodName.substring( 3 ) );
+
 			if( methodName.startsWith( "set" ) )
 			{
-				if( method.getModifiers().contains( Modifier.FINAL ))
+				if( method.getModifiers().contains( Modifier.FINAL ) )
 					continue;
-				
-				Modifier[] modifiers = new Modifier[method.getModifiers().size()];
-				int i=0;
-				for(Modifier m : method.getModifiers())
-					modifiers[i++] = m;
-				
-				MethodSpec setter = MethodSpec.methodBuilder(methodName)
-					    .returns(void.class)
-					    .addParameter( ClassName.get( method.getParameters().get( 0 ).asType() ), propertyName )
-					    .addModifiers( modifiers )
-					    .addStatement( "super." + methodName + "( " + propertyName + " )" )
-					    .addStatement( "fr.lteconsulting.hexa.databinding.properties.Properties.notify(this, \""+propertyName+"\")")
-					    .build();
-				
-				builder.addMethod( setter );
+
+				Template setter = Template.fromResource( templateName, 3 );
+
+				StringBuilder modifiersBuilder = new StringBuilder();
+				for( Modifier m : method.getModifiers() )
+					modifiersBuilder.append( m.toString() );
+				setter.replace( "$Modifiers", modifiersBuilder.toString() );
+
+				setter.replace( "$MethodName", methodName );
+
+				setter.replace( "$PropertyClass", Utils.getTypeQualifiedName( method.getParameters().get( 0 ).asType() ) );
+				setter.replace( "$Property", propertyName );
+
+				result.append( setter.toString() );
 				settersDone.add( propertyName );
 			}
-			else if( methodName.startsWith( "get" ))
+			else if( methodName.startsWith( "get" ) )
 			{
 				gettersDone.add( propertyName );
 			}
 		}
+
+		return result.toString();
 	}
 
-	private void processFields( TypeElement factoredType, Builder builder, Set<String> settersDone, Set<String> gettersDone )
+	private String processFields( TypeElement factoredType, Set<String> settersDone, Set<String> gettersDone, String templateName )
 	{
+		StringBuilder result = new StringBuilder();
+
 		for( VariableElement field : ElementFilter.fieldsIn( factoredType.getEnclosedElements() ) )
 		{
-			if( field.getModifiers().contains( Modifier.PRIVATE ))
+			if( field.getModifiers().contains( Modifier.PRIVATE ) )
 				continue;
-			
+
 			String propertyName = field.getSimpleName().toString();
-			
-			if( ! settersDone.contains( propertyName ) )
+
+			if( !settersDone.contains( propertyName ) )
 			{
 				String methodName = "set" + capitalizeFirstLetter( propertyName );
-				
-				MethodSpec setter = MethodSpec.methodBuilder(methodName)
-					    .addModifiers(Modifier.PUBLIC)
-					    .returns(void.class)
-					    .addParameter( ClassName.get( field.asType() ), propertyName )
-					    .addStatement( "this." + propertyName + " = " + propertyName )
-					    .addStatement( "fr.lteconsulting.hexa.databinding.properties.Properties.notify( this, \"" + propertyName+"\" )" )
-					    .build();
-				
-				builder.addMethod( setter );
+
+				Template setter = Template.fromResource( templateName, 4 );
+				setter.replace( "$Modifiers", "public" );
+				setter.replace( "$MethodName", methodName );
+				// setter.replace( "$PropertyClass",
+				// ((TypeElement)(((DeclaredType)
+				// field.asType()).asElement())).getQualifiedName().toString()
+				// );
+				setter.replace( "$PropertyClass", Utils.getTypeQualifiedName( field.asType() ) );
+				setter.replace( "$Property", propertyName );
+
+				result.append( setter.toString() );
+
 				settersDone.add( propertyName );
 			}
-			
-			if( ! gettersDone.contains( propertyName ) )
+
+			if( !gettersDone.contains( propertyName ) )
 			{
 				String methodName = "get" + capitalizeFirstLetter( propertyName );
-				
-				MethodSpec getter = MethodSpec.methodBuilder(methodName)
-					    .addModifiers(Modifier.PUBLIC)
-					    .returns(ClassName.get( field.asType() ))
-					    .addStatement("return this."+field.getSimpleName().toString())
-					    .build();
-				
-				builder.addMethod( getter );
+
+				Template getter = Template.fromResource( templateName, 2 );
+				// getter.replace( "$PropertyClass",
+				// ((TypeElement)(((DeclaredType)field.asType()).asElement())).getQualifiedName().toString()
+				// );
+				getter.replace( "$PropertyClass", Utils.getTypeQualifiedName( field.asType() ) );
+				getter.replace( "$MethodName", methodName );
+				getter.replace( "$Property", propertyName );
+
+				result.append( getter.toString() );
+
+				gettersDone.add( propertyName );
 			}
 		}
+
+		return result.toString();
 	}
 
 	private void error( String msg )
@@ -231,7 +259,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 	{
 		return s.substring( 0, 1 ).toLowerCase() + s.substring( 1 );
 	}
-	
+
 	private static String capitalizeFirstLetter( String s )
 	{
 		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );

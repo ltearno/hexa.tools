@@ -19,10 +19,8 @@
 		<module>hexa.binding</module>
 		<module>hexa.binding/processor</module>
 		<module>hexa.binding.gwt</module>
-		<module>hexa.binding.samples</module>
 		<module>hexa.core</module>
 		<module>hexa.css</module>
-		<module>hexa.css.samples</module>
 		<module>hexa.css-maven-plugin</module>
 		<!--<module>hexa.demo.gwt</module> -->
 		<module>hexa.gwt.archetype</module>
