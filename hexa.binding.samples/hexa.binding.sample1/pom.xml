@@ -12,6 +12,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<hexa.binding.version>1.2-SNAPSHOT</hexa.binding.version>
 	</properties>
 
 	<dependencies>
@@ -25,7 +26,7 @@
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexa.binding</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>${hexa.binding.version}</version>
 		</dependency>
 	</dependencies>
 

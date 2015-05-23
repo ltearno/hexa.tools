@@ -29,13 +29,13 @@
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexa.binding</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexa.binding.gwt</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- <dependency> -->

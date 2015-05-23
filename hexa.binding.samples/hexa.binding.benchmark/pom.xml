@@ -2,9 +2,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>fr.lteconsulting</groupId>
+  <parent>
+    <groupId>fr.lteconsulting</groupId>
+    <version>1.2-SNAPSHOT</version>
+    <artifactId>hexa.binding.samples</artifactId>
+  </parent>
+
   <artifactId>hexa.binding.benchmark</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  
   <packaging>jar</packaging>
 
   <name>hexa.binding.benchmark</name>
@@ -25,7 +30,7 @@
     <dependency>
       <groupId>fr.lteconsulting</groupId>
       <artifactId>hexa.binding</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <version>${hexa.binding.version}</version>
     </dependency>
   </dependencies>
 

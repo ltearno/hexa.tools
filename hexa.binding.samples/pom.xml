@@ -12,10 +12,22 @@
 
 	<packaging>pom</packaging>
 
+	<properties>
+		<hexa.binding.version>1.2-SNAPSHOT</hexa.binding.version>
+	</properties>
+
 	<modules>
 		<module>hexa.binding.sample1</module>
 		<module>hexa.binding.sample2</module>
 		<module>hexa.binding.benchmark</module>
 		<module>hexa.binding.labs</module>
 	</modules>
+
+	<dependencies>
+    <dependency>
+      <groupId>fr.lteconsulting</groupId>
+      <artifactId>hexa.binding</artifactId>
+      <version>${hexa.binding.version}</version>
+    </dependency>
+  </dependencies>
 </project>

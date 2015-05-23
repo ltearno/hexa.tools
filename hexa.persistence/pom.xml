@@ -5,7 +5,7 @@
 
 	<parent>
 		<groupId>fr.lteconsulting</groupId>
-		<artifactId>hexa.parent</artifactId>
+		<artifactId>hexa.tools</artifactId>
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
