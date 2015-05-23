@@ -7,6 +7,7 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Window;
@@ -32,12 +33,12 @@ public class Application implements EntryPoint
 		// bundle classes is registered into the type system
 		((MyBundle) GWT.create( MyBundle.class )).register();
 
-		// create an array of person
+		// create an array of hard-coded person
 		final List<Person> persons = new ArrayList<>();
 		for( int i = 0; i < 10; i++ )
 			persons.add( new Person( "John", i + " Smith" ) );
 
-		// create the person list
+		// create the person cell list widget
 		final CellList<Person> cellList = new CellList<>( new AbstractCell<Person>()
 		{
 			@Override
@@ -64,10 +65,10 @@ public class Application implements EntryPoint
 		RootPanel.get().add( cellList );
 		RootPanel.get().add( form );
 		
-		// bind the selected element in the CellList to the selected element
+		// bind the selected element in the CellList to the selected person
 		// in the persons list.
-		// Note that we use the 'selected' property of the list which
-		// does not really exist in ArrayList. HexaBinding will create
+		// Note that we use the 'selected' property of the list although
+		// it does not exist in the ArrayList class. HexaBinding will create
 		// a virtual property container for us.
 		Binder.bind( new SelectionModelAdapter<>( model ) ).to( persons, "selected" );
 
@@ -84,24 +85,25 @@ public class Application implements EntryPoint
 			@Override
 			protected void onChange( Object object, String property )
 			{
-				// Since the CellList does not support one row update (easily), we
-				// just re-fill it with the data again. That's not performant and would
+				// Since the CellList does not support (easily) updating one row only, we
+				// just re-set the cell list data again. That's a performance issue and should
 				// not go in production
 				cellList.setRowData( persons );
 			}
 		} );
 		
-		// We do a first call to the getStatistics method
+		// We do a first call to the getStatistics method, as the comparison point when we'll call it a second time
 		Properties.getStatistics();
 		
 		// bind the selected person's preferred color to the form's element's border style.
-		Binder.bind( persons, "selected.preferredColor" ).to( form.getElement().getStyle(), "borderColor" );
+		Binder.bind( persons, "selected.preferredColor" ).to( form, "element.style.borderColor" );
+		Binder.bind( persons, "selected.preferredColor" ).to( Document.get(), "body.style.backgroundColor" );
 		
 		// bind the selected person's name to a WriteOnlyPropertyAdapter. As it name suggests,
 		// it can only receive values and cannot be read. Our implementation
 		// changes the window's title according to the selected person's name.
 		// Note that we can't use the HexaBinding (yet) to bind to the "title" static property
-		// of the Window class.
+		// of the Window class. That's why we write our own {@link PropertyAdapater}
 		Binder.bind( persons, "selected.name" ).to( new WriteOnlyPropertyAdapter()
 		{
 			@Override
@@ -111,6 +113,8 @@ public class Application implements EntryPoint
 			}
 		} );
 		
+		// We now show the actual statistics again. It will contain a text indicating
+		// the number of resources created and destroyed since the last Properties.getStatistics() call
 		Window.alert( Properties.getStatistics() );
 	}
 
@@ -121,7 +125,7 @@ public class Application implements EntryPoint
 	interface MyBundle extends ClazzBundle
 	{
 		// List of the classes for which the data binding system needs introspection at runtime
-		@ReflectedClasses( classes = { Person.class, PersonForm.class, ArrayList.class, JavaScriptObject.class } )
+		@ReflectedClasses( classes = { PersonForm.class, ArrayList.class, JavaScriptObject.class } )
 		void register();
 	}
 }

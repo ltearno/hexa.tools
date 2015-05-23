@@ -36,6 +36,11 @@ public class JavaScriptObjectClazz implements Clazz<JavaScriptObject>
 	/*-{
 		jso[property] = value;
 	}-*/;
+	
+	private native <T> T getJsoProperty( JavaScriptObject jso, String property )
+	/*-{
+		return jso[property] || null;
+	}-*/;
 
 	@Override
 	public Field getField( final String fieldName )
@@ -54,7 +59,7 @@ public class JavaScriptObjectClazz implements Clazz<JavaScriptObject>
 				@Override
 				public <OUT> OUT getValue( Object object )
 				{
-					throw new RuntimeException( "Not yet implemented" );
+					return getJsoProperty( (JavaScriptObject) object, fieldName );
 				}
 
 				@Override

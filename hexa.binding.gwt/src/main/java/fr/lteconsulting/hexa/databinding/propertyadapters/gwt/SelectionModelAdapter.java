@@ -23,7 +23,8 @@ public class SelectionModelAdapter<T> implements PropertyAdapter
 	private SingleSelectionModel<T> model;
 	
 	/**
-	 * Uses the given selection model and acts as a binding property
+	 * Uses the given {@link SingleSelectionModel} and acts as a binding property.
+	 * Used to bind the model's selected value to another value.
 	 * 
 	 * @param selectionModel
 	 */

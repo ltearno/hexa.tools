@@ -43,7 +43,7 @@ First create a Java project. Then add this dependency in your pom.xml :
 	<dependency>
 		<groupId>fr.lteconsulting</groupId>
 		<artifactId>hexa.binding</artifactId>
-		<version>1.0</version>
+		<version>1.2</version>
 	</dependency>
 
 Then, specify at least the Java 6 language level :
@@ -393,7 +393,10 @@ Note that you can create `ClazzBundle`s at several places in the code, the set o
 
 Note also that you don't have to declare subclasses of the JavaScriptObject classes, they are managed automatically. But if you need to use a JavaScriptObject class or subclass, then you need to register the JavaScriptObject class.
 
+### The @ObservableGwt annotation
 
+The @ObservableGwt annotation can be used instead of @Observable in GWT projects because it generates also the `ClazzBundle` glue code for the
+annotated class. Refer to the @Observable paragraph to learn more about POJO generation.
 
 ## GWT Quick start
 
@@ -408,15 +411,8 @@ First create a Java GWT project. Then add those dependencies in your pom.xml :
 
 	<dependency>
 		<groupId>fr.lteconsulting</groupId>
-		<artifactId>hexa.binding</artifactId>
-		<version>1.0</version>
-		<scope>compile</scope>
-	</dependency>
-	
-	<dependency>
-		<groupId>fr.lteconsulting</groupId>
 		<artifactId>hexa.binding.gwt</artifactId>
-		<version>1.0</version>
+		<version>1.2</version>
 		<scope>compile</scope>
 	</dependency>
 
@@ -473,7 +469,7 @@ In your gwt module file, add this line :
 
 ### First sample
 
-We will begin by a very simple binding between two text boxes and a label. This will go like this :
+We will begin with a very simple binding between two text boxes and a label. This will go like this :
 
 	Label label = new Label();
 	TextBox textBox = new TextBox();
@@ -528,9 +524,9 @@ First, let's define the POJO :
 
 That's a really simple POJO. The only thing asking explanation is the line `Properties.notify( this, "name" );`. It is located in the setter after the modification of the "name" field. It notifies the binding system that the property value has changed. This is required if you want the binding system to be able to watch your values. If you don't call this method, the binding will work, but won't react on your property changes.
 
-To help your productivity, the `@Observable` annotation can be used to generate the Person class. Instead of writing the Person class by hand, you could write a reduced PersonInternal class annotated with @Observable :
+To help your productivity, the `@ObservableGwt` annotation can be used to generate the Person class. Instead of writing the Person class by hand, you could write a reduced PersonInternal class annotated with @ObservableGwt :
 
-	@Observable
+	@ObservableGwt
 	class PersonInternal
 	{
 		String name;
@@ -538,13 +534,7 @@ To help your productivity, the `@Observable` annotation can be used to generate 
 
 And the Person class will be generated automatically. This feature uses the annotation processing mechanism, so if you want to use that, you should have correctly configured your IDE.
 
-To use that POJO class, let's first add it in the set of @ReflectedClasses :
-
-	@ReflectedClasses( classes = { 
-			Label.class,
-			TextBox.class,
-			Person.class
-		} )
+You don't need to add this POJO class in the set of @ReflectedClasses because the generated implementation does that for you.
 
 In the main code, we first create the pojo, the widgets and add them into the DOM :
 
@@ -579,13 +569,14 @@ The third example is much simpler. We are going to bind a TextBox's value to the
 
 	TextBox colorBox = new TextBox();
 		
-	Binder.bind( colorBox ).to( Document.get().getBody().getStyle(), "backgroundColor" );
+	Binder.bind( colorBox ).to( Document.get(), "body.style.backgroundColor" );
 	
 	RootPanel.get().add( colorBox );
 
-For this to work, we have to add the `JavaScript` object in the set of reflected classes. That's because the getStyle() method returns a Style object which is a subclass of the JavaScriptObject class.
+For this to work, we have to add the `JavaScript` object in the set of reflected classes. That's because all the Document instance, and the getBody() and getStyle() methods return a subclass of the JavaScriptObject class. With the JavaScriptObject classes, you don't have to register 
+subclasses but at least the JavaScriptObject class.
 
-Now let's try a last thing. What if we want to bind the text box value to the window's title ? Since the Window class in GWT only has static methods, we cannot use an instance of set property values on. So we need to create a custom adapter :
+Now let's try a last thing. What if we want to bind the text box value to the window's title ? Since the Window class in GWT has only static methods, we cannot use an instance of set property values on. So we need to create a custom adapter :
 
 	Binder.bind( colorBox ).to( new WriteOnlyPropertyAdapter()
 	{
@@ -600,7 +591,7 @@ Each time the colorBox value changes, the binding system propagates this change 
 
 ## Going further
 
-To go further, you can also checkout the [Sample 2](../hexa.binding.samples/hexa.binding.sample2/), which is a very basic application showing a master detail edition view.
+To go further, you can also checkout the [Sample 2](../hexa.binding.samples/hexa.binding.sample2/), which is a very basic application showing a master detail edition view. It is full of comments so it's easy to use it as a first step guide.
 
 If you have questions, remarks or ideas, you can push a pull request or a comment !
 

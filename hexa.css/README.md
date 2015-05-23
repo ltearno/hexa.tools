@@ -18,18 +18,12 @@
 Clone the hexa.tools repository and build the hexa.css and hexa.css-maven-plugin projects :
 
 		git clone https://github.com/ltearno/hexa.tools.git
-		cd hexa.tools/hexa.css
-		mvn install
-		cd ../hexa.css-maven-plugin
+		cd hexa.tools
 		mvn install
 
 Then to build the samples :
 
-		cd ../hexa.css/samples/sample1
-		mvn install
-		cd ../sample2
-		mvn install
-		cd ../sample3
+		cd hexa.css.samples
 		mvn install
 
 Now to run the samples you just have to drop each `index.html` file in the target directories in a browser !
@@ -48,7 +42,7 @@ First, add this to your project's `pom.xml` file :
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexacss</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.2</version>
 		<dependency>
 
 You also need to inherit the HexaCss module in your application's module :
@@ -111,7 +105,7 @@ So here is the chunk you need to add in your pom.xml file to process your CSS fi
 		<plugin>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexacss-maven-plugin</artifactId>
-			<version>1.0</version>
+			<version>1.2</version>
 
 			<configuration>
 				<sourceDirectory>${project.build.directory}/css</sourceDirectory>
