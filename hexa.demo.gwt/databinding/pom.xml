@@ -7,7 +7,7 @@
 
     <name>hexa.demo.gwt.databinding</name>
     <url>http://www.lteconsulting.fr</url>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
 
     <packaging>war</packaging>
 
@@ -45,21 +45,21 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.core</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.css</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
             <scope>compile</scope>
         </dependency>
 

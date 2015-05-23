@@ -5,7 +5,7 @@
 	<groupId>fr.lteconsulting</groupId>
 	<artifactId>hexa.tools</artifactId>
 
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 
 	<name>hexa.tools</name>
 	<description>HexaTools is a pack of libraries for Java</description>
@@ -19,13 +19,13 @@
 		<module>hexa.binding</module>
 		<module>hexa.binding/processor</module>
 		<module>hexa.binding.gwt</module>
-		<module>hexa.binding.samples</module>
+		<!--<module>hexa.binding.samples</module>-->
 		<module>hexa.core</module>
 		<module>hexa.css</module>
 		<module>hexa.css-maven-plugin</module>
-		<module>hexa.css.samples</module>
+		<!--<module>hexa.css.samples</module>-->
 		<!--<module>hexa.demo.gwt</module> -->
-		<module>hexa.gwt.archetype</module>
+		<!--<module>hexa.gwt.archetype</module>-->
 		<!--<module>hexa.persistence</module>-->
 		<!--<module>hexa.rpc</module>-->
 		<!--<module>hexa.spring</module>-->

@@ -5,7 +5,7 @@
 	<groupId>fr.lteconsulting</groupId>
 	<artifactId>hexa.demo.gwt</artifactId>
 
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 
 	<name>hexa.demo.gwt</name>
 
@@ -19,13 +19,9 @@
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexa.core</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
-
-		<!-- GWT -->
-		<!-- <dependency> <groupId>com.google.gwt</groupId> <artifactId>gwt-servlet</artifactId> 
-			<scope>runtime</scope> </dependency> -->
 	</dependencies>
 
 	<build>
@@ -58,14 +54,8 @@
 					<debugPort>8001</debugPort>
 					<compileReport>true</compileReport>
 					<runTarget>${runTarget}</runTarget>
-					<!--<warSourceDirectory>target/webapp</warSourceDirectory> -->
-					<!-- <webappDirectory>${basedir}/target/gwtwebapp</webappDirectory> -->
-					<!-- launch configuration -->
-					<!-- <hostedWebapp>${basedir}/target/webapp</hostedWebapp> -->
-					<!-- <noServer>true</noServer> -->
 					<gen>${basedir}/target/gwt-gen</gen>
 					<module>fr.lteconsulting.hexa.demo.HexaDemo</module>
-					<!-- cache -->
 					<persistentunitcache>true</persistentunitcache>
 					<persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
 				</configuration>

@@ -4,7 +4,7 @@
 
 	<groupId>fr.lteconsulting</groupId>
 	<artifactId>hexacss-sample2</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 
 	<name>hexa.css.sample2</name>
 
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>hexa.css</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>1.2</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

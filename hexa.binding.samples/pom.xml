@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.lteconsulting</groupId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 	<artifactId>hexa.binding.samples</artifactId>
 
 	<name>hexa.binding.samples</name>
@@ -13,7 +13,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<hexa.binding.version>1.2-SNAPSHOT</hexa.binding.version>
+		<hexa.binding.version>1.2</hexa.binding.version>
 	</properties>
 
 	<modules>
