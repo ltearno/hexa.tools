@@ -1,0 +1,118 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.PureHexaCss" field="s"></ui:with>
+	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.PureResponsiveGridHexaCss" field="r"></ui:with>
+	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.FontAwesomeHexaCss" field="f"></ui:with>
+	<ui:with type="fr.lteconsulting.hexacss.client.Css" field="css"></ui:with>
+	<g:ScrollPanel>
+		<g:HTMLPanel>
+			<div>
+				<h1>Sample GWT app with Skeleton used through HexaCss</h1>
+				
+				<hr/>
+				
+				<div class="{s.g}">
+					<div class="{s.u1_2}">
+						<h4>Stop coding non-responsive applications. Let users use your applications from anywhere.</h4>
+					</div>
+					<div class="{s.u1_2}">
+						Those are standards GWT buttons. The first one has absolutely no style added :
+						<pre><code>Button b = new Button();</code></pre>
+						<g:Button ui:field="button1" stylePrimaryName="{s.button}">Normal</g:Button>
+						<g:Button ui:field="button2" stylePrimaryName="{s.button} {s.buttonPrimary}">Primary</g:Button>
+					</div>
+				</div>
+				
+				<hr/>
+				
+				<div class="{s.g}">
+				    <div class="{s.u1} {r.md1_3}"><p>Thirds</p></div>
+				    <div class="{s.u1} {r.md1_3}"><p>Thirds</p></div>
+				    <div class="{s.u1} {r.md1_3}">
+				    	<button class="{s.button}">
+						    <i class="{f.fa} {f.faCog}"></i>
+						    Settings
+						</button>
+						
+						<a class="{s.button} {s.buttonPrimary}" href="#">
+						    <i class="{f.fa} {f.faShoppingCart} {f.faLg}"></i>
+						    Checkout
+						</a>
+					</div>
+				</div>
+				
+				<div class="{s.g}">
+					<div class="{s.u}">
+						<h4>Intro</h4>
+						<p><a target="_blank" href="http://getskeleton.com/">Skeleton</a> is a dead simple, responsive CSS boilerplate.
+						It has the very basic minimum to start a application, with full responsiveness. So why not base our new <a target="_blank" href="http://www.gwtproject.org/">GWT</a> applications
+						on it ? With <a target="_blank" href="www.lteconsulting.fr/hexacss">HexaCss</a>, using Skeleton is really easy and type-safe. For example,
+						in the Java code and UiBinder, you get the class names auto-completion !</p>
+						
+						<p>Look at the <a target="_blank" href="https://github.com/ltearno/hexa.tools/tree/master/hexa.css/samples/sample5">code</a> of this sample to
+						get an idea on how to use it. It's very simple, just like the usual CssResource.</p>
+						
+						<p>One of the cool things with Skeleton is that it applies styles on HTML elements, so you can use most if the time use GWT widgets 
+						out-of-the-box, they will be already styled.</p>
+						
+						<p>Here are some samples of the GWT / Skeleton / HexaCss possibilities :</p>
+					</div>
+				</div>
+				
+				<hr/>
+
+				<div class="{s.g}">
+					<div class="{s.u}">
+						<h4>Forms</h4>
+						<p>This is a form with standard GWT widgets :</p>
+						<form>
+							<div class="{s.g}">
+								<div class="{s.u1_2}">
+									<label for="exampleEmailInput">Your email</label>
+									<g:TextBox ui:field="textbox"></g:TextBox>
+								</div>
+								<div class="{s.u1_2}">
+									<label for="exampleRecipientInput">Reason for contacting</label>
+									<g:ListBox ui:field="listbox"></g:ListBox>
+								</div>
+							</div>
+							
+							<label for="exampleMessage">Message</label>
+							<g:TextArea ui:field="textarea"></g:TextArea>
+							
+							<label>
+								<g:CheckBox ui:field="checkbox">Send a copy to yourself</g:CheckBox>
+							</label>
+							
+							<g:SubmitButton ui:field="submit" styleName="{s.buttonPrimary}">Submit</g:SubmitButton>
+						</form>
+					</div>
+				</div>
+				
+				<hr/>
+				
+				<div class="{s.g}">
+					<div class="{s.u1_2}">
+						<h4>Tables</h4>
+						<g:FlexTable ui:field="table" styleName="{s.u1_2}"></g:FlexTable>
+					</div>
+				</div>
+				
+				<hr/>
+				
+				<div class="{s.g}">
+					<div class="{s.u1_2}">
+						<h4>Outro</h4>
+						<p>You can find the HexaCss project here : <a target="_blank" href="www.lteconsulting.fr/hexacss">www.lteconsulting.fr/hexacss</a>, which
+						was made with love by Arnaud Tournier @ <a target="_blank" href="www.lteconsulting.fr">LTE Consulting</a>.</p>
+						
+						<p>The Skeleton project is <a target="_blank" href="http://getskeleton.com/">here</a>.</p>
+						
+						<p>And the GitHub repo containing HexaCss and many other things can be found <a target="_blank" href="https://github.com/ltearno/hexa.tools">here</a>.</p>
+					</div>
+				</div>
+			</div>
+		</g:HTMLPanel>
+	</g:ScrollPanel>
+</ui:UiBinder> 
