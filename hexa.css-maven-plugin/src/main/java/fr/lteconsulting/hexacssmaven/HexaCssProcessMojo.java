@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -72,6 +73,15 @@ public class HexaCssProcessMojo extends AbstractMojo
 		getLog().info( "Output directory: " + outputDirectory.getAbsolutePath() );
 
 		checkFileExists( mappingFile );
+		try
+		{
+			Files.createDirectories( outputDirectory.toPath() );
+		}
+		catch( IOException e1 )
+		{
+			e1.printStackTrace();
+			throw new MojoExecutionException( "Cannot create the directory '" + outputDirectory.getAbsolutePath() + "' !" );
+		}
 		checkFileExists( outputDirectory );
 
 		if( includes != null )
