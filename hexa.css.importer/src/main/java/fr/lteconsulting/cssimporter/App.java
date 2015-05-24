@@ -36,12 +36,12 @@ public class App
 		System.out.println( "HexaCss importer" );
 
 		// input file path
-		String sourcePath = "C:\\Documents\\Repos\\hexa.tools\\hexa.css.importer\\grids-responsive-min.css";
+		String sourcePath = "C:\\Documents\\Repos\\hexa.tools\\hexa.css\\src\\main\\resources\\fr\\lteconsulting\\hexa\\client\\css\\bindings\\font-awesome.css";
 
 		// output file path (default = .)
 		// output class fqn (default = fr.lteconsulting.Css)
 
-		String className = "PureHexaCss";
+		String className = "FontAwesomeHexaCss";
 		String packageName = "fr.lteconsulting.hexa.client.css.bindings";
 
 		String input;
