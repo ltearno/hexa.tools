@@ -31,12 +31,12 @@
 				    <div class="{s.u1} {r.md1_3}"><p>Thirds</p></div>
 				    <div class="{s.u1} {r.md1_3}">
 				    	<button class="{s.button}">
-						    <i class="{f.fa} {f.faCog}"></i>
+						    <i class="{f.fa} {f.cog}"></i>
 						    Settings
 						</button>
 						
 						<a class="{s.button} {s.buttonPrimary}" href="#">
-						    <i class="{f.fa} {f.faShoppingCart} {f.faLg}"></i>
+						    <i class="{f.fa} {f.shoppingCart} {f.lg}"></i>
 						    Checkout
 						</a>
 					</div>

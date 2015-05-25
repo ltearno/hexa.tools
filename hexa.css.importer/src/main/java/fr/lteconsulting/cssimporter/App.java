@@ -41,6 +41,7 @@ public class App
 		// output file path (default = .)
 		// output class fqn (default = fr.lteconsulting.Css)
 
+		String singletonName = "CSS";
 		String className = "FontAwesomeHexaCss";
 		String packageName = "fr.lteconsulting.hexa.client.css.bindings";
 
@@ -75,7 +76,7 @@ public class App
 		res.append( "\r\n" );
 		res.append( "public interface " + className + " extends HexaCss\r\n" );
 		res.append( "{\r\n" );
-		res.append( "	public static final " + className + " PURE = GWT.create( " + className + ".class );\r\n" );
+		res.append( "	public static final " + className + " " + singletonName + " = GWT.create( " + className + ".class );\r\n" );
 
 		ArrayList<String> names = new ArrayList<>( classNames );
 		Collections.sort( names );
@@ -96,8 +97,11 @@ public class App
 
 	private String transform( String s )
 	{
-		if( s.startsWith( "pure-u-" ) )
-			s = s.substring( "pure-u-".length() );
+		String prefix = "fa-";
+		if( s.equals( "fa" ) )
+			return "fa";
+		if( s.startsWith( prefix ) )
+			s = s.substring( prefix.length() );
 
 		StringBuilder sb = new StringBuilder();
 		boolean nextUppercase = false;

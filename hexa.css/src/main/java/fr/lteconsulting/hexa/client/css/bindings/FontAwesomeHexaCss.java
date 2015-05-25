@@ -7,1849 +7,1849 @@ import fr.lteconsulting.hexa.client.css.annotation.HexaCssExtra;
 
 public interface FontAwesomeHexaCss extends HexaCss
 {
-	public static final FontAwesomeHexaCss PURE = GWT.create( FontAwesomeHexaCss.class );
+	public static final FontAwesomeHexaCss CSS = GWT.create( FontAwesomeHexaCss.class );
 
 	@HexaCssExtra( name = "fa" )
 	String fa();
 
 	@HexaCssExtra( name = "fa-2x" )
-	String fa2x();
+	String _2x();
 
 	@HexaCssExtra( name = "fa-3x" )
-	String fa3x();
+	String _3x();
 
 	@HexaCssExtra( name = "fa-4x" )
-	String fa4x();
+	String _4x();
 
 	@HexaCssExtra( name = "fa-5x" )
-	String fa5x();
+	String _5x();
 
 	@HexaCssExtra( name = "fa-adjust" )
-	String faAdjust();
+	String adjust();
 
 	@HexaCssExtra( name = "fa-adn" )
-	String faAdn();
+	String adn();
 
 	@HexaCssExtra( name = "fa-align-center" )
-	String faAlignCenter();
+	String alignCenter();
 
 	@HexaCssExtra( name = "fa-align-justify" )
-	String faAlignJustify();
+	String alignJustify();
 
 	@HexaCssExtra( name = "fa-align-left" )
-	String faAlignLeft();
+	String alignLeft();
 
 	@HexaCssExtra( name = "fa-align-right" )
-	String faAlignRight();
+	String alignRight();
 
 	@HexaCssExtra( name = "fa-ambulance" )
-	String faAmbulance();
+	String ambulance();
 
 	@HexaCssExtra( name = "fa-anchor" )
-	String faAnchor();
+	String anchor();
 
 	@HexaCssExtra( name = "fa-android" )
-	String faAndroid();
+	String android();
 
 	@HexaCssExtra( name = "fa-angellist" )
-	String faAngellist();
+	String angellist();
 
 	@HexaCssExtra( name = "fa-angle-double-down" )
-	String faAngleDoubleDown();
+	String angleDoubleDown();
 
 	@HexaCssExtra( name = "fa-angle-double-left" )
-	String faAngleDoubleLeft();
+	String angleDoubleLeft();
 
 	@HexaCssExtra( name = "fa-angle-double-right" )
-	String faAngleDoubleRight();
+	String angleDoubleRight();
 
 	@HexaCssExtra( name = "fa-angle-double-up" )
-	String faAngleDoubleUp();
+	String angleDoubleUp();
 
 	@HexaCssExtra( name = "fa-angle-down" )
-	String faAngleDown();
+	String angleDown();
 
 	@HexaCssExtra( name = "fa-angle-left" )
-	String faAngleLeft();
+	String angleLeft();
 
 	@HexaCssExtra( name = "fa-angle-right" )
-	String faAngleRight();
+	String angleRight();
 
 	@HexaCssExtra( name = "fa-angle-up" )
-	String faAngleUp();
+	String angleUp();
 
 	@HexaCssExtra( name = "fa-apple" )
-	String faApple();
+	String apple();
 
 	@HexaCssExtra( name = "fa-archive" )
-	String faArchive();
+	String archive();
 
 	@HexaCssExtra( name = "fa-area-chart" )
-	String faAreaChart();
+	String areaChart();
 
 	@HexaCssExtra( name = "fa-arrow-circle-down" )
-	String faArrowCircleDown();
+	String arrowCircleDown();
 
 	@HexaCssExtra( name = "fa-arrow-circle-left" )
-	String faArrowCircleLeft();
+	String arrowCircleLeft();
 
 	@HexaCssExtra( name = "fa-arrow-circle-o-down" )
-	String faArrowCircleODown();
+	String arrowCircleODown();
 
 	@HexaCssExtra( name = "fa-arrow-circle-o-left" )
-	String faArrowCircleOLeft();
+	String arrowCircleOLeft();
 
 	@HexaCssExtra( name = "fa-arrow-circle-o-right" )
-	String faArrowCircleORight();
+	String arrowCircleORight();
 
 	@HexaCssExtra( name = "fa-arrow-circle-o-up" )
-	String faArrowCircleOUp();
+	String arrowCircleOUp();
 
 	@HexaCssExtra( name = "fa-arrow-circle-right" )
-	String faArrowCircleRight();
+	String arrowCircleRight();
 
 	@HexaCssExtra( name = "fa-arrow-circle-up" )
-	String faArrowCircleUp();
+	String arrowCircleUp();
 
 	@HexaCssExtra( name = "fa-arrow-down" )
-	String faArrowDown();
+	String arrowDown();
 
 	@HexaCssExtra( name = "fa-arrow-left" )
-	String faArrowLeft();
+	String arrowLeft();
 
 	@HexaCssExtra( name = "fa-arrow-right" )
-	String faArrowRight();
+	String arrowRight();
 
 	@HexaCssExtra( name = "fa-arrow-up" )
-	String faArrowUp();
+	String arrowUp();
 
 	@HexaCssExtra( name = "fa-arrows" )
-	String faArrows();
+	String arrows();
 
 	@HexaCssExtra( name = "fa-arrows-alt" )
-	String faArrowsAlt();
+	String arrowsAlt();
 
 	@HexaCssExtra( name = "fa-arrows-h" )
-	String faArrowsH();
+	String arrowsH();
 
 	@HexaCssExtra( name = "fa-arrows-v" )
-	String faArrowsV();
+	String arrowsV();
 
 	@HexaCssExtra( name = "fa-asterisk" )
-	String faAsterisk();
+	String asterisk();
 
 	@HexaCssExtra( name = "fa-at" )
-	String faAt();
+	String at();
 
 	@HexaCssExtra( name = "fa-automobile" )
-	String faAutomobile();
+	String automobile();
 
 	@HexaCssExtra( name = "fa-backward" )
-	String faBackward();
+	String backward();
 
 	@HexaCssExtra( name = "fa-ban" )
-	String faBan();
+	String ban();
 
 	@HexaCssExtra( name = "fa-bank" )
-	String faBank();
+	String bank();
 
 	@HexaCssExtra( name = "fa-bar-chart" )
-	String faBarChart();
+	String barChart();
 
 	@HexaCssExtra( name = "fa-bar-chart-o" )
-	String faBarChartO();
+	String barChartO();
 
 	@HexaCssExtra( name = "fa-barcode" )
-	String faBarcode();
+	String barcode();
 
 	@HexaCssExtra( name = "fa-bars" )
-	String faBars();
+	String bars();
 
 	@HexaCssExtra( name = "fa-bed" )
-	String faBed();
+	String bed();
 
 	@HexaCssExtra( name = "fa-beer" )
-	String faBeer();
+	String beer();
 
 	@HexaCssExtra( name = "fa-behance" )
-	String faBehance();
+	String behance();
 
 	@HexaCssExtra( name = "fa-behance-square" )
-	String faBehanceSquare();
+	String behanceSquare();
 
 	@HexaCssExtra( name = "fa-bell" )
-	String faBell();
+	String bell();
 
 	@HexaCssExtra( name = "fa-bell-o" )
-	String faBellO();
+	String bellO();
 
 	@HexaCssExtra( name = "fa-bell-slash" )
-	String faBellSlash();
+	String bellSlash();
 
 	@HexaCssExtra( name = "fa-bell-slash-o" )
-	String faBellSlashO();
+	String bellSlashO();
 
 	@HexaCssExtra( name = "fa-bicycle" )
-	String faBicycle();
+	String bicycle();
 
 	@HexaCssExtra( name = "fa-binoculars" )
-	String faBinoculars();
+	String binoculars();
 
 	@HexaCssExtra( name = "fa-birthday-cake" )
-	String faBirthdayCake();
+	String birthdayCake();
 
 	@HexaCssExtra( name = "fa-bitbucket" )
-	String faBitbucket();
+	String bitbucket();
 
 	@HexaCssExtra( name = "fa-bitbucket-square" )
-	String faBitbucketSquare();
+	String bitbucketSquare();
 
 	@HexaCssExtra( name = "fa-bitcoin" )
-	String faBitcoin();
+	String bitcoin();
 
 	@HexaCssExtra( name = "fa-bold" )
-	String faBold();
+	String bold();
 
 	@HexaCssExtra( name = "fa-bolt" )
-	String faBolt();
+	String bolt();
 
 	@HexaCssExtra( name = "fa-bomb" )
-	String faBomb();
+	String bomb();
 
 	@HexaCssExtra( name = "fa-book" )
-	String faBook();
+	String book();
 
 	@HexaCssExtra( name = "fa-bookmark" )
-	String faBookmark();
+	String bookmark();
 
 	@HexaCssExtra( name = "fa-bookmark-o" )
-	String faBookmarkO();
+	String bookmarkO();
 
 	@HexaCssExtra( name = "fa-border" )
-	String faBorder();
+	String border();
 
 	@HexaCssExtra( name = "fa-briefcase" )
-	String faBriefcase();
+	String briefcase();
 
 	@HexaCssExtra( name = "fa-btc" )
-	String faBtc();
+	String btc();
 
 	@HexaCssExtra( name = "fa-bug" )
-	String faBug();
+	String bug();
 
 	@HexaCssExtra( name = "fa-building" )
-	String faBuilding();
+	String building();
 
 	@HexaCssExtra( name = "fa-building-o" )
-	String faBuildingO();
+	String buildingO();
 
 	@HexaCssExtra( name = "fa-bullhorn" )
-	String faBullhorn();
+	String bullhorn();
 
 	@HexaCssExtra( name = "fa-bullseye" )
-	String faBullseye();
+	String bullseye();
 
 	@HexaCssExtra( name = "fa-bus" )
-	String faBus();
+	String bus();
 
 	@HexaCssExtra( name = "fa-buysellads" )
-	String faBuysellads();
+	String buysellads();
 
 	@HexaCssExtra( name = "fa-cab" )
-	String faCab();
+	String cab();
 
 	@HexaCssExtra( name = "fa-calculator" )
-	String faCalculator();
+	String calculator();
 
 	@HexaCssExtra( name = "fa-calendar" )
-	String faCalendar();
+	String calendar();
 
 	@HexaCssExtra( name = "fa-calendar-o" )
-	String faCalendarO();
+	String calendarO();
 
 	@HexaCssExtra( name = "fa-camera" )
-	String faCamera();
+	String camera();
 
 	@HexaCssExtra( name = "fa-camera-retro" )
-	String faCameraRetro();
+	String cameraRetro();
 
 	@HexaCssExtra( name = "fa-car" )
-	String faCar();
+	String car();
 
 	@HexaCssExtra( name = "fa-caret-down" )
-	String faCaretDown();
+	String caretDown();
 
 	@HexaCssExtra( name = "fa-caret-left" )
-	String faCaretLeft();
+	String caretLeft();
 
 	@HexaCssExtra( name = "fa-caret-right" )
-	String faCaretRight();
+	String caretRight();
 
 	@HexaCssExtra( name = "fa-caret-square-o-down" )
-	String faCaretSquareODown();
+	String caretSquareODown();
 
 	@HexaCssExtra( name = "fa-caret-square-o-left" )
-	String faCaretSquareOLeft();
+	String caretSquareOLeft();
 
 	@HexaCssExtra( name = "fa-caret-square-o-right" )
-	String faCaretSquareORight();
+	String caretSquareORight();
 
 	@HexaCssExtra( name = "fa-caret-square-o-up" )
-	String faCaretSquareOUp();
+	String caretSquareOUp();
 
 	@HexaCssExtra( name = "fa-caret-up" )
-	String faCaretUp();
+	String caretUp();
 
 	@HexaCssExtra( name = "fa-cart-arrow-down" )
-	String faCartArrowDown();
+	String cartArrowDown();
 
 	@HexaCssExtra( name = "fa-cart-plus" )
-	String faCartPlus();
+	String cartPlus();
 
 	@HexaCssExtra( name = "fa-cc" )
-	String faCc();
+	String cc();
 
 	@HexaCssExtra( name = "fa-cc-amex" )
-	String faCcAmex();
+	String ccAmex();
 
 	@HexaCssExtra( name = "fa-cc-discover" )
-	String faCcDiscover();
+	String ccDiscover();
 
 	@HexaCssExtra( name = "fa-cc-mastercard" )
-	String faCcMastercard();
+	String ccMastercard();
 
 	@HexaCssExtra( name = "fa-cc-paypal" )
-	String faCcPaypal();
+	String ccPaypal();
 
 	@HexaCssExtra( name = "fa-cc-stripe" )
-	String faCcStripe();
+	String ccStripe();
 
 	@HexaCssExtra( name = "fa-cc-visa" )
-	String faCcVisa();
+	String ccVisa();
 
 	@HexaCssExtra( name = "fa-certificate" )
-	String faCertificate();
+	String certificate();
 
 	@HexaCssExtra( name = "fa-chain" )
-	String faChain();
+	String chain();
 
 	@HexaCssExtra( name = "fa-chain-broken" )
-	String faChainBroken();
+	String chainBroken();
 
 	@HexaCssExtra( name = "fa-check" )
-	String faCheck();
+	String check();
 
 	@HexaCssExtra( name = "fa-check-circle" )
-	String faCheckCircle();
+	String checkCircle();
 
 	@HexaCssExtra( name = "fa-check-circle-o" )
-	String faCheckCircleO();
+	String checkCircleO();
 
 	@HexaCssExtra( name = "fa-check-square" )
-	String faCheckSquare();
+	String checkSquare();
 
 	@HexaCssExtra( name = "fa-check-square-o" )
-	String faCheckSquareO();
+	String checkSquareO();
 
 	@HexaCssExtra( name = "fa-chevron-circle-down" )
-	String faChevronCircleDown();
+	String chevronCircleDown();
 
 	@HexaCssExtra( name = "fa-chevron-circle-left" )
-	String faChevronCircleLeft();
+	String chevronCircleLeft();
 
 	@HexaCssExtra( name = "fa-chevron-circle-right" )
-	String faChevronCircleRight();
+	String chevronCircleRight();
 
 	@HexaCssExtra( name = "fa-chevron-circle-up" )
-	String faChevronCircleUp();
+	String chevronCircleUp();
 
 	@HexaCssExtra( name = "fa-chevron-down" )
-	String faChevronDown();
+	String chevronDown();
 
 	@HexaCssExtra( name = "fa-chevron-left" )
-	String faChevronLeft();
+	String chevronLeft();
 
 	@HexaCssExtra( name = "fa-chevron-right" )
-	String faChevronRight();
+	String chevronRight();
 
 	@HexaCssExtra( name = "fa-chevron-up" )
-	String faChevronUp();
+	String chevronUp();
 
 	@HexaCssExtra( name = "fa-child" )
-	String faChild();
+	String child();
 
 	@HexaCssExtra( name = "fa-circle" )
-	String faCircle();
+	String circle();
 
 	@HexaCssExtra( name = "fa-circle-o" )
-	String faCircleO();
+	String circleO();
 
 	@HexaCssExtra( name = "fa-circle-o-notch" )
-	String faCircleONotch();
+	String circleONotch();
 
 	@HexaCssExtra( name = "fa-circle-thin" )
-	String faCircleThin();
+	String circleThin();
 
 	@HexaCssExtra( name = "fa-clipboard" )
-	String faClipboard();
+	String clipboard();
 
 	@HexaCssExtra( name = "fa-clock-o" )
-	String faClockO();
+	String clockO();
 
 	@HexaCssExtra( name = "fa-close" )
-	String faClose();
+	String close();
 
 	@HexaCssExtra( name = "fa-cloud" )
-	String faCloud();
+	String cloud();
 
 	@HexaCssExtra( name = "fa-cloud-download" )
-	String faCloudDownload();
+	String cloudDownload();
 
 	@HexaCssExtra( name = "fa-cloud-upload" )
-	String faCloudUpload();
+	String cloudUpload();
 
 	@HexaCssExtra( name = "fa-cny" )
-	String faCny();
+	String cny();
 
 	@HexaCssExtra( name = "fa-code" )
-	String faCode();
+	String code();
 
 	@HexaCssExtra( name = "fa-code-fork" )
-	String faCodeFork();
+	String codeFork();
 
 	@HexaCssExtra( name = "fa-codepen" )
-	String faCodepen();
+	String codepen();
 
 	@HexaCssExtra( name = "fa-coffee" )
-	String faCoffee();
+	String coffee();
 
 	@HexaCssExtra( name = "fa-cog" )
-	String faCog();
+	String cog();
 
 	@HexaCssExtra( name = "fa-cogs" )
-	String faCogs();
+	String cogs();
 
 	@HexaCssExtra( name = "fa-columns" )
-	String faColumns();
+	String columns();
 
 	@HexaCssExtra( name = "fa-comment" )
-	String faComment();
+	String comment();
 
 	@HexaCssExtra( name = "fa-comment-o" )
-	String faCommentO();
+	String commentO();
 
 	@HexaCssExtra( name = "fa-comments" )
-	String faComments();
+	String comments();
 
 	@HexaCssExtra( name = "fa-comments-o" )
-	String faCommentsO();
+	String commentsO();
 
 	@HexaCssExtra( name = "fa-compass" )
-	String faCompass();
+	String compass();
 
 	@HexaCssExtra( name = "fa-compress" )
-	String faCompress();
+	String compress();
 
 	@HexaCssExtra( name = "fa-connectdevelop" )
-	String faConnectdevelop();
+	String connectdevelop();
 
 	@HexaCssExtra( name = "fa-copy" )
-	String faCopy();
+	String copy();
 
 	@HexaCssExtra( name = "fa-copyright" )
-	String faCopyright();
+	String copyright();
 
 	@HexaCssExtra( name = "fa-credit-card" )
-	String faCreditCard();
+	String creditCard();
 
 	@HexaCssExtra( name = "fa-crop" )
-	String faCrop();
+	String crop();
 
 	@HexaCssExtra( name = "fa-crosshairs" )
-	String faCrosshairs();
+	String crosshairs();
 
 	@HexaCssExtra( name = "fa-css3" )
-	String faCss3();
+	String css3();
 
 	@HexaCssExtra( name = "fa-cube" )
-	String faCube();
+	String cube();
 
 	@HexaCssExtra( name = "fa-cubes" )
-	String faCubes();
+	String cubes();
 
 	@HexaCssExtra( name = "fa-cut" )
-	String faCut();
+	String cut();
 
 	@HexaCssExtra( name = "fa-cutlery" )
-	String faCutlery();
+	String cutlery();
 
 	@HexaCssExtra( name = "fa-dashboard" )
-	String faDashboard();
+	String dashboard();
 
 	@HexaCssExtra( name = "fa-dashcube" )
-	String faDashcube();
+	String dashcube();
 
 	@HexaCssExtra( name = "fa-database" )
-	String faDatabase();
+	String database();
 
 	@HexaCssExtra( name = "fa-dedent" )
-	String faDedent();
+	String dedent();
 
 	@HexaCssExtra( name = "fa-delicious" )
-	String faDelicious();
+	String delicious();
 
 	@HexaCssExtra( name = "fa-desktop" )
-	String faDesktop();
+	String desktop();
 
 	@HexaCssExtra( name = "fa-deviantart" )
-	String faDeviantart();
+	String deviantart();
 
 	@HexaCssExtra( name = "fa-diamond" )
-	String faDiamond();
+	String diamond();
 
 	@HexaCssExtra( name = "fa-digg" )
-	String faDigg();
+	String digg();
 
 	@HexaCssExtra( name = "fa-dollar" )
-	String faDollar();
+	String dollar();
 
 	@HexaCssExtra( name = "fa-dot-circle-o" )
-	String faDotCircleO();
+	String dotCircleO();
 
 	@HexaCssExtra( name = "fa-download" )
-	String faDownload();
+	String download();
 
 	@HexaCssExtra( name = "fa-dribbble" )
-	String faDribbble();
+	String dribbble();
 
 	@HexaCssExtra( name = "fa-dropbox" )
-	String faDropbox();
+	String dropbox();
 
 	@HexaCssExtra( name = "fa-drupal" )
-	String faDrupal();
+	String drupal();
 
 	@HexaCssExtra( name = "fa-edit" )
-	String faEdit();
+	String edit();
 
 	@HexaCssExtra( name = "fa-eject" )
-	String faEject();
+	String eject();
 
 	@HexaCssExtra( name = "fa-ellipsis-h" )
-	String faEllipsisH();
+	String ellipsisH();
 
 	@HexaCssExtra( name = "fa-ellipsis-v" )
-	String faEllipsisV();
+	String ellipsisV();
 
 	@HexaCssExtra( name = "fa-empire" )
-	String faEmpire();
+	String empire();
 
 	@HexaCssExtra( name = "fa-envelope" )
-	String faEnvelope();
+	String envelope();
 
 	@HexaCssExtra( name = "fa-envelope-o" )
-	String faEnvelopeO();
+	String envelopeO();
 
 	@HexaCssExtra( name = "fa-envelope-square" )
-	String faEnvelopeSquare();
+	String envelopeSquare();
 
 	@HexaCssExtra( name = "fa-eraser" )
-	String faEraser();
+	String eraser();
 
 	@HexaCssExtra( name = "fa-eur" )
-	String faEur();
+	String eur();
 
 	@HexaCssExtra( name = "fa-euro" )
-	String faEuro();
+	String euro();
 
 	@HexaCssExtra( name = "fa-exchange" )
-	String faExchange();
+	String exchange();
 
 	@HexaCssExtra( name = "fa-exclamation" )
-	String faExclamation();
+	String exclamation();
 
 	@HexaCssExtra( name = "fa-exclamation-circle" )
-	String faExclamationCircle();
+	String exclamationCircle();
 
 	@HexaCssExtra( name = "fa-exclamation-triangle" )
-	String faExclamationTriangle();
+	String exclamationTriangle();
 
 	@HexaCssExtra( name = "fa-expand" )
-	String faExpand();
+	String expand();
 
 	@HexaCssExtra( name = "fa-external-link" )
-	String faExternalLink();
+	String externalLink();
 
 	@HexaCssExtra( name = "fa-external-link-square" )
-	String faExternalLinkSquare();
+	String externalLinkSquare();
 
 	@HexaCssExtra( name = "fa-eye" )
-	String faEye();
+	String eye();
 
 	@HexaCssExtra( name = "fa-eye-slash" )
-	String faEyeSlash();
+	String eyeSlash();
 
 	@HexaCssExtra( name = "fa-eyedropper" )
-	String faEyedropper();
+	String eyedropper();
 
 	@HexaCssExtra( name = "fa-facebook" )
-	String faFacebook();
+	String facebook();
 
 	@HexaCssExtra( name = "fa-facebook-f" )
-	String faFacebookF();
+	String facebookF();
 
 	@HexaCssExtra( name = "fa-facebook-official" )
-	String faFacebookOfficial();
+	String facebookOfficial();
 
 	@HexaCssExtra( name = "fa-facebook-square" )
-	String faFacebookSquare();
+	String facebookSquare();
 
 	@HexaCssExtra( name = "fa-fast-backward" )
-	String faFastBackward();
+	String fastBackward();
 
 	@HexaCssExtra( name = "fa-fast-forward" )
-	String faFastForward();
+	String fastForward();
 
 	@HexaCssExtra( name = "fa-fax" )
-	String faFax();
+	String fax();
 
 	@HexaCssExtra( name = "fa-female" )
-	String faFemale();
+	String female();
 
 	@HexaCssExtra( name = "fa-fighter-jet" )
-	String faFighterJet();
+	String fighterJet();
 
 	@HexaCssExtra( name = "fa-file" )
-	String faFile();
+	String file();
 
 	@HexaCssExtra( name = "fa-file-archive-o" )
-	String faFileArchiveO();
+	String fileArchiveO();
 
 	@HexaCssExtra( name = "fa-file-audio-o" )
-	String faFileAudioO();
+	String fileAudioO();
 
 	@HexaCssExtra( name = "fa-file-code-o" )
-	String faFileCodeO();
+	String fileCodeO();
 
 	@HexaCssExtra( name = "fa-file-excel-o" )
-	String faFileExcelO();
+	String fileExcelO();
 
 	@HexaCssExtra( name = "fa-file-image-o" )
-	String faFileImageO();
+	String fileImageO();
 
 	@HexaCssExtra( name = "fa-file-movie-o" )
-	String faFileMovieO();
+	String fileMovieO();
 
 	@HexaCssExtra( name = "fa-file-o" )
-	String faFileO();
+	String fileO();
 
 	@HexaCssExtra( name = "fa-file-pdf-o" )
-	String faFilePdfO();
+	String filePdfO();
 
 	@HexaCssExtra( name = "fa-file-photo-o" )
-	String faFilePhotoO();
+	String filePhotoO();
 
 	@HexaCssExtra( name = "fa-file-picture-o" )
-	String faFilePictureO();
+	String filePictureO();
 
 	@HexaCssExtra( name = "fa-file-powerpoint-o" )
-	String faFilePowerpointO();
+	String filePowerpointO();
 
 	@HexaCssExtra( name = "fa-file-sound-o" )
-	String faFileSoundO();
+	String fileSoundO();
 
 	@HexaCssExtra( name = "fa-file-text" )
-	String faFileText();
+	String fileText();
 
 	@HexaCssExtra( name = "fa-file-text-o" )
-	String faFileTextO();
+	String fileTextO();
 
 	@HexaCssExtra( name = "fa-file-video-o" )
-	String faFileVideoO();
+	String fileVideoO();
 
 	@HexaCssExtra( name = "fa-file-word-o" )
-	String faFileWordO();
+	String fileWordO();
 
 	@HexaCssExtra( name = "fa-file-zip-o" )
-	String faFileZipO();
+	String fileZipO();
 
 	@HexaCssExtra( name = "fa-files-o" )
-	String faFilesO();
+	String filesO();
 
 	@HexaCssExtra( name = "fa-film" )
-	String faFilm();
+	String film();
 
 	@HexaCssExtra( name = "fa-filter" )
-	String faFilter();
+	String filter();
 
 	@HexaCssExtra( name = "fa-fire" )
-	String faFire();
+	String fire();
 
 	@HexaCssExtra( name = "fa-fire-extinguisher" )
-	String faFireExtinguisher();
+	String fireExtinguisher();
 
 	@HexaCssExtra( name = "fa-flag" )
-	String faFlag();
+	String flag();
 
 	@HexaCssExtra( name = "fa-flag-checkered" )
-	String faFlagCheckered();
+	String flagCheckered();
 
 	@HexaCssExtra( name = "fa-flag-o" )
-	String faFlagO();
+	String flagO();
 
 	@HexaCssExtra( name = "fa-flash" )
-	String faFlash();
+	String flash();
 
 	@HexaCssExtra( name = "fa-flask" )
-	String faFlask();
+	String flask();
 
 	@HexaCssExtra( name = "fa-flickr" )
-	String faFlickr();
+	String flickr();
 
 	@HexaCssExtra( name = "fa-flip-horizontal" )
-	String faFlipHorizontal();
+	String flipHorizontal();
 
 	@HexaCssExtra( name = "fa-flip-vertical" )
-	String faFlipVertical();
+	String flipVertical();
 
 	@HexaCssExtra( name = "fa-floppy-o" )
-	String faFloppyO();
+	String floppyO();
 
 	@HexaCssExtra( name = "fa-folder" )
-	String faFolder();
+	String folder();
 
 	@HexaCssExtra( name = "fa-folder-o" )
-	String faFolderO();
+	String folderO();
 
 	@HexaCssExtra( name = "fa-folder-open" )
-	String faFolderOpen();
+	String folderOpen();
 
 	@HexaCssExtra( name = "fa-folder-open-o" )
-	String faFolderOpenO();
+	String folderOpenO();
 
 	@HexaCssExtra( name = "fa-font" )
-	String faFont();
+	String font();
 
 	@HexaCssExtra( name = "fa-forumbee" )
-	String faForumbee();
+	String forumbee();
 
 	@HexaCssExtra( name = "fa-forward" )
-	String faForward();
+	String forward();
 
 	@HexaCssExtra( name = "fa-foursquare" )
-	String faFoursquare();
+	String foursquare();
 
 	@HexaCssExtra( name = "fa-frown-o" )
-	String faFrownO();
+	String frownO();
 
 	@HexaCssExtra( name = "fa-futbol-o" )
-	String faFutbolO();
+	String futbolO();
 
 	@HexaCssExtra( name = "fa-fw" )
-	String faFw();
+	String fw();
 
 	@HexaCssExtra( name = "fa-gamepad" )
-	String faGamepad();
+	String gamepad();
 
 	@HexaCssExtra( name = "fa-gavel" )
-	String faGavel();
+	String gavel();
 
 	@HexaCssExtra( name = "fa-gbp" )
-	String faGbp();
+	String gbp();
 
 	@HexaCssExtra( name = "fa-ge" )
-	String faGe();
+	String ge();
 
 	@HexaCssExtra( name = "fa-gear" )
-	String faGear();
+	String gear();
 
 	@HexaCssExtra( name = "fa-gears" )
-	String faGears();
+	String gears();
 
 	@HexaCssExtra( name = "fa-genderless" )
-	String faGenderless();
+	String genderless();
 
 	@HexaCssExtra( name = "fa-gift" )
-	String faGift();
+	String gift();
 
 	@HexaCssExtra( name = "fa-git" )
-	String faGit();
+	String git();
 
 	@HexaCssExtra( name = "fa-git-square" )
-	String faGitSquare();
+	String gitSquare();
 
 	@HexaCssExtra( name = "fa-github" )
-	String faGithub();
+	String github();
 
 	@HexaCssExtra( name = "fa-github-alt" )
-	String faGithubAlt();
+	String githubAlt();
 
 	@HexaCssExtra( name = "fa-github-square" )
-	String faGithubSquare();
+	String githubSquare();
 
 	@HexaCssExtra( name = "fa-gittip" )
-	String faGittip();
+	String gittip();
 
 	@HexaCssExtra( name = "fa-glass" )
-	String faGlass();
+	String glass();
 
 	@HexaCssExtra( name = "fa-globe" )
-	String faGlobe();
+	String globe();
 
 	@HexaCssExtra( name = "fa-google" )
-	String faGoogle();
+	String google();
 
 	@HexaCssExtra( name = "fa-google-plus" )
-	String faGooglePlus();
+	String googlePlus();
 
 	@HexaCssExtra( name = "fa-google-plus-square" )
-	String faGooglePlusSquare();
+	String googlePlusSquare();
 
 	@HexaCssExtra( name = "fa-google-wallet" )
-	String faGoogleWallet();
+	String googleWallet();
 
 	@HexaCssExtra( name = "fa-graduation-cap" )
-	String faGraduationCap();
+	String graduationCap();
 
 	@HexaCssExtra( name = "fa-gratipay" )
-	String faGratipay();
+	String gratipay();
 
 	@HexaCssExtra( name = "fa-group" )
-	String faGroup();
+	String group();
 
 	@HexaCssExtra( name = "fa-h-square" )
-	String faHSquare();
+	String hSquare();
 
 	@HexaCssExtra( name = "fa-hacker-news" )
-	String faHackerNews();
+	String hackerNews();
 
 	@HexaCssExtra( name = "fa-hand-o-down" )
-	String faHandODown();
+	String handODown();
 
 	@HexaCssExtra( name = "fa-hand-o-left" )
-	String faHandOLeft();
+	String handOLeft();
 
 	@HexaCssExtra( name = "fa-hand-o-right" )
-	String faHandORight();
+	String handORight();
 
 	@HexaCssExtra( name = "fa-hand-o-up" )
-	String faHandOUp();
+	String handOUp();
 
 	@HexaCssExtra( name = "fa-hdd-o" )
-	String faHddO();
+	String hddO();
 
 	@HexaCssExtra( name = "fa-header" )
-	String faHeader();
+	String header();
 
 	@HexaCssExtra( name = "fa-headphones" )
-	String faHeadphones();
+	String headphones();
 
 	@HexaCssExtra( name = "fa-heart" )
-	String faHeart();
+	String heart();
 
 	@HexaCssExtra( name = "fa-heart-o" )
-	String faHeartO();
+	String heartO();
 
 	@HexaCssExtra( name = "fa-heartbeat" )
-	String faHeartbeat();
+	String heartbeat();
 
 	@HexaCssExtra( name = "fa-history" )
-	String faHistory();
+	String history();
 
 	@HexaCssExtra( name = "fa-home" )
-	String faHome();
+	String home();
 
 	@HexaCssExtra( name = "fa-hospital-o" )
-	String faHospitalO();
+	String hospitalO();
 
 	@HexaCssExtra( name = "fa-hotel" )
-	String faHotel();
+	String hotel();
 
 	@HexaCssExtra( name = "fa-html5" )
-	String faHtml5();
+	String html5();
 
 	@HexaCssExtra( name = "fa-ils" )
-	String faIls();
+	String ils();
 
 	@HexaCssExtra( name = "fa-image" )
-	String faImage();
+	String image();
 
 	@HexaCssExtra( name = "fa-inbox" )
-	String faInbox();
+	String inbox();
 
 	@HexaCssExtra( name = "fa-indent" )
-	String faIndent();
+	String indent();
 
 	@HexaCssExtra( name = "fa-info" )
-	String faInfo();
+	String info();
 
 	@HexaCssExtra( name = "fa-info-circle" )
-	String faInfoCircle();
+	String infoCircle();
 
 	@HexaCssExtra( name = "fa-inr" )
-	String faInr();
+	String inr();
 
 	@HexaCssExtra( name = "fa-instagram" )
-	String faInstagram();
+	String instagram();
 
 	@HexaCssExtra( name = "fa-institution" )
-	String faInstitution();
+	String institution();
 
 	@HexaCssExtra( name = "fa-inverse" )
-	String faInverse();
+	String inverse();
 
 	@HexaCssExtra( name = "fa-ioxhost" )
-	String faIoxhost();
+	String ioxhost();
 
 	@HexaCssExtra( name = "fa-italic" )
-	String faItalic();
+	String italic();
 
 	@HexaCssExtra( name = "fa-joomla" )
-	String faJoomla();
+	String joomla();
 
 	@HexaCssExtra( name = "fa-jpy" )
-	String faJpy();
+	String jpy();
 
 	@HexaCssExtra( name = "fa-jsfiddle" )
-	String faJsfiddle();
+	String jsfiddle();
 
 	@HexaCssExtra( name = "fa-key" )
-	String faKey();
+	String key();
 
 	@HexaCssExtra( name = "fa-keyboard-o" )
-	String faKeyboardO();
+	String keyboardO();
 
 	@HexaCssExtra( name = "fa-krw" )
-	String faKrw();
+	String krw();
 
 	@HexaCssExtra( name = "fa-language" )
-	String faLanguage();
+	String language();
 
 	@HexaCssExtra( name = "fa-laptop" )
-	String faLaptop();
+	String laptop();
 
 	@HexaCssExtra( name = "fa-lastfm" )
-	String faLastfm();
+	String lastfm();
 
 	@HexaCssExtra( name = "fa-lastfm-square" )
-	String faLastfmSquare();
+	String lastfmSquare();
 
 	@HexaCssExtra( name = "fa-leaf" )
-	String faLeaf();
+	String leaf();
 
 	@HexaCssExtra( name = "fa-leanpub" )
-	String faLeanpub();
+	String leanpub();
 
 	@HexaCssExtra( name = "fa-legal" )
-	String faLegal();
+	String legal();
 
 	@HexaCssExtra( name = "fa-lemon-o" )
-	String faLemonO();
+	String lemonO();
 
 	@HexaCssExtra( name = "fa-level-down" )
-	String faLevelDown();
+	String levelDown();
 
 	@HexaCssExtra( name = "fa-level-up" )
-	String faLevelUp();
+	String levelUp();
 
 	@HexaCssExtra( name = "fa-lg" )
-	String faLg();
+	String lg();
 
 	@HexaCssExtra( name = "fa-li" )
-	String faLi();
+	String li();
 
 	@HexaCssExtra( name = "fa-life-bouy" )
-	String faLifeBouy();
+	String lifeBouy();
 
 	@HexaCssExtra( name = "fa-life-buoy" )
-	String faLifeBuoy();
+	String lifeBuoy();
 
 	@HexaCssExtra( name = "fa-life-ring" )
-	String faLifeRing();
+	String lifeRing();
 
 	@HexaCssExtra( name = "fa-life-saver" )
-	String faLifeSaver();
+	String lifeSaver();
 
 	@HexaCssExtra( name = "fa-lightbulb-o" )
-	String faLightbulbO();
+	String lightbulbO();
 
 	@HexaCssExtra( name = "fa-line-chart" )
-	String faLineChart();
+	String lineChart();
 
 	@HexaCssExtra( name = "fa-link" )
-	String faLink();
+	String link();
 
 	@HexaCssExtra( name = "fa-linkedin" )
-	String faLinkedin();
+	String linkedin();
 
 	@HexaCssExtra( name = "fa-linkedin-square" )
-	String faLinkedinSquare();
+	String linkedinSquare();
 
 	@HexaCssExtra( name = "fa-linux" )
-	String faLinux();
+	String linux();
 
 	@HexaCssExtra( name = "fa-list" )
-	String faList();
+	String list();
 
 	@HexaCssExtra( name = "fa-list-alt" )
-	String faListAlt();
+	String listAlt();
 
 	@HexaCssExtra( name = "fa-list-ol" )
-	String faListOl();
+	String listOl();
 
 	@HexaCssExtra( name = "fa-list-ul" )
-	String faListUl();
+	String listUl();
 
 	@HexaCssExtra( name = "fa-location-arrow" )
-	String faLocationArrow();
+	String locationArrow();
 
 	@HexaCssExtra( name = "fa-lock" )
-	String faLock();
+	String lock();
 
 	@HexaCssExtra( name = "fa-long-arrow-down" )
-	String faLongArrowDown();
+	String longArrowDown();
 
 	@HexaCssExtra( name = "fa-long-arrow-left" )
-	String faLongArrowLeft();
+	String longArrowLeft();
 
 	@HexaCssExtra( name = "fa-long-arrow-right" )
-	String faLongArrowRight();
+	String longArrowRight();
 
 	@HexaCssExtra( name = "fa-long-arrow-up" )
-	String faLongArrowUp();
+	String longArrowUp();
 
 	@HexaCssExtra( name = "fa-magic" )
-	String faMagic();
+	String magic();
 
 	@HexaCssExtra( name = "fa-magnet" )
-	String faMagnet();
+	String magnet();
 
 	@HexaCssExtra( name = "fa-mail-forward" )
-	String faMailForward();
+	String mailForward();
 
 	@HexaCssExtra( name = "fa-mail-reply" )
-	String faMailReply();
+	String mailReply();
 
 	@HexaCssExtra( name = "fa-mail-reply-all" )
-	String faMailReplyAll();
+	String mailReplyAll();
 
 	@HexaCssExtra( name = "fa-male" )
-	String faMale();
+	String male();
 
 	@HexaCssExtra( name = "fa-map-marker" )
-	String faMapMarker();
+	String mapMarker();
 
 	@HexaCssExtra( name = "fa-mars" )
-	String faMars();
+	String mars();
 
 	@HexaCssExtra( name = "fa-mars-double" )
-	String faMarsDouble();
+	String marsDouble();
 
 	@HexaCssExtra( name = "fa-mars-stroke" )
-	String faMarsStroke();
+	String marsStroke();
 
 	@HexaCssExtra( name = "fa-mars-stroke-h" )
-	String faMarsStrokeH();
+	String marsStrokeH();
 
 	@HexaCssExtra( name = "fa-mars-stroke-v" )
-	String faMarsStrokeV();
+	String marsStrokeV();
 
 	@HexaCssExtra( name = "fa-maxcdn" )
-	String faMaxcdn();
+	String maxcdn();
 
 	@HexaCssExtra( name = "fa-meanpath" )
-	String faMeanpath();
+	String meanpath();
 
 	@HexaCssExtra( name = "fa-medium" )
-	String faMedium();
+	String medium();
 
 	@HexaCssExtra( name = "fa-medkit" )
-	String faMedkit();
+	String medkit();
 
 	@HexaCssExtra( name = "fa-meh-o" )
-	String faMehO();
+	String mehO();
 
 	@HexaCssExtra( name = "fa-mercury" )
-	String faMercury();
+	String mercury();
 
 	@HexaCssExtra( name = "fa-microphone" )
-	String faMicrophone();
+	String microphone();
 
 	@HexaCssExtra( name = "fa-microphone-slash" )
-	String faMicrophoneSlash();
+	String microphoneSlash();
 
 	@HexaCssExtra( name = "fa-minus" )
-	String faMinus();
+	String minus();
 
 	@HexaCssExtra( name = "fa-minus-circle" )
-	String faMinusCircle();
+	String minusCircle();
 
 	@HexaCssExtra( name = "fa-minus-square" )
-	String faMinusSquare();
+	String minusSquare();
 
 	@HexaCssExtra( name = "fa-minus-square-o" )
-	String faMinusSquareO();
+	String minusSquareO();
 
 	@HexaCssExtra( name = "fa-mobile" )
-	String faMobile();
+	String mobile();
 
 	@HexaCssExtra( name = "fa-mobile-phone" )
-	String faMobilePhone();
+	String mobilePhone();
 
 	@HexaCssExtra( name = "fa-money" )
-	String faMoney();
+	String money();
 
 	@HexaCssExtra( name = "fa-moon-o" )
-	String faMoonO();
+	String moonO();
 
 	@HexaCssExtra( name = "fa-mortar-board" )
-	String faMortarBoard();
+	String mortarBoard();
 
 	@HexaCssExtra( name = "fa-motorcycle" )
-	String faMotorcycle();
+	String motorcycle();
 
 	@HexaCssExtra( name = "fa-music" )
-	String faMusic();
+	String music();
 
 	@HexaCssExtra( name = "fa-navicon" )
-	String faNavicon();
+	String navicon();
 
 	@HexaCssExtra( name = "fa-neuter" )
-	String faNeuter();
+	String neuter();
 
 	@HexaCssExtra( name = "fa-newspaper-o" )
-	String faNewspaperO();
+	String newspaperO();
 
 	@HexaCssExtra( name = "fa-openid" )
-	String faOpenid();
+	String openid();
 
 	@HexaCssExtra( name = "fa-outdent" )
-	String faOutdent();
+	String outdent();
 
 	@HexaCssExtra( name = "fa-pagelines" )
-	String faPagelines();
+	String pagelines();
 
 	@HexaCssExtra( name = "fa-paint-brush" )
-	String faPaintBrush();
+	String paintBrush();
 
 	@HexaCssExtra( name = "fa-paper-plane" )
-	String faPaperPlane();
+	String paperPlane();
 
 	@HexaCssExtra( name = "fa-paper-plane-o" )
-	String faPaperPlaneO();
+	String paperPlaneO();
 
 	@HexaCssExtra( name = "fa-paperclip" )
-	String faPaperclip();
+	String paperclip();
 
 	@HexaCssExtra( name = "fa-paragraph" )
-	String faParagraph();
+	String paragraph();
 
 	@HexaCssExtra( name = "fa-paste" )
-	String faPaste();
+	String paste();
 
 	@HexaCssExtra( name = "fa-pause" )
-	String faPause();
+	String pause();
 
 	@HexaCssExtra( name = "fa-paw" )
-	String faPaw();
+	String paw();
 
 	@HexaCssExtra( name = "fa-paypal" )
-	String faPaypal();
+	String paypal();
 
 	@HexaCssExtra( name = "fa-pencil" )
-	String faPencil();
+	String pencil();
 
 	@HexaCssExtra( name = "fa-pencil-square" )
-	String faPencilSquare();
+	String pencilSquare();
 
 	@HexaCssExtra( name = "fa-pencil-square-o" )
-	String faPencilSquareO();
+	String pencilSquareO();
 
 	@HexaCssExtra( name = "fa-phone" )
-	String faPhone();
+	String phone();
 
 	@HexaCssExtra( name = "fa-phone-square" )
-	String faPhoneSquare();
+	String phoneSquare();
 
 	@HexaCssExtra( name = "fa-photo" )
-	String faPhoto();
+	String photo();
 
 	@HexaCssExtra( name = "fa-picture-o" )
-	String faPictureO();
+	String pictureO();
 
 	@HexaCssExtra( name = "fa-pie-chart" )
-	String faPieChart();
+	String pieChart();
 
 	@HexaCssExtra( name = "fa-pied-piper" )
-	String faPiedPiper();
+	String piedPiper();
 
 	@HexaCssExtra( name = "fa-pied-piper-alt" )
-	String faPiedPiperAlt();
+	String piedPiperAlt();
 
 	@HexaCssExtra( name = "fa-pinterest" )
-	String faPinterest();
+	String pinterest();
 
 	@HexaCssExtra( name = "fa-pinterest-p" )
-	String faPinterestP();
+	String pinterestP();
 
 	@HexaCssExtra( name = "fa-pinterest-square" )
-	String faPinterestSquare();
+	String pinterestSquare();
 
 	@HexaCssExtra( name = "fa-plane" )
-	String faPlane();
+	String plane();
 
 	@HexaCssExtra( name = "fa-play" )
-	String faPlay();
+	String play();
 
 	@HexaCssExtra( name = "fa-play-circle" )
-	String faPlayCircle();
+	String playCircle();
 
 	@HexaCssExtra( name = "fa-play-circle-o" )
-	String faPlayCircleO();
+	String playCircleO();
 
 	@HexaCssExtra( name = "fa-plug" )
-	String faPlug();
+	String plug();
 
 	@HexaCssExtra( name = "fa-plus" )
-	String faPlus();
+	String plus();
 
 	@HexaCssExtra( name = "fa-plus-circle" )
-	String faPlusCircle();
+	String plusCircle();
 
 	@HexaCssExtra( name = "fa-plus-square" )
-	String faPlusSquare();
+	String plusSquare();
 
 	@HexaCssExtra( name = "fa-plus-square-o" )
-	String faPlusSquareO();
+	String plusSquareO();
 
 	@HexaCssExtra( name = "fa-power-off" )
-	String faPowerOff();
+	String powerOff();
 
 	@HexaCssExtra( name = "fa-print" )
-	String faPrint();
+	String print();
 
 	@HexaCssExtra( name = "fa-pulse" )
-	String faPulse();
+	String pulse();
 
 	@HexaCssExtra( name = "fa-puzzle-piece" )
-	String faPuzzlePiece();
+	String puzzlePiece();
 
 	@HexaCssExtra( name = "fa-qq" )
-	String faQq();
+	String qq();
 
 	@HexaCssExtra( name = "fa-qrcode" )
-	String faQrcode();
+	String qrcode();
 
 	@HexaCssExtra( name = "fa-question" )
-	String faQuestion();
+	String question();
 
 	@HexaCssExtra( name = "fa-question-circle" )
-	String faQuestionCircle();
+	String questionCircle();
 
 	@HexaCssExtra( name = "fa-quote-left" )
-	String faQuoteLeft();
+	String quoteLeft();
 
 	@HexaCssExtra( name = "fa-quote-right" )
-	String faQuoteRight();
+	String quoteRight();
 
 	@HexaCssExtra( name = "fa-ra" )
-	String faRa();
+	String ra();
 
 	@HexaCssExtra( name = "fa-random" )
-	String faRandom();
+	String random();
 
 	@HexaCssExtra( name = "fa-rebel" )
-	String faRebel();
+	String rebel();
 
 	@HexaCssExtra( name = "fa-recycle" )
-	String faRecycle();
+	String recycle();
 
 	@HexaCssExtra( name = "fa-reddit" )
-	String faReddit();
+	String reddit();
 
 	@HexaCssExtra( name = "fa-reddit-square" )
-	String faRedditSquare();
+	String redditSquare();
 
 	@HexaCssExtra( name = "fa-refresh" )
-	String faRefresh();
+	String refresh();
 
 	@HexaCssExtra( name = "fa-remove" )
-	String faRemove();
+	String remove();
 
 	@HexaCssExtra( name = "fa-renren" )
-	String faRenren();
+	String renren();
 
 	@HexaCssExtra( name = "fa-reorder" )
-	String faReorder();
+	String reorder();
 
 	@HexaCssExtra( name = "fa-repeat" )
-	String faRepeat();
+	String repeat();
 
 	@HexaCssExtra( name = "fa-reply" )
-	String faReply();
+	String reply();
 
 	@HexaCssExtra( name = "fa-reply-all" )
-	String faReplyAll();
+	String replyAll();
 
 	@HexaCssExtra( name = "fa-retweet" )
-	String faRetweet();
+	String retweet();
 
 	@HexaCssExtra( name = "fa-rmb" )
-	String faRmb();
+	String rmb();
 
 	@HexaCssExtra( name = "fa-road" )
-	String faRoad();
+	String road();
 
 	@HexaCssExtra( name = "fa-rocket" )
-	String faRocket();
+	String rocket();
 
 	@HexaCssExtra( name = "fa-rotate-180" )
-	String faRotate180();
+	String rotate180();
 
 	@HexaCssExtra( name = "fa-rotate-270" )
-	String faRotate270();
+	String rotate270();
 
 	@HexaCssExtra( name = "fa-rotate-90" )
-	String faRotate90();
+	String rotate90();
 
 	@HexaCssExtra( name = "fa-rotate-left" )
-	String faRotateLeft();
+	String rotateLeft();
 
 	@HexaCssExtra( name = "fa-rotate-right" )
-	String faRotateRight();
+	String rotateRight();
 
 	@HexaCssExtra( name = "fa-rouble" )
-	String faRouble();
+	String rouble();
 
 	@HexaCssExtra( name = "fa-rss" )
-	String faRss();
+	String rss();
 
 	@HexaCssExtra( name = "fa-rss-square" )
-	String faRssSquare();
+	String rssSquare();
 
 	@HexaCssExtra( name = "fa-rub" )
-	String faRub();
+	String rub();
 
 	@HexaCssExtra( name = "fa-ruble" )
-	String faRuble();
+	String ruble();
 
 	@HexaCssExtra( name = "fa-rupee" )
-	String faRupee();
+	String rupee();
 
 	@HexaCssExtra( name = "fa-save" )
-	String faSave();
+	String save();
 
 	@HexaCssExtra( name = "fa-scissors" )
-	String faScissors();
+	String scissors();
 
 	@HexaCssExtra( name = "fa-search" )
-	String faSearch();
+	String search();
 
 	@HexaCssExtra( name = "fa-search-minus" )
-	String faSearchMinus();
+	String searchMinus();
 
 	@HexaCssExtra( name = "fa-search-plus" )
-	String faSearchPlus();
+	String searchPlus();
 
 	@HexaCssExtra( name = "fa-sellsy" )
-	String faSellsy();
+	String sellsy();
 
 	@HexaCssExtra( name = "fa-send" )
-	String faSend();
+	String send();
 
 	@HexaCssExtra( name = "fa-send-o" )
-	String faSendO();
+	String sendO();
 
 	@HexaCssExtra( name = "fa-server" )
-	String faServer();
+	String server();
 
 	@HexaCssExtra( name = "fa-share" )
-	String faShare();
+	String share();
 
 	@HexaCssExtra( name = "fa-share-alt" )
-	String faShareAlt();
+	String shareAlt();
 
 	@HexaCssExtra( name = "fa-share-alt-square" )
-	String faShareAltSquare();
+	String shareAltSquare();
 
 	@HexaCssExtra( name = "fa-share-square" )
-	String faShareSquare();
+	String shareSquare();
 
 	@HexaCssExtra( name = "fa-share-square-o" )
-	String faShareSquareO();
+	String shareSquareO();
 
 	@HexaCssExtra( name = "fa-shekel" )
-	String faShekel();
+	String shekel();
 
 	@HexaCssExtra( name = "fa-sheqel" )
-	String faSheqel();
+	String sheqel();
 
 	@HexaCssExtra( name = "fa-shield" )
-	String faShield();
+	String shield();
 
 	@HexaCssExtra( name = "fa-ship" )
-	String faShip();
+	String ship();
 
 	@HexaCssExtra( name = "fa-shirtsinbulk" )
-	String faShirtsinbulk();
+	String shirtsinbulk();
 
 	@HexaCssExtra( name = "fa-shopping-cart" )
-	String faShoppingCart();
+	String shoppingCart();
 
 	@HexaCssExtra( name = "fa-sign-in" )
-	String faSignIn();
+	String signIn();
 
 	@HexaCssExtra( name = "fa-sign-out" )
-	String faSignOut();
+	String signOut();
 
 	@HexaCssExtra( name = "fa-signal" )
-	String faSignal();
+	String signal();
 
 	@HexaCssExtra( name = "fa-simplybuilt" )
-	String faSimplybuilt();
+	String simplybuilt();
 
 	@HexaCssExtra( name = "fa-sitemap" )
-	String faSitemap();
+	String sitemap();
 
 	@HexaCssExtra( name = "fa-skyatlas" )
-	String faSkyatlas();
+	String skyatlas();
 
 	@HexaCssExtra( name = "fa-skype" )
-	String faSkype();
+	String skype();
 
 	@HexaCssExtra( name = "fa-slack" )
-	String faSlack();
+	String slack();
 
 	@HexaCssExtra( name = "fa-sliders" )
-	String faSliders();
+	String sliders();
 
 	@HexaCssExtra( name = "fa-slideshare" )
-	String faSlideshare();
+	String slideshare();
 
 	@HexaCssExtra( name = "fa-smile-o" )
-	String faSmileO();
+	String smileO();
 
 	@HexaCssExtra( name = "fa-soccer-ball-o" )
-	String faSoccerBallO();
+	String soccerBallO();
 
 	@HexaCssExtra( name = "fa-sort" )
-	String faSort();
+	String sort();
 
 	@HexaCssExtra( name = "fa-sort-alpha-asc" )
-	String faSortAlphaAsc();
+	String sortAlphaAsc();
 
 	@HexaCssExtra( name = "fa-sort-alpha-desc" )
-	String faSortAlphaDesc();
+	String sortAlphaDesc();
 
 	@HexaCssExtra( name = "fa-sort-amount-asc" )
-	String faSortAmountAsc();
+	String sortAmountAsc();
 
 	@HexaCssExtra( name = "fa-sort-amount-desc" )
-	String faSortAmountDesc();
+	String sortAmountDesc();
 
 	@HexaCssExtra( name = "fa-sort-asc" )
-	String faSortAsc();
+	String sortAsc();
 
 	@HexaCssExtra( name = "fa-sort-desc" )
-	String faSortDesc();
+	String sortDesc();
 
 	@HexaCssExtra( name = "fa-sort-down" )
-	String faSortDown();
+	String sortDown();
 
 	@HexaCssExtra( name = "fa-sort-numeric-asc" )
-	String faSortNumericAsc();
+	String sortNumericAsc();
 
 	@HexaCssExtra( name = "fa-sort-numeric-desc" )
-	String faSortNumericDesc();
+	String sortNumericDesc();
 
 	@HexaCssExtra( name = "fa-sort-up" )
-	String faSortUp();
+	String sortUp();
 
 	@HexaCssExtra( name = "fa-soundcloud" )
-	String faSoundcloud();
+	String soundcloud();
 
 	@HexaCssExtra( name = "fa-space-shuttle" )
-	String faSpaceShuttle();
+	String spaceShuttle();
 
 	@HexaCssExtra( name = "fa-spin" )
-	String faSpin();
+	String spin();
 
 	@HexaCssExtra( name = "fa-spinner" )
-	String faSpinner();
+	String spinner();
 
 	@HexaCssExtra( name = "fa-spoon" )
-	String faSpoon();
+	String spoon();
 
 	@HexaCssExtra( name = "fa-spotify" )
-	String faSpotify();
+	String spotify();
 
 	@HexaCssExtra( name = "fa-square" )
-	String faSquare();
+	String square();
 
 	@HexaCssExtra( name = "fa-square-o" )
-	String faSquareO();
+	String squareO();
 
 	@HexaCssExtra( name = "fa-stack" )
-	String faStack();
+	String stack();
 
 	@HexaCssExtra( name = "fa-stack-1x" )
-	String faStack1x();
+	String stack1x();
 
 	@HexaCssExtra( name = "fa-stack-2x" )
-	String faStack2x();
+	String stack2x();
 
 	@HexaCssExtra( name = "fa-stack-exchange" )
-	String faStackExchange();
+	String stackExchange();
 
 	@HexaCssExtra( name = "fa-stack-overflow" )
-	String faStackOverflow();
+	String stackOverflow();
 
 	@HexaCssExtra( name = "fa-star" )
-	String faStar();
+	String star();
 
 	@HexaCssExtra( name = "fa-star-half" )
-	String faStarHalf();
+	String starHalf();
 
 	@HexaCssExtra( name = "fa-star-half-empty" )
-	String faStarHalfEmpty();
+	String starHalfEmpty();
 
 	@HexaCssExtra( name = "fa-star-half-full" )
-	String faStarHalfFull();
+	String starHalfFull();
 
 	@HexaCssExtra( name = "fa-star-half-o" )
-	String faStarHalfO();
+	String starHalfO();
 
 	@HexaCssExtra( name = "fa-star-o" )
-	String faStarO();
+	String starO();
 
 	@HexaCssExtra( name = "fa-steam" )
-	String faSteam();
+	String steam();
 
 	@HexaCssExtra( name = "fa-steam-square" )
-	String faSteamSquare();
+	String steamSquare();
 
 	@HexaCssExtra( name = "fa-step-backward" )
-	String faStepBackward();
+	String stepBackward();
 
 	@HexaCssExtra( name = "fa-step-forward" )
-	String faStepForward();
+	String stepForward();
 
 	@HexaCssExtra( name = "fa-stethoscope" )
-	String faStethoscope();
+	String stethoscope();
 
 	@HexaCssExtra( name = "fa-stop" )
-	String faStop();
+	String stop();
 
 	@HexaCssExtra( name = "fa-street-view" )
-	String faStreetView();
+	String streetView();
 
 	@HexaCssExtra( name = "fa-strikethrough" )
-	String faStrikethrough();
+	String strikethrough();
 
 	@HexaCssExtra( name = "fa-stumbleupon" )
-	String faStumbleupon();
+	String stumbleupon();
 
 	@HexaCssExtra( name = "fa-stumbleupon-circle" )
-	String faStumbleuponCircle();
+	String stumbleuponCircle();
 
 	@HexaCssExtra( name = "fa-subscript" )
-	String faSubscript();
+	String subscript();
 
 	@HexaCssExtra( name = "fa-subway" )
-	String faSubway();
+	String subway();
 
 	@HexaCssExtra( name = "fa-suitcase" )
-	String faSuitcase();
+	String suitcase();
 
 	@HexaCssExtra( name = "fa-sun-o" )
-	String faSunO();
+	String sunO();
 
 	@HexaCssExtra( name = "fa-superscript" )
-	String faSuperscript();
+	String superscript();
 
 	@HexaCssExtra( name = "fa-support" )
-	String faSupport();
+	String support();
 
 	@HexaCssExtra( name = "fa-table" )
-	String faTable();
+	String table();
 
 	@HexaCssExtra( name = "fa-tablet" )
-	String faTablet();
+	String tablet();
 
 	@HexaCssExtra( name = "fa-tachometer" )
-	String faTachometer();
+	String tachometer();
 
 	@HexaCssExtra( name = "fa-tag" )
-	String faTag();
+	String tag();
 
 	@HexaCssExtra( name = "fa-tags" )
-	String faTags();
+	String tags();
 
 	@HexaCssExtra( name = "fa-tasks" )
-	String faTasks();
+	String tasks();
 
 	@HexaCssExtra( name = "fa-taxi" )
-	String faTaxi();
+	String taxi();
 
 	@HexaCssExtra( name = "fa-tencent-weibo" )
-	String faTencentWeibo();
+	String tencentWeibo();
 
 	@HexaCssExtra( name = "fa-terminal" )
-	String faTerminal();
+	String terminal();
 
 	@HexaCssExtra( name = "fa-text-height" )
-	String faTextHeight();
+	String textHeight();
 
 	@HexaCssExtra( name = "fa-text-width" )
-	String faTextWidth();
+	String textWidth();
 
 	@HexaCssExtra( name = "fa-th" )
-	String faTh();
+	String th();
 
 	@HexaCssExtra( name = "fa-th-large" )
-	String faThLarge();
+	String thLarge();
 
 	@HexaCssExtra( name = "fa-th-list" )
-	String faThList();
+	String thList();
 
 	@HexaCssExtra( name = "fa-thumb-tack" )
-	String faThumbTack();
+	String thumbTack();
 
 	@HexaCssExtra( name = "fa-thumbs-down" )
-	String faThumbsDown();
+	String thumbsDown();
 
 	@HexaCssExtra( name = "fa-thumbs-o-down" )
-	String faThumbsODown();
+	String thumbsODown();
 
 	@HexaCssExtra( name = "fa-thumbs-o-up" )
-	String faThumbsOUp();
+	String thumbsOUp();
 
 	@HexaCssExtra( name = "fa-thumbs-up" )
-	String faThumbsUp();
+	String thumbsUp();
 
 	@HexaCssExtra( name = "fa-ticket" )
-	String faTicket();
+	String ticket();
 
 	@HexaCssExtra( name = "fa-times" )
-	String faTimes();
+	String times();
 
 	@HexaCssExtra( name = "fa-times-circle" )
-	String faTimesCircle();
+	String timesCircle();
 
 	@HexaCssExtra( name = "fa-times-circle-o" )
-	String faTimesCircleO();
+	String timesCircleO();
 
 	@HexaCssExtra( name = "fa-tint" )
-	String faTint();
+	String tint();
 
 	@HexaCssExtra( name = "fa-toggle-down" )
-	String faToggleDown();
+	String toggleDown();
 
 	@HexaCssExtra( name = "fa-toggle-left" )
-	String faToggleLeft();
+	String toggleLeft();
 
 	@HexaCssExtra( name = "fa-toggle-off" )
-	String faToggleOff();
+	String toggleOff();
 
 	@HexaCssExtra( name = "fa-toggle-on" )
-	String faToggleOn();
+	String toggleOn();
 
 	@HexaCssExtra( name = "fa-toggle-right" )
-	String faToggleRight();
+	String toggleRight();
 
 	@HexaCssExtra( name = "fa-toggle-up" )
-	String faToggleUp();
+	String toggleUp();
 
 	@HexaCssExtra( name = "fa-train" )
-	String faTrain();
+	String train();
 
 	@HexaCssExtra( name = "fa-transgender" )
-	String faTransgender();
+	String transgender();
 
 	@HexaCssExtra( name = "fa-transgender-alt" )
-	String faTransgenderAlt();
+	String transgenderAlt();
 
 	@HexaCssExtra( name = "fa-trash" )
-	String faTrash();
+	String trash();
 
 	@HexaCssExtra( name = "fa-trash-o" )
-	String faTrashO();
+	String trashO();
 
 	@HexaCssExtra( name = "fa-tree" )
-	String faTree();
+	String tree();
 
 	@HexaCssExtra( name = "fa-trello" )
-	String faTrello();
+	String trello();
 
 	@HexaCssExtra( name = "fa-trophy" )
-	String faTrophy();
+	String trophy();
 
 	@HexaCssExtra( name = "fa-truck" )
-	String faTruck();
+	String truck();
 
 	@HexaCssExtra( name = "fa-try" )
-	String faTry();
+	String _try();
 
 	@HexaCssExtra( name = "fa-tty" )
-	String faTty();
+	String tty();
 
 	@HexaCssExtra( name = "fa-tumblr" )
-	String faTumblr();
+	String tumblr();
 
 	@HexaCssExtra( name = "fa-tumblr-square" )
-	String faTumblrSquare();
+	String tumblrSquare();
 
 	@HexaCssExtra( name = "fa-turkish-lira" )
-	String faTurkishLira();
+	String turkishLira();
 
 	@HexaCssExtra( name = "fa-twitch" )
-	String faTwitch();
+	String twitch();
 
 	@HexaCssExtra( name = "fa-twitter" )
-	String faTwitter();
+	String twitter();
 
 	@HexaCssExtra( name = "fa-twitter-square" )
-	String faTwitterSquare();
+	String twitterSquare();
 
 	@HexaCssExtra( name = "fa-ul" )
-	String faUl();
+	String ul();
 
 	@HexaCssExtra( name = "fa-umbrella" )
-	String faUmbrella();
+	String umbrella();
 
 	@HexaCssExtra( name = "fa-underline" )
-	String faUnderline();
+	String underline();
 
 	@HexaCssExtra( name = "fa-undo" )
-	String faUndo();
+	String undo();
 
 	@HexaCssExtra( name = "fa-university" )
-	String faUniversity();
+	String university();
 
 	@HexaCssExtra( name = "fa-unlink" )
-	String faUnlink();
+	String unlink();
 
 	@HexaCssExtra( name = "fa-unlock" )
-	String faUnlock();
+	String unlock();
 
 	@HexaCssExtra( name = "fa-unlock-alt" )
-	String faUnlockAlt();
+	String unlockAlt();
 
 	@HexaCssExtra( name = "fa-unsorted" )
-	String faUnsorted();
+	String unsorted();
 
 	@HexaCssExtra( name = "fa-upload" )
-	String faUpload();
+	String upload();
 
 	@HexaCssExtra( name = "fa-usd" )
-	String faUsd();
+	String usd();
 
 	@HexaCssExtra( name = "fa-user" )
-	String faUser();
+	String user();
 
 	@HexaCssExtra( name = "fa-user-md" )
-	String faUserMd();
+	String userMd();
 
 	@HexaCssExtra( name = "fa-user-plus" )
-	String faUserPlus();
+	String userPlus();
 
 	@HexaCssExtra( name = "fa-user-secret" )
-	String faUserSecret();
+	String userSecret();
 
 	@HexaCssExtra( name = "fa-user-times" )
-	String faUserTimes();
+	String userTimes();
 
 	@HexaCssExtra( name = "fa-users" )
-	String faUsers();
+	String users();
 
 	@HexaCssExtra( name = "fa-venus" )
-	String faVenus();
+	String venus();
 
 	@HexaCssExtra( name = "fa-venus-double" )
-	String faVenusDouble();
+	String venusDouble();
 
 	@HexaCssExtra( name = "fa-venus-mars" )
-	String faVenusMars();
+	String venusMars();
 
 	@HexaCssExtra( name = "fa-viacoin" )
-	String faViacoin();
+	String viacoin();
 
 	@HexaCssExtra( name = "fa-video-camera" )
-	String faVideoCamera();
+	String videoCamera();
 
 	@HexaCssExtra( name = "fa-vimeo-square" )
-	String faVimeoSquare();
+	String vimeoSquare();
 
 	@HexaCssExtra( name = "fa-vine" )
-	String faVine();
+	String vine();
 
 	@HexaCssExtra( name = "fa-vk" )
-	String faVk();
+	String vk();
 
 	@HexaCssExtra( name = "fa-volume-down" )
-	String faVolumeDown();
+	String volumeDown();
 
 	@HexaCssExtra( name = "fa-volume-off" )
-	String faVolumeOff();
+	String volumeOff();
 
 	@HexaCssExtra( name = "fa-volume-up" )
-	String faVolumeUp();
+	String volumeUp();
 
 	@HexaCssExtra( name = "fa-warning" )
-	String faWarning();
+	String warning();
 
 	@HexaCssExtra( name = "fa-wechat" )
-	String faWechat();
+	String wechat();
 
 	@HexaCssExtra( name = "fa-weibo" )
-	String faWeibo();
+	String weibo();
 
 	@HexaCssExtra( name = "fa-weixin" )
-	String faWeixin();
+	String weixin();
 
 	@HexaCssExtra( name = "fa-whatsapp" )
-	String faWhatsapp();
+	String whatsapp();
 
 	@HexaCssExtra( name = "fa-wheelchair" )
-	String faWheelchair();
+	String wheelchair();
 
 	@HexaCssExtra( name = "fa-wifi" )
-	String faWifi();
+	String wifi();
 
 	@HexaCssExtra( name = "fa-windows" )
-	String faWindows();
+	String windows();
 
 	@HexaCssExtra( name = "fa-won" )
-	String faWon();
+	String won();
 
 	@HexaCssExtra( name = "fa-wordpress" )
-	String faWordpress();
+	String wordpress();
 
 	@HexaCssExtra( name = "fa-wrench" )
-	String faWrench();
+	String wrench();
 
 	@HexaCssExtra( name = "fa-xing" )
-	String faXing();
+	String xing();
 
 	@HexaCssExtra( name = "fa-xing-square" )
-	String faXingSquare();
+	String xingSquare();
 
 	@HexaCssExtra( name = "fa-yahoo" )
-	String faYahoo();
+	String yahoo();
 
 	@HexaCssExtra( name = "fa-yelp" )
-	String faYelp();
+	String yelp();
 
 	@HexaCssExtra( name = "fa-yen" )
-	String faYen();
+	String yen();
 
 	@HexaCssExtra( name = "fa-youtube" )
-	String faYoutube();
+	String youtube();
 
 	@HexaCssExtra( name = "fa-youtube-play" )
-	String faYoutubePlay();
+	String youtubePlay();
 
 	@HexaCssExtra( name = "fa-youtube-square" )
-	String faYoutubeSquare();
+	String youtubeSquare();
 
 	@HexaCssExtra( name = "pull-left" )
 	String pullLeft();
@@ -1857,3 +1857,4 @@ public interface FontAwesomeHexaCss extends HexaCss
 	@HexaCssExtra( name = "pull-right" )
 	String pullRight();
 }
+
