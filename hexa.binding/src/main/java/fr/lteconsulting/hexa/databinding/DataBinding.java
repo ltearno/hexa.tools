@@ -62,14 +62,9 @@ public class DataBinding
 		}
 	}
 
-	private void log( String text )
-	{
-		if( logPrefix == null )
-			return;
-
-		LOGGER.info( "DATABINDING " + logPrefix + " : " + text );
-	}
-
+	/**
+	 * Activates the data binding and propagates the source to the destination
+	 */
 	public DataBinding activate()
 	{
 		fActivated = true;
@@ -81,6 +76,21 @@ public class DataBinding
 		return this;
 	}
 
+	/**
+	 * Suspend the data binding. Can be reactivated with {@link activate}
+	 */
+	public DataBinding suspend()
+	{
+		fActivated = false;
+		
+		log( "suspended" );
+		
+		return this;
+	}
+
+	/**
+	 * Switch to the deferred activation mode
+	 */
 	public void deferActivate()
 	{
 		log( "deferred activation..." );
@@ -116,6 +126,14 @@ public class DataBinding
 		destination = null;
 		destinationHandler = null;
 
+	}
+
+	private void log( String text )
+	{
+		if( logPrefix == null )
+			return;
+	
+		LOGGER.info( "DATABINDING " + logPrefix + " : " + text );
 	}
 
 	private final Action2<PropertyAdapter, Object> onSourceChanged = new Action2<PropertyAdapter, Object>()
@@ -163,11 +181,11 @@ public class DataBinding
 			// prevent us to wake up ourselves
 			if( fSettingDestination )
 				return;
-
-			log( "destination changed, propagating to source ..." );
-
+			
 			if( !fActivated )
 				return;
+			
+			log( "destination changed, propagating to source ..." );
 
 			Object value = destination.getValue();
 
