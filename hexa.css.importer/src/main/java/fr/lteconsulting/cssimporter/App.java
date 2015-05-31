@@ -36,13 +36,13 @@ public class App
 		System.out.println( "HexaCss importer" );
 
 		// input file path
-		String sourcePath = "C:\\Documents\\Repos\\hexa.tools\\hexa.css\\src\\main\\resources\\fr\\lteconsulting\\hexa\\client\\css\\bindings\\font-awesome.css";
+		String sourcePath = "C:\\Documents\\Repos\\hexa.tools\\hexa.css\\src\\main\\resources\\fr\\lteconsulting\\hexa\\client\\css\\bindings\\foundation.css";
 
 		// output file path (default = .)
 		// output class fqn (default = fr.lteconsulting.Css)
 
 		String singletonName = "CSS";
-		String className = "FontAwesomeHexaCss";
+		String className = "FoundationHexaCss";
 		String packageName = "fr.lteconsulting.hexa.client.css.bindings";
 
 		String input;
