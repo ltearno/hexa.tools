@@ -16,6 +16,7 @@
 		<gwt.version>2.7.0</gwt.version>
 		<gwt.plugin.version>2.7.0</gwt.plugin.version>
 		<generated-sources>${project.build.directory}/generated-sources/annotations</generated-sources>
+		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 	</properties>
 
 	<dependencies>

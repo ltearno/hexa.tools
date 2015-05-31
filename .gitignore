@@ -15,3 +15,4 @@ hexa.binding.gwt/.factorypath
 hexa.binding.samples/hexa.binding.labs/.factorypath
 hexa.binding.samples/hexa.binding.sample1/.factorypath
 hexa.binding.samples/hexa.binding.sample2/.factorypath
+*.factorypath

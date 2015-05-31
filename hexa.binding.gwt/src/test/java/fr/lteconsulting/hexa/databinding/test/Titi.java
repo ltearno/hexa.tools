@@ -3,7 +3,6 @@ package fr.lteconsulting.hexa.databinding.test;
 import java.util.HashMap;
 import java.util.List;
 
-import fr.lteconsulting.hexa.databinding.annotation.Observable;
 import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
 
 @ObservableGwt
@@ -27,5 +26,5 @@ public class Titi<T extends Number>
 	
 	List<Object> os;
 	
-	HashMap<String, List<ObservableTiti>> map;
+	HashMap<String, List<ObservableTiti<Integer>>> map;
 }
