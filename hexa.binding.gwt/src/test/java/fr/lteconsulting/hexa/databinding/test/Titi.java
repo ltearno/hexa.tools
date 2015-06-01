@@ -26,5 +26,5 @@ public class Titi<T extends Number>
 	
 	List<Object> os;
 	
-	HashMap<String, List<ObservableTiti<Integer>>> map;
+	HashMap<String, List<ObservableTiti>> map;
 }
