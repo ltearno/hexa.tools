@@ -6,7 +6,7 @@ import java.util.List;
 import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
 
 @ObservableGwt
-public class Titi<T extends Number>
+public class Toto<T extends Number>
 {
 	T data;
 
@@ -26,7 +26,20 @@ public class Titi<T extends Number>
 	
 	List<Object> os;
 	
-	HashMap<String, List<ObservableTiti>> map;
+	HashMap<String, List<Titi<Integer>>> map;
 
 	ObservableTiti titi;
+
+	// does not work, give <any>
+	//ObservableToto<Integer> toto2;
+
+	List<ObservableTiti> titis;
+
+	// does not work, give List<<any>>
+	//List<ObservableToto<Integer>> totos2;
+
+	// does not work, give List<<any>>
+	//List<ObservableTiti<Integer>> totos3;
+
+	List<ObservableToto> totos4;
 }

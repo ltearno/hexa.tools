@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -34,6 +35,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 	private Filer filer;
 	private Types types;
 	private TypeSimplifier typeSimplifier;
+	private Messager msg;
 
 	private static final String TEMPLATE_NAME = "fr/lteconsulting/hexa/databinding/annotation/processor/TemplateClass.txt";
 	private static final String GWT_TEMPLATE_NAME = "fr/lteconsulting/hexa/databinding/annotation/processor/TemplateClassGwt.txt";
@@ -47,6 +49,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 		filer = processingEnv.getFiler();
 		types = processingEnv.getTypeUtils();
 		typeSimplifier = new TypeSimplifier( types );
+		msg = processingEnv.getMessager();
 	}
 
 	@Override
@@ -183,7 +186,6 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 				setter.replace( "$Modifiers", modifiersBuilder.toString() );
 
 				setter.replace( "$MethodName", methodName );
-
 				setter.replace( "$PropertyClass", Utils.getTypeQualifiedName( method.getParameters().get( 0 ).asType() ) );
 				setter.replace( "$Property", propertyName );
 
@@ -209,19 +211,19 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 				continue;
 
 			String propertyName = field.getSimpleName().toString();
+			String fieldTypeName = field.asType().toString();
 
 			if( !settersDone.contains( propertyName ) )
 			{
 				String methodName = "set" + capitalizeFirstLetter( propertyName );
+				
+				if(fieldTypeName.contains( "<any>" ))
+					msg.printMessage( Kind.ERROR, "Parametrizing a generated type is impossible ! This problem is being investigated... Stay tuned....", field );
 
 				Template setter = Template.fromResource( templateName, 4 );
 				setter.replace( "$Modifiers", "public" );
 				setter.replace( "$MethodName", methodName );
-				// setter.replace( "$PropertyClass",
-				// ((TypeElement)(((DeclaredType)
-				// field.asType()).asElement())).getQualifiedName().toString()
-				// );
-				setter.replace( "$PropertyClass", Utils.getTypeQualifiedName( field.asType() ) );
+				setter.replace( "$PropertyClass", fieldTypeName );
 				setter.replace( "$Property", propertyName );
 
 				result.append( setter.toString() );
@@ -232,12 +234,12 @@ public class ObservableAnnotationProcessor extends AbstractProcessor
 			if( !gettersDone.contains( propertyName ) )
 			{
 				String methodName = "get" + capitalizeFirstLetter( propertyName );
+				
+				if(fieldTypeName.contains( "<any>" ))
+					msg.printMessage( Kind.ERROR, "Parametrizing a generated type is impossible ! This problem is being investigated... Stay tuned....", field );
 
 				Template getter = Template.fromResource( templateName, 2 );
-				// getter.replace( "$PropertyClass",
-				// ((TypeElement)(((DeclaredType)field.asType()).asElement())).getQualifiedName().toString()
-				// );
-				getter.replace( "$PropertyClass", Utils.getTypeQualifiedName( field.asType() ) );
+				getter.replace( "$PropertyClass", fieldTypeName );
 				getter.replace( "$MethodName", methodName );
 				getter.replace( "$Property", propertyName );
 
