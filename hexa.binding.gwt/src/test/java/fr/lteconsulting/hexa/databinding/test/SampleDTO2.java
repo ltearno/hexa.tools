@@ -6,10 +6,8 @@ import java.util.List;
 import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
 
 @ObservableGwt
-public class Toto<T extends Number>
+public class SampleDTO2
 {
-	T data;
-
 	String tata;
 	int toto;
 	boolean tutu;
@@ -26,14 +24,17 @@ public class Toto<T extends Number>
 	
 	List<Object> os;
 	
-	HashMap<String, List<Titi<Integer>>> map;
+	HashMap<String, List<SampleDTO1>> map;
 
-	ObservableTiti titi;
+	// self reference
+	SampleDTO2 titi2;
+	
+	SampleDTO1 titi;
 
 	// does not work, give <any>
-	//ObservableToto<Integer> toto2;
+	// ObservableToto<Integer> toto2;
 
-	List<ObservableTiti> titis;
+	List<SampleDTO1> titis;
 
 	// does not work, give List<<any>>
 	//List<ObservableToto<Integer>> totos2;
@@ -41,5 +42,5 @@ public class Toto<T extends Number>
 	// does not work, give List<<any>>
 	//List<ObservableTiti<Integer>> totos3;
 
-	List<ObservableToto> totos4;
+	List<SampleDTO1> totos4;
 }

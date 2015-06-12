@@ -6,10 +6,8 @@ import java.util.List;
 import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
 
 @ObservableGwt
-public class Titi<T extends Number>
+public class SampleDTO1
 {
-	T data;
-
 	String tata;
 	int toto;
 	boolean tutu;
@@ -26,7 +24,7 @@ public class Titi<T extends Number>
 	
 	List<Object> os;
 	
-	HashMap<String, List<ObservableTiti>> map;
+	HashMap<String, List<SampleDTO1>> map;
 
-	ObservableTiti titi;
+	SampleDTO1 titi;
 }
