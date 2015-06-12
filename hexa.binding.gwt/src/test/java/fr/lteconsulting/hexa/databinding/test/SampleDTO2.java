@@ -24,7 +24,7 @@ public class SampleDTO2
 	
 	List<Object> os;
 	
-	HashMap<String, List<SampleDTO1>> map;
+	HashMap<String, List<ObservableSampleDTO1>> map;
 
 	// self reference
 	SampleDTO2 titi2;

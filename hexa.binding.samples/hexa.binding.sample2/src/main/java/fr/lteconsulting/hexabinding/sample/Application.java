@@ -54,6 +54,7 @@ public class Application implements EntryPoint
 		
 		// gives the data to the list
 		cellList.setRowData( persons );
+		model.setSelected( persons.get( 0 ), true );
 		
 		// create the person form
 		PersonForm form = new PersonForm();
