@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>hexa.persistence</artifactId>
+	<version>1.3-SNAPSHOT</version>
 
 	<name>hexa.persistence</name>
 	<url>http://www.lteconsulting.fr</url>
