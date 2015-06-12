@@ -6,7 +6,7 @@
     <artifactId>hexa.demo.gwt.databinding</artifactId>
     <name>hexa.demo.gwt.databinding</name>
     <url>http://www.lteconsulting.fr</url>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
     <packaging>war</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,19 +40,19 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.core</artifactId>
-            <version>1.3</version>
+            <version>1.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding</artifactId>
-            <version>1.3</version>
+            <version>1.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.css</artifactId>
-            <version>1.3</version>
+            <version>1.4-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
