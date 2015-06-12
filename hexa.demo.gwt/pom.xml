@@ -1,73 +1,63 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>fr.lteconsulting</groupId>
-	<artifactId>hexa.demo.gwt</artifactId>
-
-	<version>1.3-SNAPSHOT</version>
-
-	<name>hexa.demo.gwt</name>
-
-	<packaging>war</packaging>
-
-	<properties>
-		<runTarget>http://localhost:8888/</runTarget>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>fr.lteconsulting</groupId>
-			<artifactId>hexa.core</artifactId>
-			<version>1.3-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-
-			<!-- GWT Maven Plugin -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.7.0</version>
-
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-
-				<configuration>
-					<debugPort>8001</debugPort>
-					<compileReport>true</compileReport>
-					<runTarget>${runTarget}</runTarget>
-					<gen>${basedir}/target/gwt-gen</gen>
-					<module>fr.lteconsulting.hexa.demo.HexaDemo</module>
-					<persistentunitcache>true</persistentunitcache>
-					<persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.lteconsulting</groupId>
+    <artifactId>hexa.demo.gwt</artifactId>
+    <version>1.3</version>
+    <name>hexa.demo.gwt</name>
+    <packaging>war</packaging>
+    <properties>
+        <runTarget>http://localhost:8888/</runTarget>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>fr.lteconsulting</groupId>
+            <artifactId>hexa.core</artifactId>
+            <version>1.3</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <!-- GWT Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>2.7.0</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <debugPort>8001</debugPort>
+                    <compileReport>true</compileReport>
+                    <runTarget>${runTarget}</runTarget>
+                    <gen>${basedir}/target/gwt-gen</gen>
+                    <module>fr.lteconsulting.hexa.demo.HexaDemo</module>
+                    <persistentunitcache>true</persistentunitcache>
+                    <persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

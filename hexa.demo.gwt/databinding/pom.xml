@@ -1,23 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>fr.lteconsulting</groupId>
     <artifactId>hexa.demo.gwt.databinding</artifactId>
-
     <name>hexa.demo.gwt.databinding</name>
     <url>http://www.lteconsulting.fr</url>
-    <version>1.3-SNAPSHOT</version>
-
+    <version>1.3</version>
     <packaging>war</packaging>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <runTarget>http://localhost:8888/</runTarget>
         <gwt.version>2.7.0</gwt.version>
         <gwt.plugin.version>2.7.0</gwt.plugin.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.google.gwt</groupId>
@@ -41,28 +37,24 @@
             <artifactId>gwt-codeserver</artifactId>
             <version>${gwt.version}</version>
         </dependency>
-
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.core</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.3</version>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.3</version>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.css</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.3</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -70,16 +62,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
-
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -89,12 +78,10 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
                 <version>${gwt.plugin.version}</version>
-
                 <executions>
                     <execution>
                         <phase>compile</phase>
@@ -103,7 +90,6 @@
                         </goals>
                     </execution>
                 </executions>
-
                 <configuration>
                     <workDir>${project.build.directory}/${project.build.finalName}</workDir>
                     <optimizationLevel>9</optimizationLevel>
@@ -115,7 +101,6 @@
                     <persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
                     <jsInteropMode>JS</jsInteropMode>
                 </configuration>
-
                 <dependencies>
                     <dependency>
                         <groupId>com.google.gwt</groupId>
@@ -134,20 +119,15 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
-            
-<!-- Hexa Css plugin, to obfuscate and optimize the CSS files -->
+            <!-- Hexa Css plugin, to obfuscate and optimize the CSS files -->
             <plugin>
                 <groupId>fr.lteconsulting</groupId>
                 <artifactId>hexacss-maven-plugin</artifactId>
                 <version>1.0</version>
-
                 <configuration>
                     <sourceDirectory>src/main/webapp/css</sourceDirectory>
                     <mappingFile>${project.build.directory}/${project.build.finalName}/application/hexas-css.mapping</mappingFile>
-
                     <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-
                     <includes>
                         <include>bootstrap.min.css</include>
                         <include>bootstrap.cerulean.min.css</include>
@@ -158,7 +138,6 @@
                         <include>bootstrap.spacelab.min.css</include>
                     </includes>
                 </configuration>
-
                 <executions>
                     <execution>
                         <phase>compile</phase>
@@ -168,7 +147,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -184,39 +162,39 @@
             </plugin>
         </plugins>
         <pluginManagement>
-        	<plugins>
-        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                    <groupId>
         									fr.lteconsulting
         								</groupId>
-        								<artifactId>
+                                    <artifactId>
         									hexacss-maven-plugin
         								</artifactId>
-        								<versionRange>
+                                    <versionRange>
         									[1.0,)
         								</versionRange>
-        								<goals>
-        									<goal>process</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
+                                    <goals>
+                                    <goal>process</goal>
+                                    </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                    <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
         </pluginManagement>
     </build>
 </project>

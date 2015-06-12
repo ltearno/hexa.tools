@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>fr.lteconsulting</groupId>
-	<version>1.3-SNAPSHOT</version>
-	<artifactId>hexa.all</artifactId>
-
-	<name>hexa.all</name>
-	<url>http://www.lteconsulting.fr</url>
-
-	<packaging>pom</packaging>
-
-	<modules>
-		<module>../hexa.archetype</module>
-		<module>../hexa.gwt.archetype</module>
-		<module>../hexa.binding</module>
-		<module>../hexa.binding.gwt</module>
-		<module>../hexa.css</module>
-		<module>../hexa.css/samples</module>
-		<module>../hexa.css-maven-plugin</module>
-		<module>../hexa.core</module>
-		<!--<module>../hexa.demo.gwt</module>-->
-		<module>../hexa.demo.gwt/databinding</module>
-		<!--<module>../hexa.persistence</module>-->
-		<module>../hexa.rpc</module>
-		<module>../hexa.spring</module>
-		<module>../hexa.utils</module>
-	</modules>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.lteconsulting</groupId>
+    <version>1.3</version>
+    <artifactId>hexa.all</artifactId>
+    <name>hexa.all</name>
+    <url>http://www.lteconsulting.fr</url>
+    <packaging>pom</packaging>
+    <modules>
+        <module>../hexa.archetype</module>
+        <module>../hexa.gwt.archetype</module>
+        <module>../hexa.binding</module>
+        <module>../hexa.binding.gwt</module>
+        <module>../hexa.css</module>
+        <module>../hexa.css/samples</module>
+        <module>../hexa.css-maven-plugin</module>
+        <module>../hexa.core</module>
+        <!--<module>../hexa.demo.gwt</module>-->
+        <module>../hexa.demo.gwt/databinding</module>
+        <!--<module>../hexa.persistence</module>-->
+        <module>../hexa.rpc</module>
+        <module>../hexa.spring</module>
+        <module>../hexa.utils</module>
+    </modules>
 </project>

@@ -1,260 +1,240 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>fr.lteconsulting</groupId>
-	<artifactId>hexa.binding.sample2</artifactId>
-	<version>1.3-SNAPSHOT</version>
-
-	<name>hexa.binding.sample2</name>
-	<url>http://maven.apache.org</url>
-
-	<packaging>war</packaging>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<gwt.version>2.7.0</gwt.version>
-		<gwt.plugin.version>2.7.0</gwt.plugin.version>
-		<generated-sources>${project.build.directory}/generated-sources/annotations</generated-sources>
-		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>fr.lteconsulting</groupId>
-			<artifactId>hexa.binding</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>fr.lteconsulting</groupId>
-			<artifactId>hexa.binding.gwt</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>fr.lteconsulting</groupId>
-			<artifactId>hexa.css</artifactId>
-			<version>1.3-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
-			<version>${gwt.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<version>${gwt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-codeserver</artifactId>
-			<version>${gwt.version}</version>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<generatedSourcesDirectory>${generated-sources}</generatedSourcesDirectory>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>fr.lteconsulting</groupId>
-						<artifactId>hexa.binding.processor</artifactId>
-						<version>1.3-SNAPSHOT</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.9.1</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-<!-- 						<phase>generate-sources</phase> -->
-						<phase>process-classes</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${generated-sources}</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- GWT Maven Plugin -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>${gwt.plugin.version}</version>
-
-				<configuration>
-					<workDir>${project.build.directory}/${project.build.finalName}</workDir>
-					<optimizationLevel>9</optimizationLevel>
-					<debugPort>8001</debugPort>
-					<compileReport>true</compileReport>
-					<gen>${basedir}/target/gwt-gen</gen>
-					<module>fr.lteconsulting.hexabinding.Sample</module>
-					<persistentunitcache>true</persistentunitcache>
-					<persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
-					<jsInteropMode>JS</jsInteropMode>
-					<runTarget>http://localhost:8888/</runTarget>
-				</configuration>
-
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Hexa Css plugin, to obfuscate and optimize the CSS files -->
-			<plugin>
-				<groupId>fr.lteconsulting</groupId>
-				<artifactId>hexacss-maven-plugin</artifactId>
-				<version>1.0</version>
-
-				<configuration>
-					<sourceDirectory>classpath:fr/lteconsulting/hexa/client/css/bindings</sourceDirectory>
-					<mappingFile>${project.build.directory}/${project.build.finalName}/sample/hexas-css.mapping</mappingFile>
-
-					<outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-
-					<pruneClasses>false</pruneClasses>
-
-					<includes>
-						<include>skeleton.css</include>
-					</includes>
-				</configuration>
-
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<webResources>
-						<resource>
-							<directory>${project.build.directory}/${project.build.finalName}</directory>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.lteconsulting</groupId>
+    <artifactId>hexa.binding.sample2</artifactId>
+    <version>1.3</version>
+    <name>hexa.binding.sample2</name>
+    <url>http://maven.apache.org</url>
+    <packaging>war</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <gwt.version>2.7.0</gwt.version>
+        <gwt.plugin.version>2.7.0</gwt.plugin.version>
+        <generated-sources>${project.build.directory}/generated-sources/annotations</generated-sources>
+        <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>fr.lteconsulting</groupId>
+            <artifactId>hexa.binding</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.lteconsulting</groupId>
+            <artifactId>hexa.binding.gwt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.lteconsulting</groupId>
+            <artifactId>hexa.css</artifactId>
+            <version>1.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-codeserver</artifactId>
+            <version>${gwt.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <generatedSourcesDirectory>${generated-sources}</generatedSourcesDirectory>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>fr.lteconsulting</groupId>
+                        <artifactId>hexa.binding.processor</artifactId>
+                        <version>1.3-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <!-- 						<phase>generate-sources</phase> -->
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${generated-sources}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- GWT Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwt.plugin.version}</version>
+                <configuration>
+                    <workDir>${project.build.directory}/${project.build.finalName}</workDir>
+                    <optimizationLevel>9</optimizationLevel>
+                    <debugPort>8001</debugPort>
+                    <compileReport>true</compileReport>
+                    <gen>${basedir}/target/gwt-gen</gen>
+                    <module>fr.lteconsulting.hexabinding.Sample</module>
+                    <persistentunitcache>true</persistentunitcache>
+                    <persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
+                    <jsInteropMode>JS</jsInteropMode>
+                    <runTarget>http://localhost:8888/</runTarget>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Hexa Css plugin, to obfuscate and optimize the CSS files -->
+            <plugin>
+                <groupId>fr.lteconsulting</groupId>
+                <artifactId>hexacss-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <sourceDirectory>classpath:fr/lteconsulting/hexa/client/css/bindings</sourceDirectory>
+                    <mappingFile>${project.build.directory}/${project.build.finalName}/sample/hexas-css.mapping</mappingFile>
+                    <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                    <pruneClasses>false</pruneClasses>
+                    <includes>
+                        <include>skeleton.css</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webResources>
+                        <resource>
+                            <directory>${project.build.directory}/${project.build.finalName}</directory>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                    <groupId>
 											fr.lteconsulting
 										</groupId>
-										<artifactId>
+                                    <artifactId>
 											hexacss-maven-plugin
 										</artifactId>
-										<versionRange>
+                                    <versionRange>
 											[1.0,)
 										</versionRange>
-										<goals>
-											<goal>process</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
+                                    <goals>
+                                    <goal>process</goal>
+                                    </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                    <ignore/>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                    <groupId>
 											org.codehaus.mojo
 										</groupId>
-										<artifactId>
+                                    <artifactId>
 											gwt-maven-plugin
 										</artifactId>
-										<versionRange>
+                                    <versionRange>
 											[2.7.0,)
 										</versionRange>
-										<goals>
-											<goal>compile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
+                                    <goals>
+                                    <goal>compile</goal>
+                                    </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                    <ignore/>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                    <groupId>
 											org.codehaus.mojo
 										</groupId>
-										<artifactId>
+                                    <artifactId>
 											build-helper-maven-plugin
 										</artifactId>
-										<versionRange>
+                                    <versionRange>
 											[1.9.1,)
 										</versionRange>
-										<goals>
-											<goal>add-source</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+                                    <goals>
+                                    <goal>add-source</goal>
+                                    </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                    <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
