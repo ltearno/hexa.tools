@@ -19,6 +19,10 @@ And those which are not (yet) :
 - JPA for GWT,
 - ...
 
+## Release notes
+
+Release notes are available here : ![Release notes](ReleaseNotes.md)
+
 ## Contributions
 
 Hexa Tools is developped with love by [LTE Consulting](http://www.lteconsulting.fr). If you want to contribute, have suggestions or ideas, please feel free to submit pull requests or to contact me.
