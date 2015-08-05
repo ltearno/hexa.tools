@@ -22,6 +22,7 @@ public class ObservableAnnotationProcessor extends fr.lteconsulting.hexa.databin
 
 	private final static int PRE_CONSTRUCTOR_INDEX = 0;
 
+	@Override
 	protected String[] getExtraImports() {
 		return new String[] {
 			"import com.google.gwt.core.client.GWT;",
@@ -36,6 +37,7 @@ public class ObservableAnnotationProcessor extends fr.lteconsulting.hexa.databin
 			.replace(TARGET_CLASS_NAME, targetTypeName);
 	}
 
+	@Override
 	protected int inheritFromSuperClassDepth(Annotation annotation) {
 		if(annotation instanceof Observable) {
 			Observable observable = (Observable)annotation;
