@@ -18,7 +18,6 @@ public class BindingCreation
 	protected final PropertyAdapter source;
 	protected Mode mode = Mode.TwoWay;
 	protected Converter converter;
-	protected boolean fDeferActivate;
 	protected String logPrefix;
 	
 	public BindingCreation( PropertyAdapter source )
@@ -62,28 +61,12 @@ public class BindingCreation
 	 * Defines a converter to be used by the data binding system when getting
 	 * and setting values.
 	 * 
-	 * @param mode
+	 * @param converter
 	 * @return The Binder to continue specifying the data binding
 	 */
 	public BindingCreation withConverter( Converter converter )
 	{
 		this.converter = converter;
-
-		return this;
-	}
-
-	/**
-	 * Second step, parameters.
-	 * 
-	 * The created data binding will be activated at the next event loop. The
-	 * Scheduler.get().scheduleDeferred() method will be used.
-	 * 
-	 * @param mode
-	 * @return The Binder to continue specifying the data binding
-	 */
-	public BindingCreation deferActivate()
-	{
-		fDeferActivate = true;
 
 		return this;
 	}
@@ -146,11 +129,8 @@ public class BindingCreation
 		// create the binding according to the parameters
 		DataBinding binding = new DataBinding( source, destination, mode, converter, logPrefix );
 
-		// activate the binding : launch a value event
-		if( fDeferActivate )
-			binding.deferActivate();
-		else
-			binding.activate();
+		// activate the binding
+		binding.activate();
 
 		return binding;
 	}

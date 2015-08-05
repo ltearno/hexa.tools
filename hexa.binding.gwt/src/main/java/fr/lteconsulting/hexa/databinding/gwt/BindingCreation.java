@@ -21,6 +21,8 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdap
  */
 public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCreation
 {
+	protected boolean fDeferActivate;
+
 	public BindingCreation( PropertyAdapter source )
 	{
 		super(source);
@@ -66,10 +68,19 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 		super.log(prefix);
 		return this;
 	}
-	
-	@Override
-	public BindingCreation deferActivate() {
-		super.deferActivate();
+
+	/**
+	 * Second step, parameters.
+	 *
+	 * The created data binding will be activated at the next event loop. The
+	 * Scheduler.get().scheduleDeferred() method will be used.
+	 *
+	 * @return The Binder to continue specifying the data binding
+	 */
+	public BindingCreation deferActivate()
+	{
+		fDeferActivate = true;
+
 		return this;
 	}
 	
@@ -83,5 +94,32 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	public BindingCreation withConverter( Converter converter) {
 		super.withConverter(converter);
 		return this;
+	}
+
+	/**
+	 * Final step, defines the data binding destination and activates the
+	 * binding
+	 *
+	 * This method accepts any implementation of PropertyAdapter, especially
+	 * user ones so that is a good start to customize the data binding
+	 * possibilities
+	 *
+	 * @param destination
+	 *            The destination property adapter
+	 * @return The DataBinding object
+	 */
+	@Override
+	public DataBinding to( PropertyAdapter destination )
+	{
+		// create the binding according to the parameters
+		DataBinding binding = new DataBinding( source, destination, mode, converter, logPrefix );
+
+		// activate the binding : launch a value event
+		if( fDeferActivate )
+			binding.deferActivate();
+		else
+			binding.activate();
+
+		return binding;
 	}
 }
