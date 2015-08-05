@@ -89,24 +89,6 @@ public class DataBinding
 	}
 
 	/**
-	 * Switch to the deferred activation mode
-	 */
-	public void deferActivate()
-	{
-		log( "deferred activation..." );
-
-		// TODO : Make that platform independant
-//		Scheduler.get().scheduleDeferred( new ScheduledCommand()
-//		{
-//			@Override
-//			public void execute()
-//			{
-//				activate();
-//			}
-//		} );
-	}
-
-	/**
 	 * Terminates the Data Binding activation and cleans up all related
 	 * resources. You should call this method when you want to free the binding,
 	 * in order to lower memory usage.
@@ -128,7 +110,7 @@ public class DataBinding
 
 	}
 
-	private void log( String text )
+	protected void log( String text )
 	{
 		if( logPrefix == null )
 			return;

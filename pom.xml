@@ -50,6 +50,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mavenVersion>3.0</mavenVersion>
         <gwt.version>[2.5.0,)</gwt.version>
+
+        <maven-source-plugin.version>2.3</maven-source-plugin.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -185,6 +187,20 @@
                             <phase>verify</phase>
                             <goals>
                                 <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
                             </goals>
                         </execution>
                     </executions>

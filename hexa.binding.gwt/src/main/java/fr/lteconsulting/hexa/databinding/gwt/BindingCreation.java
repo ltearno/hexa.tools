@@ -2,10 +2,11 @@ package fr.lteconsulting.hexa.databinding.gwt;
 
 import com.google.gwt.user.client.ui.HasValue;
 
+import com.google.gwt.user.client.ui.ListBox;
 import fr.lteconsulting.hexa.databinding.Converter;
-import fr.lteconsulting.hexa.databinding.DataBinding;
 import fr.lteconsulting.hexa.databinding.Mode;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
+import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
 
 /**
@@ -27,11 +28,11 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	
 	/**
 	 * Final step, defines the data binding destination and activates the
-	 * binding
+	 * binding.
 	 * 
 	 * The object used as the binding's destination is a HasValue widget, like a
 	 * TextBox. The binding system will the use setValue, getValue and
-	 * adValueChangeHandler methods to set, get and get change notifications on
+	 * addValueChangeHandler methods to set, get and get change notifications on
 	 * the @param widget parameter.
 	 * 
 	 * @param widget
@@ -40,7 +41,24 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	 */
 	public DataBinding to( HasValue<?> widget )
 	{
-		return to( new WidgetPropertyAdapter( widget ) );
+		return (DataBinding)to(new WidgetPropertyAdapter(widget));
+	}
+
+	/**
+	 * Final step, defines the data binding destination and activates the
+	 * binding.
+	 *
+	 * The object used as the binding's destination is a ListBox widget.
+	 * The binding system will the use setValue, getValue and addChangeHandler
+	 * methods to set, get and get change notifications on the @param widget parameter.
+	 *
+	 * @param listBox
+	 *            The widget
+	 * @return The DataBinding object
+	 */
+	public DataBinding to( ListBox listBox )
+	{
+		return (DataBinding)to(new ListBoxPropertyAdapter(listBox));
 	}
 	
 	@Override
@@ -62,7 +80,7 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	}
 	
 	@Override
-	public fr.lteconsulting.hexa.databinding.BindingCreation withConverter( Converter converter) {
+	public BindingCreation withConverter( Converter converter) {
 		super.withConverter(converter);
 		return this;
 	}

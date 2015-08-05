@@ -1,48 +1,48 @@
 package fr.lteconsulting.hexa.databinding.gwt;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.ListBox;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
-import fr.lteconsulting.hexa.databinding.DataBinding;
 import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.ObjectAsValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
+import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
-
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.
- * 
- * By default the data binding is : - in TwoWays mode, - without data converter,
- * - direct activation, - not logged.
- * 
+ * <br/>
+ * By default the data binding is:
+ * <ul>
+ * 	<li>in TwoWays mode,</li>
+ * 	<li>without data converter,</li>
+ * 	<li>direct activation, - not logged.</li>
+ * </ul>
  * One can create and activate data binding in one line like this :
+ * <pre>
+ * // selectedPerson to person form
+ * Binder.bind(personListBox, "selectedPerson").mode(Mode.OneWay).log("PERSONFORM").to(personForm, "person");
  * 
- * // selectedPerson to personne form Bind( personListWidget, "selectedPersonne"
- * ).Mode( Mode.OneWay ).Log("PERSONNEFORM").To( personneForm, "personne" );
+ * // selected person's category to category form
+ * Binder.bind(personListBox, "selectedPerson.category").mode(Mode.OneWay).to(categoryForm, "$DTOMap");
  * 
- * // selected person's category to category form Bind( personListWidget,
- * "selectedPersonne.category" ).Mode( Mode.OneWay ).To( categoryForm, "$DTOMap"
- * );
+ * // map selectedPerson to a person form
+ * Binder.bind(personListWidget, "selectedPerson").mapTo(personForm);
  * 
- * // map selectedPerson to a personne form Bind( personListWidget,
- * "selectedPersonne" ).MapTo( personneForm );
- * 
- * // selected person's description to Window's title Bind( personListWidget,
- * "selectedPersonne.description" ).Mode( Mode.OneWay ).To( new
- * WriteOnlyPropertyAdapter()
- * 
+ * // selected person's description to Window's title
+ * Binder.bind(personListWidget, "selectedPerson.description").mode(Mode.OneWay).to(new WriteOnlyPropertyAdapter())
+ * </pre>
  * The second parameter of the Bind and To methods, which is a String, is the
  * path to the desired property. It is '.' separated, so you can compose like
  * this : "person.category.creationDate" and the binding tool will automatically
  * follow the property's value.
- * 
+ * <br/><br/>
  * In order to support the data binding engine, one has also to declare a
  * {@link ClazzBundle} interface to process type information of the data-bounded
  * classes. Check the samples for further details.
  * 
  * @author Arnaud Tournier
- *
  */
 public class Binder
 {
@@ -76,7 +76,6 @@ public class Binder
 	 * possibilities.
 	 * 
 	 * @param source
-	 * @param propertyName
 	 * @return The Binder to continue specifying the data binding
 	 */
 	public static BindingCreation bind( PropertyAdapter source )
@@ -90,13 +89,27 @@ public class Binder
 	 * 
 	 * @param widget
 	 *            The HasValue widget, like a TextBox. The binding system will
-	 *            the use setValue, getValue and adValueChangeHandler methods to
+	 *            the use setValue, getValue and addValueChangeHandler methods to
 	 *            set, get and get change notifications on the widget.
 	 * @return The Binder to continue specifying the data binding
 	 */
 	public static BindingCreation bind( HasValue<?> widget )
 	{
 		return bind( new WidgetPropertyAdapter( widget ) );
+	}
+
+	/**
+	 * First step, accepts a data binding source definition and creates a binder
+	 *
+	 * @param listBox
+	 *            The ListBox widget, like a TextBox. The binding system will
+	 *            use the setValue, getValue and addChangeHandler methods to
+	 *            set, get and get change notifications on the widget.
+	 * @return The Binder to continue specifying the data binding
+	 */
+	public static BindingCreation bind( ListBox listBox )
+	{
+		return bind( new ListBoxPropertyAdapter( listBox ) );
 	}
 
 	/**
@@ -117,13 +130,9 @@ public class Binder
 	/**
 	 * Maps two objects together. All matching fields will then be two-way
 	 * data-bound.
-	 * 
-	 * @param source
-	 * @param destination
-	 * @return
 	 */
 	public static DataBinding map( Object source, Object destination )
 	{
-		return bindObject( source ).mapTo( destination );
+		return (DataBinding)bindObject(source).mapTo( destination );
 	}
 }
