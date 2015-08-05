@@ -393,9 +393,9 @@ Note that you can create `ClazzBundle`s at several places in the code, the set o
 
 Note also that you don't have to declare subclasses of the JavaScriptObject classes, they are managed automatically. But if you need to use a JavaScriptObject class or subclass, then you need to register the JavaScriptObject class.
 
-### The @ObservableGwt annotation
+### The @Observable annotation
 
-The @ObservableGwt annotation can be used instead of @Observable in GWT projects because it generates also the `ClazzBundle` glue code for the
+The @Observable annotation can be used instead of @Observable in GWT projects because it generates also the `ClazzBundle` glue code for the
 annotated class. Refer to the @Observable paragraph to learn more about POJO generation.
 
 ## GWT Quick start
@@ -524,9 +524,9 @@ First, let's define the POJO :
 
 That's a really simple POJO. The only thing asking explanation is the line `Properties.notify( this, "name" );`. It is located in the setter after the modification of the "name" field. It notifies the binding system that the property value has changed. This is required if you want the binding system to be able to watch your values. If you don't call this method, the binding will work, but won't react on your property changes.
 
-To help your productivity, the `@ObservableGwt` annotation can be used to generate the Person class. Instead of writing the Person class by hand, you could write a reduced PersonInternal class annotated with @ObservableGwt :
+To help your productivity, the `@Observable` annotation can be used to generate the Person class. Instead of writing the Person class by hand, you could write a reduced PersonInternal class annotated with @Observable :
 
-	@ObservableGwt
+	@Observable
 	class PersonInternal
 	{
 		String name;

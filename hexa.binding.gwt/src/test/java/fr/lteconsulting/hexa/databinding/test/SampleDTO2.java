@@ -3,9 +3,9 @@ package fr.lteconsulting.hexa.databinding.test;
 import java.util.HashMap;
 import java.util.List;
 
-import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
+import fr.lteconsulting.hexa.databinding.gwt.annotation.Observable;
 
-@ObservableGwt
+@Observable
 public class SampleDTO2
 {
 	String tata;

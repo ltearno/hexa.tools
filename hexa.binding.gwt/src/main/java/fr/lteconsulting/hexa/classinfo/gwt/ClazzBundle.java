@@ -5,7 +5,7 @@ package fr.lteconsulting.hexa.classinfo.gwt;
 /**
  * To be used with {@link ReflectedClasses} annotation
  * 
- * When you inherit this interface, declare a void register() method
+ * When you inheritDepth this interface, declare a void register() method
  * annotated with {@link ReflectedClasses}.<br/>
  * Call this method to register the use of reflection
  * on listed classes

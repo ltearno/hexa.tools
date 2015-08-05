@@ -1,7 +1,6 @@
-package fr.lteconsulting.hexa.databinding.annotation;
+package fr.lteconsulting.hexa.databinding.gwt.annotation;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -27,13 +26,12 @@ import java.lang.annotation.Target;
  * So if this annotation is put on a fr.lteconsulting.Person class,
  * it will generate an observable implementation with the following
  * fqn : fr.lteconsulting.ObservablePerson<br/><br/>
- *
- * @deprecated use {@link fr.lteconsulting.hexa.databinding.gwt.annotation.Observable}
+ * 
  * @author Arnaud Tournier
  */
 @Target( ElementType.TYPE )
 @Retention( RetentionPolicy.CLASS )
-public @interface ObservableGwt
+public @interface Observable
 {
     /**
      * Default to true if inherit depth is set or set

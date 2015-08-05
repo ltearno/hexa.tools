@@ -1,7 +1,6 @@
 package fr.lteconsulting.hexabinding.sample;
 
-import fr.lteconsulting.hexa.databinding.annotation.Observable;
-import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
+import fr.lteconsulting.hexa.databinding.gwt.annotation.Observable;
 import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 /**
@@ -24,7 +23,7 @@ import fr.lteconsulting.hexa.databinding.properties.Properties;
  * @author Arnaud Tournier
  *
  */
-@ObservableGwt
+@Observable
 class PersonInternal
 {
 	/**

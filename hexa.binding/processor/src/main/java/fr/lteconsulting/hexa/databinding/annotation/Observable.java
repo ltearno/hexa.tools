@@ -32,4 +32,15 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.CLASS )
 public @interface Observable
 {
+    /**
+     * Default to true if inherit depth is set or set
+     * inherit depth to 1 when set to true.
+     */
+    boolean inherit() default false;
+
+    /**
+     * Max depth to inheritDepth from superclasses.<br/>
+     * Will be set to 1 if {@link #inherit()} is set to true and the depth is 0.
+     */
+    int inheritDepth() default 0;
 }

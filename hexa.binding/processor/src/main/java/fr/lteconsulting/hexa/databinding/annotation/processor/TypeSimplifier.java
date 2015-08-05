@@ -33,11 +33,11 @@ import javax.lang.model.util.Types;
  * Special thanks to the authors !
  *
  */
-final class TypeSimplifier
+final public class TypeSimplifier
 {
 	private final Types typeUtils;
 
-	TypeSimplifier( Types typeUtils )
+	public TypeSimplifier( Types typeUtils )
 	{
 		this.typeUtils = typeUtils;
 	}
@@ -62,7 +62,7 @@ final class TypeSimplifier
 	// in <E extends Enum<E>> or of the second K in <K, V extends Comparable<?
 	// extends K>>. That's
 	// why we put the "extends" handling here and not in ToStringTypeVisitor.
-	String formalTypeParametersString( TypeElement type )
+	public String formalTypeParametersString( TypeElement type )
 	{
 		List<? extends TypeParameterElement> typeParameters = type.getTypeParameters();
 		if( typeParameters.isEmpty() )
@@ -88,7 +88,7 @@ final class TypeSimplifier
 	// If we have a class Foo<T extends Something> extends Foo<T>.
 	// <T extends Something> is the formal type parameter list and
 	// <T> is the actual type parameter list, which is what this method returns.
-	static String actualTypeParametersString( TypeElement type )
+	static public String actualTypeParametersString( TypeElement type )
 	{
 		List<? extends TypeParameterElement> typeParameters = type.getTypeParameters();
 		if( typeParameters.isEmpty() )

@@ -13,6 +13,7 @@
     <description>HexaBinding is a tool used when some data binding repetitive glue code is written by the developper. This library does it instead.</description>
     <url>http://www.lteconsulting.fr/hexabinding</url>
     <packaging>jar</packaging>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

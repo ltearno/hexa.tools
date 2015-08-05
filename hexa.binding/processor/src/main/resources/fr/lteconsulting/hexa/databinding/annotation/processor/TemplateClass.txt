@@ -1,6 +1,7 @@
 package $PackageName;
 
 import fr.lteconsulting.hexa.databinding.properties.Properties;
+$ExtraImports
 
 /**
   * Observable class generated from {@link $SourceClassFqn}
@@ -9,12 +10,14 @@ import fr.lteconsulting.hexa.databinding.properties.Properties;
   */
 public final class $TargetClassNameParametrized extends $SourceClassName
 {
+$PreConstructor
+
 	/**
 	 * Constructor(s)
 	 * Those are just calling the corresponding
 	 * constructor(s) on the super class
-	 */ 
-	
+	 */
+
 	$Constructors
 	
 	/**
@@ -26,9 +29,13 @@ public final class $TargetClassNameParametrized extends $SourceClassName
 ------
 	public $TargetClassName( $FormalParameters )
 	{
-		super( $Parameters );
+		super($Parameters);
 	}
-	
+------
+	public $TargetClassName( $SourceClassName o )
+	{
+		$MapFields
+	}
 ------
 	/**
 	 * Getter for the '$Property' property
@@ -39,7 +46,6 @@ public final class $TargetClassNameParametrized extends $SourceClassName
 	{
 		return $Property;
 	}
-	
 ------
 	/**
 	 * Setter for the '$Property' property.<br/>
@@ -56,7 +62,6 @@ public final class $TargetClassNameParametrized extends $SourceClassName
 		super.$MethodName( $Property );
 		Properties.notify( this, "$Property" );
 	}
-	
 ------
 	/**
 	 * Setter for the '$Property' property.<br/>
