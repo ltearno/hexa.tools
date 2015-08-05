@@ -43,7 +43,7 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	 */
 	public DataBinding to( HasValue<?> widget )
 	{
-		return (DataBinding)to(new WidgetPropertyAdapter(widget));
+		return to(new WidgetPropertyAdapter(widget));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	 */
 	public DataBinding to( ListBox listBox )
 	{
-		return (DataBinding)to(new ListBoxPropertyAdapter(listBox));
+		return to(new ListBoxPropertyAdapter(listBox));
 	}
 	
 	@Override
@@ -96,18 +96,6 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 		return this;
 	}
 
-	/**
-	 * Final step, defines the data binding destination and activates the
-	 * binding
-	 *
-	 * This method accepts any implementation of PropertyAdapter, especially
-	 * user ones so that is a good start to customize the data binding
-	 * possibilities
-	 *
-	 * @param destination
-	 *            The destination property adapter
-	 * @return The DataBinding object
-	 */
 	@Override
 	public DataBinding to( PropertyAdapter destination )
 	{
