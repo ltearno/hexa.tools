@@ -7,15 +7,27 @@ import com.google.gwt.user.client.ui.ListBox;
 import fr.lteconsulting.hexa.client.tools.Action2;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
+
 /**
  * A PropertyAdapter to bind a {@link ListBox}.<br/>
  * 
  * - When receiving an object, the adapter will set it as the selected object.<br/>
- * - When the selected item changes, the binding system gets triggered.
+ * - When the selected item changes, the binding system gets triggered.<br/>
+ * - When using a multiselect ListBox you need to ensure you are binding a collection.
+ * <br/><br/>
+ * When the {@link ListBox} has multiselect enabled, {@link #getValue()} returns an
+ * {@link ArrayList} of String representing the selected values. <br/>
+ * If you need a different collection type to be mapped create a {@link fr.lteconsulting.hexa.databinding.Converter}.
  * 
  * @author Ben Dol
  */
 public class ListBoxPropertyAdapter implements PropertyAdapter {
+	private Logger logger = Logger.getLogger(ListBoxPropertyAdapter.class.getName());
+
 	private ListBox listBox;
 
 	/**
@@ -28,17 +40,31 @@ public class ListBoxPropertyAdapter implements PropertyAdapter {
 
 	@Override
 	public void setValue(Object object) {
-		for(int i = 0; i < listBox.getItemCount(); i++) {
-			if (listBox.getValue(i).equals(object.toString())) {
-				listBox.setSelectedIndex(i);
-				return;
+		deselectItems();
+		if (object instanceof Collection) {
+			for (Object item : (Collection) object) {
+				selectItem(item);
 			}
+		}
+		else {
+			selectItem(object);
 		}
 	}
 
 	@Override
 	public Object getValue() {
-		return listBox.getSelectedValue();
+		if(listBox.isMultipleSelect()) {
+			List<String> selectedItems = new ArrayList<>();
+			for (int i = 0; i < listBox.getItemCount(); i++) {
+				if (listBox.isItemSelected(i)) {
+					selectedItems.add(listBox.getValue(i));
+				}
+			}
+			return selectedItems;
+		}
+		else {
+			return listBox.getSelectedValue();
+		}
 	}
 	
 	@Override
@@ -54,5 +80,33 @@ public class ListBoxPropertyAdapter implements PropertyAdapter {
 				callback.exec(ListBoxPropertyAdapter.this, cookie);
 			}
 		});
+	}
+
+	private void selectItem(Object item) {
+		int index = getValueIndex(item);
+		if (index > -1) {
+			listBox.setItemSelected(index, true);
+		}
+		else {
+			logger.warning("Failed to select item using: " + item.toString()
+				+ " " + item.getClass().getName());
+		}
+	}
+
+	private void deselectItems() {
+		for(int i = 0; i < listBox.getItemCount(); i++) {
+			if (listBox.isItemSelected(i)) {
+				listBox.setItemSelected(i, false);
+			}
+		}
+	}
+
+	private int getValueIndex(Object value) {
+		for(int i = 0; i < listBox.getItemCount(); i++) {
+			if (listBox.getValue(i).equals(String.valueOf(value))) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

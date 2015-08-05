@@ -12,11 +12,13 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
  */
 public class DataBinding extends fr.lteconsulting.hexa.databinding.DataBinding {
 
-    public DataBinding(Object source, String sourceProperty, Object destination, String destinationProperty, Mode bindingMode) {
+    public DataBinding(Object source, String sourceProperty, Object destination,
+                       String destinationProperty, Mode bindingMode) {
         super(source, sourceProperty, destination, destinationProperty, bindingMode);
     }
 
-    public DataBinding(PropertyAdapter source, PropertyAdapter destination, Mode bindingMode, Converter converter, String logPrefix) {
+    public DataBinding(PropertyAdapter source, PropertyAdapter destination, Mode bindingMode,
+                       Converter converter, String logPrefix) {
         super(source, destination, bindingMode, converter, logPrefix);
     }
 

@@ -287,7 +287,9 @@ class PropertyValues {
 			return field.getValue(object);
 
 		// Maybe a dynamic property will be set later on
-		LOGGER.warning("DataBinding: Warning: assuming that the object would in the future have a dynamic property set / Maybe have an opt-in option on the Binding to clarify things");
+		LOGGER.warning("DataBinding: Warning: assuming that the object would " +
+			"in the future have a dynamic property set / Maybe have an opt-in " +
+			"option on the Binding to clarify things");
 
 		return null;
 	}
