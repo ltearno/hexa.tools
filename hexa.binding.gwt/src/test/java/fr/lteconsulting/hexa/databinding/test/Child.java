@@ -2,7 +2,7 @@ package fr.lteconsulting.hexa.databinding.test;
 
 import fr.lteconsulting.hexa.databinding.gwt.annotation.Observable;
 
-@Observable(inheritDepth = 2)
+@Observable(inheritDepth = 3)
 public class Child extends Parent {
 
     String childsString;

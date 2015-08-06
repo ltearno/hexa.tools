@@ -21,6 +21,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
@@ -47,6 +48,8 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 	protected Types types;
 	protected TypeSimplifier typeSimplifier;
 	protected Messager msg;
+
+	protected String pkgName;
 
 	protected String getTemplateName() {
 		return "fr/lteconsulting/hexa/databinding/annotation/processor/TemplateClass.txt";
@@ -105,7 +108,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 
 	private void createObservableFor( TypeElement sourceType, String templateName, int inheritDepth )
 	{
-		String pkgName = elementUtils.getPackageOf( sourceType ).getQualifiedName().toString();
+		pkgName = elementUtils.getPackageOf( sourceType ).getQualifiedName().toString();
 
 		String sourceTypeName = sourceType.getSimpleName().toString();
 
@@ -164,7 +167,8 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 		}
 	}
 
-	private String processConstructors( String targetTypeName, TypeElement factoredType, String templateName, int inheritDepth )
+	private String processConstructors( String targetTypeName, TypeElement factoredType, String templateName,
+										int inheritDepth )
 	{
 		StringBuilder result = new StringBuilder();
 
@@ -219,17 +223,35 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 												  String templateName, int inheritDepth) {
 		StringBuilder fields = new StringBuilder();
 		boolean indent = false;
-		for( VariableElement field : ElementFilter.fieldsIn( factoredType.getEnclosedElements() ) ) {
+		for( VariableElement field : ElementFilter.fieldsIn( factoredType.getEnclosedElements() ) )
+		{
 			String propertyName = field.getSimpleName().toString();
-			String setMethod = "set" + capitalizeFirstLetter( propertyName );
 
-			if (field.getModifiers().contains(Modifier.PRIVATE)) {
+			Set<Modifier> mods = field.getModifiers();
+			String typePkg = elementUtils.getPackageOf(factoredType).getQualifiedName().toString();
+
+			if (mods.contains(Modifier.PRIVATE) || ((mods.contains(Modifier.PROTECTED) || !mods.contains(Modifier.PUBLIC))
+					&& !typePkg.equals(pkgName))) {
 				// Ensure the method exists for field
 				ExecutableElement getterMethod = getPropertyGetterMethod(factoredType, propertyName);
 				if (getterMethod != null) {
-					if(indent){ fields.append("\n\t\t"); } else { indent = true; }
-					String methodName = getterMethod.getSimpleName().toString();
-					fields.append(setMethod).append("(").append("o.").append(methodName).append("()").append(")").append(";");
+					ExecutableElement setterMethod = getPropertySetterMethod(factoredType, propertyName);
+					if(setterMethod != null) {
+						if (indent) {
+							fields.append("\n\t\t");
+						} else {
+							indent = true;
+						}
+
+						String getterName = getterMethod.getSimpleName().toString();
+						String setterName = setterMethod.getSimpleName().toString();
+
+						fields.append(setterName).append("(").append("o.").append(getterName).append("()").append(")").append(";");
+					}
+				}
+				else {
+					msg.printMessage(Kind.WARNING, "Field cannot be accessed and has no getter method: "
+						+ field.getSimpleName().toString(), field);
 				}
 			}
 			else {
@@ -242,8 +264,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			// Process the superclass
 			TypeMirror superClassTypeMirror = factoredType.getSuperclass();
 			if (superClassTypeMirror instanceof DeclaredType) {
-				TypeElement superClassTypeElement = (TypeElement)((DeclaredType)
-						superClassTypeMirror).asElement();
+				TypeElement superClassTypeElement = (TypeElement)((DeclaredType)superClassTypeMirror).asElement();
 
 				if (!superClassTypeElement.getQualifiedName().toString().equals("java.lang.Object")) {
 					fields.append("\n\t\t").append(processConstructorFieldMapping(targetTypeName,
@@ -277,12 +298,14 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			if( method.getModifiers().contains(Modifier.PRIVATE) )
 				continue;
 
-			String propertyName = lowerFirstLetter(methodName.substring(3));
+			String propertyName = null;
+			for(String prefix : setterPrefixes) {
+				if( methodName.startsWith(prefix) && Character.isUpperCase(methodName.charAt(prefix.length()))) {
+					propertyName = lowerFirstLetter(methodName.substring(prefix.length()));
+				}
+			}
 
-			if( methodName.startsWith( "set" ) ) {
-				if( method.getModifiers().contains( Modifier.FINAL ) )
-					continue;
-
+			if(propertyName != null) {
 				Template setter = Template.fromResource( templateName, 4 );
 
 				StringBuilder modifiersBuilder = new StringBuilder();
@@ -298,8 +321,15 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 				result.append( setter.toString() );
 				settersDone.add( propertyName );
 			}
-			else if(methodName.startsWith( "get" )) {
-				gettersDone.add(propertyName);
+			else {
+				for(String prefix : getterPrefixes) {
+					if( methodName.startsWith(prefix) && Character.isUpperCase(methodName.charAt(prefix.length()))) {
+						propertyName = lowerFirstLetter(methodName.substring(prefix.length()));
+					}
+				}
+				if(propertyName != null) {
+					gettersDone.add(propertyName);
+				}
 			}
 		}
 
@@ -307,11 +337,10 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			// Process the superclass
 			TypeMirror superClassTypeMirror = factoredType.getSuperclass();
 			if (superClassTypeMirror instanceof DeclaredType) {
-				TypeElement superClassTypeElement = (TypeElement) ((DeclaredType)
-						superClassTypeMirror).asElement();
+				TypeElement superClassTypeElement = (TypeElement) ((DeclaredType)superClassTypeMirror).asElement();
 
 				if (!superClassTypeElement.getQualifiedName().toString().equals("java.lang.Object")) {
-					result.append(processMethods(superClassTypeElement, settersDone, gettersDone, templateName, inheritDepth-1));
+					result.append(processMethods(superClassTypeElement, settersDone, gettersDone, templateName, inheritDepth - 1));
 				}
 			}
 		}
@@ -329,7 +358,10 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 
 		for( VariableElement field : ElementFilter.fieldsIn(factoredType.getEnclosedElements()) )
 		{
-			if( field.getModifiers().contains( Modifier.PRIVATE ) ) {
+			Set<Modifier> mods = field.getModifiers();
+			String typePkg = elementUtils.getPackageOf(factoredType).getQualifiedName().toString();
+			if(mods.contains(Modifier.PRIVATE) || ((mods.contains(Modifier.PROTECTED) || !mods.contains(Modifier.PUBLIC))
+					&& !typePkg.equals(pkgName))) {
 				continue;
 			}
 
@@ -340,24 +372,25 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			{
 				String methodName = "set" + capitalizeFirstLetter( propertyName );
 
-				if(fieldTypeName.contains( "<any>" ))
-					msg.printMessage( Kind.ERROR, "Parametrizing a generated type is impossible ! This problem is being investigated... Stay tuned....", field );
+				if (fieldTypeName.contains("<any>"))
+					msg.printMessage(Kind.ERROR, "Parametrizing a generated type is impossible ! This problem is being investigated... Stay tuned....", field);
 
-				Template setter = Template.fromResource( templateName, 5 );
-				setter.replace( MODIFIERS, "public" );
+				Template setter = Template.fromResource(templateName, 5);
+				setter.replace(MODIFIERS, "public");
 
-				setter.replace( METHOD_NAME, methodName );
-				setter.replace( PROPERTY_CLASS, fieldTypeName );
-				setter.replace( PROPERTY, propertyName );
+				setter.replace(METHOD_NAME, methodName);
+				setter.replace(PROPERTY_CLASS, fieldTypeName);
+				setter.replace(PROPERTY, propertyName);
 
-				result.append( setter.toString() );
-				settersDone.add( propertyName );
+				result.append(setter.toString());
+				settersDone.add(propertyName);
 			}
 
 			if( !gettersDone.contains( propertyName ) ) {
-				String methodName = "get" + capitalizeFirstLetter( propertyName );
-				result.append( createGetterStub(methodName, propertyName, fieldTypeName, templateName) );
-				gettersDone.add( propertyName );
+				String methodName = (field.asType().getKind().equals(TypeKind.BOOLEAN) ? "is" : "get")
+					+ capitalizeFirstLetter( propertyName );
+				result.append(createGetterStub(methodName, propertyName, fieldTypeName, templateName));
+				gettersDone.add(propertyName);
 			}
 		}
 
@@ -365,8 +398,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			// Process the superclass
 			TypeMirror superClassTypeMirror = factoredType.getSuperclass();
 			if (superClassTypeMirror instanceof DeclaredType) {
-				TypeElement superClassTypeElement = (TypeElement) ((DeclaredType)
-						superClassTypeMirror).asElement();
+				TypeElement superClassTypeElement = (TypeElement) ((DeclaredType)superClassTypeMirror).asElement();
 
 				if (!superClassTypeElement.getQualifiedName().toString().equals("java.lang.Object")) {
 					result.append(processFields(superClassTypeElement, settersDone, gettersDone, templateName, inheritDepth-1));
@@ -400,13 +432,12 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 
 	private ExecutableElement getMethodForProperty(TypeElement factoredType, String propertyName, String... startsWith) {
 		for( ExecutableElement method : ElementFilter.methodsIn(factoredType.getEnclosedElements()) ) {
-			String methodName = method.getSimpleName().toString();
-
 			if (method.getModifiers().contains(Modifier.PRIVATE))
 				continue;
 
+			String methodName = method.getSimpleName().toString();
 			for(String prefix : startsWith) {
-				if (methodName.startsWith(prefix)) {
+				if (methodName.startsWith(prefix) && Character.isUpperCase(methodName.charAt(prefix.length()))) {
 					String propName = lowerFirstLetter(methodName.substring(prefix.length()));
 					if (!propName.equals(propertyName) || method.getModifiers().contains(Modifier.FINAL))
 						continue;
