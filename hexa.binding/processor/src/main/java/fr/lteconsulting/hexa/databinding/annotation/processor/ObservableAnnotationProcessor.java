@@ -102,7 +102,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 		return null;
 	}
 
-	protected String getPreConstructor(String pkgName, String targetTypeName, TypeElement sourceType) {
+	protected String processPreConstructor(String pkgName, String targetTypeName, TypeElement sourceType) {
 		return "";
 	}
 
@@ -153,7 +153,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			JavaFileObject jfo = filer.createSourceFile( pkgName + "." + targetTypeName );
 			Writer writer = jfo.openWriter();
 
-			targetClass.replace(PRE_CONSTRUCTOR, getPreConstructor(pkgName, targetTypeName, sourceType));
+			targetClass.replace(PRE_CONSTRUCTOR, processPreConstructor(pkgName, targetTypeName, sourceType));
 			targetClass.replace(CONSTRUCTORS, processConstructors(targetTypeName, sourceType, templateName, inheritDepth));
 			targetClass.replace(FIELDS_AND_METHODS, processFieldsAndMethods(sourceType, templateName, inheritDepth));
 
@@ -439,7 +439,7 @@ public class ObservableAnnotationProcessor extends AbstractProcessor {
 			for(String prefix : startsWith) {
 				if (methodName.startsWith(prefix) && Character.isUpperCase(methodName.charAt(prefix.length()))) {
 					String propName = lowerFirstLetter(methodName.substring(prefix.length()));
-					if (!propName.equals(propertyName) || method.getModifiers().contains(Modifier.FINAL))
+					if (!propName.equals(propertyName))
 						continue;
 
 					return method;

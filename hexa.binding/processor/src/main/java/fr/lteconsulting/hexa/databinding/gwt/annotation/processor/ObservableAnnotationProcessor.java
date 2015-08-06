@@ -32,7 +32,7 @@ public class ObservableAnnotationProcessor extends fr.lteconsulting.hexa.databin
 	}
 
 	@Override
-	protected String getPreConstructor(String pkgName, String targetTypeName, TypeElement sourceType) {
+	protected String processPreConstructor(String pkgName, String targetTypeName, TypeElement sourceType) {
 		return Template.fromResource(TEMPLATE_CLASS, PRE_CONSTRUCTOR_INDEX).toString()
 			.replace(TARGET_CLASS_NAME, targetTypeName);
 	}
