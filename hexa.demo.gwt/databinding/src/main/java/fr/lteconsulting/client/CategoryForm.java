@@ -48,13 +48,13 @@ public class CategoryForm extends Composite
 		 * to generate the correct value for the setBorder" method of 
 		 * the getElement().getStyle() object.
 		 */
-		Binder.Bind( color ).Mode( Mode.OneWay ).WithConverter( new OneWayConverter()
+		Binder.bind( color ).mode( Mode.OneWay ).withConverter( new OneWayConverter()
 		{
 			@Override
 			public Object convert( Object value )
 			{
 				return "10px solid " + value;
 			}
-		} ).To( getElement().getStyle(), "border" );
+		} ).to( getElement().getStyle(), "border" );
 	}
 }

@@ -47,7 +47,7 @@ public class ArticleForm extends Composite
 		/**
 		 * Automatically bind (two-way) the article's fields to our form fields (name, weight and category)
 		 */
-		Binder.Bind( article ).MapTo( this );
+		Binder.bind( article ).mapTo( this );
 
 		initWidget( uiBinder.createAndBindUi( this ) );
 

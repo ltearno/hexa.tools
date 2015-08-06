@@ -1,6 +1,6 @@
 package fr.lteconsulting.client;
 
-import fr.lteconsulting.hexa.databinding.NotifyPropertyChangedEvent;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
 /**
@@ -47,7 +47,7 @@ public class Article
 	public void setName( String name )
 	{
 		this.name = name;
-		NotifyPropertyChangedEvent.notify( this, "name" );
+		Properties.notify( this, "name" );
 	}
 
 	public String getWeight()
@@ -58,7 +58,7 @@ public class Article
 	public void setWeight( String weight )
 	{
 		this.weight = weight;
-		NotifyPropertyChangedEvent.notify( this, "weight" );
+		Properties.notify( this, "weight" );
 	}
 
 	public Category getCategory()
@@ -69,7 +69,7 @@ public class Article
 	public void setCategory( Category category )
 	{
 		this.category = category;
-		NotifyPropertyChangedEvent.notify( this, "category" );
+		Properties.notify( this, "category" );
 	}
 
 	@Override

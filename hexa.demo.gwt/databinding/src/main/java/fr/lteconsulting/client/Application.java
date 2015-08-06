@@ -10,10 +10,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import fr.lteconsulting.hexa.client.css.bindings.HexaBootstrapCss;
+import fr.lteconsulting.hexa.client.css.bindings.BootstrapHexaCss;
 import fr.lteconsulting.hexa.databinding.Mode;
-import fr.lteconsulting.hexa.databinding.ObjectPropertiesUtils;
 import fr.lteconsulting.hexa.databinding.gwt.Binder;
+import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 /**
  * The GWT EntryPoint class to the application
@@ -41,12 +41,12 @@ public class Application implements EntryPoint
 		/**
 		 * Bind the selected article on the article form
 		 */
-		Binder.Bind( Repository.getArticles(), "selected" ).Mode( Mode.OneWay ).To( articleForm, "article" );
+		Binder.bind( Repository.getArticles(), "selected" ).mode( Mode.OneWay ).to( articleForm, "article" );
 
 		/**
 		 * Bind the selected article's category on the category form. All properties will be two-way bound.
 		 */
-		Binder.Bind( Repository.getArticles(), "selected.category" ).MapTo( categoryForm );
+		Binder.bind( Repository.getArticles(), "selected.category" ).mapTo( categoryForm );
 
 		/**
 		 * Select the first article
@@ -57,13 +57,13 @@ public class Application implements EntryPoint
 		 * other parts of the program (through the usual
 		 * NotifyPropertyChangedEvent.registerPropertyChangedEvent method)
 		 */
-		ObjectPropertiesUtils.SetProperty( Repository.getArticles(), "selected", Repository.getArticles().get( 0 ) );
+		Properties.setValue( Repository.getArticles(), "selected", Repository.getArticles().get( 0 ) );
 		
 		/**
 		 * Initialize the UI
 		 */
-		Document.get().getBody().addClassName( HexaBootstrapCss.CSS.containerFluid() );
-		panel.setStylePrimaryName( HexaBootstrapCss.CSS.row() );
+		Document.get().getBody().addClassName( BootstrapHexaCss.CSS.containerFluid() );
+		panel.setStylePrimaryName( BootstrapHexaCss.CSS.row() );
 		addWidget( panel, help );
 		addWidget( panel, articleList );
 		addWidget( panel, articleForm );
@@ -84,14 +84,14 @@ public class Application implements EntryPoint
 	private void addWidget( FlowPanel panel, Widget w )
 	{
 		w.getElement().getStyle().setMargin( 5, Unit.PX );
-		w.addStyleName( HexaBootstrapCss.CSS.colMd4() );
+		w.addStyleName( BootstrapHexaCss.CSS.colMd4() );
 		panel.add( w );
 	}
 	
 	private Widget createHelpWidget()
 	{
 		SimplePanel help = new SimplePanel();
-		help.setStylePrimaryName( HexaBootstrapCss.CSS.well() );
+		help.setStylePrimaryName( BootstrapHexaCss.CSS.well() );
 		help.add( new HTML( "<h3>Hello !</h3>This demo shows both <b>Hexa Binding</b> (a data binding tool) and <b>HexaCss</b> (a tool used here to embed Bootstrap).<br/>"
 				+ "You can select an article in the next zone and the Article and Category zone will hopefully stay up-to-date.<br/>" + "<i>Tip:</i> You can change the color in the category form, it is bound to the form's border color !<br/><br/>"
 				+ "No boiler plate code has been written for this demo, thanks to the Hexa binding system." ) );
