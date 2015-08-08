@@ -48,6 +48,7 @@ public class ObservableAnnotationProcessor extends fr.lteconsulting.hexa.databin
 		return -1;
 	}
 
+	@Override
 	protected boolean canUseCopyConstructor(Annotation annotation) {
 		if(annotation instanceof Observable) {
 			return ((Observable)annotation).copyConstructor();
