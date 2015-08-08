@@ -9,7 +9,7 @@ $ExtraImports
   */
 public final class $TargetClassNameParametrized extends $SourceClassName
 {
-	$ClassEntry
+$ClassEntry
 	/**
 	 * Constructor(s)
 	 * Those are just calling the corresponding

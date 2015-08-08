@@ -80,8 +80,7 @@ public class Binder
 	 */
 	public static BindingCreation bind( PropertyAdapter source )
 	{
-		BindingCreation b = new BindingCreation( source );
-		return b;
+		return new BindingCreation( source );
 	}
 	
 	/**
