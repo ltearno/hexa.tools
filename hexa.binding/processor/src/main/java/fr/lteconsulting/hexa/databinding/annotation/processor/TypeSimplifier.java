@@ -31,7 +31,6 @@ import javax.lang.model.util.Types;
 /**
  * A class from the Google Auto project on Github
  * Special thanks to the authors !
- *
  */
 final public class TypeSimplifier
 {
@@ -239,6 +238,54 @@ final public class TypeSimplifier
 		else
 		{
 			return s;
+		}
+	}
+
+	/**
+	 * Returns the qualified name of a TypeMirror.
+	 */
+	public static String getTypeQualifiedName( TypeMirror type )
+	{
+		switch( type.getKind() )
+		{
+			case ARRAY:
+				return getTypeQualifiedName( ((ArrayType) type).getComponentType() ) + "[]";
+			case BOOLEAN:
+				return "boolean";
+			case BYTE:
+				return "byte";
+			case CHAR:
+				return "char";
+			case DOUBLE:
+				return "double";
+			case FLOAT:
+				return "float";
+			case INT:
+				return "int";
+			case LONG:
+				return "long";
+			case SHORT:
+				return "short";
+			case DECLARED:
+				StringBuilder b = new StringBuilder();
+				b.append( ((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString() );
+				if( !((DeclaredType) type).getTypeArguments().isEmpty() )
+				{
+					b.append( "<" );
+					boolean addComa = false;
+					for( TypeMirror pType : ((DeclaredType) type).getTypeArguments() )
+					{
+						if( addComa )
+							b.append( ", " );
+						else
+							addComa = true;
+						b.append( getTypeQualifiedName( pType ) );
+					}
+					b.append( ">" );
+				}
+				return b.toString();
+			default:
+				return type.toString();
 		}
 	}
 }

@@ -2,7 +2,7 @@ package fr.lteconsulting.hexa.databinding.annotation.processor;
 
 public class Tags {
 	public static final String EXTRA_IMPORTS = "$ExtraImports";
-	public static final String PRE_CONSTRUCTOR = "$PreConstructor";
+	public static final String CLASS_ENTRY = "$ClassEntry";
 	public static final String TARGET_CLASS_NAME = "$TargetClassName";
 	public static final String SOURCE_CLASS_FQN = "$SourceClassFqn";
 	public static final String SOURCE_CLASS_NAME = "$SourceClassName";

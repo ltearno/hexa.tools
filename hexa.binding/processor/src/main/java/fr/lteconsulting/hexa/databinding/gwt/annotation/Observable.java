@@ -35,6 +35,11 @@ import java.lang.annotation.Target;
 public @interface Observable
 {
     /**
+     * Generate copy constructor, if possible.
+     */
+    boolean copyConstructor() default true;
+
+    /**
      * Default to true if inherit depth is set or set
      * inherit depth to 1 when set to true.
      */

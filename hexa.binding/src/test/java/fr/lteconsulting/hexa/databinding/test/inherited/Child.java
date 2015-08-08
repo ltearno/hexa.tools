@@ -1,6 +1,6 @@
-package fr.lteconsulting.hexa.databinding.test;
+package fr.lteconsulting.hexa.databinding.test.inherited;
 
-import fr.lteconsulting.hexa.databinding.gwt.annotation.Observable;
+import fr.lteconsulting.hexa.databinding.annotation.Observable;
 
 @Observable(inheritDepth = 3)
 public class Child extends Parent {

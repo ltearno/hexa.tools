@@ -33,8 +33,14 @@ import java.lang.annotation.Target;
  */
 @Target( ElementType.TYPE )
 @Retention( RetentionPolicy.CLASS )
+@Observable
 public @interface ObservableGwt
 {
+    /**
+     * Generate copy constructor, if possible.
+     */
+    boolean copyConstructor() default true;
+
     /**
      * Default to true if inherit depth is set or set
      * inherit depth to 1 when set to true.
