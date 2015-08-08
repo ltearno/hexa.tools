@@ -16,7 +16,6 @@ public final class $TargetClassNameParametrized extends $SourceClassName
 	 * constructor(s) on the super class
 	 */
 	$Constructors
-	
 	/**
 	 * Setters and getters
 	 */

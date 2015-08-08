@@ -263,7 +263,7 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 				TypeElement superType = (TypeElement)((DeclaredType)superMirror).asElement();
 				// Don't process base java.lang.Object types
 				if(!superType.getQualifiedName().toString().equals("java.lang.Object")) {
-					sb.append("\n\t\t").append(generateMethodFromFields(procInfo, superType, settersDone, gettersDone,
+					sb.append(generateMethodFromFields(procInfo, superType, settersDone, gettersDone,
 						inheritDepth - 1));
 				}
 			}
@@ -313,7 +313,7 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 				TypeElement superType = (TypeElement)((DeclaredType)superMirror).asElement();
 				// Don't process base java.lang.Object types
 				if(!superType.getQualifiedName().toString().equals("java.lang.Object")) {
-					sb.append("\n\t\t").append(generateMethodFromMethods(superType, settersDone, gettersDone,
+					sb.append(generateMethodFromMethods(superType, settersDone, gettersDone,
 						inheritDepth - 1));
 				}
 			}
