@@ -35,15 +35,15 @@ public class ObservableAnnotationProcessor extends fr.lteconsulting.hexa.databin
 	@Override
 	protected int getInheritDepth(Annotation annotation) {
 		if(annotation instanceof Observable) {
-			Observable observable = (Observable)annotation;
-			int depth = observable.inherit() ? 1 : 0;
-			return observable.inheritDepth() > depth ? observable.inheritDepth() : depth;
+			Observable observable = ((Observable) annotation);
+			int depth = observable.inheritDepth();
+			return observable.inherit() ? depth : (depth != Observable.INHERIT_MAX ? depth : 0);
 		}
 		// Duplication for legacy annotation
 		else if(annotation instanceof ObservableGwt) {
-			ObservableGwt observable = (ObservableGwt)annotation;
-			int depth = observable.inherit() ? 1 : 0;
-			return observable.inheritDepth() > depth ? observable.inheritDepth() : depth;
+			ObservableGwt observable = ((ObservableGwt) annotation);
+			int depth = observable.inheritDepth();
+			return observable.inherit() ? depth : (depth != ObservableGwt.INHERIT_MAX ? depth : 0);
 		}
 		return -1;
 	}

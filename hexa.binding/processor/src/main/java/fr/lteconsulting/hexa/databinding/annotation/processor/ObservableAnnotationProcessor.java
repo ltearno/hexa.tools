@@ -58,9 +58,9 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 
 	protected int getInheritDepth(Annotation annotation) {
 		if(annotation instanceof Observable) {
-			Observable observable = (Observable)annotation;
-			int depth = observable.inherit() ? 1 : 0;
-			return observable.inheritDepth() > depth ? observable.inheritDepth() : depth;
+			Observable observable = (Observable) annotation;
+			int depth = ((Observable) annotation).inheritDepth();
+			return observable.inherit() ? depth : (depth != Observable.INHERIT_MAX ? depth : 0);
 		}
 		return -1;
 	}
