@@ -32,7 +32,7 @@ public class ClazzGenerator extends Generator
 	// type info on the asked class
 	// JClassType askedType = null;
 
-	// type for which we provide informations
+	// type for which we provide information
 	JClassType reflectedType = null;
 
 	// package of the asked type

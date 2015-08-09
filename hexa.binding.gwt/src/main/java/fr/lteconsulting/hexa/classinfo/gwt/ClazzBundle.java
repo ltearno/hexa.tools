@@ -37,4 +37,5 @@ package fr.lteconsulting.hexa.classinfo.gwt;
  */
 public interface ClazzBundle
 {
+    void register();
 }
