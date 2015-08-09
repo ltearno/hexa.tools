@@ -8,7 +8,6 @@ package fr.lteconsulting.hexa.classinfo.gwt;
  * {@link ClazzBundle} interface.
  * 
  * @author Arnaud
- *
  */
 public @interface ReflectedClasses
 {

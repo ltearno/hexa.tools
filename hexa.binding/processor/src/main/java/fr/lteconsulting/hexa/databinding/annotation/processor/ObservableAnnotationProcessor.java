@@ -155,6 +155,7 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 		}
 		else {
 			sb.append("\n\t// Cannot generate copy constructor when there is no default constructor");
+			sb.append("\n\t// Either add a default constructor or manually add this constructor.\n");
 		}
 		return sb.toString();
 	}

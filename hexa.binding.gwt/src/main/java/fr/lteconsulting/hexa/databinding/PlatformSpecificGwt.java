@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import fr.lteconsulting.hexa.databinding.properties.DynamicPropertyBag;
 import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
 class PlatformSpecificGwt implements PlatformSpecific
@@ -106,7 +106,7 @@ class PlatformSpecificGwt implements PlatformSpecific
 	@Override
 	public PropertyAdapter createPropertyAdapter( Object object )
 	{
-		return new WidgetPropertyAdapter( (HasValue<?>) object );
+		return new ValuePropertyAdapter( (HasValue<?>) object );
 	}
 
 	// Metadata

@@ -1,13 +1,11 @@
 package fr.lteconsulting.hexa.databinding;
 
-
 /**
  * A collection of implementations of standard converters.
  * 
  * @author Arnaud Tournier
  * (c) LTE Consulting - 2015
  * http://www.lteconsulting.fr
- *
  */
 public enum Converters implements Converter
 {

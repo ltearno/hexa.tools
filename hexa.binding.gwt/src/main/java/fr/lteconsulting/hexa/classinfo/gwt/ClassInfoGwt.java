@@ -91,9 +91,7 @@ public class ClassInfoGwt implements IClassInfo
 	}
 
 	/**
-	 * Retrieve the set of registered type information providers
-	 * 
-	 * @return
+	 * Retrieve the set of registered type information providers.
 	 */
 	public Set<Class<?>> GetRegisteredClazz()
 	{

@@ -59,10 +59,9 @@ public class ClazzBundleGenerator extends Generator
 			introspectedTypes = new HashSet<JType>();
 
 			// list all return types of all methods
-			JMethod[] methods = askedType.getMethods();
-			for( int i = 0; i < methods.length; i++ )
+			for(JMethod method : askedType.getMethods())
 			{
-				ReflectedClasses classes = methods[i].getAnnotation( ReflectedClasses.class );
+				ReflectedClasses classes = method.getAnnotation( ReflectedClasses.class );
 				if( classes == null || classes.classes() == null || classes.classes().length == 0 )
 					continue;
 
@@ -93,7 +92,7 @@ public class ClazzBundleGenerator extends Generator
 	private void generateClass()
 	{
 		// get print writer that receives the source code
-		PrintWriter printWriter = null;
+		PrintWriter printWriter;
 
 		printWriter = context.tryCreate( logger, packageName, generatedClassName );
 		// print writer if null, source code has ALREADY been generated, return

@@ -7,6 +7,5 @@ class DataAdapterInfo
 	PropertyAdapter adapter;
 	Converter converter;
 	Class<?> dataType;
-
 	String debugString;
 }

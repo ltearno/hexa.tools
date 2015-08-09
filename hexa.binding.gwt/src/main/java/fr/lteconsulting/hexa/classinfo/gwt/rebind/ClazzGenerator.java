@@ -34,7 +34,6 @@ public class ClazzGenerator extends Generator
 
 	// type for which we provide informations
 	JClassType reflectedType = null;
-	String reflectedTypeName;
 
 	// package of the asked type
 	String packageName = null;
@@ -54,13 +53,12 @@ public class ClazzGenerator extends Generator
 			throw new UnableToCompleteException();
 		}
 
-		JClassType[] interfaces = askedType.getImplementedInterfaces();
-		for( int i = 0; i < interfaces.length; i++ )
+		for( JClassType classType : askedType.getImplementedInterfaces() )
 		{
-			if( !interfaces[i].getQualifiedSourceName().equals( "fr.lteconsulting.hexa.classinfo.Clazz" ) )
+			if( !classType.getQualifiedSourceName().equals( "fr.lteconsulting.hexa.classinfo.Clazz" ) )
 				continue;
 
-			JParameterizedType parametrized = interfaces[i].isParameterized();
+			JParameterizedType parametrized = classType.isParameterized();
 			JClassType[] typeArgs = parametrized.getTypeArgs();
 
 			return typeArgs[0];
@@ -81,10 +79,9 @@ public class ClazzGenerator extends Generator
 		try
 		{
 			reflectedType = getReflectedType( typeOracle, typeName );
-
 			OneClazzGenerator generator = new OneClazzGenerator( logger, context );
-			String generatedClassName = generator.generateClassFor( reflectedType );
-			return generatedClassName;
+
+			return generator.generateClassFor( reflectedType );
 		}
 		catch( Exception e )
 		{
@@ -134,7 +131,7 @@ class OneClazzGenerator
 	private void generateClass()
 	{
 		// get print writer that receives the source code
-		PrintWriter printWriter = null;
+		PrintWriter printWriter;
 
 		printWriter = context.tryCreate( logger, packageName, generatedClassName );
 		// print writer if null, source code has ALREADY been generated, return
@@ -206,10 +203,8 @@ class OneClazzGenerator
 		// Fields
 
 		List<String> fieldClassNames = new ArrayList<String>();
-		JField[] fields = reflectedType.getFields();
-		for( int f = 0; f < fields.length; f++ )
+		for( JField field : reflectedType.getFields() )
 		{
-			JField field = fields[f];
 			if( field.isStatic() )
 				continue; // skip
 
@@ -232,12 +227,9 @@ class OneClazzGenerator
 
 		// Methods
 
-		JMethod[] methods = reflectedType.getMethods();
-
 		List<String> methodClassNames = new ArrayList<String>();
-		for( int m = 0; m < methods.length; m++ )
+		for( JMethod method : reflectedType.getMethods() )
 		{
-			JMethod method = methods[m];
 			String methodClassName = method.getName() + "_MethodImpl";
 			while( methodClassNames.contains( methodClassName ) )
 				methodClassName += "_";

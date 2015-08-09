@@ -8,7 +8,7 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapt
 import fr.lteconsulting.hexa.databinding.propertyadapters.ObjectAsValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ValuePropertyAdapter;
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.
@@ -74,8 +74,7 @@ public class Binder
 	 * This method accepts any implementation of PropertyAdapter, especially
 	 * user ones so that is a good start to customize the data binding
 	 * possibilities.
-	 * 
-	 * @param source
+	 *
 	 * @return The Binder to continue specifying the data binding
 	 */
 	public static BindingCreation bind( PropertyAdapter source )
@@ -94,7 +93,7 @@ public class Binder
 	 */
 	public static BindingCreation bind( HasValue<?> widget )
 	{
-		return bind( new WidgetPropertyAdapter( widget ) );
+		return bind( new ValuePropertyAdapter( widget ) );
 	}
 
 	/**
