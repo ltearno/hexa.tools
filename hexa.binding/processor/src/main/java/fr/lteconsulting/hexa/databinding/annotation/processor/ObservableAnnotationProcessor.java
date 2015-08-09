@@ -165,6 +165,12 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 
 		boolean indent = false;
 		for(VariableElement field : ElementFilter.fieldsIn(typeElement.getEnclosedElements())) {
+			Set<Modifier> mods = field.getModifiers();
+			if(mods.contains(Modifier.STATIC) || mods.contains(Modifier.FINAL)) {
+				// We should be ignoring static/final fields since they
+				// shouldn't be modified by a local object call.
+				continue;
+			}
 			String fieldName = field.getSimpleName().toString();
 
 			if(!isFieldAccessible(field, procInfo)) {
@@ -204,7 +210,11 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 				TypeElement superType = (TypeElement)((DeclaredType)superMirror).asElement();
 				// Don't process base java.lang.Object types
 				if(!superType.getQualifiedName().toString().equals("java.lang.Object")) {
-					sb.append("\n\t\t").append(generateCopyConstructor(procInfo, superType, inheritDepth - 1));
+					String copyCtr = generateCopyConstructor(procInfo, superType, inheritDepth - 1);
+					if(!copyCtr.isEmpty()) {
+						// Only append if there was a result
+						sb.append("\n\t\t").append(copyCtr);
+					}
 				}
 			}
 		}
@@ -228,8 +238,15 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 											Set<String> gettersDone, int inheritDepth) {
 		StringBuilder sb = new StringBuilder();
 
-		for( VariableElement field : ElementFilter.fieldsIn(typeElement.getEnclosedElements())) {
+		for (VariableElement field : ElementFilter.fieldsIn(typeElement.getEnclosedElements())) {
 			if(!isFieldAccessible(field, procInfo)) {
+				continue;
+			}
+
+			Set<Modifier> mods = field.getModifiers();
+			if(mods.contains(Modifier.STATIC) || mods.contains(Modifier.FINAL)) {
+				// We should be ignoring static/final fields since they
+				// shouldn't be modified by a local object call.
 				continue;
 			}
 
@@ -279,7 +296,8 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 		for(ExecutableElement method : ElementFilter.methodsIn(typeElement.getEnclosedElements())) {
 			String methodName = method.getSimpleName().toString();
 
-			if(method.getModifiers().contains(Modifier.PRIVATE)) {
+			Set<Modifier> mods = method.getModifiers();
+			if(mods.contains(Modifier.PRIVATE)) {
 				continue;
 			}
 
@@ -291,6 +309,21 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 			}
 
 			if(fieldName != null) {
+				if(settersDone.contains(fieldName)) {
+					// We have already processed this field method.
+					continue;
+				}
+				else if(mods.contains(Modifier.FINAL)) {
+					msg.printMessage(Kind.ERROR, "Setter for '" + fieldName + "' field is marked " +
+						"as 'final' cannot override this method.", method);
+					continue;
+				}
+				else if(mods.contains(Modifier.ABSTRACT)) {
+					// Gracefully ignore abstract setter methods definitions
+					// We have probably already found this method anyway.
+					continue;
+				}
+
 				sb.append(generateMethodSetterStub(method, fieldName));
 				settersDone.add( fieldName );
 			}

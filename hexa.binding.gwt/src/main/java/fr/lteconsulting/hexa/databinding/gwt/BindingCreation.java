@@ -1,8 +1,10 @@
 package fr.lteconsulting.hexa.databinding.gwt;
 
 import com.google.gwt.user.client.ui.HasValue;
-
 import com.google.gwt.user.client.ui.ListBox;
+
+import fr.lteconsulting.hexa.databinding.Converter;
+import fr.lteconsulting.hexa.databinding.Mode;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ValuePropertyAdapter;
@@ -61,6 +63,12 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 		return to(new ListBoxPropertyAdapter(listBox));
 	}
 
+	@Override
+	public BindingCreation log(String prefix) {
+		super.log(prefix);
+		return this;
+	}
+
 	/**
 	 * Second step, parameters.
 	 *
@@ -73,6 +81,18 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	{
 		deferActivate = true;
 
+		return this;
+	}
+
+	@Override
+	public BindingCreation mode(Mode mode) {
+		super.mode(mode);
+		return this;
+	}
+
+	@Override
+	public BindingCreation withConverter(Converter converter) {
+		super.withConverter(converter);
 		return this;
 	}
 
