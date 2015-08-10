@@ -6,8 +6,8 @@ import com.google.gwt.user.client.ui.ListBox;
 import fr.lteconsulting.hexa.databinding.Converter;
 import fr.lteconsulting.hexa.databinding.Mode;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ValuePropertyAdapter;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ListBoxPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ValuePropertyAdapter;
 
 /**
  * Second part of the fluent API for Data Binding. When a binding is

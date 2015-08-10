@@ -4,11 +4,11 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ListBox;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ListBoxPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.ObjectAsValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ValuePropertyAdapter;
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.

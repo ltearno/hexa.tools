@@ -8,14 +8,11 @@
 	
 	<source path="classinfo" excludes="classinfo/gwt/rebind,classinfo/gwt/emul" />
 
-	<generate-with
-		class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzGenerator">
+	<generate-with class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzGenerator">
 		<when-type-assignable class="fr.lteconsulting.hexa.classinfo.Clazz" />
 	</generate-with>
 
-	<generate-with
-		class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzBundleGenerator">
-		<when-type-assignable
-			class="fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle" />
+	<generate-with class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzBundleGenerator">
+		<when-type-assignable class="fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle" />
 	</generate-with>
 </module>

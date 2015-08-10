@@ -1,5 +1,7 @@
 package fr.lteconsulting.hexa.databinding.annotation.processor;
 
+import fr.lteconsulting.hexa.databinding.annotation.processor.modules.ProcessorModule;
+
 import javax.annotation.processing.*;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
@@ -10,6 +12,8 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static fr.lteconsulting.hexa.databinding.annotation.processor.Tags.*;
@@ -17,11 +21,12 @@ import static fr.lteconsulting.hexa.databinding.annotation.processor.Tags.TARGET
 
 public abstract class BaseAnnotationProcessor  extends AbstractProcessor {
 
-    protected class ProcInfo {
+    public static class ProcInfo {
         TypeElement typeElement;
         Annotation annotation;
         String implName;
         String packageName;
+        List<String> extraImports;
 
         public ProcInfo(TypeElement typeElement, Annotation annotation,
                         String implName, String packageName) {
@@ -29,6 +34,31 @@ public abstract class BaseAnnotationProcessor  extends AbstractProcessor {
             this.annotation = annotation;
             this.implName = implName;
             this.packageName = packageName;
+            extraImports = new ArrayList<>();
+        }
+
+        public TypeElement getTypeElement() {
+            return typeElement;
+        }
+
+        public Annotation getAnnotation() {
+            return annotation;
+        }
+
+        public String getImplName() {
+            return implName;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
+
+        public List<String> getExtraImports() {
+            return extraImports;
+        }
+
+        public void addExtraImport(String newImport) {
+            extraImports.add(newImport);
         }
     }
 
@@ -103,7 +133,15 @@ public abstract class BaseAnnotationProcessor  extends AbstractProcessor {
         template.replace(TARGET_CLASS_NAME, procInfo.implName);
     }
 
+    protected void registerProcessorModule(ProcessorModule module) {
+        ProcessorModuleRegistry.register(module);
+    }
+
+    protected List<ProcessorModule> getProcessorModules() {
+        return ProcessorModuleRegistry.getProcessorModules();
+    }
+
     protected void error( String msg ) {
-        processingEnv.getMessager().printMessage( Diagnostic.Kind.ERROR, msg );
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
     }
 }

@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.databinding.watchablecollection.gwt;
+package fr.lteconsulting.hexa.databinding.gwt.watchablecollection;
 
 import java.util.ArrayList;
 import java.util.Collection;

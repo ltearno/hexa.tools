@@ -1,6 +1,7 @@
 package fr.lteconsulting.hexa.databinding.gwt.annotation.processor;
 
 import fr.lteconsulting.hexa.databinding.annotation.ObservableGwt;
+import fr.lteconsulting.hexa.databinding.annotation.processor.ObservableAnnotationProcessor;
 import fr.lteconsulting.hexa.databinding.annotation.processor.Template;
 import fr.lteconsulting.hexa.databinding.gwt.annotation.Observable;
 
@@ -14,22 +15,25 @@ import java.lang.annotation.Annotation;
 	"fr.lteconsulting.hexa.databinding.annotation.ObservableGwt"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public class ObservableAnnotationProcessor extends fr.lteconsulting.hexa.databinding.annotation.processor.ObservableAnnotationProcessor
-{
+public class GwtObservableAnnotationProcessor extends ObservableAnnotationProcessor {
 	private final static String TEMPLATE_CLASS = "fr/lteconsulting/hexa/databinding/gwt/annotation/processor/TemplateClass.txt";
 
 	@Override
 	protected String generateExtraImports(ProcInfo procInfo) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("import com.google.gwt.core.client.GWT;\n");
-		sb.append("import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;\n");
-		sb.append("import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;\n");
-		return sb.toString();
+		String extraImports = super.generateExtraImports(procInfo);
+		if(!extraImports.contains("fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle")) {
+			extraImports += "import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;\n";
+		}
+		if(!extraImports.contains("fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses")) {
+			extraImports += "import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;\n";
+		}
+		return extraImports;
 	}
 
 	@Override
-	protected String generateClassEntry(ProcInfo procInfo) {
-		return Template.fromResource(TEMPLATE_CLASS, BEGIN_INDEX).toString();
+	protected StringBuilder generateClassEntry(ProcInfo procInfo) {
+		return super.generateClassEntry(procInfo)
+			.append(Template.fromResource(TEMPLATE_CLASS, BEGIN_INDEX).toString());
 	}
 
 	@Override

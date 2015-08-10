@@ -2,11 +2,13 @@ package fr.lteconsulting.hexa.databinding.annotation.processor;
 
 import fr.lteconsulting.hexa.client.tools.StringUtils;
 import fr.lteconsulting.hexa.databinding.annotation.Observable;
+import fr.lteconsulting.hexa.databinding.annotation.processor.modules.ProcessorModule;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -83,18 +85,38 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 		Template template = Template.fromResource(TEMPLATE_CLASS, BEGIN_INDEX);
 
 		template.replace(EXTRA_IMPORTS, generateExtraImports(procInfo));
-		template.replace(CLASS_ENTRY, generateClassEntry(procInfo));
+		template.replace(CLASS_ENTRY, generateClassEntry(procInfo).toString());
 
 		parseGeneralTags(template, procInfo);
 		return template;
 	}
 
 	protected String generateExtraImports(ProcInfo procInfo) {
-		return ""; // nothing by default
+		String result = "";
+		for(ProcessorModule module : getProcessorModules()) {
+			for(String newImport : module.getImports(procInfo)) {
+				if(!procInfo.getExtraImports().contains(newImport)) {
+					String formatted = (!newImport.startsWith("import") ? "import " : "")
+						+ newImport + (!newImport.contains(";") ? ";" : "") + "\n";
+
+					procInfo.addExtraImport(formatted);
+					result += formatted;
+				}
+			}
+		}
+		return result;
 	}
 
-	protected String generateClassEntry(ProcInfo procInfo) {
-		return ""; // nothing by default
+	protected StringBuilder generateClassEntry(ProcInfo procInfo) {
+		StringBuilder sb = new StringBuilder();
+		for(ProcessorModule module : getProcessorModules()) {
+			String classEntry = module.getClassEntry(procInfo);
+			if(!classEntry.endsWith("\n")) {
+				classEntry += "\n";
+			}
+			sb.append(classEntry);
+		}
+		return sb;
 	}
 
 	private String generateConstructors(ProcInfo procInfo, int inheritDepth) {
