@@ -37,7 +37,7 @@ public @interface Observable
     /**
      * Generate copy constructor, if possible.
      */
-    boolean copyConstructor() default true;
+    boolean copyConstructor() default false;
 
     /**
      * Should we inherit from our super class chain.<br/>
