@@ -35,8 +35,6 @@ public class ClassInfoGwt implements IClassInfo
 
 	/**
 	 * Register a runtime type information provider
-	 * 
-	 * @param clazz
 	 */
 	public <T> void RegisterClazz( Clazz<T> clazz )
 	{
