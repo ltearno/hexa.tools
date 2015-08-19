@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.databinding.propertyadapters.gwt;
+package fr.lteconsulting.hexa.databinding.gwt.propertyadapters;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -9,15 +9,15 @@ import fr.lteconsulting.hexa.client.tools.Action2;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 /**
- * A PropertyAdapter implementation that works with a target implementing the HasValue interface.
- * 
- * Typically, this will be a Widget, like a TextBox for example, that will receive and notify its changes
+ * A PropertyAdapter implementation that works with a target
+ * implementing the HasValue interface.
+ *
+ * Typically, this will be a Widget, like a TextBox for example,
+ * that will receive and notify its changes
  * 
  * @author Arnaud Tournier
- *
  */
-@SuppressWarnings( "rawtypes" )
-public class WidgetPropertyAdapter implements PropertyAdapter, ValueChangeHandler
+public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler
 {
 	HasValue<Object> hasValue;
 
@@ -25,13 +25,13 @@ public class WidgetPropertyAdapter implements PropertyAdapter, ValueChangeHandle
 	Object cookie;
 
 	@SuppressWarnings( "unchecked" )
-	public WidgetPropertyAdapter( HasValue<?> hasValue )
+	public ValuePropertyAdapter(HasValue<?> hasValue)
 	{
 		this.hasValue = (HasValue<Object>) hasValue;
 	}
 
-	@SuppressWarnings( "unchecked" )
 	@Override
+	@SuppressWarnings( "unchecked" )
 	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
 		this.callback = callback;

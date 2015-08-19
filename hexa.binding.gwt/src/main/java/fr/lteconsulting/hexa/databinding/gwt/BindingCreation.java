@@ -1,13 +1,13 @@
 package fr.lteconsulting.hexa.databinding.gwt;
 
 import com.google.gwt.user.client.ui.HasValue;
-
 import com.google.gwt.user.client.ui.ListBox;
+
 import fr.lteconsulting.hexa.databinding.Converter;
 import fr.lteconsulting.hexa.databinding.Mode;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ListBoxPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ValuePropertyAdapter;
 
 /**
  * Second part of the fluent API for Data Binding. When a binding is
@@ -21,7 +21,7 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdap
  */
 public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCreation
 {
-	protected boolean fDeferActivate;
+	protected boolean deferActivate;
 
 	public BindingCreation( PropertyAdapter source )
 	{
@@ -37,13 +37,13 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	 * addValueChangeHandler methods to set, get and get change notifications on
 	 * the @param widget parameter.
 	 * 
-	 * @param widget
-	 *            The widget
+	 * @param hasValue
+	 *            The {@link HasValue} object
 	 * @return The DataBinding object
 	 */
-	public DataBinding to( HasValue<?> widget )
+	public DataBinding to( HasValue<?> hasValue )
 	{
-		return to(new WidgetPropertyAdapter(widget));
+		return to(new ValuePropertyAdapter(hasValue));
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	{
 		return to(new ListBoxPropertyAdapter(listBox));
 	}
-	
+
 	@Override
 	public BindingCreation log(String prefix) {
 		super.log(prefix);
@@ -79,19 +79,19 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 	 */
 	public BindingCreation deferActivate()
 	{
-		fDeferActivate = true;
+		deferActivate = true;
 
 		return this;
 	}
-	
+
 	@Override
 	public BindingCreation mode(Mode mode) {
 		super.mode(mode);
 		return this;
 	}
-	
+
 	@Override
-	public BindingCreation withConverter( Converter converter) {
+	public BindingCreation withConverter(Converter converter) {
 		super.withConverter(converter);
 		return this;
 	}
@@ -103,7 +103,7 @@ public class BindingCreation extends fr.lteconsulting.hexa.databinding.BindingCr
 		DataBinding binding = new DataBinding( source, destination, mode, converter, logPrefix );
 
 		// activate the binding : launch a value event
-		if( fDeferActivate )
+		if(deferActivate)
 			binding.deferActivate();
 		else
 			binding.activate();

@@ -12,6 +12,11 @@
     <version>1.4-SNAPSHOT</version>
     <dependencies>
         <dependency>
+            <groupId>fr.lteconsulting</groupId>
+            <artifactId>hexa.utils</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
         </dependency>

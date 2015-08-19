@@ -11,7 +11,6 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
  * @author Arnaud Tournier
  * (c) LTE Consulting - 2015
  * http://www.lteconsulting.fr
- *
  */
 public class BindingCreation
 {

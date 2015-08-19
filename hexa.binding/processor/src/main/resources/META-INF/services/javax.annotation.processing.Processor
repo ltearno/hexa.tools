@@ -1,2 +1,2 @@
 fr.lteconsulting.hexa.databinding.annotation.processor.ObservableAnnotationProcessor
-fr.lteconsulting.hexa.databinding.gwt.annotation.processor.ObservableAnnotationProcessor
+fr.lteconsulting.hexa.databinding.gwt.annotation.processor.GwtObservableAnnotationProcessor

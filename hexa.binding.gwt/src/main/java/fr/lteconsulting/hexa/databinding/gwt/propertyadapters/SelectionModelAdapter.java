@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.databinding.propertyadapters.gwt;
+package fr.lteconsulting.hexa.databinding.gwt.propertyadapters;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -15,8 +15,6 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
  * - When the selected item changes, the binding system gets triggered.
  * 
  * @author Arnaud
- *
- * @param <T>
  */
 public class SelectionModelAdapter<T> implements PropertyAdapter
 {
@@ -25,15 +23,13 @@ public class SelectionModelAdapter<T> implements PropertyAdapter
 	/**
 	 * Uses the given {@link SingleSelectionModel} and acts as a binding property.
 	 * Used to bind the model's selected value to another value.
-	 * 
-	 * @param selectionModel
 	 */
 	public SelectionModelAdapter(SingleSelectionModel<T> selectionModel) {
 		this.model = selectionModel;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public void setValue(Object object) {
 		model.clear();
 		model.setSelected((T)object, true);

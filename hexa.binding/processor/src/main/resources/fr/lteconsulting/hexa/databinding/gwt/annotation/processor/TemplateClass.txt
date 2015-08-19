@@ -8,13 +8,3 @@
 		@ReflectedClasses( classes = { $TargetClassName.class } )
 		void register();
 	}
-	
-	/**
-	  * Runtime type information activation glue code.
-	  * This code effectively registers the runtime type information
-	  * for the $TargetClassName class.
-	  */
-	static
-	{
-		GWT.<ClassBundle>create( ClassBundle.class ).register();
-	}

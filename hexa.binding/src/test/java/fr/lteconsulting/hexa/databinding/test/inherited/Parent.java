@@ -1,6 +1,6 @@
-package fr.lteconsulting.hexa.databinding.test;
+package fr.lteconsulting.hexa.databinding.test.inherited;
 
-import fr.lteconsulting.hexa.databinding.gwt.annotation.Observable;
+import fr.lteconsulting.hexa.databinding.annotation.Observable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ public class Parent extends Grandparent {
     String parentsString;
     int parentsNumber;
 
-    HashMap<String, List<SampleDTO1>> parentsMap;
+    HashMap<String, List<Integer>> parentsMap;
 
     private double parentsPrivateNoGetterSetter;
     private double parentsPrivateHasGetterSetter;

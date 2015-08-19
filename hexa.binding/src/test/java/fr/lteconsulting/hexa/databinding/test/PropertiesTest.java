@@ -30,6 +30,43 @@ import fr.lteconsulting.hexa.databinding.tools.Property;
 public class PropertiesTest extends TestCase
 {
 	/**
+	 * The DTO class for this test.<br/><br/>
+	 *
+	 * It has a field 'a', a getter/setter pair for the 'b' property
+	 * and a {@link Property} instance named 'c'.
+	 *
+	 * @author Arnaud Tournier
+	 */
+	class DTO
+	{
+		int a = 10;
+
+		private String _b;
+
+		public String getB()
+		{
+			return _b;
+		}
+
+		public void setB( String b )
+		{
+			this._b = b;
+		}
+
+		final Property<Integer> c = new Property<Integer>( this, "c", null );
+
+		public Integer getC()
+		{
+			return c.getValue();
+		}
+
+		public void setC( Integer c )
+		{
+			this.c.setValue( c );
+		}
+	}
+
+	/**
 	 * We cannot access the private member a of class {@link DTO},
 	 * but we can use the {@link Properties} class
 	 * to help us.
@@ -116,46 +153,6 @@ public class PropertiesTest extends TestCase
 		
 		// Gets the value with the Property system.
 		String d = getValue( dto, "d" );
-		assertEquals( value, d );
-	}
-}
-
-/**
- * The DTO class for this test.<br/><br/>
- * 
- * It has a field 'a', a getter/setter pair for the 'b' property
- * and a {@link Property} instance named 'c'.
- * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
- *
- */
-class DTO
-{
-	int a = 10;
-
-	private String _b;
-
-	public String getB()
-	{
-		return _b;
-	}
-
-	public void setB( String b )
-	{
-		this._b = b;
-	}
-
-	final Property<Integer> c = new Property<Integer>( this, "c", null ); 
-
-	public Integer getC()
-	{
-		return c.getValue();
-	}
-
-	public void setC( Integer c )
-	{
-		this.c.setValue( c );
+		assertEquals(value, d);
 	}
 }

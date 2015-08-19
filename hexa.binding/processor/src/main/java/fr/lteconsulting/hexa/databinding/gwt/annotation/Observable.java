@@ -34,15 +34,23 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.CLASS )
 public @interface Observable
 {
+    int INHERIT_MAX = Integer.MAX_VALUE;
+
     /**
-     * Default to true if inherit depth is set or set
-     * inherit depth to 1 when set to true.
+     * Generate copy constructor, if possible.
+     */
+    boolean copyConstructor() default false;
+
+    /**
+     * Should we inherit from our super class chain.<br/>
+     * This will search {@link #INHERIT_MAX} by default.
+     * @see #inheritDepth()
      */
     boolean inherit() default false;
 
     /**
      * Max depth to inheritDepth from superclasses.<br/>
-     * Will be set to 1 if {@link #inherit()} is set to true and the depth is 0.
+     * If this is customized it will set {@link #inherit()} to true.
      */
-    int inheritDepth() default 0;
+    int inheritDepth() default INHERIT_MAX;
 }

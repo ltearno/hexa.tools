@@ -15,15 +15,14 @@ package fr.lteconsulting.hexa.classinfo.gwt;
  * // Declare your Bundle :
  * interface MyBundle extends ClazzBundle
  * {
- * 		@ReflectedClasses(
- * 			classes = {
- * 				MyDTOClass.class,
- * 				TextBox.class,
- * 				JavaScriptObject.class,
- * 				...
- * 			}
- * 		)
- * 		void register();
+ *    &#64;ReflectedClasses(
+ *      classes = {
+ *          MyDTOClass.class,
+ *          TextBox.class,
+ *          JavaScriptObject.class,
+ *          ...
+ *      })
+ *      void register();
  * }
  * 
  * // Register it
@@ -38,4 +37,5 @@ package fr.lteconsulting.hexa.classinfo.gwt;
  */
 public interface ClazzBundle
 {
+    void register();
 }

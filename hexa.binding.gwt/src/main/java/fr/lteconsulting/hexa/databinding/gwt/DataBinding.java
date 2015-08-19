@@ -32,11 +32,6 @@ public class DataBinding extends fr.lteconsulting.hexa.databinding.DataBinding {
         return (DataBinding) super.suspend();
     }
 
-    @Override
-    public void terminate() {
-        super.terminate();
-    }
-
     /**
      * Activates the data binding using the deferred scheduler.
      * @see #activate()

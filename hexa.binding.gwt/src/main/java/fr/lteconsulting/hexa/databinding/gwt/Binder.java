@@ -4,11 +4,11 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ListBox;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ListBoxPropertyAdapter;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.ValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.ObjectAsValuePropertyAdapter;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.ListBoxPropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.WidgetPropertyAdapter;
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.
@@ -74,14 +74,12 @@ public class Binder
 	 * This method accepts any implementation of PropertyAdapter, especially
 	 * user ones so that is a good start to customize the data binding
 	 * possibilities.
-	 * 
-	 * @param source
+	 *
 	 * @return The Binder to continue specifying the data binding
 	 */
 	public static BindingCreation bind( PropertyAdapter source )
 	{
-		BindingCreation b = new BindingCreation( source );
-		return b;
+		return new BindingCreation( source );
 	}
 	
 	/**
@@ -95,7 +93,7 @@ public class Binder
 	 */
 	public static BindingCreation bind( HasValue<?> widget )
 	{
-		return bind( new WidgetPropertyAdapter( widget ) );
+		return bind( new ValuePropertyAdapter( widget ) );
 	}
 
 	/**

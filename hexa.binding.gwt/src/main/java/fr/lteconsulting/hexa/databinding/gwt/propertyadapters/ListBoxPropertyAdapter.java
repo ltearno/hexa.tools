@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.databinding.propertyadapters.gwt;
+package fr.lteconsulting.hexa.databinding.gwt.propertyadapters;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;

@@ -6,6 +6,31 @@ import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 public class DTOInheritanceTest extends TestCase
 {
+	class A
+	{
+		private String firstName;
+
+		public String getFirstName()
+		{
+			return firstName;
+		}
+
+		public void setFirstName( String firstName )
+		{
+			this.firstName = firstName;
+		}
+	}
+
+	class SubA extends A
+	{
+		public void setFirstName( String firstName )
+		{
+			super.setFirstName( firstName );
+
+			Properties.notify( this, "firstName" );
+		}
+	}
+	
 	public void test()
 	{
 		A a = new SubA();
@@ -16,32 +41,7 @@ public class DTOInheritanceTest extends TestCase
 		a.setFirstName( "titi" );
 		assertEquals( "titi", b.getFirstName() );
 		
-		b.setFirstName( "tata" );
-		assertEquals( "tata", a.getFirstName() );
-	}
-}
-
-class A
-{
-	private String firstName;
-
-	public String getFirstName()
-	{
-		return firstName;
-	}
-
-	public void setFirstName( String firstName )
-	{
-		this.firstName = firstName;
-	}
-}
-
-class SubA extends A
-{
-	public void setFirstName( String firstName )
-	{
-		super.setFirstName( firstName );
-		
-		Properties.notify( this, "firstName" );
+		b.setFirstName("tata");
+		assertEquals("tata", a.getFirstName());
 	}
 }

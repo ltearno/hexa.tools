@@ -14,18 +14,12 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.CompositePropertyAdapt
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
 class PropertyValues {
-	private final static Logger LOGGER = Logger.getLogger(PropertyValues.class
-			.getName());
+	private final static Logger LOGGER = Logger.getLogger(PropertyValues.class.getName());
 
-	private final static PlatformSpecific propertyBagAccess = PlatformSpecificProvider
-			.get();
+	private final static PlatformSpecific propertyBagAccess = PlatformSpecificProvider.get();
 
 	/**
 	 * Returns the class of the property
-	 * 
-	 * @param clazz
-	 * @param name
-	 * @return
 	 */
 	Class<?> getPropertyType(Clazz<?> clazz, String name) {
 		ClassInfoCache cache = retrieveCache(clazz);
@@ -52,10 +46,6 @@ class PropertyValues {
 
 	/**
 	 * Whether a getter or a field is available with that name
-	 * 
-	 * @param clazz
-	 * @param name
-	 * @return
 	 */
 	boolean hasSomethingToGetField(Clazz<?> clazz, String name) {
 		return getGetterPropertyType(clazz, name) != null;
@@ -63,10 +53,6 @@ class PropertyValues {
 
 	/**
 	 * Return the property getter type
-	 * 
-	 * @param clazz
-	 * @param name
-	 * @return
 	 */
 	Class<?> getGetterPropertyType(Clazz<?> clazz, String name) {
 		String getterName = "get" + capitalizeFirstLetter(name);
@@ -89,7 +75,6 @@ class PropertyValues {
 	 *            The object
 	 * @param name
 	 *            Property name
-	 * @return
 	 */
 	<T> T getValue(Object object, String name) {
 		T result = getPropertyImpl(object, name);
@@ -186,8 +171,7 @@ class PropertyValues {
 
 		if (Property.class == getPropertyType(s, propertyName)) {
 			@SuppressWarnings("unchecked")
-			Property<Object> property = (Property<Object>) getPropertyImpl(
-					object, propertyName);
+			Property<Object> property = getPropertyImpl(object, propertyName);
 			if (property != null) {
 				property.setValue(value);
 				return true;
@@ -223,12 +207,8 @@ class PropertyValues {
 	 * Whether a dynamic property value has already been set on this object
 	 */
 	boolean hasObjectDynamicProperty(Object object, String propertyName) {
-		DynamicPropertyBag bag = propertyBagAccess
-				.getObjectDynamicPropertyBag(object);
-		if (bag == null)
-			return false;
-
-		return bag.contains(propertyName);
+		DynamicPropertyBag bag = propertyBagAccess.getObjectDynamicPropertyBag(object);
+		return bag != null && bag.contains(propertyName);
 	}
 
 	/**

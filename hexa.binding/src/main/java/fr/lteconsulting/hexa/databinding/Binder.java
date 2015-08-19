@@ -6,33 +6,33 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 /**
  * Binder is a class providing a fluent api access to DataBinding.
- * 
- * By default the data binding is : - in TwoWays mode, - without data converter,
- * - direct activation, - not logged.
- * 
+ * <br/>
+ * By default the data binding is:
+ * <ul>
+ * 	<li>in TwoWays mode,</li>
+ * 	<li>without data converter,</li>
+ * 	<li>direct activation, - not logged.</li>
+ * </ul>
  * One can create and activate data binding in one line like this :
- * 
- * // selectedPerson to personne form Bind( personListWidget, "selectedPersonne"
- * ).Mode( Mode.OneWay ).Log("PERSONNEFORM").To( personneForm, "personne" );
- * 
- * // selected person's category to category form Bind( personListWidget,
- * "selectedPersonne.category" ).Mode( Mode.OneWay ).To( categoryForm, "$DTOMap"
- * );
- * 
- * // map selectedPerson to a personne form Bind( personListWidget,
- * "selectedPersonne" ).MapTo( personneForm );
- * 
- * // selected person's description to Window's title Bind( personListWidget,
- * "selectedPersonne.description" ).Mode( Mode.OneWay ).To( new
- * WriteOnlyPropertyAdapter()
- * 
+ * <pre>
+ * // selectedPerson to person form
+ * Binder.bind(personListBox, "selectedPerson").mode(Mode.OneWay).log("PERSONFORM").to(personForm, "person");
+ *
+ * // selected person's category to category form
+ * Binder.bind(personListBox, "selectedPerson.category").mode(Mode.OneWay).to(categoryForm, "$DTOMap");
+ *
+ * // map selectedPerson to a person form
+ * Binder.bind(personListWidget, "selectedPerson").mapTo(personForm);
+ *
+ * // selected person's description to Window's title
+ * Binder.bind(personListWidget, "selectedPerson.description").mode(Mode.OneWay).to(new WriteOnlyPropertyAdapter())
+ * </pre>
  * The second parameter of the Bind and To methods, which is a String, is the
  * path to the desired property. It is '.' separated, so you can compose like
  * this : "person.category.creationDate" and the binding tool will automatically
  * follow the property's value.
- * 
- * @author Arnaud Tournier
  *
+ * @author Arnaud Tournier
  */
 public class Binder
 {
@@ -64,15 +64,12 @@ public class Binder
 	 * This method accepts any implementation of PropertyAdapter, especially
 	 * user ones so that is a good start to customize the data binding
 	 * possibilities.
-	 * 
-	 * @param source
-	 * @param propertyName
+	 *
 	 * @return The Binder to continue specifying the data binding
 	 */
 	public static BindingCreation bind( PropertyAdapter source )
 	{
-		BindingCreation b = createBinder( source );
-		return b;
+		return createBinder( source );
 	}
 	
 	/**
@@ -93,10 +90,6 @@ public class Binder
 	/**
 	 * Maps two objects together. All matching fields will then be two-way
 	 * data-bound.
-	 * 
-	 * @param source
-	 * @param destination
-	 * @return
 	 */
 	public static DataBinding map( Object source, Object destination )
 	{

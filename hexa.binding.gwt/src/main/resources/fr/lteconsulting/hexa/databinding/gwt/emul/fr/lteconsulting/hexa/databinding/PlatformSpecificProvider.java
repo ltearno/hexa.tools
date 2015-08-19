@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.databinding;
 
-import com.google.gwt.core.client.GWT;
+import fr.lteconsulting.hexa.databinding.gwt.PlatformSpecificGwt;
 
 public class PlatformSpecificProvider
 {
