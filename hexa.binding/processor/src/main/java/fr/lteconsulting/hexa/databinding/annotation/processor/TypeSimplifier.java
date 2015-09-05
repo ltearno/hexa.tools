@@ -27,7 +27,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
 
 /**
  * A class from the Google Auto project on Github
