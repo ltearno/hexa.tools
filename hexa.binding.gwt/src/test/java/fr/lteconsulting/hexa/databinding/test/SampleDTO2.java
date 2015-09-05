@@ -36,7 +36,7 @@ public class SampleDTO2
 	List<SampleDTO1> totos4;
 
 	// does not work, give <any>
-	ObservableSampleDTO3<Integer> toto2;
+	//ObservableSampleDTO3<Integer> toto2;
 
 	// does not work, give List<<any>>
 	//List<ObservableSampleDTO3<Integer>> totos2;
