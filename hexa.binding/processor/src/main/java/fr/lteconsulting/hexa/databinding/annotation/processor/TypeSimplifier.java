@@ -27,6 +27,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 /**
  * A class from the Google Auto project on Github
@@ -244,8 +245,13 @@ final public class TypeSimplifier
 	/**
 	 * Returns the qualified name of a TypeMirror.
 	 */
-	public static String getTypeQualifiedName( TypeMirror type )
+	public static String getTypeQualifiedName(TypeMirror type) throws CodeGenerationIncompleteException
 	{
+		if(type.toString().equals("<any>")) {
+			throw new CodeGenerationIncompleteException("Type reported as <any> is likely a not-yet " +
+				"generated parameterized type.");
+		}
+
 		switch( type.getKind() )
 		{
 			case ARRAY:

@@ -18,9 +18,6 @@ public class ClazzGenerator extends Generator
 	// asked type name
 	String askedTypeName;
 
-	// type info on the asked class
-	// JClassType askedType = null;
-
 	// type for which we provide information
 	JClassType reflectedType;
 

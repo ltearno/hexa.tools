@@ -134,7 +134,7 @@ class ClazzInfoBuilder {
 			String fieldClassName = field.getName() + "_FieldImpl";
 			fieldClassNames.add( fieldClassName );
 
-			generateFieldClass( field, sourceWriter );
+			buildFieldClass(field, sourceWriter);
 		}
 
 		sourceWriter.println( "protected List<Field> _getDeclaredFields()" );
@@ -243,7 +243,7 @@ class ClazzInfoBuilder {
 		return mb.toString();
 	}
 
-	private void generateFieldClass( JField field, SourceWriter sourceWriter )
+	private void buildFieldClass(JField field, SourceWriter sourceWriter)
 	{
 		String fieldClassName = field.getName() + "_FieldImpl";
 

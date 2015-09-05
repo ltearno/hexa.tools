@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -273,24 +272,37 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 			}
 
 			String fieldName = field.getSimpleName().toString();
+			TypeMirror fieldType = field.asType();
 
 			// Process setting field generation
 			if(!settersDone.contains(fieldName)) {
 				String methodName = "set" + StringUtils.capitalizeFirstLetter(fieldName);
-				sb.append(generateFieldSetterStub(methodName, fieldName, field.asType()));
+				try {
+					sb.append(generateFieldSetterStub(methodName, fieldName, fieldType));
+				}
+				catch(CodeGenerationIncompleteException ex) {
+					throw new CodeGenerationIncompleteException(typeElement.getQualifiedName()
+						+ " setter stub generation failed.", ex);
+				}
 				settersDone.add(fieldName);
 			}
 
 			// Process getter field generation
 			if(!gettersDone.contains(fieldName)) {
 				String methodName;
-				if(field.asType().getKind().equals(TypeKind.BOOLEAN)) {
+				if(fieldType.getKind().equals(TypeKind.BOOLEAN)) {
 					methodName = "is";
 				} else {
 					methodName = "get";
 				}
 				methodName += StringUtils.capitalizeFirstLetter(fieldName);
-				sb.append(generateFieldGetterStub(methodName, fieldName, field.asType()));
+				try {
+					sb.append(generateFieldGetterStub(methodName, fieldName, fieldType));
+				}
+				catch(CodeGenerationIncompleteException ex) {
+					throw new CodeGenerationIncompleteException(typeElement.getQualifiedName()
+						+ " getter stub generation failed.", ex);
+				}
 				gettersDone.add(fieldName);
 			}
 		}
@@ -381,7 +393,13 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 		Template setter = Template.fromResource(TEMPLATE_CLASS, FIELD_SETTER_INDEX);
 		setter.replace(MODIFIERS, "public");
 		setter.replace(METHOD_NAME, methodName);
-		setter.replace(PROPERTY_CLASS, TypeSimplifier.getTypeQualifiedName(fieldType));
+		try {
+			setter.replace(PROPERTY_CLASS, TypeSimplifier.getTypeQualifiedName(fieldType));
+		}
+		catch(CodeGenerationIncompleteException ex) {
+			throw new CodeGenerationIncompleteException("Unable to generate field setter stub for '" +
+				fieldName + "' (" + methodName + ")", ex);
+		}
 		setter.replace(PROPERTY, fieldName);
 
 		return setter.toString();
@@ -389,7 +407,13 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
 
 	private String generateFieldGetterStub(String methodName, String fieldName, TypeMirror fieldType) {
 		Template getter = Template.fromResource(TEMPLATE_CLASS, FIELD_GETTER_INDEX);
-		getter.replace(PROPERTY_CLASS, TypeSimplifier.getTypeQualifiedName(fieldType));
+		try {
+			getter.replace(PROPERTY_CLASS, TypeSimplifier.getTypeQualifiedName(fieldType));
+		}
+		catch(CodeGenerationIncompleteException ex) {
+			throw new CodeGenerationIncompleteException("Unable to generate field getter stub for '" +
+				fieldName + "' (" + methodName + ")", ex);
+		}
 		getter.replace(METHOD_NAME, methodName);
 		getter.replace(PROPERTY, fieldName);
 
