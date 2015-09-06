@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 /**
  * Configures a module definition object using XML.
  */
+@SuppressWarnings("deprecated")
 public class ModuleDefSchema extends Schema {
 
   private final class BodySchema extends Schema {

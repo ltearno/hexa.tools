@@ -244,8 +244,13 @@ final public class TypeSimplifier
 	/**
 	 * Returns the qualified name of a TypeMirror.
 	 */
-	public static String getTypeQualifiedName( TypeMirror type )
+	public static String getTypeQualifiedName(TypeMirror type) throws CodeGenerationIncompleteException
 	{
+		if(type.toString().equals("<any>")) {
+			throw new CodeGenerationIncompleteException("Type reported as <any> is likely a not-yet " +
+				"generated parameterized type.");
+		}
+
 		switch( type.getKind() )
 		{
 			case ARRAY:

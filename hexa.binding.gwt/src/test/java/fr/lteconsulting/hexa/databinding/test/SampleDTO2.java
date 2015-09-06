@@ -31,16 +31,16 @@ public class SampleDTO2
 	
 	SampleDTO1 titi;
 
-	// does not work, give <any>
-	// ObservableToto<Integer> toto2;
-
 	List<SampleDTO1> titis;
 
-	// does not work, give List<<any>>
-	//List<ObservableToto<Integer>> totos2;
-
-	// does not work, give List<<any>>
-	//List<ObservableTiti<Integer>> totos3;
-
 	List<SampleDTO1> totos4;
+
+	// does not work, give <any>
+	//ObservableSampleDTO3<Integer> toto2;
+
+	// does not work, give List<<any>>
+	//List<ObservableSampleDTO3<Integer>> totos2;
+
+	// does not work, give List<<any>>
+	//List<ObservableSampleDTO3<Integer>> totos3;
 }
