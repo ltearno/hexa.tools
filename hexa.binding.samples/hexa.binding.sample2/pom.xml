@@ -123,6 +123,12 @@
                             <goal>compile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
             <!-- Hexa Css plugin, to obfuscate and optimize the CSS files -->

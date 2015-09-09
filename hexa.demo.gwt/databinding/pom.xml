@@ -88,6 +88,12 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <execution>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
                     </execution>
                 </executions>
                 <configuration>
