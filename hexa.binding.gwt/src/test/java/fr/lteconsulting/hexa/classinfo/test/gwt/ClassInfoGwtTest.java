@@ -38,14 +38,6 @@ public class ClassInfoGwtTest extends GWTTestCase
 	}
 }
 
-class A
-{
-	@SuppressWarnings( "unused" )
-	private int a;
-
-	int b;
-}
-
 interface TestClazzBundle extends ClazzBundle
 {
 	@ReflectedClasses( classes = { A.class } )
