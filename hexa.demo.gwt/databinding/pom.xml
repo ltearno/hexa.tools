@@ -190,6 +190,25 @@
                                     <ignore/>
                                     </action>
                                 </pluginExecution>
+                                <pluginExecution>
+                                	<pluginExecutionFilter>
+                                		<groupId>
+                                			org.codehaus.mojo
+                                		</groupId>
+                                		<artifactId>
+                                			gwt-maven-plugin
+                                		</artifactId>
+                                		<versionRange>
+                                			[2.7.0,)
+                                		</versionRange>
+                                		<goals>
+                                			<goal>compile</goal>
+                                		</goals>
+                                	</pluginExecutionFilter>
+                                	<action>
+                                		<ignore></ignore>
+                                	</action>
+                                </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
