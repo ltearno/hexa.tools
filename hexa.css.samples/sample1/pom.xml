@@ -71,6 +71,12 @@
                             <goal>compile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <workDir>${project.build.directory}/${project.build.finalName}</workDir>

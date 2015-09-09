@@ -43,6 +43,7 @@
                         <goals>
                             <goal>test</goal>
                         </goals>
+                        <phase>test</phase>
                         <configuration>
                             <includes>**/*GwtTest.java</includes>
                         </configuration>

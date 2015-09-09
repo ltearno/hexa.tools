@@ -40,6 +40,12 @@
                             <goal>compile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <debugPort>8001</debugPort>
