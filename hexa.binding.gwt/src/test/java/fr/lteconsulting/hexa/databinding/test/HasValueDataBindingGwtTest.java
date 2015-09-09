@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 import fr.lteconsulting.hexa.databinding.gwt.Binder;
-import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 /**
  * In addition to the normal binding adapters that are found in HexaBinding, the
@@ -91,21 +90,5 @@ public class HasValueDataBindingGwtTest extends GWTTestCase
 		 */
 		b1.setText( "toto" );
 		assertEquals( "titi", b2.getValue() );
-	}
-}
-
-class DTO
-{
-	private String name;
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName( String name )
-	{
-		this.name = name;
-		Properties.notify( this, "name" );
 	}
 }
