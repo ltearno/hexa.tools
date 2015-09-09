@@ -32,6 +32,10 @@ class PersonInternal
 	String firstName;
 	String lastName;
 	String preferredColor;
+	
+	public PersonInternal()
+	{
+	}
 
 	public PersonInternal( String firstName, String lastName )
 	{
