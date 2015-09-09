@@ -9,10 +9,5 @@ hexa.parent/target/
 hexa.core/${webAppDirectory}/
 hexa.core/gwt-unitCache/
 hexa.core/war/
-hexa.binding/.factorypath
 /target/
-hexa.binding.gwt/.factorypath
-hexa.binding.samples/hexa.binding.labs/.factorypath
-hexa.binding.samples/hexa.binding.sample1/.factorypath
-hexa.binding.samples/hexa.binding.sample2/.factorypath
-*.factorypath
+**/.factorypath
