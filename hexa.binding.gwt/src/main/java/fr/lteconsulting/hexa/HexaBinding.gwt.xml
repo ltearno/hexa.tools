@@ -8,8 +8,4 @@
 	<super-source path="databinding/gwt/emul" />
 
 	<source path="databinding" excludes="databinding/gwt/rebind,databinding/gwt/emul"/>
-
-	<generate-with class="fr.lteconsulting.hexa.databinding.gwt.rebind.ObservableGenerator">
-		<when-type-annotated class="fr.lteconsulting.hexa.databinding.gwt.annotation.Observable" />
-	</generate-with>
 </module>
