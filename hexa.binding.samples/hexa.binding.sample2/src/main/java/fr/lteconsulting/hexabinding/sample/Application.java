@@ -18,10 +18,10 @@ import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 import fr.lteconsulting.hexa.client.css.bindings.SkeletonHexaCss;
 import fr.lteconsulting.hexa.databinding.gwt.Binder;
+import fr.lteconsulting.hexa.databinding.gwt.propertyadapters.SelectionModelAdapter;
 import fr.lteconsulting.hexa.databinding.properties.Properties;
 import fr.lteconsulting.hexa.databinding.propertyadapters.ChangeDetector;
 import fr.lteconsulting.hexa.databinding.propertyadapters.WriteOnlyPropertyAdapter;
-import fr.lteconsulting.hexa.databinding.propertyadapters.gwt.SelectionModelAdapter;
 
 public class Application implements EntryPoint
 {

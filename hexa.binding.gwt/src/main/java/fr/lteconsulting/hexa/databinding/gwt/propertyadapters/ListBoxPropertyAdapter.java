@@ -42,7 +42,7 @@ public class ListBoxPropertyAdapter implements PropertyAdapter {
 	public void setValue(Object object) {
 		deselectItems();
 		if (object instanceof Collection) {
-			for (Object item : (Collection) object) {
+			for (Object item : (Collection<?>) object) {
 				selectItem(item);
 			}
 		}

@@ -17,7 +17,7 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
  * 
  * @author Arnaud Tournier
  */
-public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler
+public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler<Object>
 {
 	HasValue<Object> hasValue;
 
@@ -31,7 +31,6 @@ public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler
 	}
 
 	@Override
-	@SuppressWarnings( "unchecked" )
 	public Object registerPropertyChanged( Action2<PropertyAdapter, Object> callback, Object cookie )
 	{
 		this.callback = callback;
@@ -41,7 +40,7 @@ public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler
 	}
 
 	@Override
-	public void onValueChange( ValueChangeEvent event )
+	public void onValueChange( ValueChangeEvent<Object> event )
 	{
 		if( callback != null )
 			callback.exec( this, cookie );

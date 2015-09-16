@@ -84,7 +84,7 @@ public class ClazzBundleGenerator extends Generator
 					if (classes == null || classes.classes() == null || classes.classes().length == 0)
 						continue;
 
-					for (Class clazz : classes.classes()) {
+					for (Class<?> clazz : classes.classes()) {
 						JType classType = typeOracle.getType(clazz.getName());
 						if (classType != null)
 							introspectedTypes.add(classType);
