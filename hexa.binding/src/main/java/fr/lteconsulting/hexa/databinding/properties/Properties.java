@@ -107,7 +107,7 @@ public class Properties
 	 * @param name
 	 * @return
 	 */
-	public static boolean hasSomethingToGetField( Clazz<?> clazz, String name )
+	public static boolean canAccessField(Clazz<?> clazz, String name)
 	{
 		return propertyValues.hasSomethingToGetField(clazz, name);
 	}
@@ -127,7 +127,7 @@ public class Properties
 	/**
 	 * Whether there is a setter or a field to write this property
 	 */
-	public static boolean hasSomethingToSetField( Clazz<?> clazz, String name )
+	public static boolean canSetField(Clazz<?> clazz, String name)
 	{
 		return propertyValues.hasSomethingToSetField(clazz, name);
 	}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -143,10 +144,11 @@ public final class PlatformSpecificGwt implements PlatformSpecific {
 	}
 
 	@Override
-	public void fillSpecificDataAdapter(Object widget, Object context, String property, Class<?> srcPptyType, DataAdapterInfo res) {
+	public void fillSpecificDataAdapter(Object widget, Object context, String property, Class<?> srcPptyType,
+										DataAdapterInfo res) {
 		// try to guess the HasValue type
-		res.setDataType(null);
-		if(widget instanceof TextBox)
+		res.setDataType(Object.class);
+		if(widget instanceof HasText)
 			res.setDataType(String.class);
 
 		String debugString = "";

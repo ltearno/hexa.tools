@@ -19,6 +19,6 @@ public class DTOMapperPropertyAdapter extends WriteOnlyPropertyAdapter
 			DTOMapper.freeMapping( mapperResources );
 
 		if( object != null )
-			mapperResources = DTOMapper.Map( object, destinationOfMapping );
+			mapperResources = DTOMapper.map(object, destinationOfMapping);
 	}
 }

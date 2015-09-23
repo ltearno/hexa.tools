@@ -13,12 +13,12 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 import fr.lteconsulting.hexa.client.ui.widget.TextEditor;
-import fr.lteconsulting.hexa.databinding.TypedConverter;
+import fr.lteconsulting.hexa.databinding.Converter;
 import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 {
-	TypedConverter<Object, String> displayConverter;
+	Converter<Object, String> displayConverter;
 	
 	String title;
 	Clazz<T> dtoClazz;
@@ -31,18 +31,18 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 		this( dtoClass, fieldName, fieldName, null );
 	}
 	
-	public AutoTextColumn( Class<T> dtoClass, String fieldName, TypedConverter<Object, String> displayConverter )
+	public AutoTextColumn( Class<T> dtoClass, String fieldName, Converter<Object, String> displayConverter )
 	{
 		this( dtoClass, fieldName, fieldName, displayConverter );
 	}
 	
-	public AutoTextColumn( Class<T> dtoClass, String fieldName, String title, TypedConverter<Object, String> displayConverter )
+	public AutoTextColumn( Class<T> dtoClass, String fieldName, String title, Converter<Object, String> displayConverter )
 	{
 		this.title = title;
 		this.fieldName = fieldName;
 		
 		dtoClazz = Clazz( dtoClass );
-		if( ! Properties.hasSomethingToGetField( dtoClazz, fieldName ) )
+		if( ! Properties.canAccessField(dtoClazz, fieldName) )
 			throw new RuntimeException( "Cannot handle property " + fieldName + " of class " + dtoClass.getSimpleName() );
 		
 		if( displayConverter != null )
@@ -51,12 +51,12 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 			this.displayConverter = createDefaultDisplayConverter();
 	}
 	
-	private TypedConverter<Object, String> createDefaultDisplayConverter()
+	private Converter<Object, String> createDefaultDisplayConverter()
 	{
 		Class<?> propertyType = Properties.getPropertyType( dtoClazz, fieldName );
 		if( propertyType == String.class )
 		{
-			return new TypedConverter<Object, String>()
+			return new Converter<Object, String>()
 			{
 				@Override
 				public Object convertBack( String value )
@@ -73,7 +73,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 		}
 		else if( propertyType == Integer.class || propertyType == int.class )
 		{
-			return new TypedConverter<Object, String>()
+			return new Converter<Object, String>()
 			{
 				@Override
 				public Object convertBack( String value )
@@ -90,7 +90,7 @@ public class AutoTextColumn<T> implements IColumn<T>, HasValueChangeHandlers<T>
 		}
 		else
 		{
-			return new TypedConverter<Object, String>()
+			return new Converter<Object, String>()
 			{
 				@Override
 				public Object convertBack( String value )

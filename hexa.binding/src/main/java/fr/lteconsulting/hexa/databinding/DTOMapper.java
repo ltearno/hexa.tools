@@ -25,11 +25,12 @@ public class DTOMapper
 	// tries to bind as much fields of source to destination and the other way
 	// around
 	// returns mapping resources handle that were created for this mapping
-	public static Object Map( Object source, Object destination )
+	public static Object map(Object source, Object destination)
 	{
 		List<DataBinding> res = new ArrayList<DataBinding>();
 
-		LOGGER.fine( "Binding object of class " + getSimpleName( source.getClass() ) + " to another of class " + getSimpleName( destination.getClass() ) );
+		LOGGER.fine( "Binding object of class " + getSimpleName( source.getClass() )
+			+ " to another of class " + getSimpleName( destination.getClass() ) );
 
 		Clazz<?> sourceClass = ClassInfo.Clazz( source.getClass() );
 		Clazz<?> destinationClass = ClassInfo.Clazz( destination.getClass() );
@@ -63,11 +64,11 @@ public class DTOMapper
 
 		for( String name : bindedNames )
 		{
-			boolean srcRead = Properties.hasSomethingToGetField( ClassInfo.Clazz( source.getClass() ), name );
-			boolean srcWrite = Properties.hasSomethingToSetField( ClassInfo.Clazz( source.getClass() ), name );
+			boolean srcRead = Properties.canAccessField(ClassInfo.Clazz(source.getClass()), name);
+			boolean srcWrite = Properties.canSetField(ClassInfo.Clazz(source.getClass()), name);
 
-			boolean destinationRead = Properties.hasSomethingToGetField( ClassInfo.Clazz( destination.getClass() ), name );
-			boolean destinationWrite = Properties.hasSomethingToSetField( ClassInfo.Clazz( destination.getClass() ), name );
+			boolean destinationRead = Properties.canAccessField(ClassInfo.Clazz(destination.getClass()), name);
+			boolean destinationWrite = Properties.canSetField(ClassInfo.Clazz(destination.getClass()), name);
 
 			// ensure both have necessary methods or field
 			if( !srcRead || !destinationWrite )
@@ -82,7 +83,8 @@ public class DTOMapper
 			if( sourceAdapterInfo == null )
 				continue;
 
-			DataAdapterInfo destinationAdapterInfo = createDataAdapter( destination, name, sourceAdapterInfo.dataType );
+			DataAdapterInfo destinationAdapterInfo = createDataAdapter( destination, name,
+				sourceAdapterInfo.dataType );
 			if( destinationAdapterInfo == null )
 				continue;
 
@@ -101,9 +103,11 @@ public class DTOMapper
 					break;
 			}
 
-			LOGGER.fine( "[" + getSimpleName( sourceAdapterInfo.dataType ) + "] " + sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
+			LOGGER.fine( "[" + getSimpleName( sourceAdapterInfo.dataType ) + "] "
+				+ sourceAdapterInfo.debugString + symbol + destinationAdapterInfo.debugString );
 
-			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter, bindingMode, destinationAdapterInfo.converter, null );
+			DataBinding binding = new DataBinding( sourceAdapterInfo.adapter, destinationAdapterInfo.adapter,
+				bindingMode, destinationAdapterInfo.converter, null );
 			binding.activate();
 
 			res.add( binding );
@@ -142,7 +146,6 @@ public class DTOMapper
 		else
 		{
 			res.debugString += "\"" + property + "\"";
-
 			res.adapter = new ObjectPropertyAdapter( context, property );
 		}
 

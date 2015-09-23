@@ -1,95 +1,64 @@
 package fr.lteconsulting.hexa.databinding;
 
+import fr.lteconsulting.hexa.databinding.converters.StringDoubleConverter;
+import fr.lteconsulting.hexa.databinding.converters.StringFloatConverter;
+import fr.lteconsulting.hexa.databinding.converters.StringIntegerConverter;
+import fr.lteconsulting.hexa.databinding.converters.StringLongConverter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A collection of implementations of standard converters.
- * 
+ *
  * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
+ *         (c) LTE Consulting - 2015
+ *         http://www.lteconsulting.fr
  */
-public enum Converters implements Converter
-{
-	/**
-	 * A String to Integer converter. Quietly catches conversion exceptions
-	 */
-	StringToInteger
-	{
-		@Override
-		public Object convert( Object value )
-		{
-			if( value == null )
-				return null;
+public class Converters {
 
-			try
-			{
-				return Integer.parseInt( ((String) value) );
-			}
-			catch( Exception e )
-			{
-				return null;
-			}
-		}
+    private static List<AbstractConverter<?, ?>> converters = new ArrayList<>();
 
-		@Override
-		public Object convertBack( Object value )
-		{
-			if( value == null )
-				return null;
+    static {
+        converters.add(new StringIntegerConverter());
+        converters.add(new StringDoubleConverter());
+        converters.add(new StringFloatConverter());
+        converters.add(new StringLongConverter());
+    }
 
-			return "" + value;
-		}
-	},
+    /**
+     * Dynamically finds the appropriate converter to use between two objects
+     * of different classes.<br/>
+     * Returns <code>null</code> if no appropriate converter is found.
+     *
+     * @param from The input class type
+     * @param to   The output class type
+     */
+    public static Converter findConverter(Class<?> from, Class<?> to) {
+        from = getBoxedType(from);
+        to = getBoxedType(to);
 
-	/**
-	 * An Integer to String converter. Quietly catches conversion exceptions
-	 */
-	IntegerToString
-	{
-		@Override
-		public Object convert( Object value )
-		{
-			return StringToInteger.convertBack( value );
-		}
+        Converter result;
+        for(AbstractConverter<?, ?> converter : converters) {
+            result = converter.determine(from, to);
+            if(result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
 
-		@Override
-		public Object convertBack( Object value )
-		{
-			return StringToInteger.convert( value );
-		}
-	};
-
-	/**
-	 * Dynamically finds the appropriate converter to use between two objects
-	 * of different classes.<br/>
-	 * Returns <code>null</code> if no appropriate converter is found.
-	 * 
-	 * @param from The input class type
-	 * @param to The output class type
-	 * @return
-	 */
-	public static Converter findConverter( Class<?> from, Class<?> to )
-	{
-		from = getBoxedType( from );
-		to = getBoxedType( to );
-
-		if( from == String.class && to == Integer.class )
-			return StringToInteger;
-		if( from == Integer.class && to == String.class )
-			return IntegerToString;
-
-		return null;
-	}
-	
-	private static Class<?> getBoxedType( Class<?> c )
-	{
-		if( c == int.class )
-			return Integer.class;
-		if( c == char.class )
-			return Character.class;
-		if( c == double.class )
-			return Double.class;
-		if( c == float.class )
-			return Float.class;
-		return c;
-	}
+    private static Class<?> getBoxedType(Class<?> c) {
+        if (c == int.class)
+            return Integer.class;
+        if (c == char.class)
+            return Character.class;
+        if (c == double.class)
+            return Double.class;
+        if (c == float.class)
+            return Float.class;
+        if (c == long.class)
+            return Long.class;
+        return c;
+    }
 }

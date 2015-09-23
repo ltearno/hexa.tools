@@ -8,6 +8,9 @@ import com.google.gwt.user.client.ui.HasValue;
 import fr.lteconsulting.hexa.client.tools.Action2;
 import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * A PropertyAdapter implementation that works with a target
  * implementing the HasValue interface.
@@ -19,6 +22,8 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
  */
 public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler<Object>
 {
+	private static final Logger logger = Logger.getLogger(ValuePropertyAdapter.class.getName());
+
 	HasValue<Object> hasValue;
 
 	Action2<PropertyAdapter, Object> callback;
@@ -55,7 +60,18 @@ public class ValuePropertyAdapter implements PropertyAdapter, ValueChangeHandler
 	@Override
 	public void setValue( Object object )
 	{
-		hasValue.setValue( object, true );
+		try {
+			if(object instanceof String) {
+				hasValue.setValue(object, true);
+			} else if(object != null) {
+				hasValue.setValue(String.valueOf(object), true);
+			}
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "Unable to setValue for object '"
+				+ hasValue.getClass().getName() + "' using the value: " + object);
+
+			throw ex;
+		}
 	}
 
 	@Override
