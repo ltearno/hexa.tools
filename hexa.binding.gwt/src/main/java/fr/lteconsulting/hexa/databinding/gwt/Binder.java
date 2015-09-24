@@ -115,7 +115,7 @@ public class Binder
 	 * 
 	 * @param source
 	 *            Accepts a source object as the value provided for the binding.
-	 *            In that case, <b>note</b> that the provided source must be
+	 *            in that case, <b>note</b> that the provided source must be
 	 *            bound in one way mode, because the source cannot be modified
 	 *            in that mode.
 	 * @return The Binder to continue specifying the data binding

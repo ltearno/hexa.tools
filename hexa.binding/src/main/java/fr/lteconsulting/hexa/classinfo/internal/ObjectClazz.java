@@ -23,8 +23,7 @@ public class ObjectClazz extends fr.lteconsulting.hexa.classinfo.internal.ClazzB
 	@Override
 	protected List<Method> _getMethods()
 	{
-		ArrayList<Method> res = new ArrayList<Method>();
-		return res;
+		return new ArrayList<Method>();
 	}
 
 	@Override

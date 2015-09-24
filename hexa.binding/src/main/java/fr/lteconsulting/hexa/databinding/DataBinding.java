@@ -71,7 +71,7 @@ public class DataBinding
 
 		log( "activation" );
 
-		onSourceChanged.exec( null, null );
+		onSourceChanged.exec(null, null);
 
 		return this;
 	}
@@ -100,14 +100,19 @@ public class DataBinding
 		fActivated = false;
 		converter = null;
 
-		source.removePropertyChangedHandler( sourceHandler );
+		if(source != null && sourceHandler != null) {
+			source.removePropertyChangedHandler(sourceHandler);
+		}
+
+		if(destination != null && destinationHandler != null) {
+			destination.removePropertyChangedHandler(destinationHandler);
+		}
+
 		source = null;
 		sourceHandler = null;
 
-		destination.removePropertyChangedHandler( destinationHandler );
 		destination = null;
 		destinationHandler = null;
-
 	}
 
 	protected void log( String text )

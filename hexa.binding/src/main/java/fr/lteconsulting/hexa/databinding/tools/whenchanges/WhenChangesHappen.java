@@ -12,13 +12,11 @@ import fr.lteconsulting.hexa.databinding.tools.SmartRegistration;
  * <p>For example you can use it like this :
  * <pre>
  	WhenChangesHappen
-		.In( this, "mainOperation.label" )
-		.In( this, "mainOperation.account.name" )
-		.In( this, "mainOperation.writing.balance" )
-		.Call( new Action()
-		{
-			public void exec()
-			{
+		.in( this, "mainOperation.label" )
+		.in( this, "mainOperation.account.name" )
+		.in( this, "mainOperation.writing.balance" )
+		.call( new Action() {
+			public void exec() {
 				// write code depending on the above datas
 			}
 	} );
@@ -30,7 +28,7 @@ public class WhenChangesHappen
 {
 	public static WhenChangesHappenInstance In( Object object, String path )
 	{
-		return new WhenChangesHappenInstance().In( object, path );
+		return new WhenChangesHappenInstance().in(object, path);
 	}
 	
 	public static class WhenChangesHappenInstance
@@ -54,7 +52,7 @@ public class WhenChangesHappen
 			}
 		};
 		
-		public WhenChangesHappenInstance In( Object object, String path )
+		public WhenChangesHappenInstance in(Object object, String path)
 		{
 			objects.add( object );
 			paths.add( path );
@@ -62,7 +60,7 @@ public class WhenChangesHappen
 			return this;
 		}
 		
-		public void Call( Action action )
+		public void call( Action action )
 		{
 			this.action = action;
 			
