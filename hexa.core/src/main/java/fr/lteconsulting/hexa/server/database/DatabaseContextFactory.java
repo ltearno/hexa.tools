@@ -10,155 +10,130 @@ import org.slf4j.Logger;
 
 import fr.lteconsulting.hexa.server.tools.LoggerFactory;
 
-public class DatabaseContextFactory
-{
-	private static Logger log = LoggerFactory.getLogger();
+public class DatabaseContextFactory {
+    private static Logger log = LoggerFactory.getLogger();
 
-	String host;
-	int port;
-	String database;
-	String user;
-	String password;
+    String host;
+    int port;
+    String database;
+    String user;
+    String password;
 
-	DatabaseConnectionFactoryImpl connectionFactory;
+    DatabaseConnectionFactoryImpl connectionFactory;
+    Pool<DatabaseContext> dbCtxPool = new Pool<DatabaseContext>() {
+        @Override
+        protected DatabaseContext createObj() {
+            DatabaseContext context = new DatabaseContext();
+            Connection connexion = connectionFactory.getConnection();
+            context.init(connexion);
 
-	public DatabaseContextFactory()
-	{
-	}
+            log.info(" ... DatabaseContext creation in pool");
 
-	public boolean init( String databaseUri )
-	{
-		//DatabaseConnectionFactoryC3P0Impl impl = new DatabaseConnectionFactoryC3P0Impl();
-		DatabaseConnectionFactoryImpl impl = new DatabaseConnectionFactoryImpl();
-		connectionFactory = impl;
+            return context;
+        }
+    };
 
-		boolean res = impl.init( log, "com.mysql.jdbc.Driver", databaseUri );
-		
-		return res;
-	}
-	
-	Pool<DatabaseContext> dbCtxPool = new Pool<DatabaseContext>()
-	{
-		@Override
-		protected DatabaseContext createObj()
-		{
-			DatabaseContext context = new DatabaseContext();
-			Connection connexion = connectionFactory.getConnection();
-			context.init( connexion );
+    public DatabaseContextFactory() {
+    }
 
-			log.info( " ... DatabaseContext creation in pool" );
-			
-			return context;
-		}
-	};
+    public boolean init(String databaseUri) {
+        //DatabaseConnectionFactoryC3P0Impl impl = new DatabaseConnectionFactoryC3P0Impl();
+        DatabaseConnectionFactoryImpl impl = new DatabaseConnectionFactoryImpl();
+        connectionFactory = impl;
 
-	synchronized public DatabaseContext requestDatabaseContext()
-	{
-		DatabaseContext context;
-		
-		do
-		{
-			context = dbCtxPool.get();
-			
-			// test the connection
-			try
-			{
-				context.db.sql( "select 1" );
-			}
-			catch( Exception e )
-			{
-				log.info( " ... DatabaseContext error with connection, forgetting this one" );
-				dbCtxPool.remove( context );
-				context.term();
-				context = null;
-			}
-		}
-		while( context == null );
-		
-		return context;
-	}
+        boolean res = impl.init(log, "com.mysql.jdbc.Driver", databaseUri);
 
-	synchronized public void releaseDatabaseContext( DatabaseContext databaseContext )
-	{
-		dbCtxPool.replace( databaseContext );
-	}
+        return res;
+    }
+
+    synchronized public DatabaseContext requestDatabaseContext() {
+        DatabaseContext context;
+
+        do {
+            context = dbCtxPool.get();
+
+            // test the connection
+            try {
+                context.db.sql("select 1");
+            } catch (Exception e) {
+                log.info(" ... DatabaseContext error with connection, forgetting this one");
+                dbCtxPool.remove(context);
+                context.term();
+                context = null;
+            }
+        }
+        while (context == null);
+
+        return context;
+    }
+
+    synchronized public void releaseDatabaseContext(DatabaseContext databaseContext) {
+        dbCtxPool.replace(databaseContext);
+    }
 }
 
-abstract class Pool<T>
-{
-	abstract protected T createObj();
-	
-	List<T> freeObjects = new ArrayList<>();
-	
-	public T get()
-	{
-		T object = null;
-		if( freeObjects.isEmpty() )
-			object = createObj();
-		else
-			object = freeObjects.remove( 0 );
-		
-		return object;
-	}
-	
-	public void replace( T object )
-	{
-		freeObjects.add( object );
-	}
-	
-	public void remove( T object )
-	{
-		freeObjects.remove( object );
-	}
+abstract class Pool<T> {
+    List<T> freeObjects = new ArrayList<>();
+
+    abstract protected T createObj();
+
+    public T get() {
+        T object = null;
+        if (freeObjects.isEmpty())
+            object = createObj();
+        else
+            object = freeObjects.remove(0);
+
+        return object;
+    }
+
+    public void replace(T object) {
+        freeObjects.add(object);
+    }
+
+    public void remove(T object) {
+        freeObjects.remove(object);
+    }
 }
 
-class DatabaseConnectionFactoryImpl
-{
-	Logger log;
+class DatabaseConnectionFactoryImpl {
+    Logger log;
 
-	String driver;
-	String url;
+    String driver;
+    String url;
 
-	public boolean init( Logger log, String driver, String url )
-	{
-		this.log = log;
+    public boolean init(Logger log, String driver, String url) {
+        this.log = log;
 
-		this.driver = driver;
-		this.url = url;
+        this.driver = driver;
+        this.url = url;
 
-		try
-		{
-			// loads the jdbc driver
-			Class.forName( driver );
-		}
-		catch( ClassNotFoundException e )
-		{
-			log.error( "Driver load failed: ClassNotFoundException: " );
-			e.printStackTrace();
-			throw new RuntimeException( e );
-		}
+        try {
+            // loads the jdbc driver
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            log.error("Driver load failed: ClassNotFoundException: ");
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public Connection getConnection()
-	{
-		// initiate a connection to db
-		Connection connection;
-		try
-		{
-			connection = DriverManager.getConnection( url );
-		}
-		catch( SQLException e )
-		{
-			log.error( "SQLException: " );
-			e.printStackTrace();
-			return null;
-		}
+    public Connection getConnection() {
+        // initiate a connection to db
+        Connection connection;
+        try {
+            connection = DriverManager.getConnection(url);
+        } catch (SQLException e) {
+            log.error("SQLException: ");
+            e.printStackTrace();
+            return null;
+        }
 
-		log.info( "Initialized with database " + url );
+        log.info("Initialized with database " + url);
 
-		return connection;
-	}
+        return connection;
+    }
 
 }

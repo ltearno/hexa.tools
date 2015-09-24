@@ -4,28 +4,23 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 
-public class Css
-{
-	interface CssBundle extends ClientBundle
-	{
-		CommonCss commonCss();
-	}
+public class Css {
+    private static CssBundle bundle;
 
-	public interface CommonCss extends CssResource
-	{
-		String borderBoxSizing();
-	}
+    public static CommonCss css() {
+        if (bundle == null) {
+            bundle = GWT.create(CssBundle.class);
+            bundle.commonCss().ensureInjected();
+        }
 
-	private static CssBundle bundle;
+        return bundle.commonCss();
+    }
 
-	public static CommonCss css()
-	{
-		if( bundle == null )
-		{
-			bundle = GWT.create( CssBundle.class );
-			bundle.commonCss().ensureInjected();
-		}
+    interface CssBundle extends ClientBundle {
+        CommonCss commonCss();
+    }
 
-		return bundle.commonCss();
-	}
+    public interface CommonCss extends CssResource {
+        String borderBoxSizing();
+    }
 }

@@ -13,272 +13,250 @@ import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManag
 import fr.lteconsulting.hexa.client.sql.SqlParser.SqlParseInfo;
 import fr.lteconsulting.hexa.client.tools.Action;
 
-public class SqlHelper
-{
-	// should be feeded by the application logic
-	public static Action requestPersistDatabase = new Action()
-	{
-		@Override
-		public void exec()
-		{
-		}
-	};
-
-	public static <T> T find( SQLite db, Class<T> clazzz, int id )
-	{
-		Clazz<?> clazz = Clazz( clazzz );
-		if( clazz == null )
-			return null;
-
-		//String request = "select {" + clazz.getClassName() + "}, recordState from " + clazz.getClassName() + " where id=" + id;
-		String request = "select {" + clazz.getClassName() + "} from " + clazz.getClassName() + " where id=" + id;
-		SqlParser parser = new SqlParser();
-		SqlParseInfo pi = parser.parse( request );
-		JavaScriptObject results = db.execute( parser.getSql( pi ) );
-		SQLiteResult sqliteR = new SQLiteResult( results );
-		T record = parser.parseResult( pi, sqliteR, clazzz );
-
-		return record;
-	}
-
-	public static <T> List<T> query( SQLite db, String sql, Class<T> clazzz )
-	{
-		Clazz<?> clazz = Clazz( clazzz );
-		if( clazz == null )
-			return null;
-
-		SqlParser parser = new SqlParser();
-		SqlParseInfo pi = parser.parse( sql );
-		String formattedSql = parser.getSql( pi );
-		// GWT.log( "QUERY: " + formattedSql );
-		JavaScriptObject results = db.execute( formattedSql );
-		SQLiteResult sqliteR = new SQLiteResult( results );
-
-		List<T> records = parser.parseResults( pi, sqliteR, clazzz );
-
-		return records;
-	}
-
-	public static <T> T queryOne( SQLite db, String sql, Class<T> clazzz )
-	{
-		Clazz<?> clazz = Clazz( clazzz );
-		if( clazz == null )
-			return null;
-
-		SqlParser parser = new SqlParser();
-		SqlParseInfo pi = parser.parse( sql );
-		String formattedSql = parser.getSql( pi );
-		//GWT.log( "QUERY: " + formattedSql );
-		JavaScriptObject results = db.execute( formattedSql );
-		SQLiteResult sqliteR = new SQLiteResult( results );
-
-		List<T> records = parser.parseResults( pi, sqliteR, clazzz );
-		if( records.isEmpty() )
-			return null;
-
-		return records.get( 0 );
-	}
-
-	public static <T> boolean update( SQLite db, T record )
-	{
-		return update( db, record, false );
-	}
-
-	public static <T> boolean updateFromServer( SQLite db, T record )
-	{
-		return update( db, record, true );
-	}
-
-	@SuppressWarnings( "unchecked" )
-	public static <T> boolean update( SQLite db, T record, boolean isFromServer )
-	{
-		if( record == null )
-			return false;
-
-		Clazz<?> clazz = Clazz( record.getClass() );
-		if( clazz == null )
-			return false;
-
-		Field idField = clazz.getField( "id" );
-		if( idField == null )
-			throw new IllegalStateException( "No id field found for class " + clazz.getClassName() );
-
-		int recordId = (Integer) idField.getValue( record );
-
-		// UPDATE users SET name = 'toto', xxx = value WHERE expression;
-
-		String tableName = clazz.getClassName();
-
-		StringBuilder sb = new StringBuilder();
-
-		sb.append( "UPDATE " );
-		sb.append( tableName );
-		sb.append( " SET " );
-
-		boolean fComa = false;
-		for( Field field : clazz.getFields() )
-		{
-			// we dont update id field
-			if( field.getName().equals( "id" ) )
-				continue;
+public class SqlHelper {
+    // should be feeded by the application logic
+    public static Action requestPersistDatabase = new Action() {
+        @Override
+        public void exec() {
+        }
+    };
+
+    public static <T> T find(SQLite db, Class<T> clazzz, int id) {
+        Clazz<?> clazz = Clazz(clazzz);
+        if (clazz == null)
+            return null;
+
+        //String request = "select {" + clazz.getClassName() + "}, recordState from " + clazz.getClassName() + " where id=" + id;
+        String request = "select {" + clazz.getClassName() + "} from " + clazz.getClassName() + " where id=" + id;
+        SqlParser parser = new SqlParser();
+        SqlParseInfo pi = parser.parse(request);
+        JavaScriptObject results = db.execute(parser.getSql(pi));
+        SQLiteResult sqliteR = new SQLiteResult(results);
+        T record = parser.parseResult(pi, sqliteR, clazzz);
+
+        return record;
+    }
+
+    public static <T> List<T> query(SQLite db, String sql, Class<T> clazzz) {
+        Clazz<?> clazz = Clazz(clazzz);
+        if (clazz == null)
+            return null;
+
+        SqlParser parser = new SqlParser();
+        SqlParseInfo pi = parser.parse(sql);
+        String formattedSql = parser.getSql(pi);
+        // GWT.log( "QUERY: " + formattedSql );
+        JavaScriptObject results = db.execute(formattedSql);
+        SQLiteResult sqliteR = new SQLiteResult(results);
+
+        List<T> records = parser.parseResults(pi, sqliteR, clazzz);
+
+        return records;
+    }
+
+    public static <T> T queryOne(SQLite db, String sql, Class<T> clazzz) {
+        Clazz<?> clazz = Clazz(clazzz);
+        if (clazz == null)
+            return null;
+
+        SqlParser parser = new SqlParser();
+        SqlParseInfo pi = parser.parse(sql);
+        String formattedSql = parser.getSql(pi);
+        //GWT.log( "QUERY: " + formattedSql );
+        JavaScriptObject results = db.execute(formattedSql);
+        SQLiteResult sqliteR = new SQLiteResult(results);
+
+        List<T> records = parser.parseResults(pi, sqliteR, clazzz);
+        if (records.isEmpty())
+            return null;
 
-			SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
-			if( mng == null )
-				continue;
+        return records.get(0);
+    }
+
+    public static <T> boolean update(SQLite db, T record) {
+        return update(db, record, false);
+    }
 
-			if( fComa )
-				sb.append( ", " );
-			else
-				fComa = true;
+    public static <T> boolean updateFromServer(SQLite db, T record) {
+        return update(db, record, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> boolean update(SQLite db, T record, boolean isFromServer) {
+        if (record == null)
+            return false;
 
-			sb.append( field.getName() + " = " );
+        Clazz<?> clazz = Clazz(record.getClass());
+        if (clazz == null)
+            return false;
+
+        Field idField = clazz.getField("id");
+        if (idField == null)
+            throw new IllegalStateException("No id field found for class " + clazz.getClassName());
+
+        int recordId = (Integer) idField.getValue(record);
+
+        // UPDATE users SET name = 'toto', xxx = value WHERE expression;
+
+        String tableName = clazz.getClassName();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("UPDATE ");
+        sb.append(tableName);
+        sb.append(" SET ");
 
-			if( !mng.appendUpdateValueSql( sb, field, record ) )
-				return false;
-		}
+        boolean fComa = false;
+        for (Field field : clazz.getFields()) {
+            // we dont update id field
+            if (field.getName().equals("id"))
+                continue;
 
-		if( fComa )
-			sb.append( ", " );
-		if( isFromServer )
-			sb.append( "recordState = 1" );
-		else
-			sb.append( "recordState = 2" );
-
-		sb.append( " WHERE id=" + recordId );
-		sb.append( ";" );
-
-		String sql = sb.toString();
-		db.execute( sql );
+            SQLiteTypeManager mng = SQLiteTypeManagerManager.get(field.getType());
+            if (mng == null)
+                continue;
 
-		requestPersistDatabase.exec();
-
-		//GWT.log( "UPDATE: " + sql );
+            if (fComa)
+                sb.append(", ");
+            else
+                fComa = true;
 
-		// update the given object
-		T newVersion = find( db, (Class<T>) record.getClass(), recordId );
-		for( Field field : clazz.getFields() )
-			field.copyValueTo( newVersion, record );
-
-		return true;
-	}
+            sb.append(field.getName() + " = ");
 
-	public static <T> boolean insert( SQLite db, T record )
-	{
-		return insert( db, record, false );
-	}
+            if (!mng.appendUpdateValueSql(sb, field, record))
+                return false;
+        }
 
-	public static <T> boolean insertFromServer( SQLite db, T record )
-	{
-		return insert( db, record, true );
-	}
+        if (fComa)
+            sb.append(", ");
+        if (isFromServer)
+            sb.append("recordState = 1");
+        else
+            sb.append("recordState = 2");
 
-	public static <T> boolean insert( SQLite db, T record, boolean isFromServer )
-	{
-		Clazz<?> clazz = Clazz( record.getClass() );
-		if( clazz == null )
-			return false;
+        sb.append(" WHERE id=" + recordId);
+        sb.append(";");
 
-		String tableName = clazz.getClassName();
+        String sql = sb.toString();
+        db.execute(sql);
 
-		StringBuilder sb = new StringBuilder();
+        requestPersistDatabase.exec();
 
-		sb.append( "INSERT INTO " );
-		sb.append( tableName );
-		sb.append( "(" );
+        //GWT.log( "UPDATE: " + sql );
 
-		StringBuilder sbValues = new StringBuilder();
+        // update the given object
+        T newVersion = find(db, (Class<T>) record.getClass(), recordId);
+        for (Field field : clazz.getFields())
+            field.copyValueTo(newVersion, record);
 
-		boolean fComa = false;
-		for( Field field : clazz.getDeclaredFields() )
-		{
-			// we dont insert id field when they are not specified...
-			if( field.getName().equals( "id" ) && ((Integer) field.getValue( record )) == 0 )
-				continue;
+        return true;
+    }
 
-			SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
-			if( mng == null )
-				continue;
+    public static <T> boolean insert(SQLite db, T record) {
+        return insert(db, record, false);
+    }
 
-			if( fComa )
-			{
-				sb.append( ", " );
-				sbValues.append( ", " );
-			}
-			else
-			{
-				fComa = true;
-			}
+    public static <T> boolean insertFromServer(SQLite db, T record) {
+        return insert(db, record, true);
+    }
 
-			sb.append( field.getName() + " " );
+    public static <T> boolean insert(SQLite db, T record, boolean isFromServer) {
+        Clazz<?> clazz = Clazz(record.getClass());
+        if (clazz == null)
+            return false;
 
-			if( !mng.appendUpdateValueSql( sbValues, field, record ) )
-				return false;
-		}
+        String tableName = clazz.getClassName();
 
-		sb.append( ") VALUES (" );
-		sb.append( sbValues.toString() );
-		sb.append( ");" );
+        StringBuilder sb = new StringBuilder();
 
-		String sql = sb.toString();
+        sb.append("INSERT INTO ");
+        sb.append(tableName);
+        sb.append("(");
 
-		//GWT.log( "INSERT: " + sql );
+        StringBuilder sbValues = new StringBuilder();
 
-		db.execute( sql );
+        boolean fComa = false;
+        for (Field field : clazz.getDeclaredFields()) {
+            // we dont insert id field when they are not specified...
+            if (field.getName().equals("id") && ((Integer) field.getValue(record)) == 0)
+                continue;
 
-		requestPersistDatabase.exec();
+            SQLiteTypeManager mng = SQLiteTypeManagerManager.get(field.getType());
+            if (mng == null)
+                continue;
 
-		int lastId = db.getLastInsertedId();
-		GWT.log( "LastInsertedId : " + lastId );
-		if( lastId > 0 )
-		{
-			Field idField = clazz.getDeclaredField( "id" );
-			if( idField != null )
-				idField.setValue( record, lastId );
-		}
+            if (fComa) {
+                sb.append(", ");
+                sbValues.append(", ");
+            } else {
+                fComa = true;
+            }
 
-		return true;
-	}
+            sb.append(field.getName() + " ");
 
-	public static <T> boolean delete( SQLite db, Class<T> clazzz, int recordId )
-	{
-		return delete( db, clazzz, recordId, false );
-	}
+            if (!mng.appendUpdateValueSql(sbValues, field, record))
+                return false;
+        }
 
-	public static <T> boolean deleteFromServer( SQLite db, Class<T> clazzz, int recordId )
-	{
-		return delete( db, clazzz, recordId, true );
-	}
+        sb.append(") VALUES (");
+        sb.append(sbValues.toString());
+        sb.append(");");
 
-	public static <T> boolean delete( SQLite db, Class<T> clazzz, int recordId, boolean isFromServer )
-	{
-		// "DELETE FROM table WHERE id=kkk"
+        String sql = sb.toString();
 
-		Clazz<T> clazz = Clazz( clazzz );
-		if( clazz == null )
-			return false;
+        //GWT.log( "INSERT: " + sql );
 
-		String tableName = clazz.getClassName();
+        db.execute(sql);
 
-		StringBuilder sb = new StringBuilder();
+        requestPersistDatabase.exec();
 
-		sb.append( "DELETE FROM " );
-		sb.append( tableName );
-		sb.append( " WHERE id=" );
-		sb.append( recordId );
+        int lastId = db.getLastInsertedId();
+        GWT.log("LastInsertedId : " + lastId);
+        if (lastId > 0) {
+            Field idField = clazz.getDeclaredField("id");
+            if (idField != null)
+                idField.setValue(record, lastId);
+        }
 
-		String sql = sb.toString();
+        return true;
+    }
 
-		db.execute( sql );
+    public static <T> boolean delete(SQLite db, Class<T> clazzz, int recordId) {
+        return delete(db, clazzz, recordId, false);
+    }
 
-		requestPersistDatabase.exec();
+    public static <T> boolean deleteFromServer(SQLite db, Class<T> clazzz, int recordId) {
+        return delete(db, clazzz, recordId, true);
+    }
 
-		//GWT.log( "DELETE: " + sql );
+    public static <T> boolean delete(SQLite db, Class<T> clazzz, int recordId, boolean isFromServer) {
+        // "DELETE FROM table WHERE id=kkk"
 
-		if( !isFromServer )
-		{
-			db.execute( "insert into DeletedRecord (recordId, tableName) VALUES (" + recordId + ", '" + tableName + "')" );
-		}
+        Clazz<T> clazz = Clazz(clazzz);
+        if (clazz == null)
+            return false;
 
-		return true;
-	}
+        String tableName = clazz.getClassName();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("DELETE FROM ");
+        sb.append(tableName);
+        sb.append(" WHERE id=");
+        sb.append(recordId);
+
+        String sql = sb.toString();
+
+        db.execute(sql);
+
+        requestPersistDatabase.exec();
+
+        //GWT.log( "DELETE: " + sql );
+
+        if (!isFromServer) {
+            db.execute("insert into DeletedRecord (recordId, tableName) VALUES (" + recordId + ", '" + tableName + "')");
+        }
+
+        return true;
+    }
 }

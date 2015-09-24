@@ -10,46 +10,44 @@ import com.google.gwt.user.client.ui.HTML;
 
 import fr.lteconsulting.hexa.client.css.HexaCss;
 
-public class ImageTextButtonGlow extends Composite
-{
-	interface Css extends HexaCss
-	{
-		static final Css CSS = GWT.create( Css.class );
+public class ImageTextButtonGlow extends Composite {
+    HTML html = new HTML();
+    private ImageResource resource = null;
+    public
+    @UiConstructor
+    ImageTextButtonGlow(ImageResource resource, String title) {
+        this.resource = resource;
 
-		String main();
-		String left();
-		String right();
-		String image();
-		String text();
-	}
+        html.setHTML("<div class='" + Css.CSS.main() + "'><div class='" + Css.CSS.left() + "'></div><div class='" + Css.CSS.image() + "'><img src='" + resource.getSafeUri().asString() + "'/></div><div class='" + Css.CSS.text() + "'>" + title + "</div><div class='" + Css.CSS.right() + "'></div></div>");
+        initWidget(html);
+    }
 
-	private ImageResource resource = null;
-	HTML html = new HTML();
+    public void setText(String text) {
+        html.setHTML("<div class='" + Css.CSS.main() + "'><div class='" + Css.CSS.left() + "'></div><div class='" + Css.CSS.image() + "'><img src='" + resource.getSafeUri().asString() + "'/></div><div class='" + Css.CSS.text() + "'>" + text
+            + "</div><div class='TestButton-right'></div><br style='clear:both;'/></div>");
+    }
 
-	public @UiConstructor
-	ImageTextButtonGlow( ImageResource resource, String title )
-	{
-		this.resource = resource;
+    public void addClickHandler(ClickHandler handler) {
+        html.addClickHandler(handler);
+    }
 
-		html.setHTML( "<div class='"+Css.CSS.main()+"'><div class='"+Css.CSS.left()+"'></div><div class='"+Css.CSS.image()+"'><img src='" + resource.getSafeUri().asString() + "'/></div><div class='"+Css.CSS.text()+"'>" + title + "</div><div class='"+Css.CSS.right()+"'></div></div>" );
-		initWidget( html );
-	}
+    public boolean isMyClickEvent(ClickEvent event) {
+        if (event.getSource() == html)
+            return true;
+        return false;
+    }
 
-	public void setText( String text )
-	{
-		html.setHTML( "<div class='"+Css.CSS.main()+"'><div class='"+Css.CSS.left()+"'></div><div class='"+Css.CSS.image()+"'><img src='" + resource.getSafeUri().asString() + "'/></div><div class='"+Css.CSS.text()+"'>" + text
-				+ "</div><div class='TestButton-right'></div><br style='clear:both;'/></div>" );
-	}
+    interface Css extends HexaCss {
+        static final Css CSS = GWT.create(Css.class);
 
-	public void addClickHandler( ClickHandler handler )
-	{
-		html.addClickHandler( handler );
-	}
+        String main();
 
-	public boolean isMyClickEvent( ClickEvent event )
-	{
-		if( event.getSource() == html )
-			return true;
-		return false;
-	}
+        String left();
+
+        String right();
+
+        String image();
+
+        String text();
+    }
 }

@@ -29,14 +29,14 @@ import java.util.Map;
 import javax.persistence.metamodel.MapAttribute;
 
 
-public interface MapJoin<Z, K, V> 
-		extends PluralJoin<Z, Map<K, V>, V> {
+public interface MapJoin<Z, K, V>
+    extends PluralJoin<Z, Map<K, V>, V> {
 
     MapAttribute<? super Z, K, V> getModel();
 
     Path<K> key();
 
-    Path<V> value(); 
+    Path<V> value();
 
     Expression<Map.Entry<K, V>> entry();
 }

@@ -32,265 +32,225 @@ import javax.lang.model.util.Types;
  * A class from the Google Auto project on Github
  * Special thanks to the authors !
  */
-final public class TypeSimplifier
-{
-	private final Types typeUtils;
+final public class TypeSimplifier {
+    private final Types typeUtils;
+    private final ToStringTypeVisitor TO_STRING_TYPE_VISITOR = new ToStringTypeVisitor();
 
-	public TypeSimplifier( Types typeUtils )
-	{
-		this.typeUtils = typeUtils;
-	}
+    public TypeSimplifier(Types typeUtils) {
+        this.typeUtils = typeUtils;
+    }
 
-	String simplify( TypeMirror type )
-	{
-		return type.accept( TO_STRING_TYPE_VISITOR, new StringBuilder() ).toString();
-	}
+    // From the Google Auto project, thanks !
+    // The actual type parameters of the given type.
+    // If we have a class Foo<T extends Something> extends Foo<T>.
+    // <T extends Something> is the formal type parameter list and
+    // <T> is the actual type parameter list, which is what this method returns.
+    static public String actualTypeParametersString(TypeElement type) {
+        List<? extends TypeParameterElement> typeParameters = type.getTypeParameters();
+        if (typeParameters.isEmpty()) {
+            return "";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<");
+            String sep = "";
+            for (TypeParameterElement typeP : typeParameters) {
+                sb.append(sep);
+                sep = ", ";
+                sb.append(typeP.getSimpleName());
+            }
+            sb.append(">");
+            return sb.toString();
+        }
+    }
 
-	// From the Google Auto project, thanks !
-	// The formal type parameters of the given type.
-	// It will return the angle-bracket part of:
-	// Foo<SomeClass>
-	// Foo<T extends SomeClass>
-	// Foo<T extends Number>
-	// Foo<E extends Enum<E>>
-	// Foo<K, V extends Comparable<? extends K>>
-	// Type variables need special treatment because we only want to include
-	// their bounds when they
-	// are declared, not when they are referenced. We don't want to include the
-	// bounds of the second E
-	// in <E extends Enum<E>> or of the second K in <K, V extends Comparable<?
-	// extends K>>. That's
-	// why we put the "extends" handling here and not in ToStringTypeVisitor.
-	public String formalTypeParametersString( TypeElement type )
-	{
-		List<? extends TypeParameterElement> typeParameters = type.getTypeParameters();
-		if( typeParameters.isEmpty() )
-		{
-			return "";
-		}
-		else
-		{
-			StringBuilder sb = new StringBuilder( "<" );
-			String sep = "";
-			for( TypeParameterElement typeParameter : typeParameters )
-			{
-				sb.append( sep );
-				sep = ", ";
-				appendTypeParameterWithBounds( sb, typeParameter );
-			}
-			return sb.append( ">" ).toString();
-		}
-	}
+    /**
+     * Returns the name of the given type, including any enclosing types but not
+     * the package.
+     */
+    static String classNameOf(TypeElement type) {
+        String name = type.getQualifiedName().toString();
+        String pkgName = packageNameOf(type);
+        return pkgName.isEmpty() ? name : name.substring(pkgName.length() + 1);
+    }
 
-	// From the Google Auto project, thanks !
-	// The actual type parameters of the given type.
-	// If we have a class Foo<T extends Something> extends Foo<T>.
-	// <T extends Something> is the formal type parameter list and
-	// <T> is the actual type parameter list, which is what this method returns.
-	static public String actualTypeParametersString( TypeElement type )
-	{
-		List<? extends TypeParameterElement> typeParameters = type.getTypeParameters();
-		if( typeParameters.isEmpty() )
-		{
-			return "";
-		}
-		else
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.append( "<" );
-			String sep = "";
-			for( TypeParameterElement typeP : typeParameters )
-			{
-				sb.append( sep );
-				sep = ", ";
-				sb.append( typeP.getSimpleName() );
-			}
-			sb.append( ">" );
-			return sb.toString();
-		}
-	}
+    /**
+     * Returns the name of the package that the given type is in. If the type is
+     * in the default (unnamed) package then the name is the empty string.
+     */
+    static String packageNameOf(TypeElement type) {
+        while (true) {
+            Element enclosing = type.getEnclosingElement();
+            if (enclosing instanceof PackageElement) {
+                return ((PackageElement) enclosing).getQualifiedName().toString();
+            }
+            type = (TypeElement) enclosing;
+        }
+    }
 
-	private void appendTypeParameterWithBounds( StringBuilder sb, TypeParameterElement typeParameter )
-	{
-		sb.append( typeParameter.getSimpleName() );
-		String sep = " extends ";
-		for( TypeMirror bound : typeParameter.getBounds() )
-		{
-			if( !bound.toString().equals( "java.lang.Object" ) )
-			{
-				sb.append( sep );
-				sep = " & ";
-				bound.accept( TO_STRING_TYPE_VISITOR, sb );
-			}
-		}
-	}
+    static String simpleNameOf(String s) {
+        if (s.contains(".")) {
+            return s.substring(s.lastIndexOf('.') + 1);
+        } else {
+            return s;
+        }
+    }
 
-	private final ToStringTypeVisitor TO_STRING_TYPE_VISITOR = new ToStringTypeVisitor();
+    /**
+     * Returns the qualified name of a TypeMirror.
+     */
+    public static String getTypeQualifiedName(TypeMirror type) throws CodeGenerationIncompleteException {
+        if (type.toString().equals("<any>")) {
+            throw new CodeGenerationIncompleteException("Type reported as <any> is likely a not-yet " +
+                "generated parameterized type.");
+        }
 
-	/**
-	 * Visitor that produces a string representation of a type for use in
-	 * generated code. The visitor takes into account the imports defined by
-	 * {@link #typesToImport} and will use the short names of those types.
-	 *
-	 * <p>
-	 * A simpler alternative would be just to use TypeMirror.toString() and
-	 * regular expressions to pick apart the type references and replace
-	 * fully-qualified types where possible. That depends on unspecified
-	 * behaviour of TypeMirror.toString(), though, and is vulnerable to
-	 * formatting quirks such as the way it omits the space after the comma in
-	 * {@code java.util.Map<java.lang.String, java.lang.String>}.
-	 */
-	private class ToStringTypeVisitor extends SimpleTypeVisitor6<StringBuilder, StringBuilder>
-	{
-		@Override
-		protected StringBuilder defaultAction( TypeMirror type, StringBuilder sb )
-		{
-			return sb.append( type );
-		}
+        switch (type.getKind()) {
+            case ARRAY:
+                return getTypeQualifiedName(((ArrayType) type).getComponentType()) + "[]";
+            case BOOLEAN:
+                return "boolean";
+            case BYTE:
+                return "byte";
+            case CHAR:
+                return "char";
+            case DOUBLE:
+                return "double";
+            case FLOAT:
+                return "float";
+            case INT:
+                return "int";
+            case LONG:
+                return "long";
+            case SHORT:
+                return "short";
+            case DECLARED:
+                StringBuilder b = new StringBuilder();
+                b.append(((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString());
+                if (!((DeclaredType) type).getTypeArguments().isEmpty()) {
+                    b.append("<");
+                    boolean addComa = false;
+                    for (TypeMirror pType : ((DeclaredType) type).getTypeArguments()) {
+                        if (addComa)
+                            b.append(", ");
+                        else
+                            addComa = true;
+                        b.append(getTypeQualifiedName(pType));
+                    }
+                    b.append(">");
+                }
+                return b.toString();
+            default:
+                return type.toString();
+        }
+    }
 
-		@Override
-		public StringBuilder visitArray( ArrayType type, StringBuilder sb )
-		{
-			return visit( type.getComponentType(), sb ).append( "[]" );
-		}
+    String simplify(TypeMirror type) {
+        return type.accept(TO_STRING_TYPE_VISITOR, new StringBuilder()).toString();
+    }
 
-		@Override
-		public StringBuilder visitDeclared( DeclaredType type, StringBuilder sb )
-		{
-			TypeElement typeElement = (TypeElement) typeUtils.asElement( type );
-			String typeString = typeElement.getQualifiedName().toString();
-			sb.append( typeString );
-			appendTypeArguments( type, sb );
-			return sb;
-		}
+    // From the Google Auto project, thanks !
+    // The formal type parameters of the given type.
+    // It will return the angle-bracket part of:
+    // Foo<SomeClass>
+    // Foo<T extends SomeClass>
+    // Foo<T extends Number>
+    // Foo<E extends Enum<E>>
+    // Foo<K, V extends Comparable<? extends K>>
+    // Type variables need special treatment because we only want to include
+    // their bounds when they
+    // are declared, not when they are referenced. We don't want to include the
+    // bounds of the second E
+    // in <E extends Enum<E>> or of the second K in <K, V extends Comparable<?
+    // extends K>>. That's
+    // why we put the "extends" handling here and not in ToStringTypeVisitor.
+    public String formalTypeParametersString(TypeElement type) {
+        List<? extends TypeParameterElement> typeParameters = type.getTypeParameters();
+        if (typeParameters.isEmpty()) {
+            return "";
+        } else {
+            StringBuilder sb = new StringBuilder("<");
+            String sep = "";
+            for (TypeParameterElement typeParameter : typeParameters) {
+                sb.append(sep);
+                sep = ", ";
+                appendTypeParameterWithBounds(sb, typeParameter);
+            }
+            return sb.append(">").toString();
+        }
+    }
 
-		void appendTypeArguments( DeclaredType type, StringBuilder sb )
-		{
-			List<? extends TypeMirror> arguments = type.getTypeArguments();
-			if( !arguments.isEmpty() )
-			{
-				sb.append( "<" );
-				String sep = "";
-				for( TypeMirror argument : arguments )
-				{
-					sb.append( sep );
-					sep = ", ";
-					visit( argument, sb );
-				}
-				sb.append( ">" );
-			}
-		}
+    private void appendTypeParameterWithBounds(StringBuilder sb, TypeParameterElement typeParameter) {
+        sb.append(typeParameter.getSimpleName());
+        String sep = " extends ";
+        for (TypeMirror bound : typeParameter.getBounds()) {
+            if (!bound.toString().equals("java.lang.Object")) {
+                sb.append(sep);
+                sep = " & ";
+                bound.accept(TO_STRING_TYPE_VISITOR, sb);
+            }
+        }
+    }
 
-		@Override
-		public StringBuilder visitWildcard( WildcardType type, StringBuilder sb )
-		{
-			sb.append( "?" );
-			TypeMirror extendsBound = type.getExtendsBound();
-			TypeMirror superBound = type.getSuperBound();
-			if( superBound != null )
-			{
-				sb.append( " super " );
-				visit( superBound, sb );
-			}
-			else if( extendsBound != null )
-			{
-				sb.append( " extends " );
-				visit( extendsBound, sb );
-			}
-			return sb;
-		}
-	}
+    /**
+     * Visitor that produces a string representation of a type for use in
+     * generated code. The visitor takes into account the imports defined by
+     * {@link #typesToImport} and will use the short names of those types.
+     * <p/>
+     * <p/>
+     * A simpler alternative would be just to use TypeMirror.toString() and
+     * regular expressions to pick apart the type references and replace
+     * fully-qualified types where possible. That depends on unspecified
+     * behaviour of TypeMirror.toString(), though, and is vulnerable to
+     * formatting quirks such as the way it omits the space after the comma in
+     * {@code java.util.Map<java.lang.String, java.lang.String>}.
+     */
+    private class ToStringTypeVisitor extends SimpleTypeVisitor6<StringBuilder, StringBuilder> {
+        @Override
+        protected StringBuilder defaultAction(TypeMirror type, StringBuilder sb) {
+            return sb.append(type);
+        }
 
-	/**
-	 * Returns the name of the given type, including any enclosing types but not
-	 * the package.
-	 */
-	static String classNameOf( TypeElement type )
-	{
-		String name = type.getQualifiedName().toString();
-		String pkgName = packageNameOf( type );
-		return pkgName.isEmpty() ? name : name.substring( pkgName.length() + 1 );
-	}
+        @Override
+        public StringBuilder visitArray(ArrayType type, StringBuilder sb) {
+            return visit(type.getComponentType(), sb).append("[]");
+        }
 
-	/**
-	 * Returns the name of the package that the given type is in. If the type is
-	 * in the default (unnamed) package then the name is the empty string.
-	 */
-	static String packageNameOf( TypeElement type )
-	{
-		while( true )
-		{
-			Element enclosing = type.getEnclosingElement();
-			if( enclosing instanceof PackageElement )
-			{
-				return ((PackageElement) enclosing).getQualifiedName().toString();
-			}
-			type = (TypeElement) enclosing;
-		}
-	}
+        @Override
+        public StringBuilder visitDeclared(DeclaredType type, StringBuilder sb) {
+            TypeElement typeElement = (TypeElement) typeUtils.asElement(type);
+            String typeString = typeElement.getQualifiedName().toString();
+            sb.append(typeString);
+            appendTypeArguments(type, sb);
+            return sb;
+        }
 
-	static String simpleNameOf( String s )
-	{
-		if( s.contains( "." ) )
-		{
-			return s.substring( s.lastIndexOf( '.' ) + 1 );
-		}
-		else
-		{
-			return s;
-		}
-	}
+        void appendTypeArguments(DeclaredType type, StringBuilder sb) {
+            List<? extends TypeMirror> arguments = type.getTypeArguments();
+            if (!arguments.isEmpty()) {
+                sb.append("<");
+                String sep = "";
+                for (TypeMirror argument : arguments) {
+                    sb.append(sep);
+                    sep = ", ";
+                    visit(argument, sb);
+                }
+                sb.append(">");
+            }
+        }
 
-	/**
-	 * Returns the qualified name of a TypeMirror.
-	 */
-	public static String getTypeQualifiedName(TypeMirror type) throws CodeGenerationIncompleteException
-	{
-		if(type.toString().equals("<any>")) {
-			throw new CodeGenerationIncompleteException("Type reported as <any> is likely a not-yet " +
-				"generated parameterized type.");
-		}
-
-		switch( type.getKind() )
-		{
-			case ARRAY:
-				return getTypeQualifiedName( ((ArrayType) type).getComponentType() ) + "[]";
-			case BOOLEAN:
-				return "boolean";
-			case BYTE:
-				return "byte";
-			case CHAR:
-				return "char";
-			case DOUBLE:
-				return "double";
-			case FLOAT:
-				return "float";
-			case INT:
-				return "int";
-			case LONG:
-				return "long";
-			case SHORT:
-				return "short";
-			case DECLARED:
-				StringBuilder b = new StringBuilder();
-				b.append( ((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString() );
-				if( !((DeclaredType) type).getTypeArguments().isEmpty() )
-				{
-					b.append( "<" );
-					boolean addComa = false;
-					for( TypeMirror pType : ((DeclaredType) type).getTypeArguments() )
-					{
-						if( addComa )
-							b.append( ", " );
-						else
-							addComa = true;
-						b.append( getTypeQualifiedName( pType ) );
-					}
-					b.append( ">" );
-				}
-				return b.toString();
-			default:
-				return type.toString();
-		}
-	}
+        @Override
+        public StringBuilder visitWildcard(WildcardType type, StringBuilder sb) {
+            sb.append("?");
+            TypeMirror extendsBound = type.getExtendsBound();
+            TypeMirror superBound = type.getSuperBound();
+            if (superBound != null) {
+                sb.append(" super ");
+                visit(superBound, sb);
+            } else if (extendsBound != null) {
+                sb.append(" extends ");
+                visit(extendsBound, sb);
+            }
+            return sb;
+        }
+    }
 }

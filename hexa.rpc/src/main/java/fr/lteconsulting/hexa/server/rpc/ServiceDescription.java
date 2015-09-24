@@ -11,172 +11,142 @@ import com.google.gson.JsonElement;
 import fr.lteconsulting.hexa.server.tools.Trace;
 import fr.lteconsulting.hexa.shared.rpc.ListInteger;
 
-class ServiceDescription
-{
-	String name;
-	String checksum;
-	Object delegate;
-	String[] methodShortcuts;
+class ServiceDescription {
+    // cache methods informations
+    private final HashMap<String, MethodInfo> methodsCache = new HashMap<String, MethodInfo>();
+    String name;
+    String checksum;
+    Object delegate;
+    String[] methodShortcuts;
 
-	// cache methods informations
-	private final HashMap<String, MethodInfo> methodsCache = new HashMap<String, MethodInfo>();
+    public ServiceDescription(String name, String checksum, Object delegate, String[] methodShortcuts) {
+        this.name = name;
+        this.checksum = checksum;
+        this.delegate = delegate;
+        this.methodShortcuts = methodShortcuts;
+    }
 
-	private static class MethodInfo
-	{
-		MethodInfo( Method method )
-		{
-			this.method = method;
-			paramTypes = method.getParameterTypes();
-		}
+    private MethodInfo findMethod(String methodName) {
+        MethodInfo result = methodsCache.get(methodName);
+        if (result != null)
+            return result;
 
-		Method method;
+        Method[] methods = delegate.getClass().getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            if (method.getName().equals(methodName)) {
+                MethodInfo methodInfo = new MethodInfo(method);
+                methodsCache.put(methodName, methodInfo);
+                return methodInfo;
+            }
+        }
 
-		Class<?>[] paramTypes;
-	}
+        return null;
+    }
 
-	public ServiceDescription( String name, String checksum, Object delegate, String[] methodShortcuts )
-	{
-		this.name = name;
-		this.checksum = checksum;
-		this.delegate = delegate;
-		this.methodShortcuts = methodShortcuts;
-	}
+    public Object call(String method, JsonArray parameters) {
+        // Try parsing a numeric encoded value of the called method
+        try {
+            method = methodShortcuts[Integer.parseInt(method)];
+        } catch (NumberFormatException badFormat) {
+        }
 
-	private MethodInfo findMethod( String methodName )
-	{
-		MethodInfo result = methodsCache.get( methodName );
-		if( result != null )
-			return result;
+        Trace.it("Calling method " + method);
 
-		Method[] methods = delegate.getClass().getMethods();
-		for( int i = 0; i < methods.length; i++ )
-		{
-			Method method = methods[i];
-			if( method.getName().equals( methodName ) )
-			{
-				MethodInfo methodInfo = new MethodInfo( method );
-				methodsCache.put( methodName, methodInfo );
-				return methodInfo;
-			}
-		}
+        MethodInfo jmethod = findMethod(method);
+        if (jmethod == null) {
+            throw new RuntimeException("Called method not found in delegate of class " + delegate.getClass().getName());
+        }
 
-		return null;
-	}
+        Trace.it("Deserialize parameters");
 
-	public Object call( String method, JsonArray parameters )
-	{
-		// Try parsing a numeric encoded value of the called method
-		try
-		{
-			method = methodShortcuts[Integer.parseInt( method )];
-		}
-		catch( NumberFormatException badFormat )
-		{
-		}
+        // Deserialize the parameters
+        Class<?>[] paramTypes = jmethod.paramTypes;
+        if (!(parameters == null && paramTypes.length == 0) && parameters.size() != paramTypes.length)
+            throw new InvalidParameterException("parameters.size()!=paramTypes.length");
 
-		Trace.it( "Calling method " + method );
+        Object[] jparams = new Object[paramTypes.length];
 
-		MethodInfo jmethod = findMethod( method );
-		if( jmethod == null )
-		{
-			throw new RuntimeException( "Called method not found in delegate of class " + delegate.getClass().getName() );
-		}
+        for (int i = 0; i < paramTypes.length; i++) {
+            Trace.it("Param " + i);
 
-		Trace.it( "Deserialize parameters" );
+            Class<?> classType = paramTypes[i];
+            JsonElement p = parameters.get(i);
 
-		// Deserialize the parameters
-		Class<?>[] paramTypes = jmethod.paramTypes;
-		if( !(parameters == null && paramTypes.length == 0) && parameters.size() != paramTypes.length )
-			throw new InvalidParameterException( "parameters.size()!=paramTypes.length" );
+            jparams[i] = deserializeParameters(classType, p);
+        }
 
-		Object[] jparams = new Object[paramTypes.length];
+        // Call the delegate
+        try {
+            Trace.it("Real call...");
+            Object res = jmethod.method.invoke(delegate, jparams);
+            Trace.it("Ok");
+            return res;
+        } catch (Exception e) {
+            Trace.it("Failed with: " + e.getClass().getName());
+            Trace.throwable(e.getCause());
+            throw new RuntimeException(e);
+        }
+    }
 
-		for( int i = 0; i < paramTypes.length; i++ )
-		{
-			Trace.it( "Param " + i );
+    private Object deserializeParameters(Class<?> classType, JsonElement p) {
+        if (p == null)
+            return null;
 
-			Class<?> classType = paramTypes[i];
-			JsonElement p = parameters.get( i );
+        if (classType == String.class)
+            return p.getAsString();
+        else if (classType == int.class)
+            return p.getAsInt();
+        else if (classType == Integer.class)
+            return new Integer(p.getAsInt());
+        else if (classType == ListInteger.class) {
+            JsonArray jsonArray = p.getAsJsonArray();
+            int size = jsonArray.size();
 
-			jparams[i] = deserializeParameters( classType, p );
-		}
+            ListInteger res = new ListInteger();
+            for (int i = 0; i < size; i++)
+                res.add((Integer) deserializeParameters(Integer.class, jsonArray.get(i)));
 
-		// Call the delegate
-		try
-		{
-			Trace.it( "Real call..." );
-			Object res = jmethod.method.invoke( delegate, jparams );
-			Trace.it( "Ok" );
-			return res;
-		}
-		catch( Exception e )
-		{
-			Trace.it( "Failed with: " + e.getClass().getName() );
-			Trace.throwable( e.getCause() );
-			throw new RuntimeException( e );
-		}
-	}
+            return res;
+        } else if (classType.isArray()) {
+            JsonArray jsonArray = p.getAsJsonArray();
+            int size = jsonArray.size();
 
-	private Object deserializeParameters( Class<?> classType, JsonElement p )
-	{
-		if( p == null )
-			return null;
+            Class<?> componentClass = classType.getComponentType();
 
-		if( classType == String.class )
-			return p.getAsString();
-		else if( classType == int.class )
-			return p.getAsInt();
-		else if( classType == Integer.class )
-			return new Integer( p.getAsInt() );
-		else if( classType == ListInteger.class )
-		{
-			JsonArray jsonArray = p.getAsJsonArray();
-			int size = jsonArray.size();
+            if (componentClass.isPrimitive()) {
+                if (componentClass == int.class) {
+                    int[] res = new int[size];
+                    for (int i = 0; i < size; i++)
+                        res[i] = jsonArray.get(i).getAsInt();
+                    return res;
+                } else if (componentClass == String.class) {
+                    String[] res = new String[size];
+                    for (int i = 0; i < size; i++)
+                        res[i] = jsonArray.get(i).getAsString();
+                    return res;
+                }
+            }
 
-			ListInteger res = new ListInteger();
-			for( int i = 0; i < size; i++ )
-				res.add( (Integer) deserializeParameters( Integer.class, jsonArray.get( i ) ) );
+            Object res = Array.newInstance(componentClass, size);
+            for (int i = 0; i < size; i++)
+                Array.set(res, i, deserializeParameters(componentClass, jsonArray.get(i)));
 
-			return res;
-		}
-		else if( classType.isArray() )
-		{
-			JsonArray jsonArray = p.getAsJsonArray();
-			int size = jsonArray.size();
+            return res;
+        } else if (classType == ArrayList.class) {
+            throw new RuntimeException("Deserialization of an ArrayList<?>, please use one of the wrapping types like ListInteger...)");
+        } else {
+            throw new RuntimeException("Unknown deserialization of parameter for class " + classType.getName() + " json element is " + p.toString());
+        }
+    }
 
-			Class<?> componentClass = classType.getComponentType();
+    private static class MethodInfo {
+        Method method;
+        Class<?>[] paramTypes;
 
-			if( componentClass.isPrimitive() )
-			{
-				if( componentClass == int.class )
-				{
-					int[] res = new int[size];
-					for( int i = 0; i < size; i++ )
-						res[i] = jsonArray.get( i ).getAsInt();
-					return res;
-				}
-				else if( componentClass == String.class )
-				{
-					String[] res = new String[size];
-					for( int i = 0; i < size; i++ )
-						res[i] = jsonArray.get( i ).getAsString();
-					return res;
-				}
-			}
-
-			Object res = Array.newInstance( componentClass, size );
-			for( int i = 0; i < size; i++ )
-				Array.set( res, i, deserializeParameters( componentClass, jsonArray.get( i ) ) );
-
-			return res;
-		}
-		else if( classType == ArrayList.class )
-		{
-			throw new RuntimeException( "Deserialization of an ArrayList<?>, please use one of the wrapping types like ListInteger...)" );
-		}
-		else
-		{
-			throw new RuntimeException( "Unknown deserialization of parameter for class " + classType.getName() + " json element is " + p.toString() );
-		}
-	}
+        MethodInfo(Method method) {
+            this.method = method;
+            paramTypes = method.getParameterTypes();
+        }
+    }
 }

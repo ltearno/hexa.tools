@@ -17,102 +17,89 @@ import com.google.gwt.user.client.ui.UIObject;
 import fr.lteconsulting.hexa.client.ui.ListTable;
 import fr.lteconsulting.hexa.client.ui.dialog.MyPopupPanel;
 
-public class ListBoxDiscrete<T> extends Composite implements ClickHandler
-{
-	ImageResource up;
-	ImageResource down;
+public class ListBoxDiscrete<T> extends Composite implements ClickHandler {
+    ImageResource up;
+    ImageResource down;
 
-	Label label = new Label();
-	ImageButton img;
+    Label label = new Label();
+    ImageButton img;
 
-	HashMap<T, String> texts = new HashMap<T, String>();
+    HashMap<T, String> texts = new HashMap<T, String>();
 
-	ListTable<T> listTable = new ListTable<T>();
+    ListTable<T> listTable = new ListTable<T>();
 
-	MyPopupPanel popup = null;
+    MyPopupPanel popup = null;
 
-	boolean fEnabled = true;
+    boolean fEnabled = true;
 
-	public ListBoxDiscrete( ImageResource up, ImageResource down )
-	{
-		this.up = up;
-		this.down = down;
+    public ListBoxDiscrete(ImageResource up, ImageResource down) {
+        this.up = up;
+        this.down = down;
 
-		img = new ImageButton( down, "Select..." );
+        img = new ImageButton(down, "Select...");
 
-		HorizontalPanel panel = new HorizontalPanel();
-		panel.add( label );
-		panel.add( img );
-		initWidget( panel );
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.add(label);
+        panel.add(img);
+        initWidget(panel);
 
-		setStylePrimaryName( "SelectButton" );
+        setStylePrimaryName("SelectButton");
 
-		img.addClickHandler( this );
+        img.addClickHandler(this);
 
-		label.addClickHandler( this );
+        label.addClickHandler(this);
 
-		listTable.addChangeHandler( new ChangeHandler()
-		{
-			@Override
-			public void onChange( ChangeEvent event )
-			{
-				if( popup != null )
-					popup.hide();
+        listTable.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if (popup != null)
+                    popup.hide();
 
-				label.setText( texts.get( listTable.getSelected() ) );
-			}
-		} );
-	}
+                label.setText(texts.get(listTable.getSelected()));
+            }
+        });
+    }
 
-	public void setEnabled( boolean fEnabled )
-	{
-		this.fEnabled = fEnabled;
-	}
+    public void setEnabled(boolean fEnabled) {
+        this.fEnabled = fEnabled;
+    }
 
-	public void addItem( String text, T object )
-	{
-		texts.put( object, text );
-		listTable.addItem( text, object );
-	}
+    public void addItem(String text, T object) {
+        texts.put(object, text);
+        listTable.addItem(text, object);
+    }
 
-	public void addChangeHandler( ChangeHandler handler )
-	{
-		listTable.addChangeHandler( handler );
-	}
+    public void addChangeHandler(ChangeHandler handler) {
+        listTable.addChangeHandler(handler);
+    }
 
-	public T getSelected()
-	{
-		return listTable.getSelected();
-	}
+    public T getSelected() {
+        return listTable.getSelected();
+    }
 
-	public void setSelected( T selected )
-	{
-		label.setText( texts.get( selected ) );
-		listTable.setSelected( selected );
-	}
+    public void setSelected(T selected) {
+        label.setText(texts.get(selected));
+        listTable.setSelected(selected);
+    }
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		if( !fEnabled )
-			return;
+    @Override
+    public void onClick(ClickEvent event) {
+        if (!fEnabled)
+            return;
 
-		if( popup == null )
-		{
-			popup = new MyPopupPanel( true );
-			popup.setWidget( listTable );
+        if (popup == null) {
+            popup = new MyPopupPanel(true);
+            popup.setWidget(listTable);
 
-			popup.addCloseHandler( new CloseHandler<PopupPanel>()
-			{
-				@Override
-				public void onClose( CloseEvent<PopupPanel> event )
-				{
-					img.setResource( down );
-				}
-			} );
-		}
+            popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+                @Override
+                public void onClose(CloseEvent<PopupPanel> event) {
+                    img.setResource(down);
+                }
+            });
+        }
 
-		img.setResource( up );
-		popup.showRelativeTo( (UIObject) event.getSource() );
-	}
+        img.setResource(up);
+        popup.showRelativeTo((UIObject) event.getSource());
+    }
 }

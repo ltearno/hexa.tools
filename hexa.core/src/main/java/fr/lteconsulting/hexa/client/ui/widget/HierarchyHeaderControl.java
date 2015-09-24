@@ -21,181 +21,156 @@ import fr.lteconsulting.hexa.client.ui.treetable.Row;
 import fr.lteconsulting.hexa.client.ui.treetable.TreeTable;
 import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellClickEvent.TableCellClickHandler;
 
-public class HierarchyHeaderControl<T> extends Composite implements ClickHandler
-{
-	public interface HierarchyHeaderControlCallback<T>
-	{
-		public void onHierarchyHeaderControlChange( List<IHierarchyLevel<T>> levels );
-	}
+public class HierarchyHeaderControl<T> extends Composite implements ClickHandler {
+    HierarchyHeaderControlCallback<T> callback = null;
+    HorizontalPanel currentListPanel = new HorizontalPanel();
+    ImageButton addLevel = null;
+    ArrayList<IHierarchyLevel<T>> levels = new ArrayList<IHierarchyLevel<T>>();
+    ArrayList<IHierarchyLevel<T>> currentLevels = new ArrayList<IHierarchyLevel<T>>();
+    public HierarchyHeaderControl() {
+        HorizontalPanel panel = new HorizontalPanel();
 
-	HierarchyHeaderControlCallback<T> callback = null;
+        panel.add(currentListPanel);
+        addLevel = new ImageButton(HexaFramework.images.addPlus(), "Add a level to this hierachy");
+        addLevel.addClickHandler(this);
+        panel.add(addLevel);
 
-	HorizontalPanel currentListPanel = new HorizontalPanel();
-	ImageButton addLevel = null;
+        initWidget(panel);
+        addStyleName(Styles.CSS.commentPanel());
+    }
 
-	ArrayList<IHierarchyLevel<T>> levels = new ArrayList<IHierarchyLevel<T>>();
-	ArrayList<IHierarchyLevel<T>> currentLevels = new ArrayList<IHierarchyLevel<T>>();
+    public void setCallback(HierarchyHeaderControlCallback<T> callback) {
+        this.callback = callback;
+    }
 
-	public HierarchyHeaderControl()
-	{
-		HorizontalPanel panel = new HorizontalPanel();
+    public void add(IHierarchyLevel<T> level) {
+        levels.add(level);
 
-		panel.add( currentListPanel );
-		addLevel = new ImageButton( HexaFramework.images.addPlus(), "Add a level to this hierachy" );
-		addLevel.addClickHandler( this );
-		panel.add( addLevel );
+        _RefreshAll();
+    }
 
-		initWidget( panel );
-		addStyleName( Styles.CSS.commentPanel() );
-	}
+    public void clearAll() {
+        levels.clear();
+        currentLevels.clear();
 
-	public void setCallback( HierarchyHeaderControlCallback<T> callback )
-	{
-		this.callback = callback;
-	}
+        addLevel.setVisible(true);
+        currentListPanel.clear();
 
-	public void add( IHierarchyLevel<T> level )
-	{
-		levels.add( level );
+        _RefreshAll();
+    }
 
-		_RefreshAll();
-	}
+    public ArrayList<IHierarchyLevel<T>> getLevels() {
+        return currentLevels;
+    }
 
-	public void clearAll()
-	{
-		levels.clear();
-		currentLevels.clear();
+    public JSONValue getLevelsJson() {
+        JSONArray arr = new JSONArray();
 
-		addLevel.setVisible( true );
-		currentListPanel.clear();
+        int i = 0;
+        for (IHierarchyLevel<T> level : currentLevels) {
+            arr.set(i, new JSONString(level.getName()));
+            i++;
+        }
 
-		_RefreshAll();
-	}
+        return arr;
+    }
 
-	public ArrayList<IHierarchyLevel<T>> getLevels()
-	{
-		return currentLevels;
-	}
+    private IHierarchyLevel<T> findLevelIndex(String name) {
+        for (int i = 0; i < levels.size(); i++)
+            if (levels.get(i).getName().equals(name))
+                return levels.get(i);
+        return null;
+    }
 
-	public JSONValue getLevelsJson()
-	{
-		JSONArray arr = new JSONArray();
+    public void setLevelsString(GenericJSO jso) {
+        currentLevels.clear();
 
-		int i = 0;
-		for( IHierarchyLevel<T> level : currentLevels )
-		{
-			arr.set( i, new JSONString( level.getName() ) );
-			i++;
-		}
+        _RefreshAll();
 
-		return arr;
-	}
+        JsArrayString levels = jso.getAsArrayOfString();
+        for (int i = 0; i < levels.length(); i++) {
+            String levelName = levels.get(i);
+            IHierarchyLevel<T> level = findLevelIndex(levelName);
+            addLevel(level);
+        }
+    }
 
-	private IHierarchyLevel<T> findLevelIndex( String name )
-	{
-		for( int i = 0; i < levels.size(); i++ )
-			if( levels.get( i ).getName().equals( name ) )
-				return levels.get( i );
-		return null;
-	}
+    private void _RefreshAll() {
+        currentListPanel.clear();
+    }
 
-	public void setLevelsString( GenericJSO jso )
-	{
-		currentLevels.clear();
+    @Override
+    public void onClick(ClickEvent event) {
+        final MyPopupPanel popup = new MyPopupPanel(true, true);
+        popup.setStylePrimaryName("ArnoPopupPanel");
+        popup.showRelativeTo(addLevel);
 
-		_RefreshAll();
+        TreeTable table = new TreeTable();
+        table.setHeader(0, "Choose a level");
+        for (int i = 0; i < levels.size(); i++) {
+            if (currentLevels.contains(levels.get(i)))
+                continue;
 
-		JsArrayString levels = jso.getAsArrayOfString();
-		for( int i = 0; i < levels.length(); i++ )
-		{
-			String levelName = levels.get( i );
-			IHierarchyLevel<T> level = findLevelIndex( levelName );
-			addLevel( level );
-		}
-	}
+            Row item = table.addRow(null);
+            item.setText(0, levels.get(i).getName());
+            item.setDataObject(levels.get(i));
+        }
 
-	private void _RefreshAll()
-	{
-		currentListPanel.clear();
-	}
+        popup.setWidget(table);
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		final MyPopupPanel popup = new MyPopupPanel( true, true );
-		popup.setStylePrimaryName( "ArnoPopupPanel" );
-		popup.showRelativeTo( addLevel );
+        table.addTableCellClickHandler(new TableCellClickHandler() {
+            @Override
+            public void onTableCellClick(Row item, int column, ClickEvent event) {
+                @SuppressWarnings("unchecked")
+                IHierarchyLevel<T> level = (IHierarchyLevel<T>) (item.getDataObject());
+                addLevel(level);
+                _signalChange();
 
-		TreeTable table = new TreeTable();
-		table.setHeader( 0, "Choose a level" );
-		for( int i = 0; i < levels.size(); i++ )
-		{
-			if( currentLevels.contains( levels.get( i ) ) )
-				continue;
+                popup.hide();
+            }
+        });
+    }
 
-			Row item = table.addRow( null );
-			item.setText( 0, levels.get( i ).getName() );
-			item.setDataObject( levels.get( i ) );
-		}
+    private void addLevel(final IHierarchyLevel<T> level) {
+        if (level == null)
+            return;
 
-		popup.setWidget( table );
+        final ImageTextButton im = new ImageTextButton(HexaFramework.images.delete(), level.getName());
+        im.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                _onLevelClick(level, im);
+            }
+        });
+        currentListPanel.add(im);
 
-		table.addTableCellClickHandler( new TableCellClickHandler()
-		{
-			@Override
-			public void onTableCellClick( Row item, int column, ClickEvent event )
-			{
-				@SuppressWarnings( "unchecked" )
-				IHierarchyLevel<T> level = (IHierarchyLevel<T>) (item.getDataObject());
-				addLevel( level );
-				_signalChange();
+        currentLevels.add(level);
 
-				popup.hide();
-			}
-		} );
-	}
+        if (currentLevels.size() == levels.size())
+            addLevel.setVisible(false);
 
-	private void addLevel( final IHierarchyLevel<T> level )
-	{
-		if( level == null )
-			return;
+        _signalChange();
+    }
 
-		final ImageTextButton im = new ImageTextButton( HexaFramework.images.delete(), level.getName() );
-		im.addClickHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				_onLevelClick( level, im );
-			}
-		} );
-		currentListPanel.add( im );
+    private void _onLevelClick(IHierarchyLevel<T> level, ImageTextButton button) {
+        addLevel.setVisible(true);
 
-		currentLevels.add( level );
+        currentListPanel.remove(button);
 
-		if( currentLevels.size() == levels.size() )
-			addLevel.setVisible( false );
+        currentLevels.remove(level);
 
-		_signalChange();
-	}
+        _signalChange();
+    }
 
-	private void _onLevelClick( IHierarchyLevel<T> level, ImageTextButton button )
-	{
-		addLevel.setVisible( true );
+    private void _signalChange() {
+        if (callback == null)
+            return;
 
-		currentListPanel.remove( button );
+        ArrayList<IHierarchyLevel<T>> cur = getLevels();
+        callback.onHierarchyHeaderControlChange(cur);
+    }
 
-		currentLevels.remove( level );
-
-		_signalChange();
-	}
-
-	private void _signalChange()
-	{
-		if( callback == null )
-			return;
-
-		ArrayList<IHierarchyLevel<T>> cur = getLevels();
-		callback.onHierarchyHeaderControlChange( cur );
-	}
+    public interface HierarchyHeaderControlCallback<T> {
+        public void onHierarchyHeaderControlChange(List<IHierarchyLevel<T>> levels);
+    }
 }

@@ -5,16 +5,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class UiBinderSample extends Composite
-{
-	interface MyUiBinder extends UiBinder<Widget, UiBinderSample>
-	{
-	}
+public class UiBinderSample extends Composite {
+    private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-	private static MyUiBinder uiBinder = GWT.create( MyUiBinder.class );
-	
-	public UiBinderSample()
-	{
-		initWidget( uiBinder.createAndBindUi( this ) );
-	}
+    public UiBinderSample() {
+        initWidget(uiBinder.createAndBindUi(this));
+    }
+
+    interface MyUiBinder extends UiBinder<Widget, UiBinderSample> {
+    }
 }

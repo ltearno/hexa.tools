@@ -26,187 +26,164 @@ import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceCo
 import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceConfiguration.FieldConfiguration;
 import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceConfiguration.ManyToOneFieldConfiguration;
 
-public class EntityManagerFactoryImpl implements EntityManagerFactory
-{
-	private final String name;
-	PersistenceConfiguration configuration;
-	SQLite sqlite;
+public class EntityManagerFactoryImpl implements EntityManagerFactory {
+    private final String name;
+    PersistenceConfiguration configuration;
+    SQLite sqlite;
 
-	Delayer delay = new Delayer( 1000, new Delayer.Callback()
-	{
-		@Override
-		public void onDelayedEvent()
-		{
-			Storage store = Storage.getLocalStorageIfSupported();
-			if( store == null )
-				return;
+    Delayer delay = new Delayer(1000, new Delayer.Callback() {
+        @Override
+        public void onDelayedEvent() {
+            Storage store = Storage.getLocalStorageIfSupported();
+            if (store == null)
+                return;
 
-			JsArrayInteger jsArray = sqlite.exportData();
-			if( jsArray != null )
-				store.setItem( "db_" + name, new JSONArray( jsArray ).toString() );
-		}
-	}, true );
+            JsArrayInteger jsArray = sqlite.exportData();
+            if (jsArray != null)
+                store.setItem("db_" + name, new JSONArray(jsArray).toString());
+        }
+    }, true);
 
-	EntityManagerFactoryImpl( String name, @SuppressWarnings( "rawtypes" ) Map parameters )
-	{
-		this.name = name;
-		if( parameters != null )
-		{
-			configuration = (PersistenceConfiguration) parameters.get( "entitiesConfiguration" );
-		}
+    EntityManagerFactoryImpl(String name, @SuppressWarnings("rawtypes") Map parameters) {
+        this.name = name;
+        if (parameters != null) {
+            configuration = (PersistenceConfiguration) parameters.get("entitiesConfiguration");
+        }
 
-		Storage store = Storage.getLocalStorageIfSupported();
-		if( store != null )
-		{
-			String item = store.getItem( "db_" + name );
-			if( item != null )
-			{
-				JSONValue json = JSONParser.parseLenient( item );
-				JsArrayInteger jsArray = json.isArray().getJavaScriptObject().cast();
-				sqlite = SQLite.create( jsArray );
-			}
-		}
+        Storage store = Storage.getLocalStorageIfSupported();
+        if (store != null) {
+            String item = store.getItem("db_" + name);
+            if (item != null) {
+                JSONValue json = JSONParser.parseLenient(item);
+                JsArrayInteger jsArray = json.isArray().getJavaScriptObject().cast();
+                sqlite = SQLite.create(jsArray);
+            }
+        }
 
-		if( sqlite == null )
-		{
-			// TODO : try to load the database from local storage
-			sqlite = SQLite.create();
+        if (sqlite == null) {
+            // TODO : try to load the database from local storage
+            sqlite = SQLite.create();
 
-			// create database structure from configuration
-			// TODO : also need to manage updates...
-			createDatabaseStructure( configuration );
+            // create database structure from configuration
+            // TODO : also need to manage updates...
+            createDatabaseStructure(configuration);
 
-			sqlite.execute( "create table NEXTID (tableName VARCHAR(100), nextId INTEGER)" );
-		}
+            sqlite.execute("create table NEXTID (tableName VARCHAR(100), nextId INTEGER)");
+        }
 
-		sqlite.setStatementCallback( new Action2<String, JavaScriptObject>()
-		{
-			@Override
-			public void exec( String p1, JavaScriptObject p2 )
-			{
-				delay.trigger();
-			}
-		} );
-	}
+        sqlite.setStatementCallback(new Action2<String, JavaScriptObject>() {
+            @Override
+            public void exec(String p1, JavaScriptObject p2) {
+                delay.trigger();
+            }
+        });
+    }
 
-	void createDatabaseStructure( PersistenceConfiguration configuration )
-	{
-		for( EntityConfiguration entityConfiguration : configuration.entityConfigurations.values() )
-		{
-			StringBuilder sb = new StringBuilder();
+    void createDatabaseStructure(PersistenceConfiguration configuration) {
+        for (EntityConfiguration entityConfiguration : configuration.entityConfigurations.values()) {
+            StringBuilder sb = new StringBuilder();
 
-			sb.append( "create table " );
-			sb.append( entityConfiguration.tableName );
-			sb.append( "(" );
+            sb.append("create table ");
+            sb.append(entityConfiguration.tableName);
+            sb.append("(");
 
-			FieldConfiguration idFieldConfiguration = entityConfiguration.idField;
-			SQLiteTypeManager mng = SQLiteTypeManagerManager.get( idFieldConfiguration.fieldClass );
-			String creationString = mng.createFieldSql( idFieldConfiguration.columnName, true, entityConfiguration.idGenerationType==GenerationType.IDENTITY );
-			assert creationString != null;
+            FieldConfiguration idFieldConfiguration = entityConfiguration.idField;
+            SQLiteTypeManager mng = SQLiteTypeManagerManager.get(idFieldConfiguration.fieldClass);
+            String creationString = mng.createFieldSql(idFieldConfiguration.columnName, true, entityConfiguration.idGenerationType == GenerationType.IDENTITY);
+            assert creationString != null;
 
-			sb.append( idFieldConfiguration.columnName );
-			sb.append( " " );
-			sb.append( creationString );
-			sb.append( " " );
+            sb.append(idFieldConfiguration.columnName);
+            sb.append(" ");
+            sb.append(creationString);
+            sb.append(" ");
 
-			for( FieldConfiguration fieldConfiguration : entityConfiguration.directFields )
-			{
-				sb.append( ", " );
+            for (FieldConfiguration fieldConfiguration : entityConfiguration.directFields) {
+                sb.append(", ");
 
-				mng = SQLiteTypeManagerManager.get( fieldConfiguration.fieldClass );
-				creationString = mng.createFieldSql( fieldConfiguration.columnName, false, false );
+                mng = SQLiteTypeManagerManager.get(fieldConfiguration.fieldClass);
+                creationString = mng.createFieldSql(fieldConfiguration.columnName, false, false);
 
-				assert creationString != null;
+                assert creationString != null;
 
-				sb.append( fieldConfiguration.columnName );
-				sb.append( " " );
-				sb.append( creationString );
-			}
+                sb.append(fieldConfiguration.columnName);
+                sb.append(" ");
+                sb.append(creationString);
+            }
 
-			for( ManyToOneFieldConfiguration fieldConfiguration : entityConfiguration.manyToOneFields )
-			{
-				sb.append( ", " );
+            for (ManyToOneFieldConfiguration fieldConfiguration : entityConfiguration.manyToOneFields) {
+                sb.append(", ");
 
-				EntityConfiguration relatedEntityConfiguration = configuration.getConfigurationForEntity( fieldConfiguration.fieldClass );
-				assert relatedEntityConfiguration != null : "Cannot find a proper configuration for entity " + fieldConfiguration.fieldClass.getName();
+                EntityConfiguration relatedEntityConfiguration = configuration.getConfigurationForEntity(fieldConfiguration.fieldClass);
+                assert relatedEntityConfiguration != null : "Cannot find a proper configuration for entity " + fieldConfiguration.fieldClass.getName();
 
-				mng = SQLiteTypeManagerManager.get( relatedEntityConfiguration.idField.fieldClass );
-				creationString = mng.createFieldSql( fieldConfiguration.columnName, false, false );
+                mng = SQLiteTypeManagerManager.get(relatedEntityConfiguration.idField.fieldClass);
+                creationString = mng.createFieldSql(fieldConfiguration.columnName, false, false);
 
-				assert creationString != null;
+                assert creationString != null;
 
-				sb.append( fieldConfiguration.columnName );
-				sb.append( " " );
-				sb.append( creationString );
-			}
+                sb.append(fieldConfiguration.columnName);
+                sb.append(" ");
+                sb.append(creationString);
+            }
 
-			sb.append( ");" );
+            sb.append(");");
 
-			String sql = sb.toString();
+            String sql = sb.toString();
 
-			sqlite.execute( sql );
-		}
-	}
+            sqlite.execute(sql);
+        }
+    }
 
-	@Override
-	public void close()
-	{
-		assert false;
-	}
+    @Override
+    public void close() {
+        assert false;
+    }
 
-	@Override
-	public EntityManager createEntityManager()
-	{
-		return createEntityManager( null );
-	}
+    @Override
+    public EntityManager createEntityManager() {
+        return createEntityManager(null);
+    }
 
-	@Override
-	public EntityManager createEntityManager( @SuppressWarnings( "rawtypes" ) Map arg0 )
-	{
-		EntityManager em = new EntityManagerImpl( name, configuration, sqlite );
+    @Override
+    public EntityManager createEntityManager(@SuppressWarnings("rawtypes") Map arg0) {
+        EntityManager em = new EntityManagerImpl(name, configuration, sqlite);
 
-		return em;
-	}
+        return em;
+    }
 
-	@Override
-	public Cache getCache()
-	{
-		assert false;
-		return null;
-	}
+    @Override
+    public Cache getCache() {
+        assert false;
+        return null;
+    }
 
-	@Override
-	public CriteriaBuilder getCriteriaBuilder()
-	{
-		assert false;
-		return null;
-	}
+    @Override
+    public CriteriaBuilder getCriteriaBuilder() {
+        assert false;
+        return null;
+    }
 
-	@Override
-	public Metamodel getMetamodel()
-	{
-		assert false;
-		return null;
-	}
+    @Override
+    public Metamodel getMetamodel() {
+        assert false;
+        return null;
+    }
 
-	@Override
-	public PersistenceUnitUtil getPersistenceUnitUtil()
-	{
-		assert false;
-		return null;
-	}
+    @Override
+    public PersistenceUnitUtil getPersistenceUnitUtil() {
+        assert false;
+        return null;
+    }
 
-	@Override
-	public Map<String, Object> getProperties()
-	{
-		assert false;
-		return null;
-	}
+    @Override
+    public Map<String, Object> getProperties() {
+        assert false;
+        return null;
+    }
 
-	@Override
-	public boolean isOpen()
-	{
-		assert false;
-		return false;
-	}
+    @Override
+    public boolean isOpen() {
+        assert false;
+        return false;
+    }
 }

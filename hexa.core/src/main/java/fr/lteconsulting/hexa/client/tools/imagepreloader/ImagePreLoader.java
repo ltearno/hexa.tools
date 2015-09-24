@@ -6,62 +6,53 @@ import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 
-public class ImagePreLoader
-{
-	interface Resources extends ClientBundle
-	{
-		@Source( "preloadImageScript.js" )
-		TextResource preloadImageScript();
-	}
+public class ImagePreLoader {
+    private static Resources resources = GWT.create(Resources.class);
+    private static int id = 1;
+    private static ImagePreLoader singleton;
 
-	private static Resources resources = GWT.create( Resources.class );
+    public ImagePreLoader() {
+    }
 
-	private static int id = 1;
+    public static ImagePreLoader getSingleton() {
+        if (singleton == null)
+            singleton = new ImagePreLoader();
 
-	private static ImagePreLoader singleton;
+        return singleton;
+    }
 
-	public static ImagePreLoader getSingleton()
-	{
-		if( singleton == null )
-			singleton = new ImagePreLoader();
+    public void preload(String url, Callback callback) {
+        if (!isScriptInstalled()) {
+            ScriptElement script = Document.get().createScriptElement();
+            script.setText(resources.preloadImageScript().getText());
 
-		return singleton;
-	}
+            Document.get().getBody().appendChild(script);
+        }
 
-	public interface Callback
-	{
-		void onLoaded();
+        preloadImpl(id++, url, callback);
+    }
 
-		void onError();
-	}
+    private native boolean isScriptInstalled() /*-{
+        return $wnd.preloadImageScript != null;
+    }-*/;
 
-	public ImagePreLoader()
-	{
-	}
+    private native void preloadImpl(int id, String url, Callback callback)
+    /*-{
+        $wnd.preloadImageScript(url, function () {
+            callback.@fr.lteconsulting.hexa.client.tools.imagepreloader.ImagePreLoader.Callback::onLoaded()();
+        }, function () {
+            callback.@fr.lteconsulting.hexa.client.tools.imagepreloader.ImagePreLoader.Callback::onError()();
+        });
+    }-*/;
 
-	public void preload( String url, Callback callback )
-	{
-		if( !isScriptInstalled() )
-		{
-			ScriptElement script = Document.get().createScriptElement();
-			script.setText( resources.preloadImageScript().getText() );
+    interface Resources extends ClientBundle {
+        @Source("preloadImageScript.js")
+        TextResource preloadImageScript();
+    }
 
-			Document.get().getBody().appendChild( script );
-		}
+    public interface Callback {
+        void onLoaded();
 
-		preloadImpl( id++, url, callback );
-	}
-
-	private native boolean isScriptInstalled() /*-{
-												return $wnd.preloadImageScript != null;
-												}-*/;
-
-	private native void preloadImpl( int id, String url, Callback callback )
-	/*-{
-		$wnd.preloadImageScript(url, function() {
-			callback.@fr.lteconsulting.hexa.client.tools.imagepreloader.ImagePreLoader.Callback::onLoaded()();
-		}, function() {
-			callback.@fr.lteconsulting.hexa.client.tools.imagepreloader.ImagePreLoader.Callback::onError()();
-		});
-	}-*/;
+        void onError();
+    }
 }

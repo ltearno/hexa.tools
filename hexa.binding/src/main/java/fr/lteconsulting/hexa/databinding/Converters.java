@@ -39,9 +39,9 @@ public class Converters {
         to = getBoxedType(to);
 
         Converter result;
-        for(AbstractConverter<?, ?> converter : converters) {
+        for (AbstractConverter<?, ?> converter : converters) {
             result = converter.determine(from, to);
-            if(result != null) {
+            if (result != null) {
                 return result;
             }
         }

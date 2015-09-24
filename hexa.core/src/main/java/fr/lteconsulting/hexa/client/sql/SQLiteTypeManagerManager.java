@@ -5,206 +5,177 @@ import java.util.HashMap;
 
 import fr.lteconsulting.hexa.classinfo.Field;
 
-public class SQLiteTypeManagerManager
-{
-	public static abstract class SQLiteTypeManager
-	{
-		abstract public String createFieldSql( String fieldName, boolean fPrimaryKey, boolean fAutoIncrement );
+public class SQLiteTypeManagerManager {
+    private static HashMap<Class<?>, SQLiteTypeManager> typeManagers;
 
-		public String autoUpdateTimestampCreateTriggerSql( String tableName, String fieldName )
-		{
-			throw new IllegalStateException( "AutoUpdateTimestamp trigger not supported for this type !" );
-		}
+    public static SQLiteTypeManager get(Class<?> clazz) {
+        if (typeManagers == null) {
+            typeManagers = new HashMap<Class<?>, SQLiteTypeManager>();
 
-		public Boolean localRecordStateCreateTriggerSql( SQLite db, String tableName, String fieldName )
-		{
-			return true;
-		}
+            typeManagers.put(int.class, new SQLiteTypeManager_int());
+            typeManagers.put(String.class, new SQLiteTypeManager_String());
+            typeManagers.put(Date.class, new SQLiteTypeManager_Date());
+        }
 
-		public final void setFieldValueFromString( Field field, Object object, String value )
-		{
-			field.setValue( object, getValueFromString( value ) );
-		}
+        return typeManagers.get(clazz);
+    }
 
-		abstract public boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record );
+    public static abstract class SQLiteTypeManager {
+        abstract public String createFieldSql(String fieldName, boolean fPrimaryKey, boolean fAutoIncrement);
 
-		abstract public String getStringForValue( Object value );
-		abstract public Object getValueFromString( String value );
-	}
+        public String autoUpdateTimestampCreateTriggerSql(String tableName, String fieldName) {
+            throw new IllegalStateException("AutoUpdateTimestamp trigger not supported for this type !");
+        }
 
-	private static HashMap<Class<?>, SQLiteTypeManager> typeManagers;
+        public Boolean localRecordStateCreateTriggerSql(SQLite db, String tableName, String fieldName) {
+            return true;
+        }
 
-	public static SQLiteTypeManager get( Class<?> clazz )
-	{
-		if( typeManagers == null )
-		{
-			typeManagers = new HashMap<Class<?>, SQLiteTypeManager>();
+        public final void setFieldValueFromString(Field field, Object object, String value) {
+            field.setValue(object, getValueFromString(value));
+        }
 
-			typeManagers.put( int.class, new SQLiteTypeManager_int() );
-			typeManagers.put( String.class, new SQLiteTypeManager_String() );
-			typeManagers.put( Date.class, new SQLiteTypeManager_Date() );
-		}
+        abstract public boolean appendUpdateValueSql(StringBuilder sb, Field field, Object record);
 
-		return typeManagers.get( clazz );
-	}
+        abstract public String getStringForValue(Object value);
+
+        abstract public Object getValueFromString(String value);
+    }
 }
 
-class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager
-{
-	@Override
-	public String createFieldSql( String fieldName, boolean fPrimaryKey, boolean fAutoIncrement )
-	{
-		String res = "INTEGER";
-		if( fPrimaryKey )
-			res += " PRIMARY KEY";
-		if( fAutoIncrement )
-			res += " AUTOINCREMENT";
+class SQLiteTypeManager_int extends SQLiteTypeManagerManager.SQLiteTypeManager {
+    @Override
+    public String createFieldSql(String fieldName, boolean fPrimaryKey, boolean fAutoIncrement) {
+        String res = "INTEGER";
+        if (fPrimaryKey)
+            res += " PRIMARY KEY";
+        if (fAutoIncrement)
+            res += " AUTOINCREMENT";
 
-		return res;
-	}
+        return res;
+    }
 
-	/*
-	 * Créee un trigger qui permet la maj automatique d'un champ de statut (INTEGER) dont la valeur signifiera : - 0 : enregistrement créé localement - 1 :
-	 * enregistrement copie conforme du serveur - 2 : enregistrement modifié localement
-	 *
-	 * @see com.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager #localRecordStateCreateTriggerSql(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Boolean localRecordStateCreateTriggerSql( SQLite db, String tableName, String fieldName )
-	{
-		String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_localstate_update BEFORE UPDATE ON " + tableName
-				+ " FOR EACH ROW " + "WHEN NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = 2 WHERE id=NEW.id; END";
+    /*
+     * Créee un trigger qui permet la maj automatique d'un champ de statut (INTEGER) dont la valeur signifiera : - 0 : enregistrement créé localement - 1 :
+     * enregistrement copie conforme du serveur - 2 : enregistrement modifié localement
+     *
+     * @see com.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager #localRecordStateCreateTriggerSql(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Boolean localRecordStateCreateTriggerSql(SQLite db, String tableName, String fieldName) {
+        String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_localstate_update BEFORE UPDATE ON " + tableName
+            + " FOR EACH ROW " + "WHEN NEW." + fieldName + " <> 1 " + "BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = 2 WHERE id=NEW.id; END";
 
-		db.execute( triggerSql );
+        db.execute(triggerSql);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record )
-	{
-		Object value = field.getValue( record );
+    @Override
+    public boolean appendUpdateValueSql(StringBuilder sb, Field field, Object record) {
+        Object value = field.getValue(record);
 
-		sb.append( getStringForValue( value ) );
+        sb.append(getStringForValue(value));
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getStringForValue( Object value )
-	{
-		if( value == null )
-			return null;
+    @Override
+    public String getStringForValue(Object value) {
+        if (value == null)
+            return null;
 
-		return "" + value;
-	}
+        return "" + value;
+    }
 
-	@Override
-	public Object getValueFromString( String value )
-	{
-		return Integer.parseInt( value );
-	}
+    @Override
+    public Object getValueFromString(String value) {
+        return Integer.parseInt(value);
+    }
 }
 
-class SQLiteTypeManager_String extends SQLiteTypeManagerManager.SQLiteTypeManager
-{
-	@Override
-	public String createFieldSql( String fieldName, boolean fPrimaryKey, boolean fAutoIncrement )
-	{
-		assert fPrimaryKey == false;
-		assert fAutoIncrement == false;
+class SQLiteTypeManager_String extends SQLiteTypeManagerManager.SQLiteTypeManager {
+    @Override
+    public String createFieldSql(String fieldName, boolean fPrimaryKey, boolean fAutoIncrement) {
+        assert fPrimaryKey == false;
+        assert fAutoIncrement == false;
 
-		return "VARCHAR(100)";
-	}
+        return "VARCHAR(100)";
+    }
 
-	@Override
-	public final boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record )
-	{
-		Object value = field.getValue( record );
+    @Override
+    public final boolean appendUpdateValueSql(StringBuilder sb, Field field, Object record) {
+        Object value = field.getValue(record);
 
-		sb.append( "'" + getStringForValue( value ) + "'" );
+        sb.append("'" + getStringForValue(value) + "'");
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getStringForValue( Object value )
-	{
-		return (String) value;
-	}
+    @Override
+    public String getStringForValue(Object value) {
+        return (String) value;
+    }
 
-	@Override
-	public Object getValueFromString( String value )
-	{
-		return value;
-	}
+    @Override
+    public Object getValueFromString(String value) {
+        return value;
+    }
 }
 
-class SQLiteTypeManager_Date extends SQLiteTypeManagerManager.SQLiteTypeManager
-{
-	@Override
-	public String createFieldSql( String fieldName, boolean fPrimaryKey, boolean fAutoIncrement )
-	{
-		assert fPrimaryKey == false;
-		assert fAutoIncrement == false;
+class SQLiteTypeManager_Date extends SQLiteTypeManagerManager.SQLiteTypeManager {
+    private static Date parseDate(String string) {
+        try {
+            return SQLite.dateTimeFormat.parse(string);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-		return "DATETIME";
-	}
+    @Override
+    public String createFieldSql(String fieldName, boolean fPrimaryKey, boolean fAutoIncrement) {
+        assert fPrimaryKey == false;
+        assert fAutoIncrement == false;
 
-	@Override
-	public String autoUpdateTimestampCreateTriggerSql( String tableName, String fieldName )
-	{
-		String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_timestamp_update AFTER UPDATE ON " + tableName
-				+ " FOR EACH ROW BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = CURRENT_TIMESTAMP WHERE id=old.id; END";
+        return "DATETIME";
+    }
 
-		return triggerSql;
-	}
+    @Override
+    public String autoUpdateTimestampCreateTriggerSql(String tableName, String fieldName) {
+        String triggerSql = "CREATE TRIGGER IF NOT EXISTS " + tableName + "_" + fieldName + "_timestamp_update AFTER UPDATE ON " + tableName
+            + " FOR EACH ROW BEGIN " + "UPDATE " + tableName + " SET " + fieldName + " = CURRENT_TIMESTAMP WHERE id=old.id; END";
 
-	@Override
-	public final boolean appendUpdateValueSql( StringBuilder sb, Field field, Object record )
-	{
-		Object value = field.getValue( record );
-		if( value == null )
-			sb.append( "NULL" );
-		else
-			sb.append( "'" + getStringForValue( value ) + "'" );
+        return triggerSql;
+    }
 
-		return true;
-	}
+    @Override
+    public final boolean appendUpdateValueSql(StringBuilder sb, Field field, Object record) {
+        Object value = field.getValue(record);
+        if (value == null)
+            sb.append("NULL");
+        else
+            sb.append("'" + getStringForValue(value) + "'");
 
-	@Override
-	public String getStringForValue( Object value )
-	{
-		return (value != null ? SQLite.dateTimeFormat.format( (Date) value ) : "");
-	}
+        return true;
+    }
 
-	@Override
-	public Object getValueFromString( String value )
-	{
-		return parseDate( value );
-	}
+    @Override
+    public String getStringForValue(Object value) {
+        return (value != null ? SQLite.dateTimeFormat.format((Date) value) : "");
+    }
 
-	private static Date parseDate( String string )
-	{
-		try
-		{
-			return SQLite.dateTimeFormat.parse( string );
-		}
-		catch( Exception e )
-		{
-			return null;
-		}
-	}
+    @Override
+    public Object getValueFromString(String value) {
+        return parseDate(value);
+    }
 }
 
-class SQLiteTypeManager_Timestamp extends SQLiteTypeManager_Date
-{
-	@Override
-	public String createFieldSql( String fieldName, boolean fPrimaryKey, boolean fAutoIncrement )
-	{
-		assert fPrimaryKey == false;
-		assert fAutoIncrement == false;
+class SQLiteTypeManager_Timestamp extends SQLiteTypeManager_Date {
+    @Override
+    public String createFieldSql(String fieldName, boolean fPrimaryKey, boolean fAutoIncrement) {
+        assert fPrimaryKey == false;
+        assert fAutoIncrement == false;
 
-		return "DATETIME DEFAULT CURRENT_TIMESTAMP";
-	}
+        return "DATETIME DEFAULT CURRENT_TIMESTAMP";
+    }
 }

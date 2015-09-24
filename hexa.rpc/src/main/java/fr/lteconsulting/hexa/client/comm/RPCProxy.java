@@ -14,267 +14,229 @@ import fr.lteconsulting.hexa.client.comm.RPCBatchRequestSender.XRPCBatchRequestS
 import fr.lteconsulting.hexa.client.interfaces.IAsyncCallback;
 import fr.lteconsulting.hexa.client.tools.HexaTools;
 
-public class RPCProxy
-{
-	private String baseUrl = null;
+public class RPCProxy {
+    ArrayList<RPCBatchRequestSender> batchRequestSenders = null;
+    boolean isSendScheduled = false;
+    int nbSentBytes = 0;
+    int nbReceivedBytes = 0;
+    private String baseUrl = null;
+    private XRPCProxy callback = null;
+    private ArrayList<XRPCProxyStatus> statusCallbacks;
+    private ArrayList<BeforeNetworkRequestHandler> beforeNetworkRequestHandlers;
+    private ArrayList<AfterNetworkRequestHandler> afterNetworkRequestHandlers;
+    private ScheduledCommand sendCommand = new ScheduledCommand() {
+        @Override
+        public void execute() {
+            isSendScheduled = false;
 
-	private XRPCProxy callback = null;
-	private ArrayList<XRPCProxyStatus> statusCallbacks;
+            // something to send ?
+            if (batchRequestSenders.isEmpty())
+                return;
 
-	private ArrayList<BeforeNetworkRequestHandler> beforeNetworkRequestHandlers;
-	private ArrayList<AfterNetworkRequestHandler> afterNetworkRequestHandlers;
+            // send the first batch ready to be sent
+            for (RPCBatchRequestSender sender : batchRequestSenders) {
+                if (sender.isReadyToSend()) {
+                    sender.send();
+                    return;
+                }
+            }
+        }
+    };
+    private XRPCBatchRequestSender batchSenderCallback = new XRPCBatchRequestSender() {
+        @Override
+        public List<BeforeNetworkRequestHandler> getBeforeNetworkRequestHandlers() {
+            return beforeNetworkRequestHandlers;
+        }
 
-	ArrayList<RPCBatchRequestSender> batchRequestSenders = null;
+        @Override
+        public List<AfterNetworkRequestHandler> getAfterNetworkRequestHandlers() {
+            return afterNetworkRequestHandlers;
+        }
 
-	boolean isSendScheduled = false;
+        @Override
+        public void error(RPCErrorCodes errorCode, Exception exception, RPCBatchRequestSender sender) {
+            nbReceivedBytes += sender.getNbReceivedBytes();
 
-	int nbSentBytes = 0;
-	int nbReceivedBytes = 0;
+            batchRequestSenders.remove(sender);
 
-	public RPCProxy()
-	{
-		batchRequestSenders = new ArrayList<RPCBatchRequestSender>();
-		statusCallbacks = new ArrayList<XRPCProxyStatus>();
-	}
+            switch (errorCode) {
+                case ERROR_REQUEST_SEND:
+                    HexaTools.alert("Error with server connexion", "Error while sending the request");
+                    break;
+                case ERROR_REQUEST_RESPONSE_STATUS:
+                    HexaTools.alert("Error with server connexion", "The remote server seems so be down.... Try refreshing the applicatio please...");
+                    break;
+                case ERROR_REQUEST_RESPONSE_EMPTY:
+                    HexaTools.alert("Error with server connexion", "Empty response from the server, connexion may have been cut !");
+                    break;
+                case ERROR_REQUEST_RESPONSE_PARSE:
+                    callback.signalResultParseError(sender.getReceivedText(), sender.getTrace());
+                    break;
+                case ERROR_REQUEST_GWT:
+                    callback.signalRequestError(sender.getTrace(), exception);
+                    break;
+            }
 
-	public void Init( String baseUrl, XRPCProxy serverCommMessageCb )
-	{
-		this.baseUrl = baseUrl;
-		this.callback = serverCommMessageCb;
-	}
+            statusRefresh();
+            scheduleSend();
+        }
 
-	public Object addBeforeNetworkRequestHandler( BeforeNetworkRequestHandler handler )
-	{
-		if( beforeNetworkRequestHandlers == null )
-			beforeNetworkRequestHandlers = new ArrayList<BeforeNetworkRequestHandler>();
+        @Override
+        public void answerReceived(RPCBatchRequestSender sender) {
+            nbReceivedBytes += sender.getNbReceivedBytes();
 
-		beforeNetworkRequestHandlers.add( handler );
+            // TODO : I removed that because the assert was to often not
+            // verified
+            // TODO : reordering answers is then needed !
+            // int index = batchRequestSenders.indexOf( sender );
+            // assert index == 0;
 
-		return handler;
-	}
+            batchRequestSenders.remove(sender);
 
-	public void removeBeforeNetworkRequestHandler( Object registration )
-	{
-		beforeNetworkRequestHandlers.remove( registration );
-	}
+            for (RequestCallInfo info : sender.sentRequests) {
+                // signal server message to interested callbacks
+                if (info.msg.length() > 0)
+                    callback.signalServerCommMessage(info.msgLevel, info.msg);
 
-	public Object addAfterNetworkRequestHandler( AfterNetworkRequestHandler handler )
-	{
-		if( afterNetworkRequestHandlers == null )
-			afterNetworkRequestHandlers = new ArrayList<AfterNetworkRequestHandler>();
+                if (info.msgLevel > 0)
+                    continue; // don't process replies that are in error...
 
-		afterNetworkRequestHandlers.add( handler );
+                if (info.hangout != null) {
+                    // the server tells us a hang out process is needed
+                    hangOut(info, info.hangout);
+                } else {
+                    // normal case fallback
+                    info.giveResultToCallbacks();
+                }
+            }
 
-		return handler;
-	}
+            statusRefresh();
+            scheduleSend();
+        }
 
-	public void removeAfterNetworkRequestHandler( Object registration )
-	{
-		afterNetworkRequestHandlers.remove( registration );
-	}
+        @Override
+        public void sent(RPCBatchRequestSender request) {
+            nbSentBytes += request.getNbSentBytes();
 
-	public void registerStatusCallback( XRPCProxyStatus callback )
-	{
-		statusCallbacks.add( callback );
-	}
+            statusRefresh();
+        }
+    };
 
-	public void sendRequest( RequestDesc request, Object cookie, XRPCRequest callback )
-	{
-		RPCBatchRequestSender sender = getBatchRequestSender();
+    public RPCProxy() {
+        batchRequestSenders = new ArrayList<RPCBatchRequestSender>();
+        statusCallbacks = new ArrayList<XRPCProxyStatus>();
+    }
 
-		sender.addRequest( new RequestCallInfo( request, callback, cookie ) );
+    public void Init(String baseUrl, XRPCProxy serverCommMessageCb) {
+        this.baseUrl = baseUrl;
+        this.callback = serverCommMessageCb;
+    }
 
-		scheduleSend();
-	}
+    public Object addBeforeNetworkRequestHandler(BeforeNetworkRequestHandler handler) {
+        if (beforeNetworkRequestHandlers == null)
+            beforeNetworkRequestHandlers = new ArrayList<BeforeNetworkRequestHandler>();
 
-	private void scheduleSend()
-	{
-		if( isSendScheduled )
-			return;
+        beforeNetworkRequestHandlers.add(handler);
 
-		isSendScheduled = true;
-		Scheduler.get().scheduleDeferred( sendCommand );
-	}
+        return handler;
+    }
 
-	private ScheduledCommand sendCommand = new ScheduledCommand()
-	{
-		@Override
-		public void execute()
-		{
-			isSendScheduled = false;
+    public void removeBeforeNetworkRequestHandler(Object registration) {
+        beforeNetworkRequestHandlers.remove(registration);
+    }
 
-			// something to send ?
-			if( batchRequestSenders.isEmpty() )
-				return;
+    public Object addAfterNetworkRequestHandler(AfterNetworkRequestHandler handler) {
+        if (afterNetworkRequestHandlers == null)
+            afterNetworkRequestHandlers = new ArrayList<AfterNetworkRequestHandler>();
 
-			// send the first batch ready to be sent
-			for( RPCBatchRequestSender sender : batchRequestSenders )
-			{
-				if( sender.isReadyToSend() )
-				{
-					sender.send();
-					return;
-				}
-			}
-		}
-	};
+        afterNetworkRequestHandlers.add(handler);
 
-	private XRPCBatchRequestSender batchSenderCallback = new XRPCBatchRequestSender()
-	{
-		@Override
-		public List<BeforeNetworkRequestHandler> getBeforeNetworkRequestHandlers()
-		{
-			return beforeNetworkRequestHandlers;
-		}
+        return handler;
+    }
 
-		@Override
-		public List<AfterNetworkRequestHandler> getAfterNetworkRequestHandlers()
-		{
-			return afterNetworkRequestHandlers;
-		}
+    public void removeAfterNetworkRequestHandler(Object registration) {
+        afterNetworkRequestHandlers.remove(registration);
+    }
 
-		@Override
-		public void error( RPCErrorCodes errorCode, Exception exception, RPCBatchRequestSender sender )
-		{
-			nbReceivedBytes += sender.getNbReceivedBytes();
+    public void registerStatusCallback(XRPCProxyStatus callback) {
+        statusCallbacks.add(callback);
+    }
 
-			batchRequestSenders.remove( sender );
+    public void sendRequest(RequestDesc request, Object cookie, XRPCRequest callback) {
+        RPCBatchRequestSender sender = getBatchRequestSender();
 
-			switch( errorCode )
-			{
-				case ERROR_REQUEST_SEND:
-					HexaTools.alert( "Error with server connexion", "Error while sending the request" );
-					break;
-				case ERROR_REQUEST_RESPONSE_STATUS:
-					HexaTools.alert( "Error with server connexion", "The remote server seems so be down.... Try refreshing the applicatio please..." );
-					break;
-				case ERROR_REQUEST_RESPONSE_EMPTY:
-					HexaTools.alert( "Error with server connexion", "Empty response from the server, connexion may have been cut !" );
-					break;
-				case ERROR_REQUEST_RESPONSE_PARSE:
-					callback.signalResultParseError( sender.getReceivedText(), sender.getTrace() );
-					break;
-				case ERROR_REQUEST_GWT:
-					callback.signalRequestError( sender.getTrace(), exception );
-					break;
-			}
+        sender.addRequest(new RequestCallInfo(request, callback, cookie));
 
-			statusRefresh();
-			scheduleSend();
-		}
+        scheduleSend();
+    }
 
-		@Override
-		public void answerReceived( RPCBatchRequestSender sender )
-		{
-			nbReceivedBytes += sender.getNbReceivedBytes();
+    private void scheduleSend() {
+        if (isSendScheduled)
+            return;
 
-			// TODO : I removed that because the assert was to often not
-			// verified
-			// TODO : reordering answers is then needed !
-			// int index = batchRequestSenders.indexOf( sender );
-			// assert index == 0;
+        isSendScheduled = true;
+        Scheduler.get().scheduleDeferred(sendCommand);
+    }
 
-			batchRequestSenders.remove( sender );
+    // handles the case where an hangOut has been generated by the server
+    // in this case, we give control back to the application so that the user
+    // can provide the missing information, then, we send the hangout answer
+    // over the network
+    private void hangOut(final RequestCallInfo req, GenericJSO hangOut) {
+        final int hangOutId = hangOut.getIntByIdx(0);
 
-			for( RequestCallInfo info : sender.sentRequests )
-			{
-				// signal server message to interested callbacks
-				if( info.msg.length() > 0 )
-					callback.signalServerCommMessage( info.msgLevel, info.msg );
+        JsArrayString tmp = hangOut.getGenericJSOByIdx(1).cast();
+        String name = tmp.get(0);
+        String type = tmp.get(1);
+        String title = tmp.get(2);
+        String description = tmp.get(3);
+        JavaScriptObject hangOutCurrentData = hangOut.getGenericJSOByIdx(2);
 
-				if( info.msgLevel > 0 )
-					continue; // don't process replies that are in error...
+        callback.hangOut(title, description, name, type, hangOutCurrentData, new IAsyncCallback<JavaScriptObject>() {
+            @Override
+            public void onSuccess(JavaScriptObject result) {
+                JSONArray params = new JSONArray();
+                params.set(0, new JSONNumber(hangOutId));
+                params.set(1, new JSONObject(result));
+                req.request = new RequestDesc(req.request.service, req.request.interfaceChecksum, "_hang_out_reply_", params);
 
-				if( info.hangout != null )
-				{
-					// the server tells us a hang out process is needed
-					hangOut( info, info.hangout );
-				}
-				else
-				{
-					// normal case fallback
-					info.giveResultToCallbacks();
-				}
-			}
+                sendRequest(req.request, req.cookie, req.callback);
+            }
+        });
+    }
 
-			statusRefresh();
-			scheduleSend();
-		}
+    // retrieve a batch request sender that is OK for adding requests
+    private RPCBatchRequestSender getBatchRequestSender() {
+        RPCBatchRequestSender sender = null;
 
-		@Override
-		public void sent( RPCBatchRequestSender request )
-		{
-			nbSentBytes += request.getNbSentBytes();
+        // test the last sender we have in the list
+        if (!batchRequestSenders.isEmpty()) {
+            sender = batchRequestSenders.get(batchRequestSenders.size() - 1);
+            if (sender.canAddRequest())
+                return sender;
+        }
 
-			statusRefresh();
-		}
-	};
+        // otherwise, create a new one
+        sender = new RPCBatchRequestSender();
+        sender.init(baseUrl, batchSenderCallback);
+        batchRequestSenders.add(sender);
 
-	// handles the case where an hangOut has been generated by the server
-	// in this case, we give control back to the application so that the user
-	// can provide the missing information, then, we send the hangout answer
-	// over the network
-	private void hangOut( final RequestCallInfo req, GenericJSO hangOut )
-	{
-		final int hangOutId = hangOut.getIntByIdx( 0 );
+        return sender;
+    }
 
-		JsArrayString tmp = hangOut.getGenericJSOByIdx( 1 ).cast();
-		String name = tmp.get( 0 );
-		String type = tmp.get( 1 );
-		String title = tmp.get( 2 );
-		String description = tmp.get( 3 );
-		JavaScriptObject hangOutCurrentData = hangOut.getGenericJSOByIdx( 2 );
+    private void statusRefresh() {
+        String status;
+        int nbPending = 0;
+        for (RPCBatchRequestSender sender : batchRequestSenders)
+            if (sender.isSending())
+                nbPending++;
 
-		callback.hangOut( title, description, name, type, hangOutCurrentData, new IAsyncCallback<JavaScriptObject>()
-		{
-			@Override
-			public void onSuccess( JavaScriptObject result )
-			{
-				JSONArray params = new JSONArray();
-				params.set( 0, new JSONNumber( hangOutId ) );
-				params.set( 1, new JSONObject( result ) );
-				req.request = new RequestDesc( req.request.service, req.request.interfaceChecksum, "_hang_out_reply_", params );
+        if (nbPending == 0)
+            status = "OK";
+        else
+            status = "Loading";
 
-				sendRequest( req.request, req.cookie, req.callback );
-			}
-		} );
-	}
-
-	// retrieve a batch request sender that is OK for adding requests
-	private RPCBatchRequestSender getBatchRequestSender()
-	{
-		RPCBatchRequestSender sender = null;
-
-		// test the last sender we have in the list
-		if( !batchRequestSenders.isEmpty() )
-		{
-			sender = batchRequestSenders.get( batchRequestSenders.size() - 1 );
-			if( sender.canAddRequest() )
-				return sender;
-		}
-
-		// otherwise, create a new one
-		sender = new RPCBatchRequestSender();
-		sender.init( baseUrl, batchSenderCallback );
-		batchRequestSenders.add( sender );
-
-		return sender;
-	}
-
-	private void statusRefresh()
-	{
-		String status;
-		int nbPending = 0;
-		for( RPCBatchRequestSender sender : batchRequestSenders )
-			if( sender.isSending() )
-				nbPending++;
-
-		if( nbPending == 0 )
-			status = "OK";
-		else
-			status = "Loading";
-
-		for( XRPCProxyStatus callback : statusCallbacks )
-			callback.onServerCommStatusChanged( status, nbPending, nbSentBytes, nbReceivedBytes );
-	}
+        for (XRPCProxyStatus callback : statusCallbacks)
+            callback.onServerCommStatusChanged(status, nbPending, nbSentBytes, nbReceivedBytes);
+    }
 }

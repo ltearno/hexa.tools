@@ -13,103 +13,86 @@ import com.google.gwt.user.client.ui.Widget;
 
 import fr.lteconsulting.hexa.client.css.HexaCss;
 
-public class ImageTextButton extends Widget implements ClickHandler, HasClickHandlers
-{
-	public interface Css extends HexaCss
-	{
-		public static final Css CSS = GWT.create( Css.class );
+public class ImageTextButton extends Widget implements ClickHandler, HasClickHandlers {
+    protected Element button;
+    ImageResource resource;
+    String title;
+    Object cookie = null;
+    Callback callback = null;
 
-		String main();
-	}
+    @UiConstructor
+    public ImageTextButton(ImageResource resource, String title) {
+        this.resource = resource;
+        this.title = title;
 
-	public interface Callback
-	{
-		void onClick( Object cookie );
-	}
+        button = createButtonElement();
+        button.setClassName(Css.CSS.main());
 
-	ImageResource resource;
-	String title;
+        setText(title);
 
-	protected Element button;
+        setElement(button);
+    }
 
-	Object cookie = null;
-	Callback callback = null;
+    protected Element createButtonElement() {
+        return DOM.createButton();
+    }
 
-	@UiConstructor
-	public ImageTextButton( ImageResource resource, String title )
-	{
-		this.resource = resource;
-		this.title = title;
+    public void setCallback(Callback callback, Object cookie) {
+        this.callback = callback;
+        this.cookie = cookie;
 
-		button = createButtonElement();
-		button.setClassName( Css.CSS.main() );
+        addClickHandler(this);
+    }
 
-		setText( title );
+    public Object getCookie() {
+        return cookie;
+    }
 
-		setElement( button );
-	}
-	
-	protected Element createButtonElement()
-	{
-		return DOM.createButton();
-	}
+    public void setCookie(Object cookie) {
+        this.cookie = cookie;
+    }
 
-	public void setCallback( Callback callback, Object cookie )
-	{
-		this.callback = callback;
-		this.cookie = cookie;
+    public void setText(String text) {
+        title = text;
 
-		addClickHandler( this );
-	}
+        String elem;
+        if (resource != null)
+            elem = "<img src='" + resource.getSafeUri().asString() + "'/>";
+        else
+            elem = "";
 
-	public void setCookie( Object cookie )
-	{
-		this.cookie = cookie;
-	}
+        button.setInnerHTML(elem + "<span>" + text + "</span>");
+    }
 
-	public Object getCookie()
-	{
-		return cookie;
-	}
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
+    }
 
-	public void setText( String text )
-	{
-		title = text;
+    public void setEnabled(boolean fEnable) {
+        if (fEnable) {
+            button.removeAttribute("disabled");
+            button.removeClassName("disabled");
+        } else {
+            button.setAttribute("disabled", "true");
+            button.addClassName("disabled");
+        }
+    }
 
-		String elem;
-		if( resource != null )
-			elem = "<img src='" + resource.getSafeUri().asString() + "'/>";
-		else
-			elem = "";
+    @Override
+    public void onClick(ClickEvent event) {
+        assert (callback != null);
 
-		button.setInnerHTML( elem + "<span>" + text + "</span>" );
-	}
+        callback.onClick(cookie);
+    }
 
-	@Override
-	public HandlerRegistration addClickHandler( ClickHandler handler )
-	{
-		return addDomHandler( handler, ClickEvent.getType() );
-	}
+    public interface Css extends HexaCss {
+        public static final Css CSS = GWT.create(Css.class);
 
-	public void setEnabled( boolean fEnable )
-	{
-		if( fEnable )
-		{
-			button.removeAttribute( "disabled" );
-			button.removeClassName( "disabled" );
-		}
-		else
-		{
-			button.setAttribute( "disabled", "true" );
-			button.addClassName( "disabled" );
-		}
-	}
+        String main();
+    }
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		assert (callback != null);
-
-		callback.onClick( cookie );
-	}
+    public interface Callback {
+        void onClick(Object cookie);
+    }
 }

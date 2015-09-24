@@ -1,6 +1,5 @@
 package fr.lteconsulting.hexa.client.interfaces;
 
-public interface IAsyncCallback<T>
-{
-	void onSuccess( T result );
+public interface IAsyncCallback<T> {
+    void onSuccess(T result);
 }

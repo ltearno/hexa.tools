@@ -1,5 +1,4 @@
 package javax.persistence;
 
-public enum FlushModeType
-{
+public enum FlushModeType {
 }

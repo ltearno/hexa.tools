@@ -12,83 +12,76 @@ import fr.lteconsulting.hexa.databinding.gwt.Binder;
  * In addition to the normal binding adapters that are found in HexaBinding, the
  * GWT version provides binding functionnality for Widgets implementing the
  * HasValue interface.
- * 
+ * <p/>
  * Here is the related tests.
- * 
- * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
+ * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  */
-public class HasValueDataBindingGwtTest extends GWTTestCase
-{
-	@Override
-	public String getModuleName()
-	{
-		return "fr.lteconsulting.hexa.databinding.HexaBindingTest";
-	}
+public class HasValueDataBindingGwtTest extends GWTTestCase {
+    @Override
+    public String getModuleName() {
+        return "fr.lteconsulting.hexa.databinding.HexaBindingTest";
+    }
 
-	@Override
-	protected void gwtSetUp() throws Exception
-	{
-		super.gwtSetUp();
-		
-		GWT.<MyBundle>create( MyBundle.class ).register();
-	}
+    @Override
+    protected void gwtSetUp() throws Exception {
+        super.gwtSetUp();
 
-	interface MyBundle extends ClazzBundle
-	{
-		@ReflectedClasses( classes = { DTO.class } )
-		void register();
-	}
+        GWT.<MyBundle>create(MyBundle.class).register();
+    }
 
-	/**
-	 * Binding of a DTO property to a TextBox
-	 */
-	public void test01()
-	{
-		DTO dto = new DTO();
+    /**
+     * Binding of a DTO property to a TextBox
+     */
+    public void test01() {
+        DTO dto = new DTO();
 
-		TextBox box = new TextBox();
+        TextBox box = new TextBox();
 
-		Binder.bind( dto, "name" ).to( box );
+        Binder.bind(dto, "name").to(box);
 
-		dto.setName( "toto" );
-		assertEquals( "toto", box.getValue() );
+        dto.setName("toto");
+        assertEquals("toto", box.getValue());
 
-		box.setValue( "titi", true );
-		assertEquals( "titi", dto.getName() );
+        box.setValue("titi", true);
+        assertEquals("titi", dto.getName());
 
-		/**
-		 * The setText method doesn't throw an event so the 
-		 * value does not get updated in b2.
-		 * Note that if the user changes the text and leaves 
-		 * the text box, it will trigger an event and activate
-		 * the data binding
-		 */
-		box.setText( "tata" );
-		assertEquals( "titi", dto.getName() );
-	}
+        /**
+         * The setText method doesn't throw an event so the
+         * value does not get updated in b2.
+         * Note that if the user changes the text and leaves
+         * the text box, it will trigger an event and activate
+         * the data binding
+         */
+        box.setText("tata");
+        assertEquals("titi", dto.getName());
+    }
 
-	/**
-	 * Bind two TextBox together
-	 */
-	public void test02()
-	{
-		TextBox b1 = new TextBox();
-		TextBox b2 = new TextBox();
+    /**
+     * Bind two TextBox together
+     */
+    public void test02() {
+        TextBox b1 = new TextBox();
+        TextBox b2 = new TextBox();
 
-		Binder.bind( b1 ).to( b2 );
+        Binder.bind(b1).to(b2);
 
-		b2.setValue( "titi", true );
-		assertEquals( "titi", b1.getText() );
-		
-		/**
-		 * The setText method doesn't throw an event so the 
-		 * value does not get updated in b2.
-		 * Note that if the user changes the text and leaves 
-		 * the text box, it will trigger an event and activate
-		 * the data binding
-		 */
-		b1.setText( "toto" );
-		assertEquals( "titi", b2.getValue() );
-	}
+        b2.setValue("titi", true);
+        assertEquals("titi", b1.getText());
+
+        /**
+         * The setText method doesn't throw an event so the
+         * value does not get updated in b2.
+         * Note that if the user changes the text and leaves
+         * the text box, it will trigger an event and activate
+         * the data binding
+         */
+        b1.setText("toto");
+        assertEquals("titi", b2.getValue());
+    }
+
+    interface MyBundle extends ClazzBundle {
+        @ReflectedClasses(classes = {DTO.class})
+        void register();
+    }
 }

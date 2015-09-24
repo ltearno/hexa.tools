@@ -8,56 +8,47 @@ import com.google.gwt.user.client.Timer;
  * if fPostponeEachTime is true => callback called xxx ms after the last event received
  */
 
-public class Delayer
-{
-	public interface Callback
-	{
-		void onDelayedEvent();
-	}
+public class Delayer {
+    Callback callback;
+    int milliseconds;
+    boolean fTriggered = false;
+    boolean fPostponeEachTime;
+    Timer reallyDoTimer = new Timer() {
+        @Override
+        public void run() {
+            fTriggered = false;
+            reallyDoTimer.cancel();
 
-	Callback callback;
-	int milliseconds;
-	boolean fTriggered = false;
-	boolean fPostponeEachTime;
+            callback.onDelayedEvent();
 
-	public Delayer( int milliseconds, Callback callback, boolean fPostponeEachTime )
-	{
-		this.milliseconds = milliseconds;
-		this.callback = callback;
-		this.fPostponeEachTime = fPostponeEachTime;
-	}
+            reallyDoTimer.cancel();
+        }
+    };
 
-	public void trigger()
-	{
-		// if an action is already registered, postpone it
-		if( fTriggered )
-		{
-			if( fPostponeEachTime )
-			{
-				reallyDoTimer.cancel();
-				reallyDoTimer.schedule( milliseconds );
-			}
-			return;
-		}
+    public Delayer(int milliseconds, Callback callback, boolean fPostponeEachTime) {
+        this.milliseconds = milliseconds;
+        this.callback = callback;
+        this.fPostponeEachTime = fPostponeEachTime;
+    }
 
-		// schedule action ...
+    public void trigger() {
+        // if an action is already registered, postpone it
+        if (fTriggered) {
+            if (fPostponeEachTime) {
+                reallyDoTimer.cancel();
+                reallyDoTimer.schedule(milliseconds);
+            }
+            return;
+        }
 
-		fTriggered = true;
+        // schedule action ...
 
-		reallyDoTimer.schedule( milliseconds );
-	}
+        fTriggered = true;
 
-	Timer reallyDoTimer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			fTriggered = false;
-			reallyDoTimer.cancel();
+        reallyDoTimer.schedule(milliseconds);
+    }
 
-			callback.onDelayedEvent();
-			
-			reallyDoTimer.cancel();
-		}
-	};
+    public interface Callback {
+        void onDelayedEvent();
+    }
 }

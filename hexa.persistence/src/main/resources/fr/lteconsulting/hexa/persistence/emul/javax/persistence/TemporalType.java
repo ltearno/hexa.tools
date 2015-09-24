@@ -27,9 +27,9 @@ package javax.persistence;
 
 public enum TemporalType {
 
-    DATE, 
+    DATE,
 
-    TIME, 
+    TIME,
 
     TIMESTAMP
 }

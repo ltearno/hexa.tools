@@ -20,314 +20,274 @@ import com.google.gwt.user.rebind.SourceWriter;
 import fr.lteconsulting.hexa.client.comm.CustomMethod;
 import fr.lteconsulting.hexa.client.comm.FieldName;
 
-public class DataProxyGenerator extends Generator
-{
-	private String genMethodPrototype( JMethod method )
-	{
-		StringBuilder sb = new StringBuilder();
+public class DataProxyGenerator extends Generator {
+    // HexaDate fields
+    HashMap<String, String> hexaDateFields = new HashMap<String, String>();
+    // HexaTime fields
+    HashMap<String, String> hexaTimeFields = new HashMap<String, String>();
+    // HexaDateTime fields
+    HashMap<String, String> hexaDateTimeFields = new HashMap<String, String>();
 
-		sb.append( "public " + method.getReturnType().getParameterizedQualifiedSourceName() + " " + method.getName() + "( " );
+    private String genMethodPrototype(JMethod method) {
+        StringBuilder sb = new StringBuilder();
 
-		for( int i = 0; i < method.getParameters().length; i++ )
-		{
-			JParameter param = method.getParameters()[i];
-			sb.append( param.getType().getParameterizedQualifiedSourceName() + " " + param.getName() );
-			if( i < method.getParameters().length - 1 )
-				sb.append( ", " );
-		}
+        sb.append("public " + method.getReturnType().getParameterizedQualifiedSourceName() + " " + method.getName() + "( ");
 
-		sb.append( " )" );
+        for (int i = 0; i < method.getParameters().length; i++) {
+            JParameter param = method.getParameters()[i];
+            sb.append(param.getType().getParameterizedQualifiedSourceName() + " " + param.getName());
+            if (i < method.getParameters().length - 1)
+                sb.append(", ");
+        }
 
-		return sb.toString();
-	}
+        sb.append(" )");
 
-	// HexaDate fields
-	HashMap<String, String> hexaDateFields = new HashMap<String, String>();
+        return sb.toString();
+    }
 
-	String registerHexaDateVariable( String fieldName )
-	{
-		String variableName = hexaDateFields.get( fieldName );
-		if( variableName == null )
-		{
-			variableName = "hexaDate_" + hexaDateFields.size();
-			hexaDateFields.put( fieldName, variableName );
-		}
-		return variableName;
-	}
+    String registerHexaDateVariable(String fieldName) {
+        String variableName = hexaDateFields.get(fieldName);
+        if (variableName == null) {
+            variableName = "hexaDate_" + hexaDateFields.size();
+            hexaDateFields.put(fieldName, variableName);
+        }
+        return variableName;
+    }
 
-	void generateHexaDateVariables( SourceWriter sw )
-	{
-		for( String variableName : hexaDateFields.values() )
-			sw.println( "HexaDate " + variableName + " = null;" );
-	}
+    void generateHexaDateVariables(SourceWriter sw) {
+        for (String variableName : hexaDateFields.values())
+            sw.println("HexaDate " + variableName + " = null;");
+    }
 
-	// HexaTime fields
-	HashMap<String, String> hexaTimeFields = new HashMap<String, String>();
+    String registerHexaTimeVariable(String fieldName) {
+        String variableName = hexaTimeFields.get(fieldName);
+        if (variableName == null) {
+            variableName = "hexaTime_" + hexaTimeFields.size();
+            hexaTimeFields.put(fieldName, variableName);
+        }
+        return variableName;
+    }
 
-	String registerHexaTimeVariable( String fieldName )
-	{
-		String variableName = hexaTimeFields.get( fieldName );
-		if( variableName == null )
-		{
-			variableName = "hexaTime_" + hexaTimeFields.size();
-			hexaTimeFields.put( fieldName, variableName );
-		}
-		return variableName;
-	}
+    void generateHexaTimeVariables(SourceWriter sw) {
+        for (String variableName : hexaTimeFields.values())
+            sw.println("HexaTime " + variableName + " = null;");
+    }
 
-	void generateHexaTimeVariables( SourceWriter sw )
-	{
-		for( String variableName : hexaTimeFields.values() )
-			sw.println( "HexaTime " + variableName + " = null;" );
-	}
+    String registerHexaDateTimeVariable(String fieldName) {
+        String variableName = hexaDateTimeFields.get(fieldName);
+        if (variableName == null) {
+            variableName = "hexaDateTime_" + hexaDateTimeFields.size();
+            hexaDateTimeFields.put(fieldName, variableName);
+        }
+        return variableName;
+    }
 
-	// HexaDateTime fields
-	HashMap<String, String> hexaDateTimeFields = new HashMap<String, String>();
+    void generateHexaDateTimeVariables(SourceWriter sw) {
+        for (String variableName : hexaDateTimeFields.values())
+            sw.println("HexaDateTime " + variableName + " = null;");
+    }
 
-	String registerHexaDateTimeVariable( String fieldName )
-	{
-		String variableName = hexaDateTimeFields.get( fieldName );
-		if( variableName == null )
-		{
-			variableName = "hexaDateTime_" + hexaDateTimeFields.size();
-			hexaDateTimeFields.put( fieldName, variableName );
-		}
-		return variableName;
-	}
+    @Override
+    public String generate(TreeLogger logger, GeneratorContext context, String requestedClass) throws UnableToCompleteException {
+        logger.log(TreeLogger.INFO, "Generate '" + requestedClass, null);
 
-	void generateHexaDateTimeVariables( SourceWriter sw )
-	{
-		for( String variableName : hexaDateTimeFields.values() )
-			sw.println( "HexaDateTime " + variableName + " = null;" );
-	}
+        TypeOracle typeOracle = context.getTypeOracle();
 
-	@Override
-	public String generate( TreeLogger logger, GeneratorContext context, String requestedClass ) throws UnableToCompleteException
-	{
-		logger.log( TreeLogger.INFO, "Generate '" + requestedClass, null );
+        JClassType requestedType = typeOracle.findType(requestedClass);
+        if (requestedType == null) {
+            logger.log(TreeLogger.ERROR, "Type '" + requestedClass + "' has not been found by the Oracle", null);
+            throw new UnableToCompleteException();
+        }
 
-		TypeOracle typeOracle = context.getTypeOracle();
+        String className = requestedType.getName() + "Impl";
+        String fullClassName = requestedClass + "Impl";
+        String packageName = requestedType.getPackage().getName();
 
-		JClassType requestedType = typeOracle.findType( requestedClass );
-		if( requestedType == null )
-		{
-			logger.log( TreeLogger.ERROR, "Type '" + requestedClass + "' has not been found by the Oracle", null );
-			throw new UnableToCompleteException();
-		}
+        PrintWriter printWriter = context.tryCreate(logger, packageName, className);
+        if (printWriter == null) {
+            logger.log(TreeLogger.DEBUG, requestedClass + " : CANNOT CREATE PRINT WRITER", null);
+            return fullClassName;
+        }
 
-		String className = requestedType.getName() + "Impl";
-		String fullClassName = requestedClass + "Impl";
-		String packageName = requestedType.getPackage().getName();
+        // Get type parameters informations so that we generate a fitting class
+        String parameterizedTypeExt = "";
+        String typeExt = "";
+        JGenericType genericType = requestedType.isGenericType();
+        if (genericType != null) {
+            parameterizedTypeExt = "<";
+            typeExt = "<";
+            JTypeParameter[] tps = genericType.getTypeParameters();
+            boolean needComa = false;
+            for (int i = 0; i < tps.length; i++) {
+                if (needComa) {
+                    parameterizedTypeExt += ", ";
+                    typeExt += ", ";
+                }
+                needComa = true;
 
-		PrintWriter printWriter = context.tryCreate( logger, packageName, className );
-		if( printWriter == null )
-		{
-			logger.log( TreeLogger.DEBUG, requestedClass + " : CANNOT CREATE PRINT WRITER", null );
-			return fullClassName;
-		}
+                JTypeParameter tp = tps[i];
 
-		// Get type parameters informations so that we generate a fitting class
-		String parameterizedTypeExt = "";
-		String typeExt = "";
-		JGenericType genericType = requestedType.isGenericType();
-		if( genericType != null )
-		{
-			parameterizedTypeExt = "<";
-			typeExt = "<";
-			JTypeParameter[] tps = genericType.getTypeParameters();
-			boolean needComa = false;
-			for( int i = 0; i < tps.length; i++ )
-			{
-				if( needComa )
-				{
-					parameterizedTypeExt += ", ";
-					typeExt += ", ";
-				}
-				needComa = true;
+                parameterizedTypeExt += tp.getName() + " extends ";
+                typeExt += tp.getName();
 
-				JTypeParameter tp = tps[i];
+                JClassType[] cts = tp.getBounds();
+                boolean needAnd = false;
+                for (int j = 0; j < cts.length; j++) {
+                    if (needAnd)
+                        parameterizedTypeExt += " & ";
+                    needAnd = true;
 
-				parameterizedTypeExt += tp.getName() + " extends ";
-				typeExt += tp.getName();
+                    JClassType ct = cts[j];
+                    parameterizedTypeExt += ct.getName();
+                }
+            }
+            parameterizedTypeExt += ">";
+            typeExt += ">";
+        }
 
-				JClassType[] cts = tp.getBounds();
-				boolean needAnd = false;
-				for( int j = 0; j < cts.length; j++ )
-				{
-					if( needAnd )
-						parameterizedTypeExt += " & ";
-					needAnd = true;
+        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packageName, className + parameterizedTypeExt);
+        composerFactory.addImport("com.google.gwt.core.client.GWT");
+        composerFactory.addImport("fr.lteconsulting.hexa.client.comm.DataProxy");
+        composerFactory.addImport("fr.lteconsulting.hexa.client.comm.GenericJSO");
+        composerFactory.addImport("fr.lteconsulting.hexa.client.comm.ResponseJSO");
+        composerFactory.addImport("java.util.ArrayList");
+        composerFactory.addImport("com.google.gwt.core.client.JsArray");
+        composerFactory.addImport("fr.lteconsulting.hexa.client.common.HexaDate");
+        composerFactory.addImport("fr.lteconsulting.hexa.client.common.HexaTime");
+        composerFactory.addImport("fr.lteconsulting.hexa.client.common.HexaDateTime");
+        composerFactory.addImport("com.google.gwt.core.client.JavaScriptObject");
+        composerFactory.addImport("com.google.gwt.json.client.JSONObject");
+        composerFactory.addImplementedInterface(requestedClass + typeExt);
 
-					JClassType ct = cts[j];
-					parameterizedTypeExt += ct.getName();
-				}
-			}
-			parameterizedTypeExt += ">";
-			typeExt += ">";
-		}
+        SourceWriter sw = composerFactory.createSourceWriter(context, printWriter);
+        if (sw == null) {
+            // logger.log( TreeLogger.WARN, requestedClass +
+            // " : CANNOT CREATE SOURCEWRITER", null );
+            return fullClassName; // null, already generated
+        }
 
-		ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory( packageName, className + parameterizedTypeExt );
-		composerFactory.addImport( "com.google.gwt.core.client.GWT" );
-		composerFactory.addImport( "fr.lteconsulting.hexa.client.comm.DataProxy" );
-		composerFactory.addImport( "fr.lteconsulting.hexa.client.comm.GenericJSO" );
-		composerFactory.addImport( "fr.lteconsulting.hexa.client.comm.ResponseJSO" );
-		composerFactory.addImport( "java.util.ArrayList" );
-		composerFactory.addImport( "com.google.gwt.core.client.JsArray" );
-		composerFactory.addImport( "fr.lteconsulting.hexa.client.common.HexaDate" );
-		composerFactory.addImport( "fr.lteconsulting.hexa.client.common.HexaTime" );
-		composerFactory.addImport( "fr.lteconsulting.hexa.client.common.HexaDateTime" );
-		composerFactory.addImport( "com.google.gwt.core.client.JavaScriptObject" );
-		composerFactory.addImport( "com.google.gwt.json.client.JSONObject" );
-		composerFactory.addImplementedInterface( requestedClass + typeExt );
+        sw.println("private GenericJSO jso = null;");
 
-		SourceWriter sw = composerFactory.createSourceWriter( context, printWriter );
-		if( sw == null )
-		{
-			// logger.log( TreeLogger.WARN, requestedClass +
-			// " : CANNOT CREATE SOURCEWRITER", null );
-			return fullClassName; // null, already generated
-		}
+        JMethod[] methods = requestedType.getMethods();
 
-		sw.println( "private GenericJSO jso = null;" );
+        sw.println("@Override public String toString() {");
+        sw.indent();
+        sw.println("return new JSONObject(jso).toString();");
+        sw.outdent();
+        sw.println("}");
 
-		JMethod[] methods = requestedType.getMethods();
+        sw.println("public void init( GenericJSO jso ) {");
+        sw.indent();
+        sw.println("this.jso = jso;");
+        sw.outdent();
+        sw.println("}");
 
-		sw.println( "@Override public String toString() {" );
-		sw.indent();
-		sw.println( "return new JSONObject(jso).toString();" );
-		sw.outdent();
-		sw.println( "}" );
+        for (JMethod method : methods) {
+            FieldName fnAnnotation = method.getAnnotation(FieldName.class);
+            CustomMethod cmAnnotation = method.getAnnotation(CustomMethod.class);
+            if (cmAnnotation != null) {
+                sw.println("public " + method.getReturnType().getSimpleSourceName() + " " + method.getName() + "() {");
+                sw.indent();
+                sw.println(cmAnnotation.body());
+                sw.outdent();
+                sw.println("}");
+            } else if (fnAnnotation != null) {
+                String methodPrototype = genMethodPrototype(method);
+                sw.println(methodPrototype);
+                sw.println("{");
+                // sw.println( "public " +
+                // method.getReturnType().getParameterizedQualifiedSourceName()
+                // + " " + method.getName() + "() {" );
+                sw.indent();
 
-		sw.println( "public void init( GenericJSO jso ) {" );
-		sw.indent();
-		sw.println( "this.jso = jso;" );
-		sw.outdent();
-		sw.println( "}" );
+                if (method.getReturnType().getSimpleSourceName().compareTo("HexaDate") == 0) {
+                    String variableName = registerHexaDateVariable(fnAnnotation.fieldName());
+                    sw.println("if( " + variableName + " == null ) " + variableName + " = new HexaDate( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );");
+                    sw.println("return " + variableName + ";");
+                } else if (method.getReturnType().getSimpleSourceName().compareTo("HexaTime") == 0) {
+                    String variableName = registerHexaTimeVariable(fnAnnotation.fieldName());
+                    sw.println("if( " + variableName + " == null ) " + variableName + " = new HexaTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );");
+                    sw.println("return " + variableName + ";");
 
-		for( JMethod method : methods )
-		{
-			FieldName fnAnnotation = method.getAnnotation( FieldName.class );
-			CustomMethod cmAnnotation = method.getAnnotation( CustomMethod.class );
-			if( cmAnnotation != null )
-			{
-				sw.println( "public " + method.getReturnType().getSimpleSourceName() + " " + method.getName() + "() {" );
-				sw.indent();
-				sw.println( cmAnnotation.body() );
-				sw.outdent();
-				sw.println( "}" );
-			}
-			else if( fnAnnotation != null )
-			{
-				String methodPrototype = genMethodPrototype( method );
-				sw.println( methodPrototype );
-				sw.println( "{" );
-				// sw.println( "public " +
-				// method.getReturnType().getParameterizedQualifiedSourceName()
-				// + " " + method.getName() + "() {" );
-				sw.indent();
+                    // sw.println( "return new HexaTime( jso.getString( \"" +
+                    // fnAnnotation.fieldName() + "\" ) );" );
+                } else if (method.getReturnType().getSimpleSourceName().compareTo("HexaDateTime") == 0) {
+                    String variableName = registerHexaDateTimeVariable(fnAnnotation.fieldName());
+                    sw.println("if( " + variableName + " == null ) " + variableName + " = new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );");
+                    sw.println("return " + variableName + ";");
 
-				if( method.getReturnType().getSimpleSourceName().compareTo( "HexaDate" ) == 0 )
-				{
-					String variableName = registerHexaDateVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDate( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
-					sw.println( "return " + variableName + ";" );
-				}
-				else if( method.getReturnType().getSimpleSourceName().compareTo( "HexaTime" ) == 0 )
-				{
-					String variableName = registerHexaTimeVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
-					sw.println( "return " + variableName + ";" );
+                    // sw.println( "return new HexaDateTime( jso.getString( \""
+                    // + fnAnnotation.fieldName() + "\" ) );" );
+                } else if (isJSOType(method.getReturnType())) {
+                    sw.println("return jso.getGenericJSO( \"" + fnAnnotation.fieldName() + "\" ).cast();");
+                }
+                //else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
+                else if (!(method.getReturnType().getQualifiedSourceName().equals("java.util.ArrayList") || method.getReturnType().getQualifiedSourceName().equals("java.util.List"))) {
+                    String jsoType = method.getReturnType().getSimpleSourceName();
+                    if (method.getReturnType().getSimpleSourceName().compareTo("int") == 0)
+                        jsoType = "Int";
+                    else if (method.getReturnType().getSimpleSourceName().compareTo("Integer") == 0)
+                        jsoType = "Integer";
+                    else if (method.getReturnType().getSimpleSourceName().compareTo("boolean") == 0)
+                        jsoType = "Boolean";
+                    else if (method.getReturnType().getSimpleSourceName().compareTo("double") == 0)
+                        jsoType = "Double";
+                    sw.println("return jso.get" + jsoType + "( \"" + fnAnnotation.fieldName() + "\" );");
+                } else {
+                    JParameterizedType ptype = method.getReturnType().isParameterized();
+                    JClassType[] typeArgs = ptype.getTypeArgs();
+                    assert (typeArgs.length == 1);
+                    String type = typeArgs[0].getParameterizedQualifiedSourceName();
+                    String field = fnAnnotation.fieldName();
 
-					// sw.println( "return new HexaTime( jso.getString( \"" +
-					// fnAnnotation.fieldName() + "\" ) );" );
-				}
-				else if( method.getReturnType().getSimpleSourceName().compareTo( "HexaDateTime" ) == 0 )
-				{
-					String variableName = registerHexaDateTimeVariable( fnAnnotation.fieldName() );
-					sw.println( "if( " + variableName + " == null ) " + variableName + " = new HexaDateTime( jso.getString( \"" + fnAnnotation.fieldName() + "\" ) );" );
-					sw.println( "return " + variableName + ";" );
+                    sw.println("ArrayList<" + type + "> res = new ArrayList<" + type + ">();");
+                    sw.println("JsArray<GenericJSO> jsos = jso.getArray( \"" + field + "\" );");
+                    sw.println("for( int i=0; i<jsos.length(); i++ ) {");
+                    sw.println("	" + type + " elem = GWT.create( " + type + ".class );");
+                    sw.println("	elem.init( jsos.get(i) );");
+                    sw.println("	res.add( elem );");
+                    sw.println("}");
+                    sw.println("return res;");
+                }
 
-					// sw.println( "return new HexaDateTime( jso.getString( \""
-					// + fnAnnotation.fieldName() + "\" ) );" );
-				}
-				else if( isJSOType( method.getReturnType() ) )
-				{
-					sw.println( "return jso.getGenericJSO( \"" + fnAnnotation.fieldName() + "\" ).cast();" );
-				}
-				//else if( !method.getReturnType().getSimpleSourceName().equals( "ArrayList" ) )
-				else if( ! ( method.getReturnType().getQualifiedSourceName().equals( "java.util.ArrayList" ) || method.getReturnType().getQualifiedSourceName().equals( "java.util.List" ) ) )
-				{
-					String jsoType = method.getReturnType().getSimpleSourceName();
-					if( method.getReturnType().getSimpleSourceName().compareTo( "int" ) == 0 )
-						jsoType = "Int";
-					else if( method.getReturnType().getSimpleSourceName().compareTo( "Integer" ) == 0 )
-						jsoType = "Integer";
-					else if( method.getReturnType().getSimpleSourceName().compareTo( "boolean" ) == 0 )
-						jsoType = "Boolean";
-					else if( method.getReturnType().getSimpleSourceName().compareTo( "double" ) == 0 )
-						jsoType = "Double";
-					sw.println( "return jso.get" + jsoType + "( \"" + fnAnnotation.fieldName() + "\" );" );
-				}
-				else
-				{
-					JParameterizedType ptype = method.getReturnType().isParameterized();
-					JClassType[] typeArgs = ptype.getTypeArgs();
-					assert (typeArgs.length == 1);
-					String type = typeArgs[0].getParameterizedQualifiedSourceName();
-					String field = fnAnnotation.fieldName();
+                sw.outdent();
+                sw.println("}");
+            }
+        }
 
-					sw.println( "ArrayList<" + type + "> res = new ArrayList<" + type + ">();" );
-					sw.println( "JsArray<GenericJSO> jsos = jso.getArray( \"" + field + "\" );" );
-					sw.println( "for( int i=0; i<jsos.length(); i++ ) {" );
-					sw.println( "	" + type + " elem = GWT.create( " + type + ".class );" );
-					sw.println( "	elem.init( jsos.get(i) );" );
-					sw.println( "	res.add( elem );" );
-					sw.println( "}" );
-					sw.println( "return res;" );
-				}
+        generateHexaDateVariables(sw);
+        generateHexaTimeVariables(sw);
+        generateHexaDateTimeVariables(sw);
 
-				sw.outdent();
-				sw.println( "}" );
-			}
-		}
+        sw.commit(logger);
 
-		generateHexaDateVariables( sw );
-		generateHexaTimeVariables( sw );
-		generateHexaDateTimeVariables( sw );
+        return fullClassName;
+    }
 
-		sw.commit( logger );
+    boolean isJSOType(JType type) {
+        JClassType cType = type.isClass();
+        if (cType == null)
+            cType = type.isInterface();
+        if (cType == null)
+            return false;
 
-		return fullClassName;
-	}
+        for (JClassType t = cType; t != null; t = t.getSuperclass()) {
+            // sw.println( "// supertype : " + t.getSimpleSourceName() );
+            JTypeParameter typeParam = t.isTypeParameter();
+            if (typeParam != null) {
+                // sw.println( "// which is a type parameter" );
+                JClassType[] bounds = typeParam.getBounds();
+                for (int b = 0; b < bounds.length; b++) {
+                    // sw.println( "// which is bound to : " +
+                    // bounds[b].getSimpleSourceName() );
+                    if (bounds[b].getSimpleSourceName().compareTo("JavaScriptObject") == 0)
+                        return true;
+                }
+            }
+            if (t.getSimpleSourceName().compareTo("JavaScriptObject") == 0)
+                return true;
+        }
 
-	boolean isJSOType( JType type )
-	{
-		JClassType cType = type.isClass();
-		if( cType == null )
-			cType = type.isInterface();
-		if( cType == null )
-			return false;
-
-		for( JClassType t = cType; t != null; t = t.getSuperclass() )
-		{
-			// sw.println( "// supertype : " + t.getSimpleSourceName() );
-			JTypeParameter typeParam = t.isTypeParameter();
-			if( typeParam != null )
-			{
-				// sw.println( "// which is a type parameter" );
-				JClassType[] bounds = typeParam.getBounds();
-				for( int b = 0; b < bounds.length; b++ )
-				{
-					// sw.println( "// which is bound to : " +
-					// bounds[b].getSimpleSourceName() );
-					if( bounds[b].getSimpleSourceName().compareTo( "JavaScriptObject" ) == 0 )
-						return true;
-				}
-			}
-			if( t.getSimpleSourceName().compareTo( "JavaScriptObject" ) == 0 )
-				return true;
-		}
-
-		return false;
-	}
+        return false;
+    }
 }

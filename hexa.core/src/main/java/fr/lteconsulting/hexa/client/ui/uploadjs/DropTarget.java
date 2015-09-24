@@ -4,71 +4,63 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DropTarget extends Composite
-{
-	public interface Callback
-	{
-		void onDragEnter();
+public class DropTarget extends Composite {
+    private DropTarget(Widget w, Callback callback) {
+        initWidget(w);
 
-		void onDragLeave();
+        initDropZone(getElement(), callback);
+    }
 
-		void onDropFiles( FilesList files );
-	}
+    public static DropTarget create(Widget w, Callback callback) {
+        if (!canDropZone(w.getElement()))
+            return null;
 
-	public static DropTarget create( Widget w, Callback callback )
-	{
-		if( !canDropZone( w.getElement() ) )
-			return null;
+        return new DropTarget(w, callback);
+    }
 
-		return new DropTarget( w, callback );
-	}
+    private static native boolean canDropZone(Element test)
+    /*-{
+        return !!test.addEventListener;
+    }-*/;
 
-	private DropTarget( Widget w, Callback callback )
-	{
-		initWidget( w );
-
-		initDropZone( getElement(), callback );
-	}
-
-	private static native boolean canDropZone( Element test )
+    private native void initDropZone(Element dropzone, Callback callback)
 	/*-{
-		return !! test.addEventListener;
-	}-*/;
+        if (!dropzone.addEventListener)
+            return;
 
-	private native void initDropZone( Element dropzone, Callback callback )
-	/*-{
-		if( ! dropzone.addEventListener )
-			return;
+        dropzone.addEventListener("dragenter", function (event) {
+            event.preventDefault();
 
-		dropzone.addEventListener( "dragenter", function(event)
-			{
-				event.preventDefault();
+            callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDragEnter()();
+        }, true);
 
-				callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDragEnter()();
-			}, true );
+        dropzone.addEventListener("dragover", function (event) {
+            event.preventDefault();
 
-		dropzone.addEventListener( "dragover", function(event)
-			{
-				event.preventDefault();
+            callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDragEnter()();
+        }, true);
 
-				callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDragEnter()();
-			}, true );
+        dropzone.addEventListener("dragleave", function (event) {
+            event.preventDefault();
 
-		dropzone.addEventListener( "dragleave", function(event)
-			{
-				event.preventDefault();
+            callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDragLeave()();
+        }, true);
 
-				callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDragLeave()();
-			}, true );
+        dropzone.addEventListener("drop", function (event) {
+            event.preventDefault();
 
-		dropzone.addEventListener( "drop", function(event)
-			{
-			  event.preventDefault();
+            var allTheFiles = event.dataTransfer.files;
+            //$wnd.droppedFiles = allTheFiles;
 
-			  var allTheFiles = event.dataTransfer.files;
-			  //$wnd.droppedFiles = allTheFiles;
+            callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDropFiles(Lfr/lteconsulting/hexa/client/ui/uploadjs/FilesList;)(allTheFiles);
+        }, true);
+    }-*/;
 
-			  callback.@fr.lteconsulting.hexa.client.ui.uploadjs.DropTarget.Callback::onDropFiles(Lfr/lteconsulting/hexa/client/ui/uploadjs/FilesList;)( allTheFiles );
-			}, true);
-	}-*/;
+    public interface Callback {
+        void onDragEnter();
+
+        void onDragLeave();
+
+        void onDropFiles(FilesList files);
+    }
 }

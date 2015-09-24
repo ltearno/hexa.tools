@@ -21,202 +21,168 @@ import fr.lteconsulting.hexa.client.ui.treetable.TreeTableElemMng.TreeTableElemM
 import fr.lteconsulting.hexa.client.ui.widget.ImageButton;
 import fr.lteconsulting.hexa.client.ui.widget.ImageTextButton;
 
-public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements IAsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler
-{
-	//@Deprecated
-	public abstract void reload();
+public abstract class TreeTableCollectionMng<T extends IHasIntegerId> implements IAsyncCallback<List<T>>, TreeTableElemMngCallback<T>, TreeTableEditorManagerCallback, ClickHandler {
+    private final TreeTable table = new TreeTable(HexaFramework.images != null ? HexaFramework.images.treeMinus() : null, HexaFramework.images != null ? HexaFramework.images.treePlus() : null);
+    private final TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>(table, this);
+    private final ColumnsSet<T> columns = new ColumnsSet<T>();
+    private final TreeTableEditorManager tableEd = new TreeTableEditorManager();
+    HashMap<Row, T> records = new HashMap<Row, T>();
+    private final XTableListen<T> dataPlug = new XTableListen<T>() {
+        @Override
+        public void deleted(int recordId, T oldRecord) {
+            remElem(recordId);
+        }
 
-	public abstract void onWantAdd();
+        @Override
+        public void updated(T record) {
+            addElem(record);
+        }
 
-	public abstract void onWantDelete( T record );
+        @Override
+        public void updatedField(String fieldName, T record) {
+            addElem(record);
+        }
 
-	public abstract void initColumns( ColumnsSet<T> columns );
+        @Override
+        public void wholeTable(Iterable<T> data) {
+            records.clear();
+            for (T c : data)
+                addElem(c);
+            tableMng.commitVersion();
+        }
 
-	@SuppressWarnings( "unused" )
-	private String addButtonTitle;
-	@SuppressWarnings( "unused" )
-	private String deleteButtonTitle;
+        @Override
+        public void clearAll() {
+            records.clear();
+            tableMng.commitVersion();
+        }
+    };
+    ImageTextButton addButton;
+    @SuppressWarnings("unused")
+    private String addButtonTitle;
+    @SuppressWarnings("unused")
+    private String deleteButtonTitle;
+    public TreeTableCollectionMng() {
+        this(null, null);
+    }
+    public TreeTableCollectionMng(String addButtonTitle, final String deleteButtonTitle) {
+        this.addButtonTitle = addButtonTitle;
+        this.deleteButtonTitle = deleteButtonTitle;
 
-	private final TreeTable table = new TreeTable( HexaFramework.images != null ? HexaFramework.images.treeMinus() : null, HexaFramework.images != null ? HexaFramework.images.treePlus() : null );
-	private final TreeTableElemMng<T> tableMng = new TreeTableElemMng<T>( table, this );
+        if (addButtonTitle != null) {
+            addButton = new ImageTextButton(HexaFramework.images != null ? HexaFramework.images.add() : null, addButtonTitle);
+            addButton.addClickHandler(this);
+        }
 
-	private final ColumnsSet<T> columns = new ColumnsSet<T>();
-	private final TreeTableEditorManager tableEd = new TreeTableEditorManager();
-	HashMap<Row, T> records = new HashMap<Row, T>();
+        initColumns(columns);
+        if (deleteButtonTitle != null) {
+            columns.addColumn(new IColumn<T>() {
+                @Override
+                public void fillCell(Printer printer, final T record) {
+                    ImageButton im = new ImageButton(HexaFramework.images.delete(), deleteButtonTitle);
+                    im.addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            onWantDelete(record);
+                        }
+                    });
 
-	ImageTextButton addButton;
+                    printer.setWidget(im);
+                }
 
-	public TreeTableCollectionMng()
-	{
-		this( null, null );
-	}
+                @Override
+                public String getTitle() {
+                    return "Delete";
+                }
 
-	public TreeTableCollectionMng( String addButtonTitle, final String deleteButtonTitle )
-	{
-		this.addButtonTitle = addButtonTitle;
-		this.deleteButtonTitle = deleteButtonTitle;
+                @Override
+                public IEditor editCell(T record) {
+                    return null;
+                }
+            });
+        }
+        columns.setHeaders(table);
 
-		if( addButtonTitle != null )
-		{
-			addButton = new ImageTextButton( HexaFramework.images != null ? HexaFramework.images.add() : null, addButtonTitle );
-			addButton.addClickHandler( this );
-		}
+        tableEd.setTable(table, this);
+    }
 
-		initColumns( columns );
-		if( deleteButtonTitle != null )
-		{
-			columns.addColumn( new IColumn<T>()
-			{
-				@Override
-				public void fillCell( Printer printer, final T record )
-				{
-					ImageButton im = new ImageButton( HexaFramework.images.delete(), deleteButtonTitle );
-					im.addClickHandler( new ClickHandler()
-					{
-						@Override
-						public void onClick( ClickEvent event )
-						{
-							onWantDelete( record );
-						}
-					} );
+    //@Deprecated
+    public abstract void reload();
 
-					printer.setWidget( im );
-				}
+    public abstract void onWantAdd();
 
-				@Override
-				public String getTitle()
-				{
-					return "Delete";
-				}
+    public abstract void onWantDelete(T record);
 
-				@Override
-				public IEditor editCell( T record )
-				{
-					return null;
-				}
-			} );
-		}
-		columns.setHeaders( table );
+    public abstract void initColumns(ColumnsSet<T> columns);
 
-		tableEd.setTable( table, this );
-	}
+    public TreeTable getTable() {
+        return table;
+    }
 
-	public TreeTable getTable()
-	{
-		return table;
-	}
+    public Widget getAddButton() {
+        return addButton;
+    }
 
-	public Widget getAddButton()
-	{
-		return addButton;
-	}
+    public void addOrUpdateElemInCurrentVersion(T elem) {
+        Row item = tableMng.addOrUpdateItemInCurrentVersion(elem, null);
+        records.put(item, elem);
+        columns.fillRow(item, elem);
+    }
 
-	public void addOrUpdateElemInCurrentVersion( T elem )
-	{
-		Row item = tableMng.addOrUpdateItemInCurrentVersion( elem, null );
-		records.put( item, elem );
-		columns.fillRow( item, elem );
-	}
+    public void deleteElemInCurrentVersion(T elem) {
+        tableMng.deleteItemInCurrentVersion(elem, table);
+    }
 
-	public void deleteElemInCurrentVersion( T elem )
-	{
-		tableMng.deleteItemInCurrentVersion( elem, table );
-	}
-	
-	@Override
-	public final int getElementIdentifier( T record )
-	{
-		return record.getId();
-	}
+    @Override
+    public final int getElementIdentifier(T record) {
+        return record.getId();
+    }
 
-	@Override
-	public void onSuccess( List<T> result )
-	{
-		records.clear();
-		for( T c : result )
-			addElem( c );
-		tableMng.commitVersion();
-	}
+    @Override
+    public void onSuccess(List<T> result) {
+        records.clear();
+        for (T c : result)
+            addElem(c);
+        tableMng.commitVersion();
+    }
 
-	private final XTableListen<T> dataPlug = new XTableListen<T>()
-	{
-		@Override
-		public void deleted( int recordId, T oldRecord )
-		{
-			remElem( recordId );
-		}
+    public XTableListen<T> getDataPlug() {
+        return dataPlug;
+    }
 
-		@Override
-		public void updated( T record )
-		{
-			addElem( record );
-		}
+    ;
 
-		@Override
-		public void updatedField( String fieldName, T record )
-		{
-			addElem( record );
-		}
+    private void addElem(T elem) {
+        Row item = tableMng.getItem(elem, null);
+        records.put(item, elem);
+        columns.fillRow(item, elem);
+    }
 
-		@Override
-		public void wholeTable( Iterable<T> data )
-		{
-			records.clear();
-			for( T c : data )
-				addElem( c );
-			tableMng.commitVersion();
-		}
+    private void remElem(int elemId) {
+        Row item = tableMng.remove(elemId);
+        records.remove(item);
+    }
 
-		@Override
-		public void clearAll()
-		{
-			records.clear();
-			tableMng.commitVersion();
-		}
-	};
+    @Override
+    public IEditor editCell(Row row, int column) {
+        T record = records.get(row);
+        return columns.editCell(column, record);
+    }
 
-	public XTableListen<T> getDataPlug()
-	{
-		return dataPlug;
-	};
+    @Override
+    public void onTouchCellContent(Row row, int column) {
+        T record = records.get(row);
+        if (record == null) {
+            GWT.log("NULL RECORD IN TreeTableCollectionMng for onTouchCellContent", null);
+            row.setText(column, "EMPTY");
+            return;
+        }
 
-	private void addElem( T elem )
-	{
-		Row item = tableMng.getItem( elem, null );
-		records.put( item, elem );
-		columns.fillRow( item, elem );
-	}
+        columns.fillCell(column, row, record);
+    }
 
-	private void remElem( int elemId )
-	{
-		Row item = tableMng.remove( elemId );
-		records.remove( item );
-	}
-
-	@Override
-	public IEditor editCell( Row row, int column )
-	{
-		T record = records.get( row );
-		return columns.editCell( column, record );
-	}
-
-	@Override
-	public void onTouchCellContent( Row row, int column )
-	{
-		T record = records.get( row );
-		if( record == null )
-		{
-			GWT.log( "NULL RECORD IN TreeTableCollectionMng for onTouchCellContent", null );
-			row.setText( column, "EMPTY" );
-			return;
-		}
-
-		columns.fillCell( column, row, record );
-	}
-
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		onWantAdd();
-	}
+    @Override
+    public void onClick(ClickEvent event) {
+        onWantAdd();
+    }
 }

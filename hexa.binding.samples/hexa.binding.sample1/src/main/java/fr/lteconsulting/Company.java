@@ -5,21 +5,21 @@ import java.lang.String;
 import fr.lteconsulting.hexa.databinding.properties.Properties;
 
 public final class Company {
-	private String name;
-	
-	public Company() {
-	}
+    private String name;
 
-	public Company(String name) {
-		this.name = name;
-	}
+    public Company() {
+    }
 
-	public void setName(String name) {
-		this.name = name;
-		Properties.notify(this, "name");
-	}
+    public Company(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        Properties.notify(this, "name");
+    }
 }

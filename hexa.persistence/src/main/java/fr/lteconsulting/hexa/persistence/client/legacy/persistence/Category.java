@@ -9,59 +9,50 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Category
-{
-	@Id
-	@GeneratedValue( strategy = GenerationType.SEQUENCE )
-	private int id;
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
 
-	private String codeEAN;
+    private String codeEAN;
 
-	private String marque;
+    private String marque;
 
-	@OneToMany( mappedBy = "category" )
-	private List<Article> articles;
+    @OneToMany(mappedBy = "category")
+    private List<Article> articles;
 
-	public int getId()
-	{
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getCodeEAN()
-	{
-		return codeEAN;
-	}
+    public String getCodeEAN() {
+        return codeEAN;
+    }
 
-	public void setCodeEAN( String codeEAN )
-	{
-		this.codeEAN = codeEAN;
-	}
+    public void setCodeEAN(String codeEAN) {
+        this.codeEAN = codeEAN;
+    }
 
-	public String getMarque()
-	{
-		return marque;
-	}
+    public String getMarque() {
+        return marque;
+    }
 
-	public void setMarque( String marque )
-	{
-		this.marque = marque;
-	}
+    public void setMarque(String marque) {
+        this.marque = marque;
+    }
 
-	public List<Article> getArticles()
-	{
-		return articles;
-	}
+    public List<Article> getArticles() {
+        return articles;
+    }
 
-	public void setArticles( List<Article> articles )
-	{
-		this.articles = articles;
-	}
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
+    }
 
-	@Override
-	public String toString()
-	{
-		return "Category [id=" + id + ", codeEAN=" + codeEAN + ", marque=" + marque + "]";
-	}
+    @Override
+    public String toString() {
+        return "Category [id=" + id + ", codeEAN=" + codeEAN + ", marque=" + marque + "]";
+    }
 }
 
 

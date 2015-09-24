@@ -18,155 +18,156 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 import fr.lteconsulting.hexa.databinding.tools.Property;
 
 public final class PlatformSpecificGwt implements PlatformSpecific {
-	private static final PlatformSpecificGwt INSTANCE;
-	
-	static {
-		Logger.getLogger(PlatformSpecificGwt.class.getName()).info("PlatformSpecificGwt STARTED");
-		
-		INSTANCE = new PlatformSpecificGwt();
-	}
-	
-	public static PlatformSpecificGwt get() {
-		return INSTANCE;
-	}
-	
-	private PlatformSpecificGwt() {}
-	
-	private static class DynamicPropertyBagAccessJre {
-		private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
+    private static final PlatformSpecificGwt INSTANCE;
 
-		static void setObjectDynamicPropertyBag(Object object, DynamicPropertyBag bag) {
-			propertyBags.put(System.identityHashCode(object), bag);
-		}
+    static {
+        Logger.getLogger(PlatformSpecificGwt.class.getName()).info("PlatformSpecificGwt STARTED");
 
-		static DynamicPropertyBag getObjectDynamicPropertyBag(Object object) {
-			return propertyBags.get(System.identityHashCode(object));
-		}
-	}
-	
-	@Override
-	public DynamicPropertyBag getObjectDynamicPropertyBag(Object object) {
-		if(GWT.isScript())
-			return getObjectDynamicPropertyBagImpl(object);
-		else
-			return DynamicPropertyBagAccessJre.getObjectDynamicPropertyBag(object);
-	}
-	
-	private native DynamicPropertyBag getObjectDynamicPropertyBagImpl(Object object) /*-{
-		return object.__hexa_dynamic_ppty_bag || null;
-	}-*/;
+        INSTANCE = new PlatformSpecificGwt();
+    }
 
-	@Override
-	public void setObjectDynamicPropertyBag(Object object, DynamicPropertyBag bag) {
-		if(GWT.isScript())
-			setObjectDynamicPropertyBagImpl(object, bag);
-		else
-			DynamicPropertyBagAccessJre.setObjectDynamicPropertyBag(object, bag);
-	}
-	
-	private native void setObjectDynamicPropertyBagImpl(Object object, DynamicPropertyBag bag) /*-{
-		object.__hexa_dynamic_ppty_bag = bag;
-	}-*/;
+    private PlatformSpecificGwt() {
+    }
 
-	@Override
-	public boolean isBindingToken(String token) {
-		return token.equals(CompositePropertyAdapter.HASVALUE_TOKEN);
-	}
+    public static PlatformSpecificGwt get() {
+        return INSTANCE;
+    }
 
-	@Override
-	public <T> T getBindingValue(Object object, String token) {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		T result = (T) ((HasValue) object).getValue();
-		return result;
-	}
+    @Override
+    public DynamicPropertyBag getObjectDynamicPropertyBag(Object object) {
+        if (GWT.isScript())
+            return getObjectDynamicPropertyBagImpl(object);
+        else
+            return DynamicPropertyBagAccessJre.getObjectDynamicPropertyBag(object);
+    }
 
-	@Override
-	public boolean setBindingValue(Object object, String name, Object value) {
-		assert object instanceof HasValue : "Object should be implementing HasValue<?> !";
+    private native DynamicPropertyBag getObjectDynamicPropertyBagImpl(Object object) /*-{
+        return object.__hexa_dynamic_ppty_bag || null;
+    }-*/;
 
-		@SuppressWarnings("unchecked")
-		HasValue<Object> hasValue = ((HasValue<Object>) object);
+    @Override
+    public void setObjectDynamicPropertyBag(Object object, DynamicPropertyBag bag) {
+        if (GWT.isScript())
+            setObjectDynamicPropertyBagImpl(object, bag);
+        else
+            DynamicPropertyBagAccessJre.setObjectDynamicPropertyBag(object, bag);
+    }
 
-		hasValue.setValue(value, true);
-		return true;
-	}
+    private native void setObjectDynamicPropertyBagImpl(Object object, DynamicPropertyBag bag) /*-{
+        object.__hexa_dynamic_ppty_bag = bag;
+    }-*/;
 
-	@Override
-	public PropertyAdapter createPropertyAdapter(Object object) {
-		return new ValuePropertyAdapter((HasValue<?>) object);
-	}
+    @Override
+    public boolean isBindingToken(String token) {
+        return token.equals(CompositePropertyAdapter.HASVALUE_TOKEN);
+    }
 
-	// Metadata
-	
-	private static class MetatdataJre {
-		private static final HashMap<Integer, Object> metadatas = new HashMap<>();
+    @Override
+    public <T> T getBindingValue(Object object, String token) {
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        T result = (T) ((HasValue) object).getValue();
+        return result;
+    }
 
-		static void setObjectMetadata(Object object, Object metadata) {
-			metadatas.put(System.identityHashCode(object), metadata);
-		}
+    @Override
+    public boolean setBindingValue(Object object, String name, Object value) {
+        assert object instanceof HasValue : "Object should be implementing HasValue<?> !";
 
-		static <T> T getObjectMetadata(Object object) {
-			@SuppressWarnings("unchecked")
-			T result = (T) metadatas.get(System.identityHashCode(object));
-			return result;
-		}
-	}
+        @SuppressWarnings("unchecked")
+        HasValue<Object> hasValue = ((HasValue<Object>) object);
 
-	@Override
-	public void setObjectMetadata(Object object, Object metadata) {
-		if(GWT.isScript())
-			setObjectMetadataImpl(object, metadata);
-		else
-			MetatdataJre.setObjectMetadata(object, metadata);
-	}
-	
-	private native void setObjectMetadataImpl(Object object, Object metadata) /*-{
-		object.__hexa_metadata = metadata;
-	}-*/;
-	
-	@Override
-	public <T> T getObjectMetadata(Object object) {
-		if(GWT.isScript())
-			return getObjectMetadataImpl(object);
-		else
-			return MetatdataJre.getObjectMetadata(object);
-	}
-	
-	private native <T> T getObjectMetadataImpl(Object object) /*-{
-		return object.__hexa_metadata || null;
-	}-*/;
+        hasValue.setValue(value, true);
+        return true;
+    }
 
-	// DTOMapper
+    @Override
+    public PropertyAdapter createPropertyAdapter(Object object) {
+        return new ValuePropertyAdapter((HasValue<?>) object);
+    }
 
-	@Override
-	public boolean isSpecificDataAdapter(Object object) {
-		return object instanceof HasValue;
-	}
+    @Override
+    public void setObjectMetadata(Object object, Object metadata) {
+        if (GWT.isScript())
+            setObjectMetadataImpl(object, metadata);
+        else
+            MetatdataJre.setObjectMetadata(object, metadata);
+    }
 
-	@Override
-	public void fillSpecificDataAdapter(Object widget, Object context, String property, Class<?> srcPptyType,
-										DataAdapterInfo res) {
-		// try to guess the HasValue type
-		res.setDataType(Object.class);
-		if(widget instanceof HasText)
-			res.setDataType(String.class);
+    // Metadata
 
-		String debugString = "";
+    private native void setObjectMetadataImpl(Object object, Object metadata) /*-{
+        object.__hexa_metadata = metadata;
+    }-*/;
 
-		// try to find a converter if dataType does not match srcPptyType
-		Class<?> dataType = res.getDataType();
-		if(srcPptyType != null && dataType != null && dataType != srcPptyType && srcPptyType != Property.class) {
-			// try to find a converter, if not : fail
-			res.setConverter(Converters.findConverter(srcPptyType, dataType));
-			if(res.getConverter() == null)
-				debugString = "[ERROR: Cannot find converter from " + srcPptyType + " to " + dataType + "]";
-			else
-				debugString = "[" + srcPptyType.getSimpleName() + ">" + dataType.getSimpleName() + "] " + debugString;
-		}
+    @Override
+    public <T> T getObjectMetadata(Object object) {
+        if (GWT.isScript())
+            return getObjectMetadataImpl(object);
+        else
+            return MetatdataJre.getObjectMetadata(object);
+    }
 
-		debugString += "\"" + property + ".$HasValue\"";
-		res.setDebugString(debugString);
+    private native <T> T getObjectMetadataImpl(Object object) /*-{
+        return object.__hexa_metadata || null;
+    }-*/;
 
-		res.setAdapter(new CompositePropertyAdapter(context, property + ".$HasValue"));
-	}
+    @Override
+    public boolean isSpecificDataAdapter(Object object) {
+        return object instanceof HasValue;
+    }
+
+    @Override
+    public void fillSpecificDataAdapter(Object widget, Object context, String property, Class<?> srcPptyType,
+                                        DataAdapterInfo res) {
+        // try to guess the HasValue type
+        res.setDataType(Object.class);
+        if (widget instanceof HasText)
+            res.setDataType(String.class);
+
+        String debugString = "";
+
+        // try to find a converter if dataType does not match srcPptyType
+        Class<?> dataType = res.getDataType();
+        if (srcPptyType != null && dataType != null && dataType != srcPptyType && srcPptyType != Property.class) {
+            // try to find a converter, if not : fail
+            res.setConverter(Converters.findConverter(srcPptyType, dataType));
+            if (res.getConverter() == null)
+                debugString = "[ERROR: Cannot find converter from " + srcPptyType + " to " + dataType + "]";
+            else
+                debugString = "[" + srcPptyType.getSimpleName() + ">" + dataType.getSimpleName() + "] " + debugString;
+        }
+
+        debugString += "\"" + property + ".$HasValue\"";
+        res.setDebugString(debugString);
+
+        res.setAdapter(new CompositePropertyAdapter(context, property + ".$HasValue"));
+    }
+
+    // DTOMapper
+
+    private static class DynamicPropertyBagAccessJre {
+        private static HashMap<Integer, DynamicPropertyBag> propertyBags = new HashMap<>();
+
+        static void setObjectDynamicPropertyBag(Object object, DynamicPropertyBag bag) {
+            propertyBags.put(System.identityHashCode(object), bag);
+        }
+
+        static DynamicPropertyBag getObjectDynamicPropertyBag(Object object) {
+            return propertyBags.get(System.identityHashCode(object));
+        }
+    }
+
+    private static class MetatdataJre {
+        private static final HashMap<Integer, Object> metadatas = new HashMap<>();
+
+        static void setObjectMetadata(Object object, Object metadata) {
+            metadatas.put(System.identityHashCode(object), metadata);
+        }
+
+        static <T> T getObjectMetadata(Object object) {
+            @SuppressWarnings("unchecked")
+            T result = (T) metadatas.get(System.identityHashCode(object));
+            return result;
+        }
+    }
 }

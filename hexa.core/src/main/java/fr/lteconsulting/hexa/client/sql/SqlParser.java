@@ -11,191 +11,175 @@ import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
 
-public class SqlParser
-{
-	public class SqlParseInfo
-	{
-		public String sql;
+public class SqlParser {
+    int bni = 1;
 
-		public String firstPart;
-		public String paramPart;
-		public String lastPart;
+    public SqlParseInfo parse(String request) {
+        SqlParseInfo pi = new SqlParseInfo();
 
-		public String className;
-		public String tableAlias;
+        pi.sql = request;
 
-		public HashMap<String, Field> bindings = new HashMap<String, Field>();
+        findParameters(pi);
+        parseParameters(pi);
+        generateSqlSelect(pi);
 
-		public String generatedSelect;
-	}
+        return pi;
+    }
 
-	public SqlParseInfo parse( String request )
-	{
-		SqlParseInfo pi = new SqlParseInfo();
+    public String getSql(SqlParseInfo pi) {
+        if (pi == null || pi.firstPart == null || pi.generatedSelect == null || pi.lastPart == null)
+            return null;
 
-		pi.sql = request;
+        return pi.firstPart + pi.generatedSelect + pi.lastPart;
+    }
 
-		findParameters( pi );
-		parseParameters( pi );
-		generateSqlSelect( pi );
+    @SuppressWarnings("unchecked")
+    public <T> List<T> parseResults(SqlParseInfo pi, SQLiteResult results, Class<T> clazz) {
+        Clazz<?> recordType = FindClazz(pi.className);
+        if (recordType == null)
+            return null;
 
-		return pi;
-	}
+        @SuppressWarnings("rawtypes")
+        List list = new ArrayList();
 
-	public String getSql( SqlParseInfo pi )
-	{
-		if( pi == null || pi.firstPart == null || pi.generatedSelect == null || pi.lastPart == null )
-			return null;
+        for (SQLiteResult.Row row : results) {
+            Object record = recordType.NEW();
 
-		return pi.firstPart + pi.generatedSelect + pi.lastPart;
-	}
+            for (SQLiteResult.Cell cell : row) {
+                Field field = pi.bindings.get(cell.column);
+                if (field == null)
+                    continue;
 
-	@SuppressWarnings( "unchecked" )
-	public <T> List<T> parseResults( SqlParseInfo pi, SQLiteResult results, Class<T> clazz )
-	{
-		Clazz<?> recordType = FindClazz( pi.className );
-		if( recordType == null )
-			return null;
+                SQLiteTypeManager mng = SQLiteTypeManagerManager.get(field.getType());
+                if (mng == null)
+                    continue;
 
-		@SuppressWarnings( "rawtypes" )
-		List list = new ArrayList();
+                mng.setFieldValueFromString(field, record, cell.value);
+            }
 
-		for( SQLiteResult.Row row : results )
-		{
-			Object record = recordType.NEW();
+            list.add(record);
+        }
 
-			for( SQLiteResult.Cell cell : row )
-			{
-				Field field = pi.bindings.get( cell.column );
-				if( field == null )
-					continue;
+        return list;
+    }
 
-				SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
-				if( mng == null )
-					continue;
+    public <T> T parseResult(SqlParseInfo pi, SQLiteResult results, Class<T> clazz) {
+        Clazz<T> recordType = ClassInfo.Clazz(clazz);
+        if (recordType == null)
+            return null;
 
-				mng.setFieldValueFromString( field, record, cell.value );
-			}
+        for (SQLiteResult.Row row : results) {
+            T record = recordType.NEW();
 
-			list.add( record );
-		}
+            for (SQLiteResult.Cell cell : row) {
+                Field field = pi.bindings.get(cell.column);
+                if (field == null)
+                    continue;
 
-		return list;
-	}
+                SQLiteTypeManager mng = SQLiteTypeManagerManager.get(field.getType());
+                if (mng == null)
+                    continue;
 
-	public <T> T parseResult( SqlParseInfo pi, SQLiteResult results, Class<T> clazz )
-	{
-		Clazz<T> recordType = ClassInfo.Clazz( clazz );
-		if( recordType == null )
-			return null;
+                mng.setFieldValueFromString(field, record, cell.value);
+            }
 
-		for( SQLiteResult.Row row : results )
-		{
-			T record = recordType.NEW();
+            return record;
+        }
 
-			for( SQLiteResult.Cell cell : row )
-			{
-				Field field = pi.bindings.get( cell.column );
-				if( field == null )
-					continue;
+        return null;
+    }
 
-				SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
-				if( mng == null )
-					continue;
+    boolean findParameters(SqlParseInfo pi) {
+        if (pi == null || pi.sql == null)
+            return false;
 
-				mng.setFieldValueFromString( field, record, cell.value );
-			}
+        int in = pi.sql.indexOf("{");
+        int out = pi.sql.indexOf("}");
+        if (in < 0 || out < 0 || out <= in)
+            return false;
 
-			return record;
-		}
+        pi.firstPart = pi.sql.substring(0, in);
+        pi.paramPart = pi.sql.substring(in + 1, out);
+        pi.lastPart = pi.sql.substring(out + 1);
 
-		return null;
-	}
+        return true;
+    }
 
-	boolean findParameters( SqlParseInfo pi )
-	{
-		if( pi == null || pi.sql == null )
-			return false;
+    boolean parseParameters(SqlParseInfo pi) {
+        if (pi == null || pi.paramPart == null)
+            return false;
 
-		int in = pi.sql.indexOf( "{" );
-		int out = pi.sql.indexOf( "}" );
-		if( in < 0 || out < 0 || out <= in )
-			return false;
+        String[] parts = pi.paramPart.split(":");
+        if (parts == null)
+            return false;
 
-		pi.firstPart = pi.sql.substring( 0, in );
-		pi.paramPart = pi.sql.substring( in + 1, out );
-		pi.lastPart = pi.sql.substring( out + 1 );
+        switch (parts.length) {
+            case 1:
+                pi.className = parts[0];
+                pi.tableAlias = parts[0];
+                break;
 
-		return true;
-	}
+            case 2:
+                pi.className = parts[0];
+                pi.tableAlias = parts[1];
+                break;
 
-	boolean parseParameters( SqlParseInfo pi )
-	{
-		if( pi == null || pi.paramPart == null )
-			return false;
+            default:
+                return false;
+        }
 
-		String[] parts = pi.paramPart.split( ":" );
-		if( parts == null )
-			return false;
+        return true;
+    }
 
-		switch( parts.length )
-		{
-			case 1:
-				pi.className = parts[0];
-				pi.tableAlias = parts[0];
-				break;
+    boolean generateSqlSelect(SqlParseInfo pi) {
+        if (pi == null || pi.tableAlias == null || pi.className == null)
+            return false;
 
-			case 2:
-				pi.className = parts[0];
-				pi.tableAlias = parts[1];
-				break;
+        StringBuilder sb = new StringBuilder();
 
-			default:
-				return false;
-		}
+        Clazz<?> clazz = ClassInfo.FindClazz(pi.className);
+        if (clazz == null)
+            return false;
 
-		return true;
-	}
+        boolean fComa = false;
+        for (Field field : clazz.getDeclaredFields()) {
+            // no need to select fields that we don't know how to manage
+            if (SQLiteTypeManagerManager.get(field.getType()) == null)
+                continue;
 
-	boolean generateSqlSelect( SqlParseInfo pi )
-	{
-		if( pi == null || pi.tableAlias == null || pi.className == null )
-			return false;
+            if (fComa)
+                sb.append(", ");
+            else
+                fComa = true;
 
-		StringBuilder sb = new StringBuilder();
+            String bindingName = generateBindingName();
 
-		Clazz<?> clazz = ClassInfo.FindClazz( pi.className );
-		if( clazz == null )
-			return false;
+            pi.bindings.put(bindingName, field);
 
-		boolean fComa = false;
-		for( Field field : clazz.getDeclaredFields() )
-		{
-			// no need to select fields that we don't know how to manage
-			if( SQLiteTypeManagerManager.get( field.getType() ) == null )
-				continue;
+            sb.append(pi.tableAlias + "." + field.getName() + " AS " + bindingName);
+        }
 
-			if( fComa )
-				sb.append( ", " );
-			else
-				fComa = true;
+        pi.generatedSelect = sb.toString();
 
-			String bindingName = generateBindingName();
+        return true;
+    }
 
-			pi.bindings.put( bindingName, field );
+    private String generateBindingName() {
+        return "bni" + (bni++);
+    }
 
-			sb.append( pi.tableAlias + "." + field.getName() + " AS " + bindingName );
-		}
+    public class SqlParseInfo {
+        public String sql;
 
-		pi.generatedSelect = sb.toString();
+        public String firstPart;
+        public String paramPart;
+        public String lastPart;
 
-		return true;
-	}
+        public String className;
+        public String tableAlias;
 
-	int bni = 1;
+        public HashMap<String, Field> bindings = new HashMap<String, Field>();
 
-	private String generateBindingName()
-	{
-		return "bni" + (bni++);
-	}
+        public String generatedSelect;
+    }
 }

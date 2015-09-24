@@ -16,307 +16,259 @@ import fr.lteconsulting.hexa.client.common.text.DateTimeFormat;
 import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
 import fr.lteconsulting.hexa.shared.data.IdDTO;
 
-public class DatabaseHelper
-{
-	private Database db;
+public class DatabaseHelper {
+    private static final DateTimeFormat dateFormatter = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
+    HashMap<String, ArrayList<String>> cacheFields;
+    private Database db;
 
-	private static final DateTimeFormat dateFormatter = DateTimeFormat.getFormat( "yyyy/MM/dd HH:mm:ss" );
+    public DatabaseHelper(Database db) {
+        this.db = db;
+    }
 
-	HashMap<String, ArrayList<String>> cacheFields;
+    public void term() {
+        db = null;
+    }
 
-	public DatabaseHelper( Database db )
-	{
-		this.db = db;
-	}
+    public boolean hasField(String table, String field) {
+        DBResults res = db.sql("SELECT * FROM " + table + " WHERE 1=0");
+        if (res == null)
+            return false;
 
-	public void term()
-	{
-		db = null;
-	}
+        int idx = res.getColumnIndex(field);
 
-	public boolean hasField( String table, String field )
-	{
-		DBResults res = db.sql( "SELECT * FROM " + table + " WHERE 1=0" );
-		if( res == null )
-			return false;
+        return idx >= 0;
+    }
 
-		int idx = res.getColumnIndex( field );
+    public ArrayList<String> getTableFields(String table) {
+        if (cacheFields == null)
+            cacheFields = new HashMap<String, ArrayList<String>>();
 
-		return idx >= 0;
-	}
+        ArrayList<String> list = cacheFields.get(table);
 
-	public ArrayList<String> getTableFields( String table )
-	{
-		if( cacheFields == null )
-			cacheFields = new HashMap<String, ArrayList<String>>();
+        if (list != null)
+            return list;
 
-		ArrayList<String> list = cacheFields.get( table );
+        list = new ArrayList<String>();
+        cacheFields.put(table, list);
 
-		if( list != null )
-			return list;
+        DBResults res = db.sql("SELECT * FROM " + table + " WHERE 1=0");
+        if (res == null)
+            return list;
 
-		list = new ArrayList<String>();
-		cacheFields.put( table, list );
+        int n = res.getColumnCount();
+        for (int i = 0; i < n; i++)
+            list.add(res.getColumnName(i));
 
-		DBResults res = db.sql( "SELECT * FROM " + table + " WHERE 1=0" );
-		if( res == null )
-			return list;
+        return list;
+    }
 
-		int n = res.getColumnCount();
-		for( int i = 0; i < n; i++ )
-			list.add( res.getColumnName( i ) );
+    public ArrayList<String> getTables() {
+        ArrayList<String> list = new ArrayList<String>();
 
-		return list;
-	}
+        try {
+            DBResults res = new DBResults(db.getDatabaseMetaData().getTables(db.getCurrentDatabase(), null, null, new String[]{"TABLE"}), null);
+            int idx = res.getColumnIndex("TABLE_NAME");
+            while (res.next())
+                list.add(res.getString(idx));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-	public ArrayList<String> getTables()
-	{
-		ArrayList<String> list = new ArrayList<String>();
+        return list;
+    }
 
-		try
-		{
-			DBResults res = new DBResults( db.getDatabaseMetaData().getTables( db.getCurrentDatabase(), null, null, new String[] { "TABLE" } ), null );
-			int idx = res.getColumnIndex( "TABLE_NAME" );
-			while( res.next() )
-				list.add( res.getString( idx ) );
-		}
-		catch( SQLException e )
-		{
-			e.printStackTrace();
-		}
+    // TODO : this one works only on MySQL server
+    public boolean hasTrigger(String triggerName) {
+        DBResults res = db.sql("SELECT * FROM information_schema.TRIGGERS WHERE TRIGGER_NAME='$triggerName' AND TRIGGER_SCHEMA='" + db.getCurrentDatabase() + "'");
+        if (res.getRowCount() == 0)
+            return false;
+        return true;
+    }
 
-		return list;
-	}
+    public <T extends IdDTO> T insert(String table, Class<T> clazz, T item) {
+        return insert(table, clazz, item, null);
+    }
 
-	// TODO : this one works only on MySQL server
-	public boolean hasTrigger( String triggerName )
-	{
-		DBResults res = db.sql( "SELECT * FROM information_schema.TRIGGERS WHERE TRIGGER_NAME='$triggerName' AND TRIGGER_SCHEMA='" + db.getCurrentDatabase() + "'" );
-		if( res.getRowCount() == 0 )
-			return false;
-		return true;
-	}
+    private String getStringForObject(Object o) {
+        if (o == null)
+            return "NULL";
 
-	public static class FieldsMap
-	{
-		HashMap<String, Object> map = new HashMap<String, Object>();
+        if (o.getClass().isEnum())
+            return "'" + o.toString() + "'";
 
-		public static FieldsMap create()
-		{
-			return new FieldsMap();
-		}
+        if (o instanceof Date)
+            return "'" + dateFormatter.format((Date) o) + "'";
 
-		public FieldsMap p( String name, Object value )
-		{
-			if( value != null && value.getClass().isEnum() )
-			{
-				map.put( name, value.toString() );
+        if (o instanceof HexaDateTime)
+            return "'" + ((HexaDateTime) o).getString() + "'";
 
-				return this;
-			}
+        if (o instanceof HexaDate)
+            return "'" + ((HexaDate) o).getString() + "'";
 
-			map.put( name, value );
+        if (o instanceof HexaTime)
+            return "'" + ((HexaTime) o).getString() + "'";
 
-			return this;
-		}
-	}
+        return "'" + o.toString().replaceAll("'", "''") + "'";
+    }
 
-	public <T extends IdDTO> T insert( String table, Class<T> clazz, T item )
-	{
-		return insert( table, clazz, item, null );
-	}
+    // TODO : return the T item. for this have to prepare for the clazz some
+    // data, to be optimized a bit
+    public <T extends IdDTO> T insert(String table, Class<T> clazz, T item, FieldsMap toAppendFieldsMap) {
+        try {
+            FieldsMap fields = FieldsMap.create();
 
-	private String getStringForObject( Object o )
-	{
-		if( o == null )
-			return "NULL";
+            Field[] classFields = clazz.getFields();
+            for (int i = 0; i < classFields.length; i++) {
+                Field classField = classFields[i];
+                if (classField.getName().equals("id"))
+                    continue;
 
-		if( o.getClass().isEnum() )
-			return "'" + o.toString() + "'";
+                fields.p(JavaDBNames.javaToDBName(classFields[i].getName()), classField.get(item));
+            }
 
-		if( o instanceof Date )
-			return "'" + dateFormatter.format( (Date) o ) + "'";
+            if (toAppendFieldsMap != null) {
+                for (Entry<String, Object> e : toAppendFieldsMap.map.entrySet()) {
+                    fields.map.put(e.getKey(), e.getValue());
 
-		if( o instanceof HexaDateTime )
-			return "'" + ((HexaDateTime) o).getString() + "'";
+                    // TODO sets the item's field also
+                }
+            }
 
-		if( o instanceof HexaDate )
-			return "'" + ((HexaDate) o).getString() + "'";
+            int insertedId = insert(table, fields);
+            item.setId(insertedId);
 
-		if( o instanceof HexaTime )
-			return "'" + ((HexaTime) o).getString() + "'";
+            return item;
+        } catch (IllegalAccessException e) {
+            return null;
+        }
+    }
 
-		return "'" + o.toString().replaceAll( "'" , "''" ) + "'";
-	}
+    public int insert(String table, FieldsMap fields) {
+        return insert(table, fields.map);
+    }
 
-	// TODO : return the T item. for this have to prepare for the clazz some
-	// data, to be optimized a bit
-	public <T extends IdDTO> T insert( String table, Class<T> clazz, T item, FieldsMap toAppendFieldsMap )
-	{
-		try
-		{
-			FieldsMap fields = FieldsMap.create();
+    public int insert(String table, HashMap<String, ?> fields) {
+        String sql;
+        if (fields == null) {
+            sql = "INSERT INTO " + table + " () VALUES ()";
+        } else {
+            StringBuilder fieldsSb = new StringBuilder();
+            StringBuilder valuesSb = new StringBuilder();
 
-			Field[] classFields = clazz.getFields();
-			for( int i = 0; i < classFields.length; i++ )
-			{
-				Field classField = classFields[i];
-				if( classField.getName().equals( "id" ) )
-					continue;
+            boolean fFirst = true;
+            for (Entry<String, ?> entry : fields.entrySet()) {
+                if (fFirst) {
+                    fFirst = false;
+                } else {
+                    fieldsSb.append(", ");
+                    valuesSb.append(", ");
+                }
 
-				fields.p( JavaDBNames.javaToDBName( classFields[i].getName() ), classField.get( item ) );
-			}
+                String fieldName = entry.getKey();
+                Object fieldValue = entry.getValue();
 
-			if( toAppendFieldsMap != null )
-			{
-				for( Entry<String, Object> e : toAppendFieldsMap.map.entrySet() )
-				{
-					fields.map.put( e.getKey(), e.getValue() );
+                fieldsSb.append("`" + fieldName + "`");
+                valuesSb.append(getStringForObject(fieldValue));
+            }
 
-					// TODO sets the item's field also
-				}
-			}
+            sql = "INSERT INTO " + table + " (" + fieldsSb.toString() + ") VALUES (" + valuesSb.toString() + ")";
+        }
 
-			int insertedId = insert( table, fields );
-			item.setId( insertedId );
+        return db.sqlInsert(sql);
+    }
 
-			return item;
-		}
-		catch( IllegalAccessException e )
-		{
-			return null;
-		}
-	}
+    public int delete(String table, String condition) {
+        return db.sqlDelete("DELETE FROM " + table + " WHERE " + condition);
+    }
 
-	public int insert( String table, FieldsMap fields )
-	{
-		return insert( table, fields.map );
-	}
+    public int update(String table, String condition, FieldsMap fields) {
+        return update(table, condition, fields.map);
+    }
 
-	public int insert( String table, HashMap<String, ?> fields )
-	{
-		String sql;
-		if( fields == null )
-		{
-			sql = "INSERT INTO " + table + " () VALUES ()";
-		}
-		else
-		{
-			StringBuilder fieldsSb = new StringBuilder();
-			StringBuilder valuesSb = new StringBuilder();
+    public <T extends IHasIntegerId> T update(String table, Class<T> clazz, T item) {
+        return update(table, clazz, item, null);
+    }
 
-			boolean fFirst = true;
-			for( Entry<String, ?> entry : fields.entrySet() )
-			{
-				if( fFirst )
-				{
-					fFirst = false;
-				}
-				else
-				{
-					fieldsSb.append( ", " );
-					valuesSb.append( ", " );
-				}
+    public <T extends IHasIntegerId> T update(String table, Class<T> clazz, T item, FieldsMap toAppendFieldsMap) {
+        try {
+            FieldsMap fields = FieldsMap.create();
 
-				String fieldName = entry.getKey();
-				Object fieldValue = entry.getValue();
+            Field[] classFields = clazz.getFields();
+            for (int i = 0; i < classFields.length; i++) {
+                Field classField = classFields[i];
+                if (classField.getName().equals("id"))
+                    continue;
 
-				fieldsSb.append( "`" + fieldName + "`" );
-				valuesSb.append( getStringForObject( fieldValue ) );
-			}
+                fields.p(JavaDBNames.javaToDBName(classFields[i].getName()), classField.get(item));
+            }
 
-			sql = "INSERT INTO " + table + " (" + fieldsSb.toString() + ") VALUES (" + valuesSb.toString() + ")";
-		}
+            if (toAppendFieldsMap != null) {
+                for (Entry<String, Object> e : toAppendFieldsMap.map.entrySet()) {
+                    fields.map.put(e.getKey(), e.getValue());
 
-		return db.sqlInsert( sql );
-	}
+                    // TODO sets the item's field also
+                }
+            }
 
-	public int delete( String table, String condition )
-	{
-		return db.sqlDelete( "DELETE FROM " + table + " WHERE " + condition );
-	}
+            int res = update(table, "id=" + item.getId(), fields.map);
+            if (res < 0)
+                return null;
 
-	public int update( String table, String condition, FieldsMap fields )
-	{
-		return update( table, condition, fields.map );
-	}
-	
-	public <T extends IHasIntegerId> T update( String table, Class<T> clazz, T item )
-	{
-		return update( table, clazz, item, null );
-	}
-	
-	public <T extends IHasIntegerId> T update( String table, Class<T> clazz, T item, FieldsMap toAppendFieldsMap )
-	{
-		try
-		{
-			FieldsMap fields = FieldsMap.create();
+            return item;
+        } catch (IllegalAccessException e) {
+            return null;
+        }
+    }
 
-			Field[] classFields = clazz.getFields();
-			for( int i = 0; i < classFields.length; i++ )
-			{
-				Field classField = classFields[i];
-				if( classField.getName().equals( "id" ) )
-					continue;
+    public int update(String table, String condition, HashMap<String, ?> data) {
+        if (data == null || data.size() == 0)
+            return 0;
 
-				fields.p( JavaDBNames.javaToDBName( classFields[i].getName() ), classField.get( item ) );
-			}
+        StringBuilder updateSb = new StringBuilder();
 
-			if( toAppendFieldsMap != null )
-			{
-				for( Entry<String, Object> e : toAppendFieldsMap.map.entrySet() )
-				{
-					fields.map.put( e.getKey(), e.getValue() );
+        boolean fFirst = true;
+        for (Entry<String, ?> entry : data.entrySet()) {
+            if (fFirst)
+                fFirst = false;
+            else
+                updateSb.append(", ");
 
-					// TODO sets the item's field also
-				}
-			}
-			
-			int res = update( table, "id="+item.getId(), fields.map );
-			if( res < 0 )
-				return null;
-			
-			return item;
-		}
-		catch( IllegalAccessException e )
-		{
-			return null;
-		}
-	}
+            String fieldName = entry.getKey();
+            Object fieldValue = entry.getValue();
 
-	public int update( String table, String condition, HashMap<String, ?> data )
-	{
-		if( data == null || data.size() == 0 )
-			return 0;
+            updateSb.append("`" + fieldName + "`=");
+            if (fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).equalsIgnoreCase("null")))
+                updateSb.append("NULL");
+            else if (fieldValue instanceof Date) {
+                Date date = (Date) fieldValue;
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                updateSb.append("'" + format.format(date) + "'");
+            } else
+                updateSb.append("'" + fieldValue.toString() + "'");
+        }
 
-		StringBuilder updateSb = new StringBuilder();
+        String sql = "UPDATE " + table + " SET " + updateSb.toString() + " WHERE " + condition;
 
-		boolean fFirst = true;
-		for( Entry<String, ?> entry : data.entrySet() )
-		{
-			if( fFirst )
-				fFirst = false;
-			else
-				updateSb.append( ", " );
+        return db.sqlUpdate(sql);
+    }
 
-			String fieldName = entry.getKey();
-			Object fieldValue = entry.getValue();
+    public static class FieldsMap {
+        HashMap<String, Object> map = new HashMap<String, Object>();
 
-			updateSb.append( "`" + fieldName + "`=" );
-			if( fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).equalsIgnoreCase( "null" )) )
-				updateSb.append( "NULL" );
-			else if( fieldValue instanceof Date )
-			{
-				Date date = (Date) fieldValue;
-				DateFormat format = new SimpleDateFormat( "yyyy-MM-dd" );
-				updateSb.append( "'" + format.format( date ) + "'" );
-			}
-			else
-				updateSb.append( "'" + fieldValue.toString() + "'" );
-		}
+        public static FieldsMap create() {
+            return new FieldsMap();
+        }
 
-		String sql = "UPDATE " + table + " SET " + updateSb.toString() + " WHERE " + condition;
+        public FieldsMap p(String name, Object value) {
+            if (value != null && value.getClass().isEnum()) {
+                map.put(name, value.toString());
 
-		return db.sqlUpdate( sql );
-	}
+                return this;
+            }
+
+            map.put(name, value);
+
+            return this;
+        }
+    }
 }

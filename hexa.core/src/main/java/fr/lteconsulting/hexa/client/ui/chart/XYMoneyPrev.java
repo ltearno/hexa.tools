@@ -6,228 +6,195 @@ import fr.lteconsulting.hexa.client.ui.chart.raphael.PathBuilder;
 import fr.lteconsulting.hexa.client.ui.chart.raphael.Raphael.Circle;
 import fr.lteconsulting.hexa.client.ui.chart.raphael.Raphael.Path;
 
-public class XYMoneyPrev implements ChartRemovable
-{
-	Layer layer = null;
-	Referential ref = null;
-	XYSerie serie = null;
+public class XYMoneyPrev implements ChartRemovable {
+    Layer layer = null;
+    Referential ref = null;
+    XYSerie serie = null;
 
-	float prevAmount;
+    float prevAmount;
+    // Chart objects
+    Path fill = null;
+    Path line = null;
+    Circle[] dots = null;
+    int emphasizedPoint = -1;
+    // A BIT OF STYLING
+    float fillOpacity = (float) 0.3;
+    int lineStroke = 1; // 2
+    float dotNormalSize = (float) 1;// 0.5; // 4
+    int dotBigSize = 4; // 7
+    int dotStrokeWidth = 1; // 2
+    String dotStrokeColor = "#ffffff";
+    public XYMoneyPrev(float prevAmount) {
+        this.prevAmount = prevAmount;
+    }
 
-	public XYMoneyPrev( float prevAmount )
-	{
-		this.prevAmount = prevAmount;
-	}
+    public void remove() {
+        if (fill != null) {
+            fill.removeFromParent();
+            fill = null;
+        }
 
-	// Chart objects
-	Path fill = null;
-	Path line = null;
-	Circle[] dots = null;
+        if (line != null) {
+            line.removeFromParent();
+            line = null;
+        }
 
-	int emphasizedPoint = -1;
+        if (dots != null) {
+            for (int i = 0; i < dots.length; i++)
+                dots[i].removeFromParent();
+            dots = null;
+        }
+    }
 
-	// A BIT OF STYLING
-	float fillOpacity = (float) 0.3;
-	int lineStroke = 1; // 2
-	float dotNormalSize = (float) 1;// 0.5; // 4
-	int dotBigSize = 4; // 7
-	int dotStrokeWidth = 1; // 2
-	String dotStrokeColor = "#ffffff";
+    public void setLayer(Layer layer) {
+        this.layer = layer;
+    }
 
-	public void remove()
-	{
-		if( fill != null )
-		{
-			fill.removeFromParent();
-			fill = null;
-		}
+    public void setReferential(Referential referential) {
+        this.ref = referential;
+    }
 
-		if( line != null )
-		{
-			line.removeFromParent();
-			line = null;
-		}
+    public void setSerie(XYSerie serie) {
+        this.serie = serie;
+    }
 
-		if( dots != null )
-		{
-			for( int i = 0; i < dots.length; i++ )
-				dots[i].removeFromParent();
-			dots = null;
-		}
-	}
+    public void setAll(Layer layer, Referential referential, XYSerie serie) {
+        setLayer(layer);
+        setReferential(referential);
+        setSerie(serie);
+    }
 
-	public void setLayer( Layer layer )
-	{
-		this.layer = layer;
-	}
+    // index < 0 means that we emphasize no point at all
+    public void emphasizePoint(int index) {
+        if (dots == null || dots.length < (index - 1))
+            return; // impossible !
 
-	public void setReferential( Referential referential )
-	{
-		this.ref = referential;
-	}
+        // if no change, nothing to do
+        if (emphasizedPoint == index)
+            return;
 
-	public void setSerie( XYSerie serie )
-	{
-		this.serie = serie;
-	}
+        // de-emphasize the current emphasized point
+        if (emphasizedPoint >= 0) {
+            dots[emphasizedPoint].attr("r", dotNormalSize);
 
-	public void setAll( Layer layer, Referential referential, XYSerie serie )
-	{
-		setLayer( layer );
-		setReferential( referential );
-		setSerie( serie );
-	}
+            emphasizedPoint = -1;
+        }
 
-	// index < 0 means that we emphasize no point at all
-	public void emphasizePoint( int index )
-	{
-		if( dots == null || dots.length < (index - 1) )
-			return; // impossible !
+        if (index >= 0) {
+            dots[index].attr("r", dotBigSize);
 
-		// if no change, nothing to do
-		if( emphasizedPoint == index )
-			return;
+            emphasizedPoint = index;
+        }
+    }
 
-		// de-emphasize the current emphasized point
-		if( emphasizedPoint >= 0 )
-		{
-			dots[emphasizedPoint].attr( "r", dotNormalSize );
+    public void update() {
+        // dumb check
+        if (layer == null || ref == null || serie == null)
+            return;
 
-			emphasizedPoint = -1;
-		}
+        // TODO : this is a hack to get the dot stroke color the same as the
+        // line's color
+        dotStrokeColor = serie.getColor();
 
-		if( index >= 0 )
-		{
-			dots[index].attr( "r", dotBigSize );
+        // now, create or update the objects
+        updateLineAndFill();
+        updateDots();
+    }
 
-			emphasizedPoint = index;
-		}
-	}
+    private void updateLineAndFill() {
+        PathBuilder linePath = new PathBuilder();
+        PathBuilder fillPath = new PathBuilder();
 
-	public void update()
-	{
-		// dumb check
-		if( layer == null || ref == null || serie == null )
-			return;
+        ArrayList<Float> xs = serie.getXs();
+        ArrayList<Float> ys = serie.getYs();
+        String color = serie.getColor();
 
-		// TODO : this is a hack to get the dot stroke color the same as the
-		// line's color
-		dotStrokeColor = serie.getColor();
+        // fillPath.M( ref.getRealX(ref.getMinX()), ref.getRealY(ref.getMinY())
+        // );
 
-		// now, create or update the objects
-		updateLineAndFill();
-		updateDots();
-	}
+        int nbPoints = serie.xs.size();
+        for (int i = 0; i < nbPoints; i++) {
+            float x = xs.get(i);
+            float y = ys.get(i) + prevAmount;
 
-	private void updateLineAndFill()
-	{
-		PathBuilder linePath = new PathBuilder();
-		PathBuilder fillPath = new PathBuilder();
+            float realX = ref.getRealX(x);
+            float realY = ref.getRealY(y);
 
-		ArrayList<Float> xs = serie.getXs();
-		ArrayList<Float> ys = serie.getYs();
-		String color = serie.getColor();
+            if (i == 0) {
+                fillPath.M(realX, ref.getRealY(prevAmount));
 
-		// fillPath.M( ref.getRealX(ref.getMinX()), ref.getRealY(ref.getMinY())
-		// );
+                linePath.M(realX, realY);
+                fillPath.L(realX, realY);
+            } else if (i < nbPoints - 1) {
+                linePath.L(realX, realY);
+                fillPath.L(realX, realY);
+            } else {
+                linePath.L(realX, realY);
+                fillPath.L(realX, realY);
+            }
+        }
 
-		int nbPoints = serie.xs.size();
-		for( int i = 0; i < nbPoints; i++ )
-		{
-			float x = xs.get( i );
-			float y = ys.get( i ) + prevAmount;
+        fillPath.L(ref.getRealX(ref.getMaxX()), ref.getRealY(prevAmount));
 
-			float realX = ref.getRealX( x );
-			float realY = ref.getRealY( y );
+        // Create or update the fill path object
+        if (fill == null)
+            fill = layer.addPath(fillPath);
+        else
+            fill.attr("path", fillPath.toString());
 
-			if( i == 0 )
-			{
-				fillPath.M( realX, ref.getRealY( prevAmount ) );
+        // Update fill style
+        fill.attr("stroke", "none");
+        fill.attr("fill", color);
+        fill.attr("opacity", fillOpacity);
 
-				linePath.M( realX, realY );
-				fillPath.L( realX, realY );
-			}
-			else if( i < nbPoints - 1 )
-			{
-				linePath.L( realX, realY );
-				fillPath.L( realX, realY );
-			}
-			else
-			{
-				linePath.L( realX, realY );
-				fillPath.L( realX, realY );
-			}
-		}
+        // Create or update the line path object
+        if (line == null)
+            line = layer.addPath(linePath);
+        else
+            line.attr("path", linePath.toString());
 
-		fillPath.L( ref.getRealX( ref.getMaxX() ), ref.getRealY( prevAmount ) );
+        // update line style
+        line.attr("stroke", color);
+        line.attr("stroke-width", lineStroke);
+        line.attr("stroke-linejoin", "round");
+    }
 
-		// Create or update the fill path object
-		if( fill == null )
-			fill = layer.addPath( fillPath );
-		else
-			fill.attr( "path", fillPath.toString() );
+    // draw dots
+    private void updateDots() {
+        ArrayList<Float> xs = serie.getXs();
+        ArrayList<Float> ys = serie.getYs();
+        String color = serie.getColor();
 
-		// Update fill style
-		fill.attr( "stroke", "none" );
-		fill.attr( "fill", color );
-		fill.attr( "opacity", fillOpacity );
+        assert xs.size() == ys.size() : "BAD x and y arrays are not the same size : THEY SHOULD";
 
-		// Create or update the line path object
-		if( line == null )
-			line = layer.addPath( linePath );
-		else
-			line.attr( "path", linePath.toString() );
+        emphasizePoint(-1);
 
-		// update line style
-		line.attr( "stroke", color );
-		line.attr( "stroke-width", lineStroke );
-		line.attr( "stroke-linejoin", "round" );
-	}
+        int nbPoints = xs.size();
 
-	// draw dots
-	private void updateDots()
-	{
-		ArrayList<Float> xs = serie.getXs();
-		ArrayList<Float> ys = serie.getYs();
-		String color = serie.getColor();
+        if (dots == null) {
+            dots = new Circle[nbPoints];
+        } else if (dots.length != nbPoints) {
+            for (int i = 0; i < dots.length; i++)
+                dots[i].removeFromParent();
+            dots = new Circle[nbPoints];
+        }
 
-		assert xs.size() == ys.size() : "BAD x and y arrays are not the same size : THEY SHOULD";
+        for (int i = 0; i < nbPoints; i++) {
+            float x = xs.get(i);
+            float y = ys.get(i);
 
-		emphasizePoint( -1 );
+            if (dots[i] == null) {
+                dots[i] = layer.addCircle(ref.getRealX(x), ref.getRealY(y), dotNormalSize);
+            } else {
+                dots[i].attr("cx", ref.getRealX(x));
+                dots[i].attr("cy", ref.getRealY(y));
+                dots[i].attr("r", dotNormalSize);
+            }
 
-		int nbPoints = xs.size();
-
-		if( dots == null )
-		{
-			dots = new Circle[nbPoints];
-		}
-		else if( dots.length != nbPoints )
-		{
-			for( int i = 0; i < dots.length; i++ )
-				dots[i].removeFromParent();
-			dots = new Circle[nbPoints];
-		}
-
-		for( int i = 0; i < nbPoints; i++ )
-		{
-			float x = xs.get( i );
-			float y = ys.get( i );
-
-			if( dots[i] == null )
-			{
-				dots[i] = layer.addCircle( ref.getRealX( x ), ref.getRealY( y ), dotNormalSize );
-			}
-			else
-			{
-				dots[i].attr( "cx", ref.getRealX( x ) );
-				dots[i].attr( "cy", ref.getRealY( y ) );
-				dots[i].attr( "r", dotNormalSize );
-			}
-
-			dots[i].attr( "fill", color );
-			dots[i].attr( "opacity", "1" );
-			dots[i].attr( "stroke", dotStrokeColor );
-			dots[i].attr( "stroke-width", dotStrokeWidth );
-		}
-	}
+            dots[i].attr("fill", color);
+            dots[i].attr("opacity", "1");
+            dots[i].attr("stroke", dotStrokeColor);
+            dots[i].attr("stroke-width", dotStrokeWidth);
+        }
+    }
 }

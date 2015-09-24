@@ -25,155 +25,133 @@ import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.ui.dialog.DialogBoxBuilder.DialogBox;
 import fr.lteconsulting.hexa.client.ui.resources.image.ImageResources;
 
-class DialogBoxForNormalWidget extends ComplexPanel implements DialogBox, HasCloseHandlers<DialogBox>
-{
-	private boolean isDisplayed = false;
+class DialogBoxForNormalWidget extends ComplexPanel implements DialogBox, HasCloseHandlers<DialogBox> {
+    boolean isMoving = false;
+    int movingMouseOffsetX;
+    int movingMouseOffsetY;
+    int movingOriginX;
+    int movingOriginY;
+    private boolean isDisplayed = false;
+    private Element main;
+    private Element title;
+    private Element close;
+    private Element content;
+    private boolean isAutoHide;
+    private MouseDownHandler mouseDownHandler = new MouseDownHandler() {
+        @Override
+        public void onMouseDown(MouseDownEvent event) {
+            if (event.getNativeEvent().getEventTarget().<Element>cast() == title) {
+                isMoving = true;
+                movingMouseOffsetX = event.getClientX();
+                movingMouseOffsetY = event.getClientY();
 
-	private Element main;
-	private Element title;
-	private Element close;
-	private Element content;
+                DOM.setCapture(title);
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+    };
+    private MouseMoveHandler mouseMoveHandler = new MouseMoveHandler() {
+        @Override
+        public void onMouseMove(MouseMoveEvent event) {
+            if (isMoving) {
+                main.getStyle().setLeft(movingOriginX + event.getClientX() - movingMouseOffsetX, Unit.PX);
+                main.getStyle().setTop(movingOriginY + event.getClientY() - movingMouseOffsetY, Unit.PX);
+            }
+        }
+    };
+    private MouseUpHandler mouseUpHandler = new MouseUpHandler() {
+        @Override
+        public void onMouseUp(MouseUpEvent event) {
+            isMoving = false;
+            DOM.releaseCapture(title);
 
-	private boolean isAutoHide;
+            movingOriginX += event.getClientX() - movingMouseOffsetX;
+            movingOriginY += event.getClientY() - movingMouseOffsetY;
+        }
+    };
 
-	public DialogBoxForNormalWidget( String titleText, Widget contentWidget )
-	{
-		Element glass = Document.get().createDivElement();
-		setElement( glass );
+    public DialogBoxForNormalWidget(String titleText, Widget contentWidget) {
+        Element glass = Document.get().createDivElement();
+        setElement(glass);
 
-		glass.getStyle().setBackgroundColor( "rgba(0, 0, 0, 0.25)" );
-		glass.getStyle().setPosition( Position.ABSOLUTE );
-		glass.getStyle().setLeft( 0, Unit.PX );
-		glass.getStyle().setTop( 0, Unit.PX );
-		glass.getStyle().setRight( 0, Unit.PX );
-		glass.getStyle().setBottom( 0, Unit.PX );
-		glass.getStyle().setTextAlign( com.google.gwt.dom.client.Style.TextAlign.CENTER );
+        glass.getStyle().setBackgroundColor("rgba(0, 0, 0, 0.25)");
+        glass.getStyle().setPosition(Position.ABSOLUTE);
+        glass.getStyle().setLeft(0, Unit.PX);
+        glass.getStyle().setTop(0, Unit.PX);
+        glass.getStyle().setRight(0, Unit.PX);
+        glass.getStyle().setBottom(0, Unit.PX);
+        glass.getStyle().setTextAlign(com.google.gwt.dom.client.Style.TextAlign.CENTER);
 
-		ImageResource closeImage = ImageResources.INSTANCE.close();
-		int headerSize = Math.max( closeImage.getHeight(), closeImage.getWidth() ) + 5;
+        ImageResource closeImage = ImageResources.INSTANCE.close();
+        int headerSize = Math.max(closeImage.getHeight(), closeImage.getWidth()) + 5;
 
-		glass.setInnerHTML( "<div class='"+ResizablePanel.CSS.bkgnd()+"' style='display: inline-block; position: relative; margin-top:50px'>"+
-				"<div class='"+ResizablePanel.CSS.title()+"' style='position:relative; left:0px; margin-right:"+headerSize+"px; top:0px; height:"+headerSize+"px'></div>"+
-				"<div style='position:absolute; right:0px; top:0px;'><img></img></div>"+
-				"<div style='position: relative; overflow:auto;'> <!-- content holder --> </div>"+
-			"</div>" );
+        glass.setInnerHTML("<div class='" + ResizablePanel.CSS.bkgnd() + "' style='display: inline-block; position: relative; margin-top:50px'>" +
+            "<div class='" + ResizablePanel.CSS.title() + "' style='position:relative; left:0px; margin-right:" + headerSize + "px; top:0px; height:" + headerSize + "px'></div>" +
+            "<div style='position:absolute; right:0px; top:0px;'><img></img></div>" +
+            "<div style='position: relative; overflow:auto;'> <!-- content holder --> </div>" +
+            "</div>");
 
-		main = (Element) glass.getChild( 0 );
+        main = (Element) glass.getChild(0);
 
-		title = (Element) main.getChild( 0 );
-		title.setInnerText( titleText );
+        title = (Element) main.getChild(0);
+        title.setInnerText(titleText);
 
-		close = (Element) main.getChild( 1 ).getChild( 0 );
-		close.setAttribute( "src", closeImage.getSafeUri().asString() );
-		content = (Element) main.getChild( 2 );
-		
-		content.addClassName( ResizablePanel.CSS.content() );
+        close = (Element) main.getChild(1).getChild(0);
+        close.setAttribute("src", closeImage.getSafeUri().asString());
+        content = (Element) main.getChild(2);
 
-		add( contentWidget, content );
+        content.addClassName(ResizablePanel.CSS.content());
 
-		addDomHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				if( ! isAutoHide )
-					return;
+        add(contentWidget, content);
 
-				if( (Object) event.getNativeEvent().getEventTarget() != (Object) close )
-					return;
+        addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (!isAutoHide)
+                    return;
 
-				hide();
-			}
-		}, ClickEvent.getType() );
+                if ((Object) event.getNativeEvent().getEventTarget() != (Object) close)
+                    return;
 
-		addDomHandler( mouseDownHandler, MouseDownEvent.getType() );
-		addDomHandler( mouseMoveHandler, MouseMoveEvent.getType() );
-		addDomHandler( mouseUpHandler, MouseUpEvent.getType() );
-	}
+                hide();
+            }
+        }, ClickEvent.getType());
 
-	boolean isMoving = false;
-	int movingMouseOffsetX;
-	int movingMouseOffsetY;
-	int movingOriginX;
-	int movingOriginY;
+        addDomHandler(mouseDownHandler, MouseDownEvent.getType());
+        addDomHandler(mouseMoveHandler, MouseMoveEvent.getType());
+        addDomHandler(mouseUpHandler, MouseUpEvent.getType());
+    }
 
-	private MouseDownHandler mouseDownHandler = new MouseDownHandler()
-	{
-		@Override
-		public void onMouseDown( MouseDownEvent event )
-		{
-			if( event.getNativeEvent().getEventTarget().<Element>cast() == title )
-			{
-				isMoving = true;
-				movingMouseOffsetX = event.getClientX();
-				movingMouseOffsetY = event.getClientY();
+    @Override
+    public void show() {
+        show(true);
+    }
 
-				DOM.setCapture( title );
-				event.preventDefault();
-				event.stopPropagation();
-			}
-		}
-	};
+    @Override
+    public void show(boolean isAutoHide) {
+        this.isAutoHide = isAutoHide;
 
-	private MouseMoveHandler mouseMoveHandler = new MouseMoveHandler()
-	{
-		@Override
-		public void onMouseMove( MouseMoveEvent event )
-		{
-			if( isMoving )
-			{
-				main.getStyle().setLeft( movingOriginX + event.getClientX() - movingMouseOffsetX, Unit.PX );
-				main.getStyle().setTop( movingOriginY + event.getClientY() - movingMouseOffsetY, Unit.PX );
-			}
-		}
-	};
+        if (isDisplayed)
+            return;
+        isDisplayed = true;
 
-	private MouseUpHandler mouseUpHandler = new MouseUpHandler()
-	{
-		@Override
-		public void onMouseUp( MouseUpEvent event )
-		{
-			isMoving = false;
-			DOM.releaseCapture( title );
+        RootPanel.get().add(this);
+    }
 
-			movingOriginX += event.getClientX() - movingMouseOffsetX;
-			movingOriginY += event.getClientY() - movingMouseOffsetY;
-		}
-	};
+    @Override
+    public void hide() {
+        if (!isDisplayed)
+            return;
+        isDisplayed = false;
 
-	@Override
-	public void show()
-	{
-		show( true );
-	}
+        RootPanel.get().remove(this);
 
-	@Override
-	public void show( boolean isAutoHide )
-	{
-		this.isAutoHide = isAutoHide;
+        CloseEvent.fire(this, null);
+    }
 
-		if( isDisplayed )
-			return;
-		isDisplayed = true;
-
-		RootPanel.get().add( this );
-	}
-
-	@Override
-	public void hide()
-	{
-		if( ! isDisplayed )
-			return;
-		isDisplayed = false;
-
-		RootPanel.get().remove( this );
-
-		CloseEvent.fire( this, null );
-	}
-
-	@Override
-	public HandlerRegistration addCloseHandler( CloseHandler<DialogBox> handler )
-	{
-		return addHandler( handler, CloseEvent.getType() );
-	}
+    @Override
+    public HandlerRegistration addCloseHandler(CloseHandler<DialogBox> handler) {
+        return addHandler(handler, CloseEvent.getType());
+    }
 }

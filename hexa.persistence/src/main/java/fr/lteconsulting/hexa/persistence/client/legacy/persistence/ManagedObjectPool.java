@@ -6,106 +6,91 @@ import java.util.List;
 import fr.lteconsulting.hexa.client.sql.SQLiteResult;
 import fr.lteconsulting.hexa.persistence.client.legacy.persistence.PersistenceConfiguration.EntityConfiguration;
 
-public class ManagedObjectPool
-{
-	List<AttachedObjectInfo> attachedObjects = new ArrayList<AttachedObjectInfo>();
+public class ManagedObjectPool {
+    List<AttachedObjectInfo> attachedObjects = new ArrayList<AttachedObjectInfo>();
 
-	public static class AttachedObjectInfo
-	{
-		final EntityConfiguration entityConfiguration;
-		final Object managedObject;
+    public List<AttachedObjectInfo> getObjectsToBeInserted() {
+        List<AttachedObjectInfo> res = new ArrayList<AttachedObjectInfo>();
+        for (AttachedObjectInfo info : attachedObjects) {
+            if (!info.isToBeInserted())
+                continue;
 
-		Object managedObjectId;
+            res.add(info);
+        }
 
-		// null means that the object has never been loaded from DB
-		SQLiteResult.Row row;
+        return res;
+    }
 
-		boolean fToDelete = false;
-		boolean fToBeInserted;
-		boolean isProxy;
+    public void clear() {
+        attachedObjects.clear();
+    }
 
-		public AttachedObjectInfo( EntityConfiguration entityConfiguration, Object managedObjectId, Object managedObject, SQLiteResult.Row row, boolean isProxy )
-		{
-			this.entityConfiguration = entityConfiguration;
-			this.managedObject = managedObject;
-			this.managedObjectId = managedObjectId;
-			this.row = row;
-			this.isProxy = isProxy;
+    public AttachedObjectInfo attachObject(EntityConfiguration entityConfiguration, Object id, Object managedObject, SQLiteResult.Row row, boolean isProxy) {
+        AttachedObjectInfo res = new AttachedObjectInfo(entityConfiguration, id, managedObject, row, isProxy);
 
-			fToBeInserted = row == null && (! isProxy);
-		}
+        attachedObjects.add(res);
 
-		public void markAsToBeDeleted()
-		{
-			fToDelete = true;
-		}
+        return res;
+    }
 
-		public void markAsInserted()
-		{
-			fToBeInserted = false;
-		}
+    public void detachObject(AttachedObjectInfo info) {
+        attachedObjects.remove(info);
+    }
 
-		public boolean isToBeInserted()
-		{
-			return fToBeInserted;
-		}
-	}
+    public AttachedObjectInfo findAttachedObjectByTableAndId(String tableName, Object id) {
+        if (id == null)
+            return null;
 
-	public List<AttachedObjectInfo> getObjectsToBeInserted()
-	{
-		List<AttachedObjectInfo> res = new ArrayList<AttachedObjectInfo>();
-		for( AttachedObjectInfo info : attachedObjects )
-		{
-			if( ! info.isToBeInserted() )
-				continue;
+        for (AttachedObjectInfo i : attachedObjects) {
+            if (i.entityConfiguration.tableName.equals(tableName) && id.equals(i.managedObjectId))
+                return i;
+        }
 
-			res.add( info );
-		}
+        return null;
+    }
 
-		return res;
-	}
+    public AttachedObjectInfo findAttachedObjectByReference(Object o) {
+        for (AttachedObjectInfo i : attachedObjects) {
+            if (i.managedObject == o)
+                return i;
+        }
 
-	public void clear()
-	{
-		attachedObjects.clear();
-	}
+        return null;
+    }
 
-	public AttachedObjectInfo attachObject( EntityConfiguration entityConfiguration, Object id, Object managedObject, SQLiteResult.Row row, boolean isProxy )
-	{
-		AttachedObjectInfo res = new AttachedObjectInfo( entityConfiguration, id, managedObject, row, isProxy );
+    public static class AttachedObjectInfo {
+        final EntityConfiguration entityConfiguration;
+        final Object managedObject;
 
-		attachedObjects.add( res );
+        Object managedObjectId;
 
-		return res;
-	}
+        // null means that the object has never been loaded from DB
+        SQLiteResult.Row row;
 
-	public void detachObject( AttachedObjectInfo info )
-	{
-		attachedObjects.remove( info );
-	}
+        boolean fToDelete = false;
+        boolean fToBeInserted;
+        boolean isProxy;
 
-	public AttachedObjectInfo findAttachedObjectByTableAndId( String tableName, Object id )
-	{
-		if( id == null )
-			return null;
+        public AttachedObjectInfo(EntityConfiguration entityConfiguration, Object managedObjectId, Object managedObject, SQLiteResult.Row row, boolean isProxy) {
+            this.entityConfiguration = entityConfiguration;
+            this.managedObject = managedObject;
+            this.managedObjectId = managedObjectId;
+            this.row = row;
+            this.isProxy = isProxy;
 
-		for( AttachedObjectInfo i : attachedObjects )
-		{
-			if( i.entityConfiguration.tableName.equals( tableName ) && id.equals( i.managedObjectId ) )
-				return i;
-		}
+            fToBeInserted = row == null && (!isProxy);
+        }
 
-		return null;
-	}
+        public void markAsToBeDeleted() {
+            fToDelete = true;
+        }
 
-	public AttachedObjectInfo findAttachedObjectByReference( Object o )
-	{
-		for( AttachedObjectInfo i : attachedObjects )
-		{
-			if( i.managedObject == o )
-				return i;
-		}
+        public void markAsInserted() {
+            fToBeInserted = false;
+        }
 
-		return null;
-	}
+        public boolean isToBeInserted() {
+            return fToBeInserted;
+        }
+    }
 }

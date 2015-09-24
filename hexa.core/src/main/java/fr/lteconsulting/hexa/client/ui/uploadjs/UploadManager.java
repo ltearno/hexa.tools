@@ -5,139 +5,114 @@ import java.util.HashMap;
 import fr.lteconsulting.hexa.client.tools.Action;
 import fr.lteconsulting.hexa.client.ui.uploadjs.Tasker.AsynchroneTask;
 
-public class UploadManager
-{
-	interface Cookie
-	{
-		File getFile();
+public class UploadManager {
+    Callback eventsCallback;
+    Tasker tasker = new Tasker();
+    FileUploader uploader = new FileUploader();
 
-		String getDataUrl();
-	}
+    public UploadManager(Callback eventsCallback) {
+        this.eventsCallback = eventsCallback;
+    }
 
-	public interface Callback
-	{
-		void onUploadInitialized( Cookie cookie );
+    void sendFiles(FilesList files) {
+        int nb = files.getCount();
+        for (int i = 0; i < nb; i++) {
+            FileUploadInfo info = new FileUploadInfo(files.getFile(i));
 
-		void onImageParsingBegin( Cookie cookie );
+            eventsCallback.onUploadInitialized(info);
 
-		void onImageParsingFinished( Cookie cookie, String data );
+            // this task is the upload of a file
+            tasker.enqueueTask(info);
+        }
+    }
 
-		void onUploadBegin( Cookie cookie );
+    interface Cookie {
+        File getFile();
 
-		void onUploadProgress( Cookie cookie, int percentage, float speed );
+        String getDataUrl();
+    }
 
-		void onUploadFinished( Cookie cookie, String responseText, boolean error );
-	}
+    public interface Callback {
+        void onUploadInitialized(Cookie cookie);
 
-	Callback eventsCallback;
+        void onImageParsingBegin(Cookie cookie);
 
-	Tasker tasker = new Tasker();
+        void onImageParsingFinished(Cookie cookie, String data);
 
-	FileUploader uploader = new FileUploader();
+        void onUploadBegin(Cookie cookie);
 
-	public UploadManager( Callback eventsCallback )
-	{
-		this.eventsCallback = eventsCallback;
-	}
+        void onUploadProgress(Cookie cookie, int percentage, float speed);
 
-	void sendFiles( FilesList files )
-	{
-		int nb = files.getCount();
-		for( int i = 0; i < nb; i++ )
-		{
-			FileUploadInfo info = new FileUploadInfo( files.getFile( i ) );
+        void onUploadFinished(Cookie cookie, String responseText, boolean error);
+    }
 
-			eventsCallback.onUploadInitialized( info );
+    class FileUploadInfo implements Cookie, Tasker.AsynchroneTask {
+        File file;
+        String dataUrl;
 
-			// this task is the upload of a file
-			tasker.enqueueTask( info );
-		}
-	}
+        Tasker tasker = new Tasker();
+        AsynchroneTask parseImage = new AsynchroneTask() {
+            @Override
+            public void execute(final Action taskFinishedCallback) {
+                eventsCallback.onImageParsingBegin(FileUploadInfo.this);
 
-	class FileUploadInfo implements Cookie, Tasker.AsynchroneTask
-	{
-		File file;
-		String dataUrl;
+                file.getAsDataUrl(new File.Callback() {
+                    @Override
+                    public void onDataReady(String data) {
+                        dataUrl = data;
 
-		Tasker tasker = new Tasker();
+                        eventsCallback.onImageParsingFinished(FileUploadInfo.this, data);
 
-		public FileUploadInfo( File file )
-		{
-			this.file = file;
-		}
+                        taskFinishedCallback.exec();
+                    }
+                });
+            }
+        };
+        AsynchroneTask uploadImage = new AsynchroneTask() {
+            @Override
+            public void execute(final Action taskFinishedCallback) {
+                HashMap<String, String> prms = new HashMap<String, String>();
+                prms.put("uploadData", "{ \"type\" : \"upload_picture\", \"user_id\" : " + 0 + " }");
 
-		@Override
-		public void execute( final Action taskFinishedCallback )
-		{
-			tasker.enqueueTask( parseImage );
-			tasker.enqueueTask( uploadImage, taskFinishedCallback );
-		}
+                uploader.uploadFile("upload", prms, "Filedata", file, new FileUploader.Callback() {
+                    @Override
+                    public void onStart() {
+                        eventsCallback.onUploadBegin(FileUploadInfo.this);
+                    }
 
-		AsynchroneTask parseImage = new AsynchroneTask()
-		{
-			@Override
-			public void execute( final Action taskFinishedCallback )
-			{
-				eventsCallback.onImageParsingBegin( FileUploadInfo.this );
+                    @Override
+                    public void onProgress(int percentage, float speed, String responseText) {
+                        if (percentage >= 0)
+                            eventsCallback.onUploadProgress(FileUploadInfo.this, percentage, speed);
 
-				file.getAsDataUrl( new File.Callback()
-				{
-					@Override
-					public void onDataReady( String data )
-					{
-						dataUrl = data;
+                        if (percentage == 100 || percentage < 0) {
+                            eventsCallback.onUploadFinished(FileUploadInfo.this, responseText, percentage < 0);
 
-						eventsCallback.onImageParsingFinished( FileUploadInfo.this, data );
+                            taskFinishedCallback.exec();
+                        }
+                    }
+                });
+            }
+        };
 
-						taskFinishedCallback.exec();
-					}
-				} );
-			}
-		};
+        public FileUploadInfo(File file) {
+            this.file = file;
+        }
 
-		AsynchroneTask uploadImage = new AsynchroneTask()
-		{
-			@Override
-			public void execute( final Action taskFinishedCallback )
-			{
-				HashMap<String, String> prms = new HashMap<String, String>();
-				prms.put( "uploadData", "{ \"type\" : \"upload_picture\", \"user_id\" : " + 0 + " }" );
+        @Override
+        public void execute(final Action taskFinishedCallback) {
+            tasker.enqueueTask(parseImage);
+            tasker.enqueueTask(uploadImage, taskFinishedCallback);
+        }
 
-				uploader.uploadFile( "upload", prms, "Filedata", file, new FileUploader.Callback()
-				{
-					@Override
-					public void onStart()
-					{
-						eventsCallback.onUploadBegin( FileUploadInfo.this );
-					}
+        @Override
+        public File getFile() {
+            return file;
+        }
 
-					@Override
-					public void onProgress( int percentage, float speed, String responseText )
-					{
-						if( percentage >= 0 )
-							eventsCallback.onUploadProgress( FileUploadInfo.this, percentage, speed );
-
-						if( percentage == 100 || percentage < 0 )
-						{
-							eventsCallback.onUploadFinished( FileUploadInfo.this, responseText, percentage < 0 );
-
-							taskFinishedCallback.exec();
-						}
-					}
-				} );
-			}
-		};
-
-		@Override
-		public File getFile()
-		{
-			return file;
-		}
-
-		@Override
-		public String getDataUrl()
-		{
-			return dataUrl;
-		}
-	}
+        @Override
+        public String getDataUrl() {
+            return dataUrl;
+        }
+    }
 }

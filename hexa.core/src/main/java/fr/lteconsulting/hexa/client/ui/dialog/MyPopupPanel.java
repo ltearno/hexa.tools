@@ -7,30 +7,25 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 import fr.lteconsulting.hexa.client.css.HexaCss;
 
-public class MyPopupPanel extends PopupPanel
-{
-	interface Css extends HexaCss
-	{
-		static final Css CSS = GWT.create( Css.class );
+public class MyPopupPanel extends PopupPanel {
+    public MyPopupPanel(boolean autoHide) {
+        this(autoHide, false);
+    }
 
-		String main();
-	}
+    public MyPopupPanel(boolean autoHide, boolean modal) {
+        super(autoHide, modal);
 
-	public MyPopupPanel( boolean autoHide )
-	{
-		this( autoHide, false );
-	}
+        setStylePrimaryName(Css.CSS.main());
+    }
 
-	public MyPopupPanel( boolean autoHide, boolean modal )
-	{
-		super( autoHide, modal );
+    @Override
+    public HandlerRegistration addCloseHandler(CloseHandler<PopupPanel> handler) {
+        return super.addCloseHandler(handler);
+    }
 
-		setStylePrimaryName( Css.CSS.main() );
-	}
+    interface Css extends HexaCss {
+        static final Css CSS = GWT.create(Css.class);
 
-	@Override
-	public HandlerRegistration addCloseHandler( CloseHandler<PopupPanel> handler )
-	{
-		return super.addCloseHandler( handler );
-	}
+        String main();
+    }
 }

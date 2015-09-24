@@ -2,7 +2,6 @@ package fr.lteconsulting.hexacss.client;
 
 import fr.lteconsulting.hexa.client.css.HexaCss;
 
-public interface MyCss extends HexaCss
-{
-	String panel();
+public interface MyCss extends HexaCss {
+    String panel();
 }

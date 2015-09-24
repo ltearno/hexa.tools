@@ -39,214 +39,179 @@ import com.github.gwtbootstrap.client.ui.constants.LabelType;
 import com.github.gwtbootstrap.datepicker.client.ui.DateBox;
 import com.google.gwt.user.client.ui.IsWidget;
 
-public class UiUtils
-{
-	public static Modal modal( String title, IsWidget... children )
-	{
-		Modal res = new Modal( true, true );
-		res.setTitle( title );
-		return addIn( res, children );
-	}
+public class UiUtils {
+    public static Modal modal(String title, IsWidget... children) {
+        Modal res = new Modal(true, true);
+        res.setTitle(title);
+        return addIn(res, children);
+    }
 
-	public static ModalFooter modalFooter( IsWidget... children )
-	{
-		return addIn( new ModalFooter(), children );
-	}
+    public static ModalFooter modalFooter(IsWidget... children) {
+        return addIn(new ModalFooter(), children);
+    }
 
-	public static Form form( FormType formType, IsWidget... children )
-	{
-		Form form = new Form();
-		form.setType( FormType.HORIZONTAL );
+    public static Form form(FormType formType, IsWidget... children) {
+        Form form = new Form();
+        form.setType(FormType.HORIZONTAL);
 
-		return addIn( form, children );
-	}
+        return addIn(form, children);
+    }
 
-	public static Well well( String html )
-	{
-		return new Well( html );
-	}
+    public static Well well(String html) {
+        return new Well(html);
+    }
 
-	public static WellForm wellForm( String url, String method, String encoding, IsWidget... children )
-	{
-		WellForm form = new WellForm();
-		form.setAction( url );
-		form.setMethod( method );
-		form.setEncoding( encoding );
+    public static WellForm wellForm(String url, String method, String encoding, IsWidget... children) {
+        WellForm form = new WellForm();
+        form.setAction(url);
+        form.setMethod(method);
+        form.setEncoding(encoding);
 
-		return addIn( form, children );
-	}
+        return addIn(form, children);
+    }
 
-	public static Fieldset fieldSet( IsWidget... children )
-	{
-		return addIn( new Fieldset(), children );
-	}
+    public static Fieldset fieldSet(IsWidget... children) {
+        return addIn(new Fieldset(), children);
+    }
 
-	public static ControlGroup controlGroup( IsWidget... children )
-	{
-		return addIn( new ControlGroup(), children );
-	}
+    public static ControlGroup controlGroup(IsWidget... children) {
+        return addIn(new ControlGroup(), children);
+    }
 
-	public static Controls controls( IsWidget... children )
-	{
-		return addIn( new Controls(), children );
-	}
+    public static Controls controls(IsWidget... children) {
+        return addIn(new Controls(), children);
+    }
 
-	public static ButtonToolbar buttonToolbar( IsWidget... children )
-	{
-		return addIn( new ButtonToolbar(), children );
-	}
+    public static ButtonToolbar buttonToolbar(IsWidget... children) {
+        return addIn(new ButtonToolbar(), children);
+    }
 
-	public static ButtonGroup buttonGroup( IsWidget... children )
-	{
-		return addIn( new ButtonGroup(), children );
-	}
+    public static ButtonGroup buttonGroup(IsWidget... children) {
+        return addIn(new ButtonGroup(), children);
+    }
 
-	public static Button button( String text, IconType iconType )
-	{
-		return new Button( text, iconType );
-	}
+    public static Button button(String text, IconType iconType) {
+        return new Button(text, iconType);
+    }
 
-	public static Button button( String text, ButtonType buttonType )
-	{
-		Button res = new Button( text );
-		res.setType( buttonType );
-		return res;
-	}
+    public static Button button(String text, ButtonType buttonType) {
+        Button res = new Button(text);
+        res.setType(buttonType);
+        return res;
+    }
 
-	public static Button button( String text, IconType iconType, ButtonType buttonType )
-	{
-		Button res = button( text, iconType );
-		res.setType( buttonType );
-		return res;
-	}
+    public static Button button(String text, IconType iconType, ButtonType buttonType) {
+        Button res = button(text, iconType);
+        res.setType(buttonType);
+        return res;
+    }
 
-	public static Button buttonOk( String text )
-	{
-		return button( text, IconType.OK_SIGN, ButtonType.INVERSE );
-	}
+    public static Button buttonOk(String text) {
+        return button(text, IconType.OK_SIGN, ButtonType.INVERSE);
+    }
 
-	public static Button buttonCancel()
-	{
-		return button( "Annuler", IconType.BACKWARD );
-	}
+    public static Button buttonCancel() {
+        return button("Annuler", IconType.BACKWARD);
+    }
 
-	public static TextBox textBox( String placeholder )
-	{
-		TextBox textBox = new TextBox();
-		textBox.setPlaceholder( placeholder );
+    public static TextBox textBox(String placeholder) {
+        TextBox textBox = new TextBox();
+        textBox.setPlaceholder(placeholder);
 
-		return textBox;
-	}
+        return textBox;
+    }
 
-	public static TextBox textBox( String placeHolder, AlternateSize alternateSize )
-	{
-		TextBox textBox = textBox( placeHolder );
-		textBox.setAlternateSize( alternateSize );
+    public static TextBox textBox(String placeHolder, AlternateSize alternateSize) {
+        TextBox textBox = textBox(placeHolder);
+        textBox.setAlternateSize(alternateSize);
 
-		return textBox;
-	}
+        return textBox;
+    }
 
-	public static PasswordTextBox passwordTextBox( String placeHolder, AlternateSize alternateSize )
-	{
-		PasswordTextBox passwordTextBox = new PasswordTextBox();
-		passwordTextBox.setAlternateSize( alternateSize );
-		passwordTextBox.setPlaceholder( placeHolder );
+    public static PasswordTextBox passwordTextBox(String placeHolder, AlternateSize alternateSize) {
+        PasswordTextBox passwordTextBox = new PasswordTextBox();
+        passwordTextBox.setAlternateSize(alternateSize);
+        passwordTextBox.setPlaceholder(placeHolder);
 
-		return passwordTextBox;
-	}
+        return passwordTextBox;
+    }
 
-	public static TextArea textArea( String placeholder )
-	{
-		TextArea textArea = new TextArea();
-		textArea.setPlaceholder( placeholder );
+    public static TextArea textArea(String placeholder) {
+        TextArea textArea = new TextArea();
+        textArea.setPlaceholder(placeholder);
 
-		return textArea;
-	}
+        return textArea;
+    }
 
-	public static DateBox dateBox()
-	{
-		return new DateBox();
-	}
+    public static DateBox dateBox() {
+        return new DateBox();
+    }
 
-	public static ControlLabel controlLabel( String label )
-	{
-		return new ControlLabel( label );
-	}
+    public static ControlLabel controlLabel(String label) {
+        return new ControlLabel(label);
+    }
 
-	public static HelpBlock helpBlock( String html )
-	{
-		return new HelpBlock( html );
-	}
+    public static HelpBlock helpBlock(String html) {
+        return new HelpBlock(html);
+    }
 
-	public static Hero hero( IsWidget... children )
-	{
-		return addIn( new Hero(), children );
-	}
+    public static Hero hero(IsWidget... children) {
+        return addIn(new Hero(), children);
+    }
 
-	public static Heading heading( int size, String text )
-	{
-		return new Heading( size, text );
-	}
+    public static Heading heading(int size, String text) {
+        return new Heading(size, text);
+    }
 
-	public static Paragraph paragraph( String html )
-	{
-		return new Paragraph( html );
-	}
+    public static Paragraph paragraph(String html) {
+        return new Paragraph(html);
+    }
 
-	public static Label label( LabelType labelType, String text )
-	{
-		return new Label( labelType, text );
-	}
+    public static Label label(LabelType labelType, String text) {
+        return new Label(labelType, text);
+    }
 
-	public static Navbar navBar( IsWidget... children )
-	{
-		return addIn( new Navbar(), children );
-	}
+    public static Navbar navBar(IsWidget... children) {
+        return addIn(new Navbar(), children);
+    }
 
-	public static Nav nav( Alignment alignment, IsWidget... children )
-	{
-		Nav nav = new Nav();
-		nav.setAlignment( alignment );
+    public static Nav nav(Alignment alignment, IsWidget... children) {
+        Nav nav = new Nav();
+        nav.setAlignment(alignment);
 
-		return addIn( nav, children );
-	}
+        return addIn(nav, children);
+    }
 
-	public static NavLink navLink( String text )
-	{
-		return new NavLink( text );
-	}
+    public static NavLink navLink(String text) {
+        return new NavLink(text);
+    }
 
-	public static NavWidget navWidget( IconType iconType )
-	{
-		NavWidget navWidget = new NavWidget();
-		navWidget.setIcon( iconType );
+    public static NavWidget navWidget(IconType iconType) {
+        NavWidget navWidget = new NavWidget();
+        navWidget.setIcon(iconType);
 
-		return navWidget;
-	}
+        return navWidget;
+    }
 
-	public static Dropdown dropdown( String caption, IsWidget... children )
-	{
-		return addIn( new Dropdown( caption ), children );
-	}
+    public static Dropdown dropdown(String caption, IsWidget... children) {
+        return addIn(new Dropdown(caption), children);
+    }
 
-	public static NavSearch navSearch( int size, String placeholder )
-	{
-		NavSearch navSearch = new NavSearch( size );
-		navSearch.setPlaceholder( placeholder );
+    public static NavSearch navSearch(int size, String placeholder) {
+        NavSearch navSearch = new NavSearch(size);
+        navSearch.setPlaceholder(placeholder);
 
-		return navSearch;
-	}
+        return navSearch;
+    }
 
-	public static Brand brand( String text )
-	{
-		return new Brand( text );
-	}
+    public static Brand brand(String text) {
+        return new Brand(text);
+    }
 
-	public static NavText navText( Alignment alignment, String text )
-	{
-		NavText navText = new NavText( text );
-		navText.setAlignment( alignment );
+    public static NavText navText(Alignment alignment, String text) {
+        NavText navText = new NavText(text);
+        navText.setAlignment(alignment);
 
-		return navText;
-	}
+        return navText;
+    }
 }

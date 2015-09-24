@@ -8,6 +8,7 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 /**
  * DataBinding for GWT implementation.
+ *
  * @author Ben Dol
  */
 public class DataBinding extends fr.lteconsulting.hexa.databinding.DataBinding {
@@ -34,10 +35,11 @@ public class DataBinding extends fr.lteconsulting.hexa.databinding.DataBinding {
 
     /**
      * Activates the data binding using the deferred scheduler.
+     *
      * @see #activate()
      */
     public void deferActivate() {
-        log( "deferred activation..." );
+        log("deferred activation...");
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override

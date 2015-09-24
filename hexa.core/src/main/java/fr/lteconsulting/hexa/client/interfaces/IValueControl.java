@@ -1,15 +1,13 @@
 package fr.lteconsulting.hexa.client.interfaces;
 
-public interface IValueControl<T>
-{
-	public interface Callback<T>
-	{
-		void onValueControlChange( Object cookie );
-	}
+public interface IValueControl<T> {
+    public abstract T getValue();
 
-	public abstract void setValue( T value );
+    public abstract void setValue(T value);
 
-	public abstract T getValue();
+    public void addCallback(Callback<T> callback, Object cookie);
 
-	public void addCallback( Callback<T> callback, Object cookie );
+    public interface Callback<T> {
+        void onValueControlChange(Object cookie);
+    }
 }

@@ -8,45 +8,44 @@ import fr.lteconsulting.hexa.databinding.properties.PropertyChangedHandler;
 
 
 public class UniversalEditor {
-	private Object value;
-	private Object registration;
+    private Object value;
+    private Object registration;
+    private PropertyChangedHandler handlePropertyChange = new PropertyChangedHandler() {
+        public void onPropertyChanged(PropertyChangedEvent event) {
+            String ptyName = event.getPropertyName();
+            Object sender = event.getSender();
+            System.out.println("Show property " + ptyName + " of object "
+                + sender + " with value "
+                + Properties.getValue(sender, ptyName));
+        }
+    };
 
-	public UniversalEditor() {
-	}
+    public UniversalEditor() {
+    }
 
-	public Object getValue() {
-		return value;
-	}
+    public Object getValue() {
+        return value;
+    }
 
-	public void setValue(Object value) {
-		this.value = value;
+    public void setValue(Object value) {
+        this.value = value;
 
-		System.out.println("Clear all properties");
+        System.out.println("Clear all properties");
 
-		if (registration != null) {
-			Properties.removeHandler(registration);
-			registration = null;
-		}
+        if (registration != null) {
+            Properties.removeHandler(registration);
+            registration = null;
+        }
 
-		if (value != null) {
-			// TODO get the object's properties
-			Clazz<?> claz = ClassInfo.Clazz(value.getClass());
-			// ...
+        if (value != null) {
+            // TODO get the object's properties
+            Clazz<?> claz = ClassInfo.Clazz(value.getClass());
+            // ...
 
-			registration = Properties
-					.register(value, "*", handlePropertyChange);
-		}
+            registration = Properties
+                .register(value, "*", handlePropertyChange);
+        }
 
-		Properties.notify(this, "value");
-	}
-
-	private PropertyChangedHandler handlePropertyChange = new PropertyChangedHandler() {
-		public void onPropertyChanged( PropertyChangedEvent event ) {
-			String ptyName = event.getPropertyName();
-			Object sender = event.getSender();
-			System.out.println("Show property " + ptyName + " of object "
-					+ sender + " with value "
-					+ Properties.getValue(sender, ptyName));
-		}
-	};
+        Properties.notify(this, "value");
+    }
 }

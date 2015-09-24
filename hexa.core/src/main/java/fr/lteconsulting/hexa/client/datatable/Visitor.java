@@ -2,17 +2,15 @@ package fr.lteconsulting.hexa.client.datatable;
 
 /**
  * Visiting interface for rows hierarchy
- * 
- * @param <T>
- *            The type of instances being visited
+ *
+ * @param <T> The type of instances being visited
  */
-public interface Visitor<T>
-{
-	void beginVisit( T node );
-	
-	void beginVisitChild( T node, T child );
+public interface Visitor<T> {
+    void beginVisit(T node);
 
-	void endVisitChild( T node, T child, Object childResult );
+    void beginVisitChild(T node, T child);
 
-	Object endVisit( T node );
+    void endVisitChild(T node, T child, Object childResult);
+
+    Object endVisit(T node);
 }

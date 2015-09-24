@@ -36,6 +36,7 @@ public interface AbstractQuery<T> {
     <X> Root<X> from(Class<X> entityClass);
 
     <X> Root<X> from(EntityType<X> entity);
+
     AbstractQuery<T> where(Expression<Boolean> restriction);
 
     AbstractQuery<T> where(Predicate... restrictions);
@@ -57,11 +58,12 @@ public interface AbstractQuery<T> {
     Selection<T> getSelection();
 
     Predicate getRestriction();
+
     List<Expression<?>> getGroupList();
 
     Predicate getGroupRestriction();
 
     boolean isDistinct();
 
-    Class<T> getResultType();  	
+    Class<T> getResultType();
 }

@@ -1,6 +1,5 @@
 package javax.persistence;
 
-public @interface Id
-{
+public @interface Id {
 
 }

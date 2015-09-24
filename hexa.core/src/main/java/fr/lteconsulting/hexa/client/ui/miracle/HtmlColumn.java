@@ -1,60 +1,48 @@
 package fr.lteconsulting.hexa.client.ui.miracle;
 
-public abstract class HtmlColumn<T> implements IColumnMng<T>
-{
-	protected abstract String getHtml( T data );
+public abstract class HtmlColumn<T> implements IColumnMng<T> {
+    PrintsOn<Void> hdrPrintsOn;
+    PrintsOn<T> printsOn;
+    public HtmlColumn(final String title) {
+        hdrPrintsOn = new PrintsOn<Void>() {
+            @Override
+            public void print(Void data, Printer printer) {
+                printer.setText(title);
+            }
+        };
 
-	PrintsOn<Void> hdrPrintsOn;
-	PrintsOn<T> printsOn;
+        printsOn = new PrintsOn<T>() {
+            @Override
+            public void print(T data, Printer printer) {
+                printer.setHTML(getHtml(data));
+            }
+        };
+    }
 
-	public HtmlColumn( final String title )
-	{
-		hdrPrintsOn = new PrintsOn<Void>()
-		{
-			@Override
-			public void print( Void data, Printer printer )
-			{
-				printer.setText( title );
-			}
-		};
+    protected abstract String getHtml(T data);
 
-		printsOn = new PrintsOn<T>()
-		{
-			@Override
-			public void print( T data, Printer printer )
-			{
-				printer.setHTML( getHtml( data ) );
-			}
-		};
-	}
+    @Override
+    public PrintsOn<T> getPrintsOn() {
+        return printsOn;
+    }
 
-	@Override
-	public PrintsOn<T> getPrintsOn()
-	{
-		return printsOn;
-	}
+    @Override
+    public Edits<T> getEdits() {
+        return null;
+    }
 
-	@Override
-	public Edits<T> getEdits()
-	{
-		return null;
-	}
+    @Override
+    public CellClickMng<T> getClicks() {
+        return null;
+    }
 
-	@Override
-	public CellClickMng<T> getClicks()
-	{
-		return null;
-	}
+    @Override
+    public PrintsOn<Void> getHdrPrintsOn() {
+        return hdrPrintsOn;
+    }
 
-	@Override
-	public PrintsOn<Void> getHdrPrintsOn()
-	{
-		return hdrPrintsOn;
-	}
-
-	@Override
-	public CellClickMng<Void> getHdrClickMng()
-	{
-		return null;
-	}
+    @Override
+    public CellClickMng<Void> getHdrClickMng() {
+        return null;
+    }
 }

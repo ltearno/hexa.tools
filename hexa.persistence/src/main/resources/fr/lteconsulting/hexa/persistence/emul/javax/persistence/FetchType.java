@@ -1,7 +1,6 @@
 package javax.persistence;
 
-public enum FetchType
-{
-	EAGER,
-	LAZY;
+public enum FetchType {
+    EAGER,
+    LAZY;
 }

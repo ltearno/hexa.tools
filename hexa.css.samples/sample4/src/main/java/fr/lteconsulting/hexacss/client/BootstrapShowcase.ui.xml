@@ -1,131 +1,144 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.BootstrapHexaCss"
-		field="bs"></ui:with>
-	<g:DockLayoutPanel unit='EM'>
-		<g:north size='4'>
-			<g:HTMLPanel>
-				<strong style="font-size:200%;">This is a GWT application build with HexaCss (embedding Bootstrap)</strong>
-				<div style="float:right;">
-					<g:ListBox ui:field="theme" stylePrimaryName="{bs.formControl}"></g:ListBox>
-				</div>
-				<div style="float:right;">
-					<span class="{bs.label} {bs.labelInfo}">Theme selection: </span>
-				</div>
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with type="fr.lteconsulting.hexa.client.css.bindings.BootstrapHexaCss"
+             field="bs"></ui:with>
+    <g:DockLayoutPanel unit='EM'>
+        <g:north size='4'>
+            <g:HTMLPanel>
+                <strong style="font-size:200%;">This is a GWT application build with HexaCss (embedding Bootstrap)
+                </strong>
+                <div style="float:right;">
+                    <g:ListBox ui:field="theme" stylePrimaryName="{bs.formControl}"></g:ListBox>
+                </div>
+                <div style="float:right;">
+                    <span class="{bs.label} {bs.labelInfo}">Theme selection:</span>
+                </div>
 
-				<div style="clear:both;"></div>
-			</g:HTMLPanel>
-		</g:north>
+                <div style="clear:both;"></div>
+            </g:HTMLPanel>
+        </g:north>
 
-		<g:west size='18'>
-				<g:HTMLPanel>
-				<div style="margin:5px;" class="container-fluid">
-					<div class="{bs.panel} {bs.panelDefault}">
-						<div class="{bs.panelHeading}">
-							<h1>Login form</h1>
-						</div>
+        <g:west size='18'>
+            <g:HTMLPanel>
+                <div style="margin:5px;" class="container-fluid">
+                    <div class="{bs.panel} {bs.panelDefault}">
+                        <div class="{bs.panelHeading}">
+                            <h1>Login form</h1>
+                        </div>
 
-						<div class="{bs.panelBody}">
-							<form>
-								<div class="{bs.formGroup}">
-									<label>Email address</label>
-									<g:TextBox stylePrimaryName="{bs.formControl}"></g:TextBox>
-								</div>
-								<div class="{bs.formGroup}">
-									<label>Password</label>
-									<g:PasswordTextBox stylePrimaryName="{bs.formControl}"></g:PasswordTextBox>
-								</div>
-								<div class="{bs.formGroup}">
-									<label>File input</label>
-									<input type="file" id="exampleInputFile" />
-								</div>
-								<div class="{bs.checkbox}">
-									<label>
-										<input type="checkbox" />
-										Check me out
-									</label>
-								</div>
+                        <div class="{bs.panelBody}">
+                            <form>
+                                <div class="{bs.formGroup}">
+                                    <label>Email address</label>
+                                    <g:TextBox stylePrimaryName="{bs.formControl}"></g:TextBox>
+                                </div>
+                                <div class="{bs.formGroup}">
+                                    <label>Password</label>
+                                    <g:PasswordTextBox stylePrimaryName="{bs.formControl}"></g:PasswordTextBox>
+                                </div>
+                                <div class="{bs.formGroup}">
+                                    <label>File input</label>
+                                    <input type="file" id="exampleInputFile"/>
+                                </div>
+                                <div class="{bs.checkbox}">
+                                    <label>
+                                        <input type="checkbox"/>
+                                        Check me out
+                                    </label>
+                                </div>
 
-								<g:Button styleName="{bs.btn} {bs.btnDefault}">Submit</g:Button>
-							</form>
-						</div>
-					</div>
-					</div>
-				</g:HTMLPanel>
-		</g:west>
-		
-		<g:north size='4'>
-			<g:HTMLPanel>
-				<strong>MAIN PANEL</strong>
-				
-				<div style="float:right;">
-					<a href="#">Inbox<span class="{bs.badge}">42</span></a>
-					<button class="{bs.btn} {bs.btnPrimary}" type="button">Messages<span class="{bs.badge}">4</span></button>
-				</div>
-				
-				<div style="clear:both"></div>
-			</g:HTMLPanel>
-		</g:north>
+                                <g:Button styleName="{bs.btn} {bs.btnDefault}">Submit</g:Button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </g:HTMLPanel>
+        </g:west>
 
-		<g:center>
-			<g:ScrollPanel>
-				<g:HTMLPanel>
-				<div class="container-fluid">
-					<div class="{bs.row}">
-						<div class="{bs.colMd3} {bs.well}" style="margin:5px;">
-							<strong>License validation</strong><br/>
-							You should validate your license to use bla ....
-							<br /><br />
-							By clicking on the button you agree :<br/>
-							<g:Button styleName="{bs.btn} {bs.btnSuccess}">Button...</g:Button>
-						</div>
-						<div class="{bs.colMd4} {bs.well}" style="margin:5px;">
-							All the widgets here are GWT widgets, with CSS classes added programatically. Those are added through 
-							HexaCss which works the same way as CssResource.<br/>
-							Basically one does :
-							<div class="{bs.alert} {bs.alertInfo}">
-							widget.setStylePrimaryName( HexaBootstrapCss.CSS.btn() );
-							</div>
-						</div>
-						<div class="{bs.colMd3} {bs.well}" style="margin:5px;">
-							And the other column !
-						</div>
-						<div style="clear:both"></div>
-					</div>
-					
-					<div class="{bs.row}">
-						<div class="{bs.colMd8}">
-							<g:FlexTable ui:field="table" stylePrimaryName="{bs.table} {bs.tableStriped}"></g:FlexTable>
-						</div>
-						
-						<div style="clear:both"></div>
-					</div>
+        <g:north size='4'>
+            <g:HTMLPanel>
+                <strong>MAIN PANEL</strong>
 
-					<div class="{bs.row}">
-						<div class="{bs.well}">
-							In a well...
-							<div class="{bs.progress}">
-								<div class="{bs.progressBar}" role="progressbar"
-									aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-									style="width: 60%;">60%</div>
-							</div>
-							
-							<g:VerticalPanel ui:field="panel"></g:VerticalPanel>
-							
-							And here is a Bootstrap thumbnail :<br/>
-							<g:Image width="200px" height="200px" stylePrimaryName="{bs.imgThumbnail}"></g:Image>
-						</div>
-					</div>
+                <div style="float:right;">
+                    <a href="#">Inbox
+                        <span class="{bs.badge}">42</span>
+                    </a>
+                    <button class="{bs.btn} {bs.btnPrimary}" type="button">Messages
+                        <span class="{bs.badge}">4</span>
+                    </button>
+                </div>
 
-					<div class="{bs.row}">
-						<div class="{bs.colMd8}">
-							Another column, with 8 column width...
-						</div>
-					</div>
-				</div>
-				</g:HTMLPanel>
-			</g:ScrollPanel>
-		</g:center>
-	</g:DockLayoutPanel>
+                <div style="clear:both"></div>
+            </g:HTMLPanel>
+        </g:north>
+
+        <g:center>
+            <g:ScrollPanel>
+                <g:HTMLPanel>
+                    <div class="container-fluid">
+                        <div class="{bs.row}">
+                            <div class="{bs.colMd3} {bs.well}" style="margin:5px;">
+                                <strong>License validation</strong>
+                                <br/>
+                                You should validate your license to use bla ....
+                                <br/>
+                                <br/>
+                                By clicking on the button you agree :
+                                <br/>
+                                <g:Button styleName="{bs.btn} {bs.btnSuccess}">Button...</g:Button>
+                            </div>
+                            <div class="{bs.colMd4} {bs.well}" style="margin:5px;">
+                                All the widgets here are GWT widgets, with CSS classes added programatically. Those are
+                                added through
+                                HexaCss which works the same way as CssResource.
+                                <br/>
+                                Basically one does :
+                                <div class="{bs.alert} {bs.alertInfo}">
+                                    widget.setStylePrimaryName( HexaBootstrapCss.CSS.btn() );
+                                </div>
+                            </div>
+                            <div class="{bs.colMd3} {bs.well}" style="margin:5px;">
+                                And the other column !
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+
+                        <div class="{bs.row}">
+                            <div class="{bs.colMd8}">
+                                <g:FlexTable ui:field="table"
+                                             stylePrimaryName="{bs.table} {bs.tableStriped}"></g:FlexTable>
+                            </div>
+
+                            <div style="clear:both"></div>
+                        </div>
+
+                        <div class="{bs.row}">
+                            <div class="{bs.well}">
+                                In a well...
+                                <div class="{bs.progress}">
+                                    <div class="{bs.progressBar}" role="progressbar"
+                                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                         style="width: 60%;">60%
+                                    </div>
+                                </div>
+
+                                <g:VerticalPanel ui:field="panel"></g:VerticalPanel>
+
+                                And here is a Bootstrap thumbnail :
+                                <br/>
+                                <g:Image width="200px" height="200px" stylePrimaryName="{bs.imgThumbnail}"></g:Image>
+                            </div>
+                        </div>
+
+                        <div class="{bs.row}">
+                            <div class="{bs.colMd8}">
+                                Another column, with 8 column width...
+                            </div>
+                        </div>
+                    </div>
+                </g:HTMLPanel>
+            </g:ScrollPanel>
+        </g:center>
+    </g:DockLayoutPanel>
 </ui:UiBinder> 

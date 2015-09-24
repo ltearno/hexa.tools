@@ -2,36 +2,34 @@ package fr.lteconsulting.hexa.client.interfaces;
 
 import com.google.gwt.user.client.ui.Composite;
 
-public abstract class AValueControl<T> extends Composite implements IValueControl<T>
-{
-	@Override
-	public void addCallback( Callback<T> callback, Object cookie ) // throws
-																	// Exception
-	{
-		assert (this.callback == null);
-		// if( this.callback != null )
-		// throw new Exception(
-		// "AValueControl::addCallback has been called but a callback was already set !"
-		// );
+public abstract class AValueControl<T> extends Composite implements IValueControl<T> {
+    private Callback<T> callback = null;
+    private Object cookie = null;
 
-		this.callback = callback;
-		this.cookie = cookie;
-	}
+    @Override
+    public void addCallback(Callback<T> callback, Object cookie) // throws
+    // Exception
+    {
+        assert (this.callback == null);
+        // if( this.callback != null )
+        // throw new Exception(
+        // "AValueControl::addCallback has been called but a callback was already set !"
+        // );
 
-	@Override
-	public abstract void setValue( T value );
+        this.callback = callback;
+        this.cookie = cookie;
+    }
 
-	@Override
-	public abstract T getValue();
+    @Override
+    public abstract T getValue();
 
-	private Callback<T> callback = null;
-	private Object cookie = null;
+    @Override
+    public abstract void setValue(T value);
 
-	protected void signalCallbacks()
-	{
-		if( callback == null )
-			return;
+    protected void signalCallbacks() {
+        if (callback == null)
+            return;
 
-		callback.onValueControlChange( cookie );
-	}
+        callback.onValueControlChange(cookie);
+    }
 }

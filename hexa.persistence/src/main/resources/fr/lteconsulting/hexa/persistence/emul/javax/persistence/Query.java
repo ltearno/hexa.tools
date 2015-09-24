@@ -41,13 +41,13 @@ public interface Query {
 
     int executeUpdate();
 
-    Query setMaxResults(int maxResult);
-
     int getMaxResults();
 
-    Query setFirstResult(int startPosition);
+    Query setMaxResults(int maxResult);
 
     int getFirstResult();
+
+    Query setFirstResult(int startPosition);
 
     Query setHint(String hintName, Object value);
 
@@ -55,26 +55,26 @@ public interface Query {
 
     <T> Query setParameter(Parameter<T> param, T value);
 
-    Query setParameter(Parameter<Calendar> param, Calendar value, 
+    Query setParameter(Parameter<Calendar> param, Calendar value,
                        TemporalType temporalType);
 
-    Query setParameter(Parameter<Date> param, Date value, 
+    Query setParameter(Parameter<Date> param, Date value,
                        TemporalType temporalType);
 
     Query setParameter(String name, Object value);
 
-    Query setParameter(String name, Calendar value, 
+    Query setParameter(String name, Calendar value,
                        TemporalType temporalType);
 
-    Query setParameter(String name, Date value, 
+    Query setParameter(String name, Date value,
                        TemporalType temporalType);
 
     Query setParameter(int position, Object value);
 
-    Query setParameter(int position, Calendar value,  
+    Query setParameter(int position, Calendar value,
                        TemporalType temporalType);
 
-    Query setParameter(int position, Date value,  
+    Query setParameter(int position, Date value,
                        TemporalType temporalType);
 
     Set<Parameter<?>> getParameters();
@@ -95,13 +95,13 @@ public interface Query {
 
     Object getParameterValue(int position);
 
-    Query setFlushMode(FlushModeType flushMode);
-
     FlushModeType getFlushMode();
 
-    Query setLockMode(LockModeType lockMode);
+    Query setFlushMode(FlushModeType flushMode);
 
     LockModeType getLockMode();
+
+    Query setLockMode(LockModeType lockMode);
 
     <T> T unwrap(Class<T> cls);
 }

@@ -10,117 +10,100 @@ import fr.lteconsulting.hexa.client.common.HexaDate;
 import fr.lteconsulting.hexa.client.interfaces.IValueChangeHandler;
 import fr.lteconsulting.hexa.client.ui.dialog.MyPopupPanel;
 
-public class DateSelector extends Composite implements JQDatepicker.Callback
-{
-	boolean enabled = true;
-	TextBox textBox = new TextBox();
-	MyPopupPanel popup = null;
-	JQDatepicker datePicker = null;
+public class DateSelector extends Composite implements JQDatepicker.Callback {
+    boolean enabled = true;
+    TextBox textBox = new TextBox();
+    MyPopupPanel popup = null;
+    JQDatepicker datePicker = null;
 
-	ArrayList<IValueChangeHandler<HexaDate>> handlers = new ArrayList<IValueChangeHandler<HexaDate>>();
+    ArrayList<IValueChangeHandler<HexaDate>> handlers = new ArrayList<IValueChangeHandler<HexaDate>>();
 
-	public DateSelector()
-	{
-		initWidget( textBox );
+    public DateSelector() {
+        initWidget(textBox);
 
-		textBox.addFocusHandler( new FocusHandler()
-		{
-			@Override
-			public void onFocus( FocusEvent event )
-			{
-				if( ! enabled )
-					return;
-				
-				showPopup();
-			}
-		} );
-	}
+        textBox.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                if (!enabled)
+                    return;
 
-	public void clear()
-	{
-		setDate( null );
-	}
+                showPopup();
+            }
+        });
+    }
 
-	public HexaDate getDate()
-	{
-		String tb = textBox.getText();
-		HexaDate res = HexaDate.getDisplayFormat().getHexaDateFromDisplayString( tb );
-		return res;
-	}
+    public void clear() {
+        setDate(null);
+    }
 
-	public void setDate( HexaDate hexaDate )
-	{
-		if( hexaDate == null )
-		{
-			textBox.setText( "" );
-			return;
-		}
-		
-		String display = hexaDate.getDisplayString();
-		
-		textBox.setText( display );
-		if( datePicker != null )
-			datePicker.setValueString( hexaDate.getString() );
-	}
+    public HexaDate getDate() {
+        String tb = textBox.getText();
+        HexaDate res = HexaDate.getDisplayFormat().getHexaDateFromDisplayString(tb);
+        return res;
+    }
 
-	public void setDate( HexaDate date, boolean fFireEvent )
-	{
-		setDate( date );
+    public void setDate(HexaDate hexaDate) {
+        if (hexaDate == null) {
+            textBox.setText("");
+            return;
+        }
 
-		if( fFireEvent )
-			fire( date );
-	}
+        String display = hexaDate.getDisplayString();
 
-	public void addValueChangeHandler( IValueChangeHandler<HexaDate> handler )
-	{
-		handlers.add( handler );
-	}
+        textBox.setText(display);
+        if (datePicker != null)
+            datePicker.setValueString(hexaDate.getString());
+    }
 
-	public void setEnabled( boolean enabled )
-	{
-		this.enabled = enabled;
-		textBox.setEnabled( enabled );
-	}
+    public void setDate(HexaDate date, boolean fFireEvent) {
+        setDate(date);
 
-	private void showPopup()
-	{
-		if( datePicker == null )
-		{
-			datePicker = new JQDatepicker( true );
-			datePicker.setCallback( this );
-		}
+        if (fFireEvent)
+            fire(date);
+    }
 
-		if( popup == null )
-		{
-			popup = new MyPopupPanel( true, true );
-			popup.setWidget( datePicker );
-		}
+    public void addValueChangeHandler(IValueChangeHandler<HexaDate> handler) {
+        handlers.add(handler);
+    }
 
-		popup.showRelativeTo( textBox );
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        textBox.setEnabled(enabled);
+    }
 
-		HexaDate hexaDate = getDate();
-		if( hexaDate != null )
-			datePicker.setValueString( hexaDate.getString() );
-	}
+    private void showPopup() {
+        if (datePicker == null) {
+            datePicker = new JQDatepicker(true);
+            datePicker.setCallback(this);
+        }
 
-	private void hidePopup()
-	{
-		if( popup != null )
-			popup.hide();
-	}
+        if (popup == null) {
+            popup = new MyPopupPanel(true, true);
+            popup.setWidget(datePicker);
+        }
 
-	@Override
-	public void onDateSelected( String text )
-	{
-		hidePopup();
-		
-		HexaDate date = new HexaDate( text );
-		setDate( date, true );
-	}
+        popup.showRelativeTo(textBox);
 
-	private void fire( HexaDate date )
-	{
-		for( IValueChangeHandler<HexaDate> handler : handlers )
-			handler.onValueChange( date );
-	}
+        HexaDate hexaDate = getDate();
+        if (hexaDate != null)
+            datePicker.setValueString(hexaDate.getString());
+    }
+
+    private void hidePopup() {
+        if (popup != null)
+            popup.hide();
+    }
+
+    @Override
+    public void onDateSelected(String text) {
+        hidePopup();
+
+        HexaDate date = new HexaDate(text);
+        setDate(date, true);
+    }
+
+    private void fire(HexaDate date) {
+        for (IValueChangeHandler<HexaDate> handler : handlers)
+            handler.onValueChange(date);
+    }
 }

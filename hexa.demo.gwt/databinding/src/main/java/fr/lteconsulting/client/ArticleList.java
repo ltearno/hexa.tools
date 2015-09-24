@@ -29,214 +29,207 @@ import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection
 
 /**
  * This widget presents the different Articles and allow to select one
- * 
- * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  *
+ * @author Arnaud Tournier (c) LTE Consulting - 2015 http://www.lteconsulting.fr
  */
 public class ArticleList extends Composite {
-	@UiField
-	ListBox<Article> listBox;
+    private static ArticleListUiBinder uiBinder = GWT.create(ArticleListUiBinder.class);
+    private final WatchableCollection<Article> articles = Repository.getArticles();
+    @UiField
+    ListBox<Article> listBox;
+    @UiField
+    DivElement listDiv;
+    @UiField
+    Button add;
+    @UiField
+    Button delete;
+    Element currentActiveElement = null;
 
-	@UiField
-	DivElement listDiv;
+    public ArticleList() {
+        initWidget(uiBinder.createAndBindUi(this));
 
-	@UiField
-	Button add;
+        initListBox();
 
-	@UiField
-	Button delete;
+        initArticleList();
 
-	Element currentActiveElement = null;
+        registerSelectArticleClickAction();
 
-	private final WatchableCollection<Article> articles = Repository.getArticles();
+        registerSelectedArticleProperty();
 
-	private static ArticleListUiBinder uiBinder = GWT.create(ArticleListUiBinder.class);
+        initAddHandler();
 
-	interface ArticleListUiBinder extends UiBinder<Widget, ArticleList> {
-	}
+        initDeleteHandler();
 
-	public ArticleList() {
-		initWidget(uiBinder.createAndBindUi(this));
+        listBox.getElement().focus();
+    }
 
-		initListBox();
+    private void initListBox() {
+        /**
+         * Use the {@link WatchableCollection} subscription system to get
+         * changes happening to the list
+         */
+        articles.addCallbackAndSendAll(new Action1<List<Change>>() {
+            @Override
+            public void exec(List<Change> param) {
+                for (Change c : param) {
+                    // Each change has a type and conveys the item that was
+                    // concerned
+                    switch (c.getType()) {
+                        case ADD:
+                            listBox.addItem(c.<Article>getItem().getName(), c.<Article>getItem());
+                            break;
+                        case REMOVE:
+                            listBox.removeItem(c.<Article>getItem());
+                            break;
+                    }
+                }
+            }
+        });
 
-		initArticleList();
+        /**
+         * Bind the selected article to the list box.
+         *
+         * This is a two way data binding !
+         */
+        Binder.bind(articles, "selected").to(listBox);
+    }
 
-		registerSelectArticleClickAction();
+    private void initArticleList() {
+        /**
+         * Use the {@link WatchableCollection} subscription system to get
+         * changes happening to the list
+         */
+        articles.addCallbackAndSendAll(new Action1<List<Change>>() {
+            @Override
+            public void exec(List<Change> changes) {
+                for (Change c : changes) {
+                    // Each change has a type and conveys the item that was
+                    // concerned
+                    switch (c.getType()) {
+                        case ADD:
+                            AnchorElement anchor = Document.get().createAnchorElement();
+                            anchor.setHref("#");
+                            anchor.addClassName(BootstrapHexaCss.CSS.listGroupItem());
+                            Binder.bind(c.getItem(), "name").mode(Mode.OneWay).to(anchor, "innerText");
+                            listDiv.appendChild(anchor);
 
-		registerSelectedArticleProperty();
+                            break;
 
-		initAddHandler();
+                        case REMOVE:
+                            listDiv.getChild(c.getIndex()).removeFromParent();
 
-		initDeleteHandler();
+                            break;
+                    }
+                }
+            }
+        });
+    }
 
-		listBox.getElement().focus();
-	}
+    private void registerSelectArticleClickAction() {
+        addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                int index = DOM.getChildIndex(listDiv, event.getNativeEvent().getEventTarget().<Element>cast());
+                if (index < 0)
+                    return;
 
-	private void initListBox() {
-		/**
-		 * Use the {@link WatchableCollection} subscription system to get
-		 * changes happening to the list
-		 */
-		articles.addCallbackAndSendAll(new Action1<List<Change>>() {
-			@Override
-			public void exec(List<Change> param) {
-				for (Change c : param) {
-					// Each change has a type and conveys the item that was
-					// concerned
-					switch (c.getType()) {
-					case ADD:
-						listBox.addItem(c.<Article> getItem().getName(), c.<Article> getItem());
-						break;
-					case REMOVE:
-						listBox.removeItem(c.<Article> getItem());
-						break;
-					}
-				}
-			}
-		});
+                /**
+                 * Set the "selected" property of the articles list (and
+                 * notifies others).
+                 *
+                 * Since the articles's class ({@link WatchableCollection} does
+                 * not have a "selected" getter nor field, the binding mecanism
+                 * will use the dynamic property system)
+                 */
+                Properties.setValue(articles, "selected", articles.get(index));
 
-		/**
-		 * Bind the selected article to the list box.
-		 * 
-		 * This is a two way data binding !
-		 */
-		Binder.bind(articles, "selected").to(listBox);
-	}
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        }, ClickEvent.getType());
+    }
 
-	private void initArticleList() {
-		/**
-		 * Use the {@link WatchableCollection} subscription system to get
-		 * changes happening to the list
-		 */
-		articles.addCallbackAndSendAll(new Action1<List<Change>>() {
-			@Override
-			public void exec(List<Change> changes) {
-				for (Change c : changes) {
-					// Each change has a type and conveys the item that was
-					// concerned
-					switch (c.getType()) {
-					case ADD:
-						AnchorElement anchor = Document.get().createAnchorElement();
-						anchor.setHref("#");
-						anchor.addClassName(BootstrapHexaCss.CSS.listGroupItem());
-						Binder.bind(c.getItem(), "name").mode(Mode.OneWay).to(anchor, "innerText");
-						listDiv.appendChild(anchor);
+    private void registerSelectedArticleProperty() {
+        /**
+         * Register to the "selected" property of the articles list to change
+         * the active state of the corresponding item.
+         */
+        Properties.register(articles, "selected", new PropertyChangedHandler() {
+            @Override
+            public void onPropertyChanged(PropertyChangedEvent event) {
+                // deactivate previously selected item
+                if (currentActiveElement != null)
+                    currentActiveElement.removeClassName(BootstrapHexaCss.CSS.active());
 
-						break;
+                /**
+                 * Get the "selected" property of the articles list
+                 *
+                 * Since the articles's class ({@link WatchableCollection} does
+                 * not have a "selected" getter nor field, the binding mecanism
+                 * will use the dynamic property system)
+                 */
+                Article article = Properties.getValue(articles, "selected");
+                if (article != null) {
+                    int index = articles.indexOf(article);
+                    if (index >= 0)
+                        currentActiveElement = listDiv.getChild(index).<Element>cast();
+                }
 
-					case REMOVE:
-						listDiv.getChild(c.getIndex()).removeFromParent();
+                // activate selected item
+                if (currentActiveElement != null)
+                    currentActiveElement.addClassName(BootstrapHexaCss.CSS.active());
+            }
+        });
+    }
 
-						break;
-					}
-				}
-			}
-		});
-	}
+    private void initAddHandler() {
+        add.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                /**
+                 * Add a new article...
+                 */
+                Article newArticle = Repository.createRandomArticle();
+                articles.add(newArticle);
 
-	private void registerSelectArticleClickAction() {
-		addDomHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				int index = DOM.getChildIndex(listDiv, event.getNativeEvent().getEventTarget().<Element> cast());
-				if (index < 0)
-					return;
+                /**
+                 * And select it with the "selected" dynamic property of the
+                 * articles list
+                 */
+                Properties.setValue(articles, "selected", newArticle);
+            }
+        });
+    }
 
-				/**
-				 * Set the "selected" property of the articles list (and
-				 * notifies others).
-				 * 
-				 * Since the articles's class ({@link WatchableCollection} does
-				 * not have a "selected" getter nor field, the binding mecanism
-				 * will use the dynamic property system)
-				 */
-				Properties.setValue(articles, "selected", articles.get(index));
+    private void initDeleteHandler() {
+        delete.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                /**
+                 * Retreive the selected article through the "selected" dynamic
+                 * property of the articles list
+                 */
+                Article toRemove = Properties.getValue(articles, "selected");
 
-				event.stopPropagation();
-				event.preventDefault();
-			}
-		}, ClickEvent.getType());
-	}
+                if (toRemove != null) {
+                    /**
+                     * Remove the article from the list.
+                     *
+                     * Since the list is a {@link WatchableCollection}, all
+                     * watchers will be notified
+                     */
+                    articles.remove(toRemove);
 
-	private void registerSelectedArticleProperty() {
-		/**
-		 * Register to the "selected" property of the articles list to change
-		 * the active state of the corresponding item.
-		 */
-		Properties.register(articles, "selected", new PropertyChangedHandler() {
-			@Override
-			public void onPropertyChanged(PropertyChangedEvent event) {
-				// deactivate previously selected item
-				if (currentActiveElement != null)
-					currentActiveElement.removeClassName(BootstrapHexaCss.CSS.active());
+                    /**
+                     * Selects an article
+                     */
+                    Properties.setValue(articles, "selected",
+                        articles.isEmpty() ? null : articles.get(articles.size() - 1));
+                }
+            }
+        });
+    }
 
-				/**
-				 * Get the "selected" property of the articles list
-				 * 
-				 * Since the articles's class ({@link WatchableCollection} does
-				 * not have a "selected" getter nor field, the binding mecanism
-				 * will use the dynamic property system)
-				 */
-				Article article = Properties.getValue(articles, "selected");
-				if (article != null) {
-					int index = articles.indexOf(article);
-					if (index >= 0)
-						currentActiveElement = listDiv.getChild(index).<Element> cast();
-				}
-
-				// activate selected item
-				if (currentActiveElement != null)
-					currentActiveElement.addClassName(BootstrapHexaCss.CSS.active());
-			}
-		});
-	}
-
-	private void initAddHandler() {
-		add.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				/**
-				 * Add a new article...
-				 */
-				Article newArticle = Repository.createRandomArticle();
-				articles.add(newArticle);
-
-				/**
-				 * And select it with the "selected" dynamic property of the
-				 * articles list
-				 */
-				Properties.setValue(articles, "selected", newArticle);
-			}
-		});
-	}
-
-	private void initDeleteHandler() {
-		delete.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				/**
-				 * Retreive the selected article through the "selected" dynamic
-				 * property of the articles list
-				 */
-				Article toRemove = Properties.getValue(articles, "selected");
-
-				if (toRemove != null) {
-					/**
-					 * Remove the article from the list.
-					 * 
-					 * Since the list is a {@link WatchableCollection}, all
-					 * watchers will be notified
-					 */
-					articles.remove(toRemove);
-
-					/**
-					 * Selects an article
-					 */
-					Properties.setValue(articles, "selected",
-							articles.isEmpty() ? null : articles.get(articles.size() - 1));
-				}
-			}
-		});
-	}
+    interface ArticleListUiBinder extends UiBinder<Widget, ArticleList> {
+    }
 }

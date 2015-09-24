@@ -15,9 +15,9 @@ public abstract class AbstractConverter<A, B> implements BidirectionalConverter<
      * and return the appropriate converter (in the case of reversals).
      */
     public Converter determine(Class<?> aType, Class<?> bType) {
-        if(aType.equals(aClass) && bType.equals(bClass)) {
+        if (aType.equals(aClass) && bType.equals(bClass)) {
             return this;
-        } else if(aType.equals(bClass) && bType.equals(aClass)) {
+        } else if (aType.equals(bClass) && bType.equals(aClass)) {
             return reverse();
         }
         return null;
@@ -30,6 +30,7 @@ public abstract class AbstractConverter<A, B> implements BidirectionalConverter<
             public A convert(B value) {
                 return AbstractConverter.this.convertBack(value);
             }
+
             @Override
             public B convertBack(A value) {
                 return AbstractConverter.this.convert(value);

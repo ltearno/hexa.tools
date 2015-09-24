@@ -6,197 +6,173 @@ import com.google.gwt.core.client.GWT;
  * MIGHT NOT BE USED ANYMORE, COMES FROM AN OLD FILE THAT I DID NOT DELETE
  */
 
-public class URLEncoderEx
-{
-	private static int ROTATION = 7;
+public class URLEncoderEx {
+    private static int ROTATION = 7;
 
-	private static int[] codeToEncode = null;
-	private static int[] encodeToCode = null;
+    private static int[] codeToEncode = null;
+    private static int[] encodeToCode = null;
 
-	static
-	{
-		codeToEncode = new int[123];
-		encodeToCode = new int[123];
+    static {
+        codeToEncode = new int[123];
+        encodeToCode = new int[123];
 
-		for( int i = 0; i < 123; i++ )
-		{
-			int encode = _codeToEncode( i );
-			codeToEncode[i] = encode;
-			encodeToCode[encode] = i;
-		}
-	}
+        for (int i = 0; i < 123; i++) {
+            int encode = _codeToEncode(i);
+            codeToEncode[i] = encode;
+            encodeToCode[encode] = i;
+        }
+    }
 
-	public static String encode( String input )
-	{
-		StringBuilder b = new StringBuilder();
+    public static String encode(String input) {
+        StringBuilder b = new StringBuilder();
 
-		int checkSum = 0;
+        int checkSum = 0;
 
-		int inputLen = input.length();
-		for( int i = 0; i < inputLen; i++ )
-		{
-			int n = charCodeAt( input, i );
+        int inputLen = input.length();
+        for (int i = 0; i < inputLen; i++) {
+            int n = charCodeAt(input, i);
 
-			checkSum += n;
+            checkSum += n;
 
-			n = codeToEncode( n );
+            n = codeToEncode(n);
 
-			pushToList( n, b );
-		}
+            pushToList(n, b);
+        }
 
-		b.append( (char) encodeToCode( checkSum % 61 ) );
+        b.append((char) encodeToCode(checkSum % 61));
 
-		return b.toString();
-	}
+        return b.toString();
+    }
 
-	static class StringReader
-	{
-		int idx = 0;
-		String string;
+    public static String decode(String encoded) {
+        if (encoded == null || encoded.length() == 0)
+            return "";
 
-		public StringReader( String string )
-		{
-			this.string = string;
-		}
+        int checkSum = codeToEncode(charCodeAt(encoded.substring(encoded.length() - 1), 0));
+        int control = 0;
 
-		public boolean finished()
-		{
-			return idx >= string.length();
-		}
+        encoded = encoded.substring(0, encoded.length() - 1);
 
-		public int get()
-		{
-			return charCodeAt( string, idx++ );
-		}
-	}
+        StringReader reader = new StringReader(encoded);
 
-	public static String decode( String encoded )
-	{
-		if( encoded == null || encoded.length() == 0 )
-			return "";
+        StringBuilder b = new StringBuilder();
 
-		int checkSum = codeToEncode( charCodeAt( encoded.substring( encoded.length() - 1 ), 0 ) );
-		int control = 0;
+        while (!reader.finished()) {
+            int n = encodeToCode(consumeList(reader));
 
-		encoded = encoded.substring( 0, encoded.length() - 1 );
+            control += n;
 
-		StringReader reader = new StringReader( encoded );
+            b.append((char) n);
+        }
 
-		StringBuilder b = new StringBuilder();
+        if (control % 61 != checkSum) {
+            GWT.log("Badly formatted encoded string ! " + encoded + " key is " + checkSum + " and processed : " + (control % 61));
+            return null;
+        }
 
-		while( !reader.finished() )
-		{
-			int n = encodeToCode( consumeList( reader ) );
+        return b.toString();
+    }
 
-			control += n;
+    private static int consumeList(StringReader encodedList) {
+        assert !encodedList.finished();
 
-			b.append( (char) n );
-		}
+        int n = codeToEncode(rotateCode(encodedList.get(), -ROTATION));
 
-		if( control % 61 != checkSum )
-		{
-			GWT.log( "Badly formatted encoded string ! " + encoded + " key is " + checkSum + " and processed : " + (control % 61) );
-			return null;
-		}
+        if (n < 61) {
+            return n;
+        } else {
+            // it is the marker, IT SHOULD
+            assert n == 61;
 
-		return b.toString();
-	}
+            int reste = codeToEncode(rotateCode(encodedList.get(), -ROTATION));
 
-	private static int consumeList( StringReader encodedList )
-	{
-		assert !encodedList.finished();
+            return reste + 61 * consumeList(encodedList);
+        }
+    }
 
-		int n = codeToEncode( rotateCode( encodedList.get(), -ROTATION ) );
+    private static void pushToList(int n, StringBuilder b) {
+        if (n < 61) {
+            // empiler n directement
+            b.append((char) rotateCode(encodeToCode(n), ROTATION));
+        } else {
+            // empiler le markeur (61)
+            b.append((char) rotateCode(encodeToCode(61), ROTATION));
 
-		if( n < 61 )
-		{
-			return n;
-		}
-		else
-		{
-			// it is the marker, IT SHOULD
-			assert n == 61;
+            // empiler le reste
+            int reste = n % 61;
+            b.append((char) rotateCode(encodeToCode(reste), ROTATION));
 
-			int reste = codeToEncode( rotateCode( encodedList.get(), -ROTATION ) );
+            // recursion avec (n-reste)/61
+            pushToList((n - reste) / 61, b);
+        }
+    }
 
-			return reste + 61 * consumeList( encodedList );
-		}
-	}
+    private static int codeToEncode(int code) {
+        if (code < 123)
+            return codeToEncode[code];
+        return code;
+    }
 
-	private static void pushToList( int n, StringBuilder b )
-	{
-		if( n < 61 )
-		{
-			// empiler n directement
-			b.append( (char) rotateCode( encodeToCode( n ), ROTATION ) );
-		}
-		else
-		{
-			// empiler le markeur (61)
-			b.append( (char) rotateCode( encodeToCode( 61 ), ROTATION ) );
+    private static int encodeToCode(int encode) {
+        if (encode < 123)
+            return encodeToCode[encode];
+        return encode;
+    }
 
-			// empiler le reste
-			int reste = n % 61;
-			b.append( (char) rotateCode( encodeToCode( reste ), ROTATION ) );
+    private static int rotateCode(int charCode, int rotation) {
+        if (charCode >= 48 && charCode <= 57)
+            return 48 + (((charCode - 48) + (rotation + 10)) % 10);
 
-			// recursion avec (n-reste)/61
-			pushToList( (n - reste) / 61, b );
-		}
-	}
+        if (charCode >= 65 && charCode <= 90)
+            return 65 + (((charCode - 65) + (rotation + (90 - 65 + 1))) % (90 - 65 + 1));
 
-	private static int codeToEncode( int code )
-	{
-		if( code < 123 )
-			return codeToEncode[code];
-		return code;
-	}
+        if (charCode >= 97 && charCode <= 122)
+            return 97 + (((charCode - 97) + (rotation + (122 - 97 + 1))) % (122 - 97 + 1));
 
-	private static int encodeToCode( int encode )
-	{
-		if( encode < 123 )
-			return encodeToCode[encode];
-		return encode;
-	}
+        return charCode;
+    }
 
-	private static int rotateCode( int charCode, int rotation )
-	{
-		if( charCode >= 48 && charCode <= 57 )
-			return 48 + (((charCode - 48) + (rotation + 10)) % 10);
+    private static int _codeToEncode(int code) {
+        if (code >= 0 && code <= 47)
+            return 62 + code;
+        if (code >= 48 && code <= 57)
+            return code - 48;
+        if (code >= 58 && code <= 64)
+            return code - 58 + 62 + 48;
+        if (code >= 65 && code <= 90)
+            return code - 65 + 10;
+        if (code >= 91 && code <= 96)
+            return code - 91 + 117;// 62 + 48 + 26;
+        if (code >= 97 && code <= 122)
+            return code - 97 + 36;
 
-		if( charCode >= 65 && charCode <= 90 )
-			return 65 + (((charCode - 65) + (rotation + (90 - 65 + 1))) % (90 - 65 + 1));
+        return code;// - 123 + 162;//62 + 48 + 26 + 26;
+    }
 
-		if( charCode >= 97 && charCode <= 122 )
-			return 97 + (((charCode - 97) + (rotation + (122 - 97 + 1))) % (122 - 97 + 1));
+    private static native int charCodeAt(String s, int i)
+    /*-{
+        return s.charCodeAt(i);
+    }-*/;
 
-		return charCode;
-	}
-
-	private static int _codeToEncode( int code )
-	{
-		if( code >= 0 && code <= 47 )
-			return 62 + code;
-		if( code >= 48 && code <= 57 )
-			return code - 48;
-		if( code >= 58 && code <= 64 )
-			return code - 58 + 62 + 48;
-		if( code >= 65 && code <= 90 )
-			return code - 65 + 10;
-		if( code >= 91 && code <= 96 )
-			return code - 91 + 117;// 62 + 48 + 26;
-		if( code >= 97 && code <= 122 )
-			return code - 97 + 36;
-
-		return code;// - 123 + 162;//62 + 48 + 26 + 26;
-	}
-
-	private static native int charCodeAt( String s, int i )
+    private static native String fromCharCode(int code)
 	/*-{
-		return s.charCodeAt( i );
-	}-*/;
+        return String.fromCharCode(code);
+    }-*/;
 
-	private static native String fromCharCode( int code )
-	/*-{
-		return String.fromCharCode( code );
-	}-*/;
+    static class StringReader {
+        int idx = 0;
+        String string;
+
+        public StringReader(String string) {
+            this.string = string;
+        }
+
+        public boolean finished() {
+            return idx >= string.length();
+        }
+
+        public int get() {
+            return charCodeAt(string, idx++);
+        }
+    }
 }

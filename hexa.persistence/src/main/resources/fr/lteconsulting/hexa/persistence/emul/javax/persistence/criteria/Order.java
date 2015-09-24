@@ -32,5 +32,5 @@ public interface Order {
 
     boolean isAscending();
 
-   Expression<?> getExpression();
+    Expression<?> getExpression();
 }

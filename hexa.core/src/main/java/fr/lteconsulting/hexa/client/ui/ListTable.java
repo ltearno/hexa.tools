@@ -12,66 +12,54 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 import fr.lteconsulting.hexa.client.css.HexaCss;
 
-public class ListTable<T> extends Composite
-{
-	interface Css extends HexaCss
-	{
-		public static final Css CSS = GWT.create( Css.class );
+public class ListTable<T> extends Composite {
+    FlexTable table = new FlexTable();
+    HashMap<Integer, T> rows = new HashMap<Integer, T>();
+    T selected = null;
 
-		String main();
-	}
+    public ListTable() {
+        initWidget(table);
 
-	FlexTable table = new FlexTable();
-	HashMap<Integer, T> rows = new HashMap<Integer, T>();
+        setStylePrimaryName(Css.CSS.main());
 
-	T selected = null;
+        table.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Cell cell = table.getCellForEvent(event);
+                if (cell == null)
+                    return;
+                selected = rows.get(cell.getRowIndex());
+            }
+        });
+    }
 
-	public ListTable()
-	{
-		initWidget( table );
+    public void addItem(String text, T object) {
+        int row = table.getRowCount();
 
-		setStylePrimaryName( Css.CSS.main() );
+        rows.put(row, object);
+        table.setText(row, 0, text);
+    }
 
-		table.addClickHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				Cell cell = table.getCellForEvent( event );
-				if( cell == null )
-					return;
-				selected = rows.get( cell.getRowIndex() );
-			}
-		} );
-	}
+    public void addChangeHandler(final ChangeHandler handler) {
+        table.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                handler.onChange(null);
+            }
+        });
+    }
 
-	public void addItem( String text, T object )
-	{
-		int row = table.getRowCount();
+    public T getSelected() {
+        return selected;
+    }
 
-		rows.put( row, object );
-		table.setText( row, 0, text );
-	}
+    public void setSelected(T selected) {
+        this.selected = selected;
+    }
 
-	public void addChangeHandler( final ChangeHandler handler )
-	{
-		table.addClickHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				handler.onChange( null );
-			}
-		} );
-	}
+    interface Css extends HexaCss {
+        public static final Css CSS = GWT.create(Css.class);
 
-	public T getSelected()
-	{
-		return selected;
-	}
-
-	public void setSelected( T selected )
-	{
-		this.selected = selected;
-	}
+        String main();
+    }
 }

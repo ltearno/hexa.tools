@@ -4,37 +4,34 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.user.client.ui.Widget;
 
-public interface IBkgndStackPanel
-{
-	public interface Callback
-	{
-		void onMouseWheel( Object cookie, MouseWheelEvent event, int x, int delta );
+public interface IBkgndStackPanel {
+    void setCallback(Callback callback, Object cookie);
 
-		void onMouseMove( Object cookie, int x );
+    void setSize(int width, int height);
 
-		void onKeyUp( Object cookie, KeyUpEvent event );
-	}
+    void clearBackground();
 
-	public interface Background
-	{
-		void add( Widget w );
+    Background getBackgroundCanvas();
 
-		void add( Widget w, int x, int y );
+    IStackPanel getStackPanel();
 
-		void setWidgetPosition( Widget w, int x, int y );
+    public interface Callback {
+        void onMouseWheel(Object cookie, MouseWheelEvent event, int x, int delta);
 
-		void removeItem( Widget w );
+        void onMouseMove(Object cookie, int x);
 
-		void clearAll();
-	}
+        void onKeyUp(Object cookie, KeyUpEvent event);
+    }
 
-	void setCallback( Callback callback, Object cookie );
+    public interface Background {
+        void add(Widget w);
 
-	void setSize( int width, int height );
+        void add(Widget w, int x, int y);
 
-	void clearBackground();
+        void setWidgetPosition(Widget w, int x, int y);
 
-	Background getBackgroundCanvas();
+        void removeItem(Widget w);
 
-	IStackPanel getStackPanel();
+        void clearAll();
+    }
 }

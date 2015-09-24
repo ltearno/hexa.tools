@@ -26,19 +26,20 @@
 package javax.persistence.metamodel;
 
 
-public interface PluralAttribute<X, C, E> 
-		extends Attribute<X, C>, Bindable<E> {
-    public static enum CollectionType {
-
-        COLLECTION, 
-
-        SET, 
-
-        LIST, 
-
-        MAP
-    }
+public interface PluralAttribute<X, C, E>
+    extends Attribute<X, C>, Bindable<E> {
     CollectionType getCollectionType();
 
     Type<E> getElementType();
+
+    public static enum CollectionType {
+
+        COLLECTION,
+
+        SET,
+
+        LIST,
+
+        MAP
+    }
 }

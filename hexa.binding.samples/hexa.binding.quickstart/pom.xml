@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.lteconsulting</groupId>
     <artifactId>hexa.binding.samples.quickstart</artifactId>
@@ -127,21 +128,21 @@
                             <pluginExecutions>
                                 <pluginExecution>
                                     <pluginExecutionFilter>
-                                    <groupId>
-											org.codehaus.mojo
-										</groupId>
-                                    <artifactId>
-											build-helper-maven-plugin
-										</artifactId>
-                                    <versionRange>
-											[1.9.1,)
-										</versionRange>
-                                    <goals>
-                                    <goal>add-source</goal>
-                                    </goals>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            build-helper-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.9.1,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>add-source</goal>
+                                        </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                    <ignore/>
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>

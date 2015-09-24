@@ -3,80 +3,71 @@ package fr.lteconsulting.hexa.databinding.annotation.processor;
 import java.io.InputStream;
 import java.util.Scanner;
 
-public class Template
-{
-	private String value;
+public class Template {
+    private String value;
 
-	public static Template fromResource( String path )
-	{
-		Template result = new Template();
+    public static Template fromResource(String path) {
+        Template result = new Template();
 
-		result.value = readResource( path );
+        result.value = readResource(path);
 
-		return result;
-	}
+        return result;
+    }
 
-	public static Template fromResource( String path, int index )
-	{
-		Template result = new Template();
+    public static Template fromResource(String path, int index) {
+        Template result = new Template();
 
-		result.value = readResource( path, index );
+        result.value = readResource(path, index);
 
-		return result;
-	}
+        return result;
+    }
 
-	public Template replace( String target, String replacement )
-	{
-		value = value.replace( target, replacement );
-		return this;
-	}
+    private static String readResource(String path) {
+        InputStream is = Template.class.getClassLoader().getResourceAsStream(path);
 
-	@Override
-	public String toString()
-	{
-		return value;
-	}
+        Scanner s = new Scanner(is);
+        s.useDelimiter("\\A");
 
-	private static String readResource( String path )
-	{
-		InputStream is = Template.class.getClassLoader().getResourceAsStream( path );
+        String result = s.hasNext() ? s.next() : "";
 
-		Scanner s = new Scanner( is );
-		s.useDelimiter( "\\A" );
+        s.close();
+        return result;
+    }
 
-		String result = s.hasNext() ? s.next() : "";
+    private static String readResource(String path, int index) {
+        InputStream is = Template.class.getClassLoader().getResourceAsStream(path);
 
-		s.close();
-		return result;
-	}
+        if (is == null)
+            throw new RuntimeException("Not found resource " + path);
 
-	private static String readResource( String path, int index )
-	{
-		InputStream is = Template.class.getClassLoader().getResourceAsStream( path );
+        Scanner s = new Scanner(is);
+        s.useDelimiter("------");
 
-		if( is == null )
-			throw new RuntimeException( "Not found resource " + path );
+        String result;
+        int i = -1;
+        do {
+            if (!s.hasNext()) {
+                result = "";
+                break;
+            }
 
-		Scanner s = new Scanner( is );
-		s.useDelimiter( "------" );
+            result = s.next();
+            i++;
+        }
+        while (i < index);
 
-		String result;
-		int i = -1;
-		do
-		{
-			if( !s.hasNext() )
-			{
-				result = "";
-				break;
-			}
+        s.close();
 
-			result = s.next();
-			i++;
-		}
-		while( i < index );
+        return result;
+    }
 
-		s.close();
+    public Template replace(String target, String replacement) {
+        value = value.replace(target, replacement);
+        return this;
+    }
 
-		return result;
-	}
+    @Override
+    public String toString() {
+        return value;
+    }
 }

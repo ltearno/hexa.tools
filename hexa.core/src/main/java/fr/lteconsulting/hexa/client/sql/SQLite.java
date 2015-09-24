@@ -14,124 +14,109 @@ import com.google.gwt.storage.client.Storage;
 
 import fr.lteconsulting.hexa.client.tools.Action2;
 
-public class SQLite extends JavaScriptObject
-{
-	interface SQLiteBundle extends ClientBundle
-	{
-		@Source( "sql.js" )
-		TextResource SqlJs();
-	}
+public class SQLite extends JavaScriptObject {
+    public static final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss");
+    private final static String LOCAL_CURRENT_ID_INCREMENT = "LOCAL_CURRENT_ID_INCREMENT";
+    private static SQLiteBundle bundle;
 
-	private static SQLiteBundle bundle;
+    protected SQLite() {
+    }
 
-	private final static String LOCAL_CURRENT_ID_INCREMENT = "LOCAL_CURRENT_ID_INCREMENT";
+    public final static SQLite create() {
+        return create(null);
+    }
 
-	public static final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "yyyy-MM-dd HH:mm:ss" );
+    public final static SQLite create(JsArrayInteger data) {
+        if (bundle == null) {
+            bundle = (SQLiteBundle) GWT.create(SQLiteBundle.class);
 
-	public final static SQLite create()
-	{
-		return create( null );
-	}
+            Document doc = Document.get();
+            ScriptElement sqljs = doc.createScriptElement();
+            sqljs.setAttribute("type", "text/javascript");
+            sqljs.setInnerText(bundle.SqlJs().getText());
+            doc.getDocumentElement().getFirstChildElement().appendChild(sqljs);
+        }
 
-	public final static SQLite create( JsArrayInteger data )
-	{
-		if( bundle == null )
-		{
-			bundle = (SQLiteBundle) GWT.create( SQLiteBundle.class );
+        if (data != null)
+            return createWithDataJsni(data);
 
-			Document doc = Document.get();
-			ScriptElement sqljs = doc.createScriptElement();
-			sqljs.setAttribute( "type", "text/javascript" );
-			sqljs.setInnerText( bundle.SqlJs().getText() );
-			doc.getDocumentElement().getFirstChildElement().appendChild( sqljs );
-		}
+        return createJsni();
+    }
 
-		if( data != null )
-			return createWithDataJsni( data );
+    public final static native SQLite createJsni()
+    /*-{
+        return $wnd.SQL.open();
+    }-*/;
 
-		return createJsni();
-	}
-
-	public final static native SQLite createJsni()
+    public final static native SQLite createWithDataJsni(JsArrayInteger data)
 	/*-{
-		return $wnd.SQL.open();
-	}-*/;
+        return $wnd.SQL.open(data);
+    }-*/;
 
-	public final static native SQLite createWithDataJsni( JsArrayInteger data )
+    // Create a negative ID.
+    public final static int createLocalId() {
+        Storage storage = Storage.getLocalStorageIfSupported();
+        if (storage == null)
+            return 0;
+
+        int increment = 0;
+        String incrementString = storage.getItem(LOCAL_CURRENT_ID_INCREMENT);
+        try {
+            increment = Integer.parseInt(incrementString);
+        } catch (Exception e) {
+        }
+
+        increment += 1;
+
+        storage.setItem(LOCAL_CURRENT_ID_INCREMENT, increment + "");
+
+        return -increment;
+    }
+
+    public final native void close()
 	/*-{
-		return $wnd.SQL.open(data);
-	}-*/;
+        this.close();
+    }-*/;
 
-	public final native void close()
+    private final native Action2<String, JavaScriptObject> getStatementCallback()
 	/*-{
-		this.close();
-	}-*/;
-	
-	public final native void setStatementCallback( Action2<String, JavaScriptObject> callback )
+        return this.__stmcb || null;
+    }-*/;
+
+    public final native void setStatementCallback(Action2<String, JavaScriptObject> callback)
 	/*-{
-		this.__stmcb = callback;
-	}-*/;
-	
-	private final native Action2<String, JavaScriptObject> getStatementCallback()
+        this.__stmcb = callback;
+    }-*/;
+
+    public final native JsArrayInteger exportData()
 	/*-{
-		return this.__stmcb || null;
-	}-*/;
+        return this.exportData();
+    }-*/;
 
-	public final native JsArrayInteger exportData()
+    public final JavaScriptObject execute(String statement) {
+        JavaScriptObject res = executeNative(statement);
+
+        Action2<String, JavaScriptObject> callback = getStatementCallback();
+        if (callback != null)
+            callback.exec(statement, res);
+
+        return res;
+    }
+
+    private final native JavaScriptObject executeNative(String statement)
 	/*-{
-		return this.exportData();
-	}-*/;
-	
-	public final JavaScriptObject execute( String statement )
-	{
-		JavaScriptObject res = executeNative( statement );
-		
-		Action2<String, JavaScriptObject> callback = getStatementCallback();
-		if( callback != null )
-			callback.exec( statement, res );
-		
-		return res;
-	}
+        return this.exec(statement);
+    }-*/;
 
+    public final int getLastInsertedId() {
+        JavaScriptObject js = execute("select last_insert_rowid();");
+        JSONValue json = new JSONObject(js);
+        int lastInsertedId = Integer.parseInt(json.isObject().get("0").isArray().get(0).isObject().get("value").isString().stringValue());
+        return lastInsertedId;
+    }
 
-	private final native JavaScriptObject executeNative( String statement )
-	/*-{
-		return this.exec(statement);
-	}-*/;
-
-	protected SQLite()
-	{
-	}
-
-	// Create a negative ID.
-	public final static int createLocalId()
-	{
-		Storage storage = Storage.getLocalStorageIfSupported();
-		if( storage == null )
-			return 0;
-
-		int increment = 0;
-		String incrementString = storage.getItem( LOCAL_CURRENT_ID_INCREMENT );
-		try
-		{
-			increment = Integer.parseInt( incrementString );
-		}
-		catch( Exception e )
-		{
-		}
-
-		increment += 1;
-
-		storage.setItem( LOCAL_CURRENT_ID_INCREMENT, increment + "" );
-
-		return -increment;
-	}
-
-	public final int getLastInsertedId()
-	{
-		JavaScriptObject js = execute( "select last_insert_rowid();" );
-		JSONValue json = new JSONObject( js );
-		int lastInsertedId = Integer.parseInt( json.isObject().get( "0" ).isArray().get( 0 ).isObject().get( "value" ).isString().stringValue() );
-		return lastInsertedId;
-	}
+    interface SQLiteBundle extends ClientBundle {
+        @Source("sql.js")
+        TextResource SqlJs();
+    }
 }

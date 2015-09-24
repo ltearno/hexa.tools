@@ -4,36 +4,34 @@ import java.util.List;
 
 /**
  * Runtime type information interface about a class
- * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
  *
  * @param <T> The class for which runtime type information is provided
+ * @author Arnaud Tournier
+ *         (c) LTE Consulting - 2015
+ *         http://www.lteconsulting.fr
  */
-public interface Clazz<T>
-{
-	String getClassName();
+public interface Clazz<T> {
+    String getClassName();
 
-	Class<T> getReflectedClass();
+    Class<T> getReflectedClass();
 
-	Clazz<? super T> getSuperclass();
+    Clazz<? super T> getSuperclass();
 
-	List<Field> getAllFields();
+    List<Field> getAllFields();
 
-	Field getAllField( String fieldName );
+    Field getAllField(String fieldName);
 
-	List<Field> getFields();
+    List<Field> getFields();
 
-	Field getField( String fieldName );
+    Field getField(String fieldName);
 
-	List<Field> getDeclaredFields();
+    List<Field> getDeclaredFields();
 
-	Field getDeclaredField( String fieldName );
+    Field getDeclaredField(String fieldName);
 
-	List<Method> getMethods();
+    List<Method> getMethods();
 
-	Method getMethod( String methodName );
+    Method getMethod(String methodName);
 
-	T NEW();
+    T NEW();
 }

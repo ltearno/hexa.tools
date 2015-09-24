@@ -1,6 +1,5 @@
 package javax.persistence;
 
-public interface PersistenceUnitUtil
-{
+public interface PersistenceUnitUtil {
 
 }

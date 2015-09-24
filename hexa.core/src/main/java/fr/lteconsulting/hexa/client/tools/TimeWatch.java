@@ -2,21 +2,18 @@ package fr.lteconsulting.hexa.client.tools;
 
 import java.util.Date;
 
-public class TimeWatch
-{
-	long start;
+public class TimeWatch {
+    long start;
 
-	public TimeWatch()
-	{
-		start = new Date().getTime();
-	}
+    public TimeWatch() {
+        start = new Date().getTime();
+    }
 
-	public long measureAndRestart()
-	{
-		long measureStart = start;
+    public long measureAndRestart() {
+        long measureStart = start;
 
-		start = new Date().getTime();
+        start = new Date().getTime();
 
-		return start - measureStart;
-	}
+        return start - measureStart;
+    }
 }

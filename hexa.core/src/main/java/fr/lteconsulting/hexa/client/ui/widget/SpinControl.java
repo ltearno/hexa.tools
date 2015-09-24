@@ -15,85 +15,75 @@ import fr.lteconsulting.hexa.client.ui.editable.EditableLabel;
 import fr.lteconsulting.hexa.client.ui.editable.EditableWidget;
 import fr.lteconsulting.hexa.client.ui.resources.image.ImageResources;
 
-public class SpinControl extends AValueControl<Integer> implements ClickHandler
-{
-	int value = 0;
+public class SpinControl extends AValueControl<Integer> implements ClickHandler {
+    int value = 0;
 
-	HTMLPanel w;
+    HTMLPanel w;
 
-	Image up;
-	Image down;
-	//Label valueLabel;
-	EditableLabel<Void> valueLabel;
+    Image up;
+    Image down;
+    //Label valueLabel;
+    EditableLabel<Void> valueLabel;
 
-	@UiConstructor
-	public SpinControl( ImageResource upRsrc, ImageResource downRsrc )
-	{
-		String imgsPlace = DOM.createUniqueId();
-		String labelPlace = DOM.createUniqueId();
+    @UiConstructor
+    public SpinControl(ImageResource upRsrc, ImageResource downRsrc) {
+        String imgsPlace = DOM.createUniqueId();
+        String labelPlace = DOM.createUniqueId();
 
-		up = new Image( upRsrc );
-		down = new Image( downRsrc );
-		valueLabel = new EditableLabel<Void>( ImageResources.INSTANCE.loading16x16(), new EditableLabel.Callback<Void>()
-		{
-			@Override
-			public void onWantChange( String text, EditableWidget<Label, Void> widget, Void cookie )
-			{
-				try
-				{
-					value = Integer.parseInt( text );
-					valueLabel.setText( String.valueOf( value ) );
-					
-					signalCallbacks();
-				}
-				catch( Exception e )
-				{
-				}
-			}
-		}, null );
-		valueLabel.setText( String.valueOf( value ) );
+        up = new Image(upRsrc);
+        down = new Image(downRsrc);
+        valueLabel = new EditableLabel<Void>(ImageResources.INSTANCE.loading16x16(), new EditableLabel.Callback<Void>() {
+            @Override
+            public void onWantChange(String text, EditableWidget<Label, Void> widget, Void cookie) {
+                try {
+                    value = Integer.parseInt(text);
+                    valueLabel.setText(String.valueOf(value));
 
-		up.getElement().getStyle().setDisplay( Display.BLOCK );
+                    signalCallbacks();
+                } catch (Exception e) {
+                }
+            }
+        }, null);
+        valueLabel.setText(String.valueOf(value));
 
-		w = new HTMLPanel( "<table><tr>" + "<td id='" + imgsPlace + "'></td>" + "<td id='" + labelPlace + "'></td>" + "</tr></table>" );
+        up.getElement().getStyle().setDisplay(Display.BLOCK);
 
-		w.add( up, imgsPlace );
-		w.add( down, imgsPlace );
-		w.add( valueLabel, labelPlace );
+        w = new HTMLPanel("<table><tr>" + "<td id='" + imgsPlace + "'></td>" + "<td id='" + labelPlace + "'></td>" + "</tr></table>");
 
-		initWidget( w );
+        w.add(up, imgsPlace);
+        w.add(down, imgsPlace);
+        w.add(valueLabel, labelPlace);
 
-		up.addClickHandler( this );
-		down.addClickHandler( this );
-	}
+        initWidget(w);
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		int inc = 0;
-		if( event.getSource() == up )
-			inc = 1;
-		else if( event.getSource() == down )
-			inc = -1;
+        up.addClickHandler(this);
+        down.addClickHandler(this);
+    }
 
-		value += inc;
+    @Override
+    public void onClick(ClickEvent event) {
+        int inc = 0;
+        if (event.getSource() == up)
+            inc = 1;
+        else if (event.getSource() == down)
+            inc = -1;
 
-		valueLabel.setText( String.valueOf( value ) );
+        value += inc;
 
-		signalCallbacks();
-	}
+        valueLabel.setText(String.valueOf(value));
 
-	@Override
-	public Integer getValue()
-	{
-		return value;
-	}
+        signalCallbacks();
+    }
 
-	@Override
-	public void setValue( Integer value )
-	{
-		this.value = value;
+    @Override
+    public Integer getValue() {
+        return value;
+    }
 
-		valueLabel.setText( String.valueOf( value ) );
-	}
+    @Override
+    public void setValue(Integer value) {
+        this.value = value;
+
+        valueLabel.setText(String.valueOf(value));
+    }
 }

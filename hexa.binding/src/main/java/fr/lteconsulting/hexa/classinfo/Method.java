@@ -4,17 +4,15 @@ import java.util.List;
 
 /**
  * Represents a Java method
- * 
- * @author Arnaud
  *
+ * @author Arnaud
  */
-public interface Method
-{
-	String getName();
+public interface Method {
+    String getName();
 
-	Class<?> getReturnType();
+    Class<?> getReturnType();
 
-	List<Class<?>> getParameterTypes();
+    List<Class<?>> getParameterTypes();
 
-	Object invoke( Object target, Object... parameters );
+    Object invoke(Object target, Object... parameters);
 }

@@ -10,196 +10,166 @@ import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.tools.HexaTools;
 import fr.lteconsulting.hexa.client.tools.JQuery;
 
-public class Accordion extends Panel
-{
-	public Accordion()
-	{
-		Element main = DOM.createDiv();
-		main.setClassName( "Accordion" );
+public class Accordion extends Panel {
+    ArrayList<Item> items = new ArrayList<Item>();
 
-		setElement( main );
-	}
+    public Accordion() {
+        Element main = DOM.createDiv();
+        main.setClassName("Accordion");
 
-	ArrayList<Item> items = new ArrayList<Item>();
+        setElement(main);
+    }
 
-	public Item addItem()
-	{
-		Item item = new Item();
-		items.add( item );
+    public Item addItem() {
+        Item item = new Item();
+        items.add(item);
 
-		return item;
-	}
+        return item;
+    }
 
-	@Override
-	public void clear()
-	{
-		while( items.size() > 0 )
-			items.remove( 0 ).removeFromAccordion();
-	}
+    @Override
+    public void clear() {
+        while (items.size() > 0)
+            items.remove(0).removeFromAccordion();
+    }
 
-	public class Item
-	{
-		boolean fExpanded = true;
+    @Override
+    public boolean remove(Widget child) {
+        return false;
+    }
 
-		Element itemHeader;
-		Element itemContentDecorator;
-		Element itemContentContainer;
+    @Override
+    public Iterator<Widget> iterator() {
+        return new ItWidgets();
+    }
 
-		Widget headerWidget = null;
-		Widget contentWidget = null;
+    public class Item {
+        boolean fExpanded = true;
 
-		public Item()
-		{
-			itemHeader = DOM.createDiv();
-			itemHeader.setClassName( "Accordion-ItemHeader" );
+        Element itemHeader;
+        Element itemContentDecorator;
+        Element itemContentContainer;
 
-			itemContentDecorator = DOM.createDiv();
-			itemContentDecorator.setClassName( "Accordion-ItemContentDecorator" );
+        Widget headerWidget = null;
+        Widget contentWidget = null;
 
-			itemContentContainer = DOM.createDiv();
-			itemContentContainer.setClassName( "Accordion-ItemContentContainer" );
-			itemContentDecorator.appendChild( itemContentContainer );
+        public Item() {
+            itemHeader = DOM.createDiv();
+            itemHeader.setClassName("Accordion-ItemHeader");
 
-			getElement().appendChild( itemHeader );
-			getElement().appendChild( itemContentDecorator );
-		}
+            itemContentDecorator = DOM.createDiv();
+            itemContentDecorator.setClassName("Accordion-ItemContentDecorator");
 
-		public void removeFromAccordion()
-		{
-			setHeaderWidget( null );
-			setContentWidget( null );
+            itemContentContainer = DOM.createDiv();
+            itemContentContainer.setClassName("Accordion-ItemContentContainer");
+            itemContentDecorator.appendChild(itemContentContainer);
 
-			itemContentDecorator.removeFromParent();
-			itemHeader.removeFromParent();
-		}
+            getElement().appendChild(itemHeader);
+            getElement().appendChild(itemContentDecorator);
+        }
 
-		public void setExpanded( boolean fExpanded )
-		{
-			this.fExpanded = fExpanded;
+        public void removeFromAccordion() {
+            setHeaderWidget(null);
+            setContentWidget(null);
 
-			String effect = "blind";
+            itemContentDecorator.removeFromParent();
+            itemHeader.removeFromParent();
+        }
 
-			if( !fExpanded )
-				JQuery.get().jqHide( effect, itemContentDecorator, null );
-			else
-			{
-				// for( Item item: items )
-				// if( item != this )
-				// item.setExpanded( false );
-				JQuery.get().jqShow( effect, itemContentDecorator );
-			}
-		}
+        public boolean getExpanded() {
+            return fExpanded;
+        }
 
-		public boolean getExpanded()
-		{
-			return fExpanded;
-		}
+        public void setExpanded(boolean fExpanded) {
+            this.fExpanded = fExpanded;
 
-		public void setHeaderWidget( Widget widget )
-		{
-			if( widget != null )
-				widget.removeFromParent();
+            String effect = "blind";
 
-			if( headerWidget != null )
-			{
-				try
-				{
-					orphan( headerWidget );
-				}
-				finally
-				{
-					itemHeader.removeChild( headerWidget.getElement() );
-					headerWidget = null;
-				}
-			}
+            if (!fExpanded)
+                JQuery.get().jqHide(effect, itemContentDecorator, null);
+            else {
+                // for( Item item: items )
+                // if( item != this )
+                // item.setExpanded( false );
+                JQuery.get().jqShow(effect, itemContentDecorator);
+            }
+        }
 
-			headerWidget = widget;
+        public void setHeaderWidget(Widget widget) {
+            if (widget != null)
+                widget.removeFromParent();
 
-			if( widget != null )
-			{
-				DOM.appendChild( itemHeader, widget.getElement() );
+            if (headerWidget != null) {
+                try {
+                    orphan(headerWidget);
+                } finally {
+                    itemHeader.removeChild(headerWidget.getElement());
+                    headerWidget = null;
+                }
+            }
 
-				adopt( widget );
-			}
-		}
+            headerWidget = widget;
 
-		public void setContentWidget( Widget widget )
-		{
-			if( widget != null )
-				widget.removeFromParent();
+            if (widget != null) {
+                DOM.appendChild(itemHeader, widget.getElement());
 
-			if( contentWidget != null )
-			{
-				try
-				{
-					orphan( contentWidget );
-				}
-				finally
-				{
-					itemContentContainer.removeChild( contentWidget.getElement() );
-					contentWidget = null;
-				}
-			}
+                adopt(widget);
+            }
+        }
 
-			contentWidget = widget;
+        public void setContentWidget(Widget widget) {
+            if (widget != null)
+                widget.removeFromParent();
 
-			if( widget != null )
-			{
-				DOM.appendChild( itemContentContainer, widget.getElement() );
+            if (contentWidget != null) {
+                try {
+                    orphan(contentWidget);
+                } finally {
+                    itemContentContainer.removeChild(contentWidget.getElement());
+                    contentWidget = null;
+                }
+            }
 
-				adopt( widget );
-			}
-		}
-	}
+            contentWidget = widget;
 
-	@Override
-	public boolean remove( Widget child )
-	{
-		return false;
-	}
+            if (widget != null) {
+                DOM.appendChild(itemContentContainer, widget.getElement());
 
-	class ItWidgets implements Iterator<Widget>
-	{
-		ArrayList<Widget> wList = new ArrayList<Widget>();
-		int idx = 0;
+                adopt(widget);
+            }
+        }
+    }
 
-		public ItWidgets()
-		{
-			for( Item item : items )
-			{
-				if( item.headerWidget != null )
-					wList.add( item.headerWidget );
-				if( item.contentWidget != null )
-					wList.add( item.contentWidget );
-			}
-		}
+    class ItWidgets implements Iterator<Widget> {
+        ArrayList<Widget> wList = new ArrayList<Widget>();
+        int idx = 0;
 
-		@Override
-		public boolean hasNext()
-		{
-			return idx < wList.size();
-		}
+        public ItWidgets() {
+            for (Item item : items) {
+                if (item.headerWidget != null)
+                    wList.add(item.headerWidget);
+                if (item.contentWidget != null)
+                    wList.add(item.contentWidget);
+            }
+        }
 
-		@Override
-		public Widget next()
-		{
-			Widget w = wList.get( idx );
-			idx++;
+        @Override
+        public boolean hasNext() {
+            return idx < wList.size();
+        }
 
-			return w;
-		}
+        @Override
+        public Widget next() {
+            Widget w = wList.get(idx);
+            idx++;
 
-		@Override
-		public void remove()
-		{
-			HexaTools.alert( "Error !!! Remove not implemented in Accordion.java" );
-		}
+            return w;
+        }
 
-	}
+        @Override
+        public void remove() {
+            HexaTools.alert("Error !!! Remove not implemented in Accordion.java");
+        }
 
-	@Override
-	public Iterator<Widget> iterator()
-	{
-		return new ItWidgets();
-	}
+    }
 }

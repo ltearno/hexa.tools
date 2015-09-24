@@ -12,199 +12,174 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Pager
-{
-	public interface PagerCallback
-	{
-		public void onPagerWant( int startPosition, int endPosition );
-	}
+public class Pager {
+    private static PagerWidgetUiBinder uiBinder = GWT.create(PagerWidgetUiBinder.class);
+    PagerCallback callback = null;
 
-	PagerCallback callback = null;
+    int currentPosition = 0;
+    int nbDisplayed = 0;
+    int lastPosition = 0;
+    int nbPerPage = 0;
 
-	int currentPosition = 0;
-	int nbDisplayed = 0;
-	int lastPosition = 0;
-	int nbPerPage = 0;
+    int start = 0;
+    int end = 0;
+    int nb = 0;
+    boolean fFirst = false;
+    boolean fPrev = false;
+    boolean fNext = false;
+    boolean fLast = false;
+    ArrayList<PagingWidget> widgets = new ArrayList<PagingWidget>();
+    EventListener firstEvent = new EventListener() {
+        @Override
+        public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() != Event.ONCLICK)
+                return;
 
-	int start = 0;
-	int end = 0;
-	int nb = 0;
-	boolean fFirst = false;
-	boolean fPrev = false;
-	boolean fNext = false;
-	boolean fLast = false;
+            if (callback != null)
+                callback.onPagerWant(0, nbPerPage - 1);
 
-	public Pager( PagerCallback callback )
-	{
-		setCallback( callback );
-	}
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+    EventListener prevEvent = new EventListener() {
+        @Override
+        public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() != Event.ONCLICK)
+                return;
 
-	public void setCallback( PagerCallback callback )
-	{
-		this.callback = callback;
-	}
+            int nextPos = currentPosition - nbPerPage;
+            if (callback != null)
+                callback.onPagerWant(nextPos, nextPos + nbPerPage - 1);
 
-	public void setCurrent( int currentPosition, int nbDisplayed, int lastPosition, int nbPerPage )
-	{
-		this.currentPosition = currentPosition;
-		this.nbDisplayed = nbDisplayed;
-		this.lastPosition = lastPosition;
-		this.nbPerPage = nbPerPage;
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+    EventListener nextEvent = new EventListener() {
+        @Override
+        public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() != Event.ONCLICK)
+                return;
 
-		start = currentPosition + 1;
-		end = start + nbDisplayed - 1;
-		nb = lastPosition + 1;
-		fFirst = currentPosition >= 2 * nbPerPage;
-		fPrev = start > 1;
-		fNext = (currentPosition + nbDisplayed) <= lastPosition;
-		fLast = (currentPosition + nbDisplayed) <= lastPosition - nbPerPage;
+            int nextPos = currentPosition + nbPerPage;
+            if (callback != null)
+                callback.onPagerWant(nextPos, nextPos + nbPerPage - 1);
 
-		updateWidgets();
-	}
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+    EventListener lastEvent = new EventListener() {
+        @Override
+        public void onBrowserEvent(Event event) {
+            if (event.getTypeInt() != Event.ONCLICK)
+                return;
 
-	ArrayList<PagingWidget> widgets = new ArrayList<PagingWidget>();
+            int nextPos = lastPosition - (lastPosition % nbPerPage);
+            if (callback != null)
+                callback.onPagerWant(nextPos, nextPos + nbPerPage - 1);
 
-	void updateWidgets()
-	{
-		for( PagingWidget w : widgets )
-			w.update();
-	}
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
 
-	interface PagerWidgetUiBinder extends UiBinder<Element, PagingWidget>
-	{
-	}
+    public Pager(PagerCallback callback) {
+        setCallback(callback);
+    }
 
-	private static PagerWidgetUiBinder uiBinder = GWT.create( PagerWidgetUiBinder.class );
+    public void setCallback(PagerCallback callback) {
+        this.callback = callback;
+    }
 
-	class PagingWidget extends Widget
-	{
-		@UiField
-		Element first;
-		@UiField
-		Element prev;
-		@UiField
-		Element position;
-		@UiField
-		Element next;
-		@UiField
-		Element last;
+    public void setCurrent(int currentPosition, int nbDisplayed, int lastPosition, int nbPerPage) {
+        this.currentPosition = currentPosition;
+        this.nbDisplayed = nbDisplayed;
+        this.lastPosition = lastPosition;
+        this.nbPerPage = nbPerPage;
 
-		public PagingWidget()
-		{
-			setElement( uiBinder.createAndBindUi( this ) );
+        start = currentPosition + 1;
+        end = start + nbDisplayed - 1;
+        nb = lastPosition + 1;
+        fFirst = currentPosition >= 2 * nbPerPage;
+        fPrev = start > 1;
+        fNext = (currentPosition + nbDisplayed) <= lastPosition;
+        fLast = (currentPosition + nbDisplayed) <= lastPosition - nbPerPage;
 
-			DOM.setEventListener( first, firstEvent );
-			DOM.sinkEvents( first, Event.ONCLICK );
+        updateWidgets();
+    }
 
-			DOM.setEventListener( prev, prevEvent );
-			DOM.sinkEvents( prev, Event.ONCLICK );
+    void updateWidgets() {
+        for (PagingWidget w : widgets)
+            w.update();
+    }
 
-			DOM.setEventListener( next, nextEvent );
-			DOM.sinkEvents( next, Event.ONCLICK );
+    public Widget createPagingWidget() {
+        PagingWidget w = new PagingWidget();
+        widgets.add(w);
+        w.update();
 
-			DOM.setEventListener( last, lastEvent );
-			DOM.sinkEvents( last, Event.ONCLICK );
-		}
+        return w;
+    }
 
-		public void update()
-		{
-			position.setInnerHTML( "&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;" );
+    public interface PagerCallback {
+        public void onPagerWant(int startPosition, int endPosition);
+    }
 
-			if( fFirst )
-				first.getStyle().clearDisplay();
-			else
-				first.getStyle().setDisplay( Display.NONE );
+    interface PagerWidgetUiBinder extends UiBinder<Element, PagingWidget> {
+    }
 
-			if( fPrev )
-				prev.getStyle().clearDisplay();
-			else
-				prev.getStyle().setDisplay( Display.NONE );
+    class PagingWidget extends Widget {
+        @UiField
+        Element first;
+        @UiField
+        Element prev;
+        @UiField
+        Element position;
+        @UiField
+        Element next;
+        @UiField
+        Element last;
 
-			if( fNext )
-				next.getStyle().clearDisplay();
-			else
-				next.getStyle().setDisplay( Display.NONE );
+        public PagingWidget() {
+            setElement(uiBinder.createAndBindUi(this));
 
-			if( fLast )
-				last.getStyle().clearDisplay();
-			else
-				last.getStyle().setDisplay( Display.NONE );
-		}
-	}
+            DOM.setEventListener(first, firstEvent);
+            DOM.sinkEvents(first, Event.ONCLICK);
 
-	public Widget createPagingWidget()
-	{
-		PagingWidget w = new PagingWidget();
-		widgets.add( w );
-		w.update();
+            DOM.setEventListener(prev, prevEvent);
+            DOM.sinkEvents(prev, Event.ONCLICK);
 
-		return w;
-	}
+            DOM.setEventListener(next, nextEvent);
+            DOM.sinkEvents(next, Event.ONCLICK);
 
-	EventListener firstEvent = new EventListener()
-	{
-		@Override
-		public void onBrowserEvent( Event event )
-		{
-			if( event.getTypeInt() != Event.ONCLICK )
-				return;
+            DOM.setEventListener(last, lastEvent);
+            DOM.sinkEvents(last, Event.ONCLICK);
+        }
 
-			if( callback != null )
-				callback.onPagerWant( 0, nbPerPage - 1 );
+        public void update() {
+            position.setInnerHTML("&nbsp;<b>" + start + " - " + end + "</b> of <b>" + nb + "</b>&nbsp;");
 
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	};
+            if (fFirst)
+                first.getStyle().clearDisplay();
+            else
+                first.getStyle().setDisplay(Display.NONE);
 
-	EventListener prevEvent = new EventListener()
-	{
-		@Override
-		public void onBrowserEvent( Event event )
-		{
-			if( event.getTypeInt() != Event.ONCLICK )
-				return;
+            if (fPrev)
+                prev.getStyle().clearDisplay();
+            else
+                prev.getStyle().setDisplay(Display.NONE);
 
-			int nextPos = currentPosition - nbPerPage;
-			if( callback != null )
-				callback.onPagerWant( nextPos, nextPos + nbPerPage - 1 );
+            if (fNext)
+                next.getStyle().clearDisplay();
+            else
+                next.getStyle().setDisplay(Display.NONE);
 
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	};
-
-	EventListener nextEvent = new EventListener()
-	{
-		@Override
-		public void onBrowserEvent( Event event )
-		{
-			if( event.getTypeInt() != Event.ONCLICK )
-				return;
-
-			int nextPos = currentPosition + nbPerPage;
-			if( callback != null )
-				callback.onPagerWant( nextPos, nextPos + nbPerPage - 1 );
-
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	};
-
-	EventListener lastEvent = new EventListener()
-	{
-		@Override
-		public void onBrowserEvent( Event event )
-		{
-			if( event.getTypeInt() != Event.ONCLICK )
-				return;
-
-			int nextPos = lastPosition - (lastPosition % nbPerPage);
-			if( callback != null )
-				callback.onPagerWant( nextPos, nextPos + nbPerPage - 1 );
-
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	};
+            if (fLast)
+                last.getStyle().clearDisplay();
+            else
+                last.getStyle().setDisplay(Display.NONE);
+        }
+    }
 }

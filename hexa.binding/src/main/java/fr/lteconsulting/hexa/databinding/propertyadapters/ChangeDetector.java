@@ -9,32 +9,27 @@ import fr.lteconsulting.hexa.databinding.properties.PropertyChangedHandler;
  * in the currently bound object.
  *
  * @author Arnaud
- *
  */
-public abstract class ChangeDetector extends WriteOnlyPropertyAdapter
-{
-	private Object reg;
+public abstract class ChangeDetector extends WriteOnlyPropertyAdapter {
+    PropertyChangedHandler handler = new PropertyChangedHandler() {
+        @Override
+        public void onPropertyChanged(PropertyChangedEvent event) {
+            onChange(event.getSender(), event.getPropertyName());
+        }
+    };
+    private Object reg;
 
-	abstract protected void onChange( Object object, String property );
+    abstract protected void onChange(Object object, String property);
 
-	@Override
-	public void setValue(Object object) {
-		if( reg != null )
-		{
-			Properties.removeHandler(reg);
-			reg = null;
-		}
+    @Override
+    public void setValue(Object object) {
+        if (reg != null) {
+            Properties.removeHandler(reg);
+            reg = null;
+        }
 
-		if( object != null )
-		{
-			reg = Properties.register(object, "*", handler);
-		}
-	}
-
-	PropertyChangedHandler handler = new PropertyChangedHandler() {
-		@Override
-		public void onPropertyChanged(PropertyChangedEvent event) {
-			onChange(event.getSender(), event.getPropertyName());
-		}
-	};
+        if (object != null) {
+            reg = Properties.register(object, "*", handler);
+        }
+    }
 }

@@ -2,21 +2,19 @@ package fr.lteconsulting.hexa.classinfo;
 
 /**
  * Represents a Java field
- * 
- * @author Arnaud
  *
+ * @author Arnaud
  */
-public interface Field
-{
-	String getName();
+public interface Field {
+    String getName();
 
-	Class<?> getType();
+    Class<?> getType();
 
-	void setValue( Object object, Object value );
+    void setValue(Object object, Object value);
 
-	<OUT> OUT getValue( Object object );
+    <OUT> OUT getValue(Object object);
 
-	void copyValueTo( Object source, Object destination );
+    void copyValueTo(Object source, Object destination);
 
-	int getModifier();
+    int getModifier();
 }

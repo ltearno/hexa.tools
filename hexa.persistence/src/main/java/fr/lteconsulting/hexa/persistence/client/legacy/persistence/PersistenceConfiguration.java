@@ -10,146 +10,129 @@ import javax.persistence.GenerationType;
 import fr.lteconsulting.hexa.client.classinfo.ClassInfo;
 import fr.lteconsulting.hexa.client.classinfo.Clazz;
 
-public class PersistenceConfiguration
-{
-	HashMap<String, EntityConfiguration> entityConfigurations = new HashMap<String, EntityConfiguration>();
+public class PersistenceConfiguration {
+    HashMap<String, EntityConfiguration> entityConfigurations = new HashMap<String, EntityConfiguration>();
 
-	public EntityConfiguration addEntityConfiguration( Class<?> entityClass, Class<?> idFieldClass, String idFieldName, GenerationType idGenerationType )
-	{
-		if( entityClass == null )
-			return null;
-		if( entityConfigurations.containsKey( entityClass.getName() ) )
-			return null;
+    public EntityConfiguration addEntityConfiguration(Class<?> entityClass, Class<?> idFieldClass, String idFieldName, GenerationType idGenerationType) {
+        if (entityClass == null)
+            return null;
+        if (entityConfigurations.containsKey(entityClass.getName()))
+            return null;
 
-		String tableName = entityClass.getName().substring( 1 + entityClass.getName().lastIndexOf( "." ) );
+        String tableName = entityClass.getName().substring(1 + entityClass.getName().lastIndexOf("."));
 
-		EntityConfiguration entityConfiguration = new EntityConfiguration( entityClass, tableName, idFieldClass, idFieldName, idGenerationType );
-		entityConfigurations.put( entityClass.getName(), entityConfiguration );
+        EntityConfiguration entityConfiguration = new EntityConfiguration(entityClass, tableName, idFieldClass, idFieldName, idGenerationType);
+        entityConfigurations.put(entityClass.getName(), entityConfiguration);
 
-		return entityConfiguration;
-	}
+        return entityConfiguration;
+    }
 
-	public EntityConfiguration getConfigurationForEntity( Class<?> clazz )
-	{
-		return entityConfigurations.get( clazz.getName() );
-	}
+    public EntityConfiguration getConfigurationForEntity(Class<?> clazz) {
+        return entityConfigurations.get(clazz.getName());
+    }
 
-	public static class EntityConfiguration
-	{
-		Class<?> entityClass;
-		Clazz<?> entityClazz;
-		String tableName;
+    public static class EntityConfiguration {
+        Class<?> entityClass;
+        Clazz<?> entityClazz;
+        String tableName;
 
-		GenerationType idGenerationType;
-		FieldConfiguration idField;
-		List<FieldConfiguration> directFields;
-		List<ManyToOneFieldConfiguration> manyToOneFields;
-		List<OneToManyFieldConfiguration> oneToManyFields;
+        GenerationType idGenerationType;
+        FieldConfiguration idField;
+        List<FieldConfiguration> directFields;
+        List<ManyToOneFieldConfiguration> manyToOneFields;
+        List<OneToManyFieldConfiguration> oneToManyFields;
 
-		public EntityConfiguration( Class<?> entityClass, String tableName, Class<?> idFieldClass, String idFieldName, GenerationType idGenerationType )
-		{
-			this.entityClass = entityClass;
-			this.entityClazz = ClassInfo.Clazz( entityClass );
-			this.tableName = tableName;
+        public EntityConfiguration(Class<?> entityClass, String tableName, Class<?> idFieldClass, String idFieldName, GenerationType idGenerationType) {
+            this.entityClass = entityClass;
+            this.entityClazz = ClassInfo.Clazz(entityClass);
+            this.tableName = tableName;
 
-			this.idGenerationType = idGenerationType;
-			this.idField = new FieldConfiguration( idFieldClass, idFieldName, idFieldName );
+            this.idGenerationType = idGenerationType;
+            this.idField = new FieldConfiguration(idFieldClass, idFieldName, idFieldName);
 
-			directFields = new ArrayList<FieldConfiguration>();
-			manyToOneFields = new ArrayList<ManyToOneFieldConfiguration>();
-			oneToManyFields = new ArrayList<OneToManyFieldConfiguration>();
-		}
+            directFields = new ArrayList<FieldConfiguration>();
+            manyToOneFields = new ArrayList<ManyToOneFieldConfiguration>();
+            oneToManyFields = new ArrayList<OneToManyFieldConfiguration>();
+        }
 
-		public void addFieldConfiguration( Class<?> fieldClass, String fieldName )
-		{
-			directFields.add( new FieldConfiguration( fieldClass, fieldName, fieldName ) );
-		}
+        public void addFieldConfiguration(Class<?> fieldClass, String fieldName) {
+            directFields.add(new FieldConfiguration(fieldClass, fieldName, fieldName));
+        }
 
-		public void addManyToOneFieldConfiguration( Class<?> fieldClass, String fieldName, String columnName, FetchType fetchType )
-		{
-			manyToOneFields.add( new ManyToOneFieldConfiguration( fieldClass, fieldName, columnName, fetchType ) );
-		}
+        public void addManyToOneFieldConfiguration(Class<?> fieldClass, String fieldName, String columnName, FetchType fetchType) {
+            manyToOneFields.add(new ManyToOneFieldConfiguration(fieldClass, fieldName, columnName, fetchType));
+        }
 
-		public void addOneToManyFieldConfiguration( Class<?> containerClass, Class<?> targetClass, String fieldName, String mappedBy, boolean isOrphanRemoval )
-		{
-			oneToManyFields.add( new OneToManyFieldConfiguration( containerClass, targetClass, fieldName, mappedBy, isOrphanRemoval ) );
-		}
+        public void addOneToManyFieldConfiguration(Class<?> containerClass, Class<?> targetClass, String fieldName, String mappedBy, boolean isOrphanRemoval) {
+            oneToManyFields.add(new OneToManyFieldConfiguration(containerClass, targetClass, fieldName, mappedBy, isOrphanRemoval));
+        }
 
-		public FieldConfiguration getFieldConfiguration( String fieldName )
-		{
-			if( idField.fieldName.equals( fieldName ) )
-				return idField;
+        public FieldConfiguration getFieldConfiguration(String fieldName) {
+            if (idField.fieldName.equals(fieldName))
+                return idField;
 
-			for( FieldConfiguration c : directFields )
-				if( c.fieldName.equals( fieldName ) )
-					return c;
-			return null;
-		}
+            for (FieldConfiguration c : directFields)
+                if (c.fieldName.equals(fieldName))
+                    return c;
+            return null;
+        }
 
-		public ManyToOneFieldConfiguration getManyToOneFieldConfiguration( String fieldName )
-		{
-			for( ManyToOneFieldConfiguration c : manyToOneFields )
-				if( c.fieldName.equals( fieldName ) )
-					return c;
-			return null;
-		}
+        public ManyToOneFieldConfiguration getManyToOneFieldConfiguration(String fieldName) {
+            for (ManyToOneFieldConfiguration c : manyToOneFields)
+                if (c.fieldName.equals(fieldName))
+                    return c;
+            return null;
+        }
 
-		public Object createEntityProxy( EntityManagerImpl em )
-		{
-			Object proxy = null;
-			if( entityClass == Category.class )
-				proxy = new CategoryProxy( em );
+        public Object createEntityProxy(EntityManagerImpl em) {
+            Object proxy = null;
+            if (entityClass == Category.class)
+                proxy = new CategoryProxy(em);
 
-			return proxy;
-		}
-	}
+            return proxy;
+        }
+    }
 
-	public static class FieldConfiguration
-	{
-		Class<?> fieldClass;
-		String fieldName;
-		String columnName;
+    public static class FieldConfiguration {
+        Class<?> fieldClass;
+        String fieldName;
+        String columnName;
 
-		public FieldConfiguration( Class<?> fieldClass, String fieldName, String columnName )
-		{
-			this.fieldClass = fieldClass;
-			this.fieldName = fieldName;
-			this.columnName = columnName;
-		}
-	}
+        public FieldConfiguration(Class<?> fieldClass, String fieldName, String columnName) {
+            this.fieldClass = fieldClass;
+            this.fieldName = fieldName;
+            this.columnName = columnName;
+        }
+    }
 
-	public static class ManyToOneFieldConfiguration
-	{
-		Class<?> fieldClass;
-		String fieldName;
-		String columnName;
+    public static class ManyToOneFieldConfiguration {
+        Class<?> fieldClass;
+        String fieldName;
+        String columnName;
 
-		FetchType fetchType;
+        FetchType fetchType;
 
-		public ManyToOneFieldConfiguration( Class<?> fieldClass, String fieldName, String columnName, FetchType fetchType )
-		{
-			this.fieldClass = fieldClass;
-			this.fieldName = fieldName;
-			this.columnName = columnName;
-			this.fetchType = fetchType;
-		}
-	}
+        public ManyToOneFieldConfiguration(Class<?> fieldClass, String fieldName, String columnName, FetchType fetchType) {
+            this.fieldClass = fieldClass;
+            this.fieldName = fieldName;
+            this.columnName = columnName;
+            this.fetchType = fetchType;
+        }
+    }
 
-	public static class OneToManyFieldConfiguration
-	{
-		Class<?> containerClass;
-		Class<?> targetClass;
-		String fieldName;
-		String mappedBy;
-		boolean isOrphanRemoval;
+    public static class OneToManyFieldConfiguration {
+        Class<?> containerClass;
+        Class<?> targetClass;
+        String fieldName;
+        String mappedBy;
+        boolean isOrphanRemoval;
 
-		public OneToManyFieldConfiguration( Class<?> containerClass, Class<?> targetClass, String fieldName, String mappedBy, boolean isOrphanRemoval )
-		{
-			this.containerClass = containerClass;
-			this.targetClass = targetClass;
-			this.fieldName = fieldName;
-			this.mappedBy = mappedBy;
-			this.isOrphanRemoval = isOrphanRemoval;
-		}
-	}
+        public OneToManyFieldConfiguration(Class<?> containerClass, Class<?> targetClass, String fieldName, String mappedBy, boolean isOrphanRemoval) {
+            this.containerClass = containerClass;
+            this.targetClass = targetClass;
+            this.fieldName = fieldName;
+            this.mappedBy = mappedBy;
+            this.isOrphanRemoval = isOrphanRemoval;
+        }
+    }
 }

@@ -7,88 +7,70 @@ import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.ui.tools.IEditor;
 import fr.lteconsulting.hexa.client.ui.tools.IEditorHost;
 
-public abstract class GenericEditor<T extends Widget> implements IEditor
-{
-	private IEditorHost editorHost;
-	private final Validator<T> validator;
-	private final T widget;
+public abstract class GenericEditor<T extends Widget> implements IEditor {
+    private final Validator<T> validator;
+    private final T widget;
+    private IEditorHost editorHost;
+    private final ValidatorCallback validatorCallback = new ValidatorCallback() {
+        @Override
+        public void onValidatorAction(Button button) {
+            switch (button) {
+                case Cancel:
+                    editorHost.finishedEdition();
+                    break;
 
-	abstract protected void onValidate( T widget );
+                case Ok:
+                    onValidate(validator.getEditor());
+            }
+        }
+    };
 
-	public GenericEditor( T widget, boolean fShowCancel )
-	{
-		this( widget, fShowCancel, true );
-	}
-	
-	public GenericEditor( final T widget, boolean fShowCancel, boolean fShowValidator )
-	{
-		this.widget = widget;
-		
-		if( fShowValidator ) 
-		{
-			validator = new Validator<>();
-			validator.setEditor( widget, fShowCancel );
-			validator.setCallback( validatorCallback );
-		}
-		else
-		{
-			validator = null;
-		}
-		
-		if( widget instanceof Focusable )
-		{
-			widget.addAttachHandler( new AttachEvent.Handler()
-			{
-				@Override
-				public void onAttachOrDetach( AttachEvent event )
-				{
-					((Focusable)widget).setFocus( true );
-				}
-			} );
-		}
-	}
+    public GenericEditor(T widget, boolean fShowCancel) {
+        this(widget, fShowCancel, true);
+    }
 
-	@Override
-	public final void setHost( IEditorHost editorHost )
-	{
-		this.editorHost = editorHost;
-	}
+    public GenericEditor(final T widget, boolean fShowCancel, boolean fShowValidator) {
+        this.widget = widget;
 
-	@Override
-	public final Widget getWidget()
-	{
-		return validator != null ? validator : widget;
-	}
-	
-	protected final T getEditorWidget()
-	{
-		return widget;
-	}
+        if (fShowValidator) {
+            validator = new Validator<>();
+            validator.setEditor(widget, fShowCancel);
+            validator.setCallback(validatorCallback);
+        } else {
+            validator = null;
+        }
 
-	protected final void finishedEdition()
-	{
-		editorHost.finishedEdition();
-	}
+        if (widget instanceof Focusable) {
+            widget.addAttachHandler(new AttachEvent.Handler() {
+                @Override
+                public void onAttachOrDetach(AttachEvent event) {
+                    ((Focusable) widget).setFocus(true);
+                }
+            });
+        }
+    }
 
-	protected final IEditorHost getEditorHost()
-	{
-		return editorHost;
-	}
+    abstract protected void onValidate(T widget);
 
-	private final ValidatorCallback validatorCallback = new ValidatorCallback()
-	{
-		@Override
-		public void onValidatorAction( Button button )
-		{
-			switch( button )
-			{
-				case Cancel:
-					editorHost.finishedEdition();
-					break;
+    @Override
+    public final void setHost(IEditorHost editorHost) {
+        this.editorHost = editorHost;
+    }
 
-				case Ok:
-					onValidate( validator.getEditor() );
-			}
-		}
-	};
+    @Override
+    public final Widget getWidget() {
+        return validator != null ? validator : widget;
+    }
+
+    protected final T getEditorWidget() {
+        return widget;
+    }
+
+    protected final void finishedEdition() {
+        editorHost.finishedEdition();
+    }
+
+    protected final IEditorHost getEditorHost() {
+        return editorHost;
+    }
 }

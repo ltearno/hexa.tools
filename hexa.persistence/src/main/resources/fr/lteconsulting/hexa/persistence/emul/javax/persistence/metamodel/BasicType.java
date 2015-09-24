@@ -26,4 +26,5 @@
 package javax.persistence.metamodel;
 
 
-public interface BasicType<X> extends Type<X> {}
+public interface BasicType<X> extends Type<X> {
+}

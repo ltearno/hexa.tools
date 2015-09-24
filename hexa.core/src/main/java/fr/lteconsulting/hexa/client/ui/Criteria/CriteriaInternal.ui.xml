@@ -1,20 +1,20 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
 
-	</ui:style>
-	<g:HTMLPanel>
-		<span style="font-size:80%;">
-			<g:Anchor ui:field='andAnchor' href='#'>combination (and)</g:Anchor>
-			-
-			<g:Anchor ui:field='orAnchor' href='#'>at least one true (or)</g:Anchor>
-			-
-			<g:Anchor ui:field='compareAnchor' href='#'>compare</g:Anchor>
-		</span>
-		<span style="float:right;font-size:80%;">
-			<g:SimplePanel ui:field='closeSpot' />
-		</span>
-		<g:SimplePanel ui:field='content' />
-	</g:HTMLPanel>
+    </ui:style>
+    <g:HTMLPanel>
+        <span style="font-size:80%;">
+            <g:Anchor ui:field='andAnchor' href='#'>combination (and)</g:Anchor>
+            -
+            <g:Anchor ui:field='orAnchor' href='#'>at least one true (or)</g:Anchor>
+            -
+            <g:Anchor ui:field='compareAnchor' href='#'>compare</g:Anchor>
+        </span>
+        <span style="float:right;font-size:80%;">
+            <g:SimplePanel ui:field='closeSpot'/>
+        </span>
+        <g:SimplePanel ui:field='content'/>
+    </g:HTMLPanel>
 </ui:UiBinder> 

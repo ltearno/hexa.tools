@@ -11,357 +11,297 @@ import java.util.List;
 import fr.lteconsulting.hexa.client.interfaces.IAsyncCallback;
 import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
 
-public abstract class TableServiceBase<T extends IHasIntegerId>
-{
-	protected abstract void doDeleteRecord( int recordId, IAsyncCallback<Integer> callback );
+public abstract class TableServiceBase<T extends IHasIntegerId> {
+    String logName;
+    HashMap<Integer, T> records = new HashMap<Integer, T>();
+    boolean fWholeTableLoaded = false;
+    boolean fFullLoadRequested = false;
+    HashSet<IAsyncCallback<Integer>> waitingLoaded = null;
+    HashSet<ClientInfo> waitingWholeTableLoaded = null;
+    HashSet<ClientInfo> clients = new HashSet<ClientInfo>();
 
-	protected abstract void doUpdateField( int recordId, String fieldName, String wantedValue, IAsyncCallback<String> callback );
+    protected TableServiceBase(String logName) {
+        this.logName = logName;
+    }
 
-	protected abstract void doGetRecords( IAsyncCallback<Iterable<T>> callback );
+    protected abstract void doDeleteRecord(int recordId, IAsyncCallback<Integer> callback);
 
-	protected abstract void doGetRecord( int recordId, IAsyncCallback<T> callback );
+    protected abstract void doUpdateField(int recordId, String fieldName, String wantedValue, IAsyncCallback<String> callback);
 
-	// to be overriden if needed
-	protected boolean isClientInterestedByRecord( T record, Object clientParam )
-	{
-		return true;
-	}
+    protected abstract void doGetRecords(IAsyncCallback<Iterable<T>> callback);
 
-	protected TableServiceBase( String logName )
-	{
-		this.logName = logName;
-	}
+    protected abstract void doGetRecord(int recordId, IAsyncCallback<T> callback);
 
-	String logName;
+    // to be overriden if needed
+    protected boolean isClientInterestedByRecord(T record, Object clientParam) {
+        return true;
+    }
 
-	HashMap<Integer, T> records = new HashMap<Integer, T>();
-	boolean fWholeTableLoaded = false;
-	boolean fFullLoadRequested = false;
+    public ITableCommand<T> listen(XTableListen<T> callback) {
+        return listenInternal(null, callback);
+    }
 
-	HashSet<IAsyncCallback<Integer>> waitingLoaded = null;
-	HashSet<ClientInfo> waitingWholeTableLoaded = null;
+    protected ITableCommand<T> listenInternal(Object clientParam, XTableListen<T> callback) {
+        ClientInfo client = new ClientInfo(clientParam, callback);
+        clients.add(client);
+        return client.command;
+    }
 
-	class ClientInfo
-	{
-		Object param;
-		XTableListen<T> callback;
-		ITableCommand<T> command;
+    protected IAsyncCallback<T> getAddInternalCallback(final IAsyncCallback<T> callback) {
+        return new IAsyncCallback<T>() {
+            @Override
+            public void onSuccess(T result) {
+                if (result == null) {
+                    callback.onSuccess(null);
+                    return;
+                }
+                records.put(result.getId(), result);
+                for (ClientInfo client : clients)
+                    client.onUpdatedRecord(result);
+                if (callback != null)
+                    callback.onSuccess(result);
+            }
+        };
+    }
 
-		public ClientInfo( Object param, XTableListen<T> callback )
-		{
-			this.param = param;
-			this.callback = callback;
-			command = new ITableCommand<T>()
-			{
-				@Override
-				public boolean isLoaded()
-				{
-					return fWholeTableLoaded;
-				}
+    public void delete(final int recordId) {
+        doDeleteRecord(recordId, new IAsyncCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer result) {
+                if (result < 0)
+                    return;
+                T oldRecord = records.remove(recordId);
+                for (ClientInfo client : clients)
+                    client.onDeletedRecord(recordId, oldRecord);
+            }
+        });
+    }
 
-				@Override
-				public void waitLoaded( IAsyncCallback<Integer> callback )
-				{
-					if( fWholeTableLoaded )
-					{
-						callback.onSuccess( 1 );
-						return;
-					}
+    public void updateField(int recordId, final String fieldName, String newValue) {
+        doUpdateField(recordId, fieldName, newValue, new IAsyncCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+            }
+        });
 
-					if( waitingLoaded == null )
-						waitingLoaded = new HashSet<IAsyncCallback<Integer>>();
-					waitingLoaded.add( callback );
-				}
+        doGetRecord(recordId, new IAsyncCallback<T>() {
+            @Override
+            public void onSuccess(T result) {
+                records.put(result.getId(), result);
 
-				@Override
-				public void quit()
-				{
-					// GWT.log( "TableServiceBase "+logName+" client leaving..."
-					// );
-					clients.remove( ClientInfo.this );
-				}
+                for (ClientInfo client : clients)
+                    client.onUpdatedRecordField(result, fieldName);
+            }
+        });
+    }
 
-				@Override
-				public void askRefreshTable()
-				{
-					if( fWholeTableLoaded )
-					{
-						ClientInfo.this.onWholeTable( records.values() );
-					}
-					else
-					{
-						if( fFullLoadRequested )
-						{
-							if( waitingWholeTableLoaded == null )
-								waitingWholeTableLoaded = new HashSet<ClientInfo>();
-							waitingWholeTableLoaded.add( ClientInfo.this );
-						}
-						else
-						{
-							fFullLoadRequested = true;
-							doGetRecords( new IAsyncCallback<Iterable<T>>()
-							{
-								@Override
-								public void onSuccess( Iterable<T> result )
-								{
-									records.clear();
-									for( T e : result )
-										records.put( e.getId(), e );
+    public void getRecord(int recordId, IAsyncCallback<T> callback) {
+        if (fWholeTableLoaded)
+            callback.onSuccess(records.get(recordId));
+        else
+            doGetRecord(recordId, callback);
+    }
 
-									// GWT.log(
-									// "TableServiceBase "+logName+" WHOLE TABLE RECEIVED / "
-									// + TableServiceBase.this.toString() );
-									fWholeTableLoaded = true;
-									fFullLoadRequested = false;
+    public void getRecords(IAsyncCallback<Iterable<T>> callback) {
+        if (fWholeTableLoaded)
+            callback.onSuccess(records.values());
+        else
+            doGetRecords(callback);
+    }
 
-									ClientInfo.this.onWholeTable( records.values() );
+    class ClientInfo {
+        Object param;
+        XTableListen<T> callback;
+        ITableCommand<T> command;
 
-									if( waitingWholeTableLoaded != null )
-									{
-										for( ClientInfo waitingClient : waitingWholeTableLoaded )
-											waitingClient.onWholeTable( records.values() );
-										waitingWholeTableLoaded.clear();
-										waitingWholeTableLoaded = null;
-									}
-									if( waitingLoaded != null )
-									{
-										for( IAsyncCallback<Integer> cb : waitingLoaded )
-											cb.onSuccess( 1 );
-										waitingLoaded.clear();
-										waitingLoaded = null;
-									}
-								}
-							} );
-						}
-					}
-				}
+        public ClientInfo(Object param, XTableListen<T> callback) {
+            this.param = param;
+            this.callback = callback;
+            command = new ITableCommand<T>() {
+                @Override
+                public boolean isLoaded() {
+                    return fWholeTableLoaded;
+                }
 
-				@Override
-				public T getRecord( int recordId )
-				{
-					assert (fWholeTableLoaded);
-					return records.get( recordId );
-				}
+                @Override
+                public void waitLoaded(IAsyncCallback<Integer> callback) {
+                    if (fWholeTableLoaded) {
+                        callback.onSuccess(1);
+                        return;
+                    }
 
-				@Override
-				public Iterable<T> getRecords()
-				{
-					assert (fWholeTableLoaded);
-					return records.values();
-				}
+                    if (waitingLoaded == null)
+                        waitingLoaded = new HashSet<IAsyncCallback<Integer>>();
+                    waitingLoaded.add(callback);
+                }
 
-				@Override
-				public Iterable<T> getRecordsSorted( Comparator<T> comparator )
-				{
-					assert (fWholeTableLoaded);
-					List<T> sortedList = new ArrayList<T>( records.values() );
-					Collections.sort( sortedList, comparator );
-					return sortedList;
-				}
+                @Override
+                public void quit() {
+                    // GWT.log( "TableServiceBase "+logName+" client leaving..."
+                    // );
+                    clients.remove(ClientInfo.this);
+                }
 
-				@Override
-				public boolean isEmpty()
-				{
-					assert (fWholeTableLoaded);
-					if( ClientInfo.this.param != null )
-					{
-						Iterable<T> it = new FilteredIterable( records.values() );
-						return !it.iterator().hasNext();
-					}
-					return records.isEmpty();
-				}
-			};
-		}
+                @Override
+                public void askRefreshTable() {
+                    if (fWholeTableLoaded) {
+                        ClientInfo.this.onWholeTable(records.values());
+                    } else {
+                        if (fFullLoadRequested) {
+                            if (waitingWholeTableLoaded == null)
+                                waitingWholeTableLoaded = new HashSet<ClientInfo>();
+                            waitingWholeTableLoaded.add(ClientInfo.this);
+                        } else {
+                            fFullLoadRequested = true;
+                            doGetRecords(new IAsyncCallback<Iterable<T>>() {
+                                @Override
+                                public void onSuccess(Iterable<T> result) {
+                                    records.clear();
+                                    for (T e : result)
+                                        records.put(e.getId(), e);
 
-		void onWholeTable( Iterable<T> records )
-		{
-			if( callback == null )
-				return;
-			if( param != null )
-				callback.wholeTable( new FilteredIterable( records ) );
-			else
-				callback.wholeTable( records );
-		}
+                                    // GWT.log(
+                                    // "TableServiceBase "+logName+" WHOLE TABLE RECEIVED / "
+                                    // + TableServiceBase.this.toString() );
+                                    fWholeTableLoaded = true;
+                                    fFullLoadRequested = false;
 
-		void onUpdatedRecord( T record )
-		{
-			if( callback == null )
-				return;
-			if( param != null && !isClientInterestedByRecord( record, param ) )
-				return;
-			callback.updated( record );
-		}
+                                    ClientInfo.this.onWholeTable(records.values());
 
-		void onUpdatedRecordField( T record, String fieldName )
-		{
-			if( callback == null )
-				return;
-			if( param != null && !isClientInterestedByRecord( record, param ) )
-				return;
-			callback.updatedField( fieldName, record );
-		}
+                                    if (waitingWholeTableLoaded != null) {
+                                        for (ClientInfo waitingClient : waitingWholeTableLoaded)
+                                            waitingClient.onWholeTable(records.values());
+                                        waitingWholeTableLoaded.clear();
+                                        waitingWholeTableLoaded = null;
+                                    }
+                                    if (waitingLoaded != null) {
+                                        for (IAsyncCallback<Integer> cb : waitingLoaded)
+                                            cb.onSuccess(1);
+                                        waitingLoaded.clear();
+                                        waitingLoaded = null;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
 
-		void onDeletedRecord( int recordId, T oldRecord )
-		{
-			if( callback == null )
-				return;
-			if( param != null && !isClientInterestedByRecord( oldRecord, param ) )
-				return;
-			callback.deleted( recordId, oldRecord );
-		}
+                @Override
+                public T getRecord(int recordId) {
+                    assert (fWholeTableLoaded);
+                    return records.get(recordId);
+                }
 
-		class FilteredIterable implements Iterable<T>
-		{
-			Iterable<T> raw;
+                @Override
+                public Iterable<T> getRecords() {
+                    assert (fWholeTableLoaded);
+                    return records.values();
+                }
 
-			public FilteredIterable( Iterable<T> raw )
-			{
-				this.raw = raw;
-			}
+                @Override
+                public Iterable<T> getRecordsSorted(Comparator<T> comparator) {
+                    assert (fWholeTableLoaded);
+                    List<T> sortedList = new ArrayList<T>(records.values());
+                    Collections.sort(sortedList, comparator);
+                    return sortedList;
+                }
 
-			@Override
-			public Iterator<T> iterator()
-			{
-				class FilteredIterator implements Iterator<T>
-				{
-					Iterator<T> rawIt = raw.iterator();
-					T nextElem = null;
+                @Override
+                public boolean isEmpty() {
+                    assert (fWholeTableLoaded);
+                    if (ClientInfo.this.param != null) {
+                        Iterable<T> it = new FilteredIterable(records.values());
+                        return !it.iterator().hasNext();
+                    }
+                    return records.isEmpty();
+                }
+            };
+        }
 
-					FilteredIterator()
-					{
-						prepareNextElem();
-					}
+        void onWholeTable(Iterable<T> records) {
+            if (callback == null)
+                return;
+            if (param != null)
+                callback.wholeTable(new FilteredIterable(records));
+            else
+                callback.wholeTable(records);
+        }
 
-					@Override
-					public boolean hasNext()
-					{
-						return nextElem != null;
-					}
+        void onUpdatedRecord(T record) {
+            if (callback == null)
+                return;
+            if (param != null && !isClientInterestedByRecord(record, param))
+                return;
+            callback.updated(record);
+        }
 
-					@Override
-					public T next()
-					{
-						T curElem = nextElem;
+        void onUpdatedRecordField(T record, String fieldName) {
+            if (callback == null)
+                return;
+            if (param != null && !isClientInterestedByRecord(record, param))
+                return;
+            callback.updatedField(fieldName, record);
+        }
 
-						prepareNextElem();
+        void onDeletedRecord(int recordId, T oldRecord) {
+            if (callback == null)
+                return;
+            if (param != null && !isClientInterestedByRecord(oldRecord, param))
+                return;
+            callback.deleted(recordId, oldRecord);
+        }
 
-						return curElem;
-					}
+        class FilteredIterable implements Iterable<T> {
+            Iterable<T> raw;
 
-					void prepareNextElem()
-					{
-						nextElem = null;
-						while( rawIt.hasNext() )
-						{
-							T test = rawIt.next();
-							if( isClientInterestedByRecord( test, param ) )
-							{
-								nextElem = test;
-								return;
-							}
-						}
-					}
+            public FilteredIterable(Iterable<T> raw) {
+                this.raw = raw;
+            }
 
-					@Override
-					public void remove()
-					{
-						assert (false) : "remove is not allowed ...";
-					}
-				}
+            @Override
+            public Iterator<T> iterator() {
+                class FilteredIterator implements Iterator<T> {
+                    Iterator<T> rawIt = raw.iterator();
+                    T nextElem = null;
 
-				return new FilteredIterator();
-			}
+                    FilteredIterator() {
+                        prepareNextElem();
+                    }
 
-		}
-	}
+                    @Override
+                    public boolean hasNext() {
+                        return nextElem != null;
+                    }
 
-	HashSet<ClientInfo> clients = new HashSet<ClientInfo>();
+                    @Override
+                    public T next() {
+                        T curElem = nextElem;
 
-	public ITableCommand<T> listen( XTableListen<T> callback )
-	{
-		return listenInternal( null, callback );
-	}
+                        prepareNextElem();
 
-	protected ITableCommand<T> listenInternal( Object clientParam, XTableListen<T> callback )
-	{
-		ClientInfo client = new ClientInfo( clientParam, callback );
-		clients.add( client );
-		return client.command;
-	}
+                        return curElem;
+                    }
 
-	protected IAsyncCallback<T> getAddInternalCallback( final IAsyncCallback<T> callback )
-	{
-		return new IAsyncCallback<T>()
-		{
-			@Override
-			public void onSuccess( T result )
-			{
-				if( result == null )
-				{
-					callback.onSuccess( null );
-					return;
-				}
-				records.put( result.getId(), result );
-				for( ClientInfo client : clients )
-					client.onUpdatedRecord( result );
-				if( callback != null )
-					callback.onSuccess( result );
-			}
-		};
-	}
+                    void prepareNextElem() {
+                        nextElem = null;
+                        while (rawIt.hasNext()) {
+                            T test = rawIt.next();
+                            if (isClientInterestedByRecord(test, param)) {
+                                nextElem = test;
+                                return;
+                            }
+                        }
+                    }
 
-	public void delete( final int recordId )
-	{
-		doDeleteRecord( recordId, new IAsyncCallback<Integer>()
-		{
-			@Override
-			public void onSuccess( Integer result )
-			{
-				if( result < 0 )
-					return;
-				T oldRecord = records.remove( recordId );
-				for( ClientInfo client : clients )
-					client.onDeletedRecord( recordId, oldRecord );
-			}
-		} );
-	}
+                    @Override
+                    public void remove() {
+                        assert (false) : "remove is not allowed ...";
+                    }
+                }
 
-	public void updateField( int recordId, final String fieldName, String newValue )
-	{
-		doUpdateField( recordId, fieldName, newValue, new IAsyncCallback<String>()
-		{
-			@Override
-			public void onSuccess( String result )
-			{
-			}
-		} );
+                return new FilteredIterator();
+            }
 
-		doGetRecord( recordId, new IAsyncCallback<T>()
-		{
-			@Override
-			public void onSuccess( T result )
-			{
-				records.put( result.getId(), result );
-
-				for( ClientInfo client : clients )
-					client.onUpdatedRecordField( result, fieldName );
-			}
-		} );
-	}
-
-	public void getRecord( int recordId, IAsyncCallback<T> callback )
-	{
-		if( fWholeTableLoaded )
-			callback.onSuccess( records.get( recordId ) );
-		else
-			doGetRecord( recordId, callback );
-	}
-
-	public void getRecords( IAsyncCallback<Iterable<T>> callback )
-	{
-		if( fWholeTableLoaded )
-			callback.onSuccess( records.values() );
-		else
-			doGetRecords( callback );
-	}
+        }
+    }
 }

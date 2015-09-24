@@ -17,143 +17,123 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
  * It also ensures that answers are given to the clients
  * in the order they were asked.
  */
-public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests
-{
-	RPCProxy srv = new RPCProxy();
+public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests {
+    RPCProxy srv = new RPCProxy();
+    ArrayList<PendingRequestInfo> pendingRequests = new ArrayList<PendingRequestInfo>();
+    HashMap<String, ResponseJSO> cache = new HashMap<String, ResponseJSO>();
+    // requests as received by the sendRequest method
+    ArrayList<RequestCallInfo> requestStack = new ArrayList<RequestCallInfo>();
+    boolean fCallbackingScheduled = false;
+    ScheduledCommand checkResults = new ScheduledCommand() {
+        @Override
+        public void execute() {
+            fCallbackingScheduled = false;
 
-	public void Init( String baseUrl, XRPCProxy serverCommMessageCb )
-	{
-		srv.Init( baseUrl, serverCommMessageCb );
-	}
+            while (!requestStack.isEmpty()) {
+                RequestCallInfo info = requestStack.get(0);
 
-	public RPCProxy getInternalServerComm()
-	{
-		return srv;
-	}
+                // we give back results in the order requests have been made,
+                // here we may need to wait for other responses to arrive
+                if (!info.fResultReceived)
+                    return;
 
-	ArrayList<PendingRequestInfo> pendingRequests = new ArrayList<PendingRequestInfo>();
-	HashMap<String, ResponseJSO> cache = new HashMap<String, ResponseJSO>();
+                requestStack.remove(0);
 
-	// requests as received by the sendRequest method
-	ArrayList<RequestCallInfo> requestStack = new ArrayList<RequestCallInfo>();
+                info.giveResultToCallbacks();
+            }
+        }
+    };
 
-	boolean fCallbackingScheduled = false;
+    public void Init(String baseUrl, XRPCProxy serverCommMessageCb) {
+        srv.Init(baseUrl, serverCommMessageCb);
+    }
 
-	class PendingRequestInfo
-	{
-		boolean fStoreResultInCache;
+    public RPCProxy getInternalServerComm() {
+        return srv;
+    }
 
-		String requestKey;
+    @Override
+    public void sendRequest(boolean fUseCache, boolean fInvalidate, RequestDesc request, Object cookie, XRPCRequest callback) {
+        // destroys the data cache if specified so
+        if (fInvalidate) {
+            GWT.log("Clear cache for request " + request.getUniqueKey() + " / " + request.getExtraInfo(), null);
+            cache.clear();
+        }
 
-		ArrayList<RequestCallInfo> subscriptions = new ArrayList<RequestCallInfo>();
+        RequestCallInfo requestCallInfo = new RequestCallInfo(request, callback, cookie);
+        requestStack.add(requestCallInfo);
 
-		public PendingRequestInfo( boolean fStoreResultInCache, RequestCallInfo requestCallInfo )
-		{
-			this.fStoreResultInCache = fStoreResultInCache;
+        if (fUseCache) {
+            // is the result already in cache ?
+            ResponseJSO cached = cache.get(request.getUniqueKey());
+            if (cached != null) {
+                requestCallInfo.setResult(0, null, null, cached);
+                checkAnswersToGive();
+                return;
+            }
 
-			requestKey = requestCallInfo.request.getUniqueKey();
-			addSubscription( requestCallInfo );
-		}
+            // is the same request already pending ?
+            for (PendingRequestInfo pending : pendingRequests) {
+                if (!pending.requestKey.equals(request.getUniqueKey()))
+                    continue;
 
-		public void addSubscription( RequestCallInfo requestCallInfo )
-		{
-			subscriptions.add( requestCallInfo );
-		}
-	}
+                pending.addSubscription(requestCallInfo);
+                return;
+            }
+        }
 
-	@Override
-	public void sendRequest( boolean fUseCache, boolean fInvalidate, RequestDesc request, Object cookie, XRPCRequest callback )
-	{
-		// destroys the data cache if specified so
-		if( fInvalidate )
-		{
-			GWT.log( "Clear cache for request " + request.getUniqueKey() + " / " + request.getExtraInfo(), null );
-			cache.clear();
-		}
+        // create a pending request
+        PendingRequestInfo pending = new PendingRequestInfo(fUseCache && (!fInvalidate), requestCallInfo);
+        pendingRequests.add(pending);
 
-		RequestCallInfo requestCallInfo = new RequestCallInfo( request, callback, cookie );
-		requestStack.add( requestCallInfo );
+        // send the request to the server
+        srv.sendRequest(request, pending, this);
+    }
 
-		if( fUseCache )
-		{
-			// is the result already in cache ?
-			ResponseJSO cached = cache.get( request.getUniqueKey() );
-			if( cached != null )
-			{
-				requestCallInfo.setResult( 0, null, null, cached );
-				checkAnswersToGive();
-				return;
-			}
+    // receives the answer from the ServerComm object
+    @Override
+    public void onResponse(Object cookie, ResponseJSO response, int msgLevel, String msg) {
+        PendingRequestInfo info = (PendingRequestInfo) cookie;
 
-			// is the same request already pending ?
-			for( PendingRequestInfo pending : pendingRequests )
-			{
-				if( !pending.requestKey.equals( request.getUniqueKey() ) )
-					continue;
+        // Store answer in cache
+        if (info.fStoreResultInCache)
+            cache.put(info.requestKey, response);
 
-				pending.addSubscription( requestCallInfo );
-				return;
-			}
-		}
+        // give the result to all the subscribees
+        for (RequestCallInfo call : info.subscriptions)
+            call.setResult(msgLevel, msg, null, response);
 
-		// create a pending request
-		PendingRequestInfo pending = new PendingRequestInfo( fUseCache && (!fInvalidate), requestCallInfo );
-		pendingRequests.add( pending );
+        // forget this request
+        pendingRequests.remove(info);
 
-		// send the request to the server
-		srv.sendRequest( request, pending, this );
-	}
+        // calls back the clients
+        checkAnswersToGive();
+    }
 
-	// receives the answer from the ServerComm object
-	@Override
-	public void onResponse( Object cookie, ResponseJSO response, int msgLevel, String msg )
-	{
-		PendingRequestInfo info = (PendingRequestInfo) cookie;
+    private void checkAnswersToGive() {
+        if (fCallbackingScheduled)
+            return;
 
-		// Store answer in cache
-		if( info.fStoreResultInCache )
-			cache.put( info.requestKey, response );
+        fCallbackingScheduled = true;
+        Scheduler.get().scheduleFinally(checkResults);
+    }
 
-		// give the result to all the subscribees
-		for( RequestCallInfo call : info.subscriptions )
-			call.setResult( msgLevel, msg, null, response );
+    class PendingRequestInfo {
+        boolean fStoreResultInCache;
 
-		// forget this request
-		pendingRequests.remove( info );
+        String requestKey;
 
-		// calls back the clients
-		checkAnswersToGive();
-	}
+        ArrayList<RequestCallInfo> subscriptions = new ArrayList<RequestCallInfo>();
 
-	private void checkAnswersToGive()
-	{
-		if( fCallbackingScheduled )
-			return;
+        public PendingRequestInfo(boolean fStoreResultInCache, RequestCallInfo requestCallInfo) {
+            this.fStoreResultInCache = fStoreResultInCache;
 
-		fCallbackingScheduled = true;
-		Scheduler.get().scheduleFinally( checkResults );
-	}
+            requestKey = requestCallInfo.request.getUniqueKey();
+            addSubscription(requestCallInfo);
+        }
 
-	ScheduledCommand checkResults = new ScheduledCommand()
-	{
-		@Override
-		public void execute()
-		{
-			fCallbackingScheduled = false;
-
-			while( !requestStack.isEmpty() )
-			{
-				RequestCallInfo info = requestStack.get( 0 );
-
-				// we give back results in the order requests have been made,
-				// here we may need to wait for other responses to arrive
-				if( !info.fResultReceived )
-					return;
-
-				requestStack.remove( 0 );
-
-				info.giveResultToCallbacks();
-			}
-		}
-	};
+        public void addSubscription(RequestCallInfo requestCallInfo) {
+            subscriptions.add(requestCallInfo);
+        }
+    }
 }

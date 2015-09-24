@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.1/distro-source/core/src/gwt-module.dtd">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.1//EN"
+        "http://google-web-toolkit.googlecode.com/svn/tags/1.7.1/distro-source/core/src/gwt-module.dtd">
 <module rename-to='hexacore'>
-	<inherits name='com.google.gwt.user.User' />
-	<inherits name="com.google.gwt.http.HTTP" />
-	<inherits name='com.google.gwt.json.JSON' />
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name="com.google.gwt.http.HTTP"/>
+    <inherits name='com.google.gwt.json.JSON'/>
 
-	<!-- For using GWTBootstrap and Hexa Utils associated with it, inherit the 
-		following module -->
-	<!-- <inherits name='fr.lteconsulting.hexa.HexaGwtBootstrap'/> -->
+    <!-- For using GWTBootstrap and Hexa Utils associated with it, inherit the
+        following module -->
+    <!-- <inherits name='fr.lteconsulting.hexa.HexaGwtBootstrap'/> -->
 
-	<!-- Inherit other Hexa modules -->
-	<inherits name='fr.lteconsulting.hexa.HexaCss' />
-	<inherits name='fr.lteconsulting.hexa.HexaClassInfo' />
-	<inherits name='fr.lteconsulting.hexa.HexaBinding' />
+    <!-- Inherit other Hexa modules -->
+    <inherits name='fr.lteconsulting.hexa.HexaCss'/>
+    <inherits name='fr.lteconsulting.hexa.HexaClassInfo'/>
+    <inherits name='fr.lteconsulting.hexa.HexaBinding'/>
 
-	<super-source path="jre" />
-	<source path="client" />
-	<source path="shared" />
+    <super-source path="jre"/>
+    <source path="client"/>
+    <source path="shared"/>
 
-	<generate-with class="fr.lteconsulting.hexa.rebind.StackGenerator">
-		<when-type-assignable class="fr.lteconsulting.hexa.client.comm.Stack" />
-	</generate-with>
+    <generate-with class="fr.lteconsulting.hexa.rebind.StackGenerator">
+        <when-type-assignable class="fr.lteconsulting.hexa.client.comm.Stack"/>
+    </generate-with>
 
-	<generate-with class="fr.lteconsulting.hexa.rebind.JSONBrowserGenerator">
-		<when-type-assignable
-			class="fr.lteconsulting.hexa.client.jsonbrowser.JSONBrowser" />
-	</generate-with>
+    <generate-with class="fr.lteconsulting.hexa.rebind.JSONBrowserGenerator">
+        <when-type-assignable
+                class="fr.lteconsulting.hexa.client.jsonbrowser.JSONBrowser"/>
+    </generate-with>
 
-	<define-linker name="AppCacheLinker"
-		class="fr.lteconsulting.hexa.linker.AppCacheLinker" />
+    <define-linker name="AppCacheLinker"
+                   class="fr.lteconsulting.hexa.linker.AppCacheLinker"/>
 
-	<!-- You can add that in your own app module, to support HTML5 AppCache 
-		manifest -->
-	<!--<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker" 
-		/> <add-linker name="AppCacheLinker" /> -->
+    <!-- You can add that in your own app module, to support HTML5 AppCache
+        manifest -->
+    <!--<define-linker name="AppCacheLinker" class="fr.lteconsulting.hexa.linker.AppCacheLinker"
+        /> <add-linker name="AppCacheLinker" /> -->
 
-	<add-linker name="xsiframe" />
+    <add-linker name="xsiframe"/>
 </module>

@@ -8,163 +8,141 @@ import fr.lteconsulting.hexa.classinfo.Clazz;
 import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.classinfo.Method;
 
-public abstract class ClazzBase<T> implements Clazz<T>
-{
-	// To implement :
-	protected abstract List<Field> _getDeclaredFields();
+public abstract class ClazzBase<T> implements Clazz<T> {
+    private Class<? super T> _superClass;
+    private Class<T> _reflectedClass;
+    private String _className;
+    private List<Field> _allFields;
+    private List<Field> _declaredFields;
+    private List<Field> _fields;
+    private List<Method> _methods;
+    @SuppressWarnings("unused")
+    private ClazzBase() {
+    }
+    @SuppressWarnings("unchecked")
+    protected ClazzBase(Class<?> reflectedClass, String className, Class<? super T> superClass) {
+        _reflectedClass = (Class<T>) reflectedClass;
+        _className = className;
+        _superClass = superClass;
+    }
 
-	protected abstract List<Method> _getMethods();
+    // To implement :
+    protected abstract List<Field> _getDeclaredFields();
 
-	protected abstract void _ensureSuperClassInfoRegistered();
+    protected abstract List<Method> _getMethods();
 
-	private Class<? super T> _superClass;
-	private Class<T> _reflectedClass;
-	private String _className;
+    protected abstract void _ensureSuperClassInfoRegistered();
 
-	private List<Field> _allFields;
-	private List<Field> _declaredFields;
-	private List<Field> _fields;
+    @Override
+    public Clazz<? super T> getSuperclass() {
+        if (_superClass == null)
+            return null;
 
-	private List<Method> _methods;
+        _ensureSuperClassInfoRegistered();
 
-	@SuppressWarnings( "unused" )
-	private ClazzBase()
-	{
-	}
+        return ClassInfo.Clazz(_superClass);
+    }
 
-	@SuppressWarnings( "unchecked" )
-	protected ClazzBase( Class<?> reflectedClass, String className, Class<? super T> superClass )
-	{
-		_reflectedClass = (Class<T>) reflectedClass;
-		_className = className;
-		_superClass = superClass;
-	}
+    @Override
+    public String getClassName() {
+        return _className;
+    }
 
-	@Override
-	public Clazz<? super T> getSuperclass()
-	{
-		if( _superClass == null )
-			return null;
+    @Override
+    public Class<T> getReflectedClass() {
+        _ensureSuperClassInfoRegistered();
 
-		_ensureSuperClassInfoRegistered();
+        return _reflectedClass;
+    }
 
-		return ClassInfo.Clazz( _superClass );
-	}
+    @Override
+    public List<Field> getAllFields() {
+        if (_allFields == null) {
+            _allFields = _getDeclaredFields();
 
-	@Override
-	public String getClassName()
-	{
-		return _className;
-	}
+            // all public declared fields of superclass
+            Clazz<? super T> superClass = getSuperclass();
+            if (superClass != null)
+                _allFields.addAll(superClass.getAllFields());
+        }
 
-	@Override
-	public Class<T> getReflectedClass()
-	{
-		_ensureSuperClassInfoRegistered();
+        return _allFields;
+    }
 
-		return _reflectedClass;
-	}
+    @Override
+    public Field getAllField(String name) {
+        // first, search in declared fields
+        for (Field field : getDeclaredFields())
+            if (field.getName().equals(name))
+                return field;
 
-	@Override
-	public List<Field> getAllFields()
-	{
-		if( _allFields == null )
-		{
-			_allFields = _getDeclaredFields();
+        // then try superclass
+        Clazz<? super T> superClass = getSuperclass();
+        if (superClass != null)
+            return superClass.getAllField(name);
 
-			// all public declared fields of superclass
-			Clazz<? super T> superClass = getSuperclass();
-			if( superClass != null )
-				_allFields.addAll( superClass.getAllFields() );
-		}
+        return null;
+    }
 
-		return _allFields;
-	}
+    @Override
+    public List<Field> getDeclaredFields() {
+        if (_declaredFields == null)
+            _declaredFields = _getDeclaredFields();
 
-	@Override
-	public Field getAllField( String name )
-	{
-		// first, search in declared fields
-		for( Field field : getDeclaredFields() )
-			if( field.getName().equals( name ) )
-				return field;
+        return _declaredFields;
+    }
 
-		// then try superclass
-		Clazz<? super T> superClass = getSuperclass();
-		if( superClass != null )
-			return superClass.getAllField( name );
+    @Override
+    public Field getDeclaredField(String name) {
+        for (Field field : getDeclaredFields())
+            if (field.getName().equals(name))
+                return field;
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public List<Field> getDeclaredFields()
-	{
-		if( _declaredFields == null )
-			_declaredFields = _getDeclaredFields();
+    @Override
+    public List<Field> getFields() {
+        if (_fields == null) {
+            // all public declared fields
+            _fields = new ArrayList<Field>();
+            for (Field field : getDeclaredFields()) {
+                if ((field.getModifier() & /*Modifier.PUBLIC*/1) == /*Modifier.PUBLIC*/1)
+                    _fields.add(field);
+            }
 
-		return _declaredFields;
-	}
+            // all public declared fields of superclass
+            Clazz<? super T> superClass = getSuperclass();
+            if (superClass != null)
+                _fields.addAll(superClass.getDeclaredFields());
+        }
 
-	@Override
-	public Field getDeclaredField( String name )
-	{
-		for( Field field : getDeclaredFields() )
-			if( field.getName().equals( name ) )
-				return field;
+        return _fields;
+    }
 
-		return null;
-	}
+    @Override
+    public Field getField(String fieldName) {
+        for (Field field : getFields())
+            if (field.getName().equals(fieldName))
+                return field;
+        return null;
+    }
 
-	@Override
-	public List<Field> getFields()
-	{
-		if( _fields == null )
-		{
-			// all public declared fields
-			_fields = new ArrayList<Field>();
-			for( Field field : getDeclaredFields() )
-			{
-				if( (field.getModifier() & /*Modifier.PUBLIC*/1) == /*Modifier.PUBLIC*/1 )
-					_fields.add( field );
-			}
+    @Override
+    public List<Method> getMethods() {
+        if (_methods == null) {
+            _methods = new ArrayList<Method>();
+            _methods.addAll(_getMethods());
+        }
 
-			// all public declared fields of superclass
-			Clazz<? super T> superClass = getSuperclass();
-			if( superClass != null )
-				_fields.addAll( superClass.getDeclaredFields() );
-		}
+        return _methods;
+    }
 
-		return _fields;
-	}
-
-	@Override
-	public Field getField( String fieldName )
-	{
-		for( Field field : getFields() )
-			if( field.getName().equals( fieldName ) )
-				return field;
-		return null;
-	}
-
-	@Override
-	public List<Method> getMethods()
-	{
-		if( _methods == null )
-		{
-			_methods = new ArrayList<Method>();
-			_methods.addAll( _getMethods() );
-		}
-
-		return _methods;
-	}
-
-	@Override
-	public Method getMethod( String methodName )
-	{
-		for( Method method : getMethods() )
-			if( method.getName().equals( methodName ) )
-				return method;
-		return null;
-	}
+    @Override
+    public Method getMethod(String methodName) {
+        for (Method method : getMethods())
+            if (method.getName().equals(methodName))
+                return method;
+        return null;
+    }
 }

@@ -5,67 +5,64 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.tools.JQuery;
 
-public class JQDatepicker extends Widget
-{
-	public interface Callback
-	{
-		public void onDateSelected( String text );
-	}
+public class JQDatepicker extends Widget {
+    boolean fInline;
+    Element input;
+    public JQDatepicker() {
+        this(false);
+    }
 
-	boolean fInline;
-	Element input;
+    public JQDatepicker(boolean fInline) {
+        this.fInline = fInline;
 
-	public JQDatepicker()
-	{
-		this( false );
-	}
+        if (fInline)
+            input = DOM.createDiv();
+        else
+            input = DOM.createInputText();
 
-	public JQDatepicker( boolean fInline )
-	{
-		this.fInline = fInline;
+        JQuery.get().jqDatepicker(input);
+        jqDatepickerOption(input, "dateFormat", "yy-mm-dd");
+        setElement(input);
+    }
 
-		if( fInline )
-			input = DOM.createDiv();
-		else
-			input = DOM.createInputText();
+    private static native void jqDatepickerOption(Element e, String option, String value)
+    /*-{
+        $wnd.$(e).datepicker("option", option, value);
+    }-*/;
 
-		JQuery.get().jqDatepicker( input );
-		jqDatepickerOption( input, "dateFormat", "yy-mm-dd" );
-		setElement( input );
-	}
-
-	private static native void jqDatepickerOption( Element e, String option, String value )
+    private static native void jqDatepickerSetEventHandler(Element e, JQDatepicker.Callback datePicker)
 	/*-{
-		$wnd.$( e ).datepicker( "option", option, value );
-	}-*/;
+        $wnd.$(e).datepicker("option", "onSelect", function (dateText, inst) {
+            datePicker.@fr.lteconsulting.hexa.client.ui.widget.JQDatepicker.Callback::onDateSelected(Ljava/lang/String;)(dateText);
+        });
+        $wnd.$(e).datepicker("option", "onClose", function (dateText, inst) {
+            datePicker.@fr.lteconsulting.hexa.client.ui.widget.JQDatepicker.Callback::onDateSelected(Ljava/lang/String;)(dateText);
+        });
+    }-*/;
 
-	private static native void jqDatepickerSetEventHandler( Element e, JQDatepicker.Callback datePicker )
+    private static native void jqDatepickerRefresh(Element e) /*-{
+        $wnd.$(e).datepicker("refresh");
+    }-*/;
+
+    public void setCallback(Callback callback) {
+        jqDatepickerSetEventHandler(input, callback);
+    }
+
+    public void setValueString(String date) {
+        if (date == null || date.isEmpty())
+            return;
+
+        setValueString(input, date);
+    }
+
+    private native final void setValueString(Element element, String date)
 	/*-{
-		$wnd.$( e ).datepicker( "option", "onSelect", function(dateText, inst) { datePicker.@fr.lteconsulting.hexa.client.ui.widget.JQDatepicker.Callback::onDateSelected(Ljava/lang/String;)(dateText); } );
-		$wnd.$( e ).datepicker( "option", "onClose", function(dateText, inst) { datePicker.@fr.lteconsulting.hexa.client.ui.widget.JQDatepicker.Callback::onDateSelected(Ljava/lang/String;)(dateText); } );
-	}-*/;
+        $wnd.$(element).datepicker("setDate", date);
+    }-*/;
 
-	private static native void jqDatepickerRefresh( Element e ) /*-{
-																$wnd.$( e ).datepicker( "refresh" );
-																}-*/;
-
-	public void setCallback( Callback callback )
-	{
-		jqDatepickerSetEventHandler( input, callback );
-	}
-	
-	public void setValueString( String date )
-	{
-		if( date == null || date.isEmpty() )
-			return;
-		
-		setValueString( input, date );
-	}
-
-	private native final void setValueString( Element element, String date )
-	/*-{
-		$wnd.$( element ).datepicker( "setDate", date );
-	}-*/;
+    public String getValueAsString() {
+        return input.getPropertyString("value");
+    }
 //	{
 //		if( ! fInline )
 //			input.setInnerText( date );
@@ -74,8 +71,7 @@ public class JQDatepicker extends Widget
 //		input.setPropertyString( "value", date );
 //	}
 
-	public String getValueAsString()
-	{
-		return input.getPropertyString( "value" );
-	}
+    public interface Callback {
+        public void onDateSelected(String text);
+    }
 }

@@ -4,6 +4,7 @@ import fr.lteconsulting.hexa.databinding.Converter;
 
 /**
  * Converter for enum types.
+ *
  * @author Ben Dol
  */
 public class EnumConverter implements Converter {
@@ -14,6 +15,7 @@ public class EnumConverter implements Converter {
 
     /**
      * Default constructor, won't use the enums ordinal value by default.
+     *
      * @see #EnumConverter(Enum[] values, boolean toOrdinal)
      */
     public EnumConverter(Enum[] values) {
@@ -31,9 +33,9 @@ public class EnumConverter implements Converter {
 
     @Override
     public Object convert(Object value) {
-        if(toOrdinal) {
-            for(int i = 0; i < values.length; ++i) {
-                if(values[i].equals(value))
+        if (toOrdinal) {
+            for (int i = 0; i < values.length; ++i) {
+                if (values[i].equals(value))
                     return i;
             }
         }
@@ -46,17 +48,15 @@ public class EnumConverter implements Converter {
         try {
             if (value instanceof Integer) {
                 e = values[(Integer) value];
-            }
-            else if (value instanceof String) {
+            } else if (value instanceof String) {
                 try {
                     // Find by ordinal value first
-                    e = values[Integer.parseInt((String)value)];
-                }
-                catch(NumberFormatException | IndexOutOfBoundsException ex) {
+                    e = values[Integer.parseInt((String) value)];
+                } catch (NumberFormatException | IndexOutOfBoundsException ex) {
                     // Failed to find by ordinal value
                     // Try find by enum name string
-                    for(Enum val : values) {
-                        if(val.name().equals(value)) {
+                    for (Enum val : values) {
+                        if (val.name().equals(value)) {
                             e = val;
                             break;
                         }
@@ -64,8 +64,7 @@ public class EnumConverter implements Converter {
                     assert e != null;
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalArgumentException("Attempted to convert an " +
                 "enum using an invalid value: ", ex);
         }

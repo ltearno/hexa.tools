@@ -9,83 +9,74 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.ui.widget.ImageButton;
 
-public class AccordionHeader extends Composite implements ClickHandler
-{
-	Accordion.Item item;
+public class AccordionHeader extends Composite implements ClickHandler {
+    private static ImageResource _openRsrc = null;
+    private static ImageResource _closeRsrc = null;
+    Accordion.Item item;
+    ImageButton image;
+    Label label = null;
+    Widget widget = null;
 
-	ImageButton image;
-	Label label = null;
-	Widget widget = null;
+    public AccordionHeader(Accordion.Item item, String text) {
+        this.item = item;
 
-	private static ImageResource _openRsrc = null;
-	private static ImageResource _closeRsrc = null;
+        label = new Label("");
 
-	public static void setImages( ImageResource open, ImageResource close )
-	{
-		_openRsrc = open;
-		_closeRsrc = close;
-	}
+        HorizontalPanel p = new HorizontalPanel();
 
-	public AccordionHeader( Accordion.Item item, String text )
-	{
-		this.item = item;
+        image = new ImageButton(_openRsrc, "");
+        image.addClickHandler(this);
 
-		label = new Label( "" );
+        p.add(image);
+        p.add(label);
 
-		HorizontalPanel p = new HorizontalPanel();
+        updateImage();
 
-		image = new ImageButton( _openRsrc, "" );
-		image.addClickHandler( this );
+        setText(text);
 
-		p.add( image );
-		p.add( label );
+        initWidget(p);
+    }
 
-		updateImage();
+    public AccordionHeader(Accordion.Item item, Widget widget) {
+        this.item = item;
 
-		setText( text );
+        this.widget = widget;
 
-		initWidget( p );
-	}
+        HorizontalPanel p = new HorizontalPanel();
+        // FlowPanel p = new FlowPanel();
 
-	public AccordionHeader( Accordion.Item item, Widget widget )
-	{
-		this.item = item;
+        image = new ImageButton(_openRsrc, "");
+        image.addClickHandler(this);
 
-		this.widget = widget;
+        p.add(image);
+        p.add(widget);
 
-		HorizontalPanel p = new HorizontalPanel();
-		// FlowPanel p = new FlowPanel();
+        updateImage();
 
-		image = new ImageButton( _openRsrc, "" );
-		image.addClickHandler( this );
+        p.setWidth("100%");
 
-		p.add( image );
-		p.add( widget );
+        initWidget(p);
+    }
 
-		updateImage();
+    public static void setImages(ImageResource open, ImageResource close) {
+        _openRsrc = open;
+        _closeRsrc = close;
+    }
 
-		p.setWidth( "100%" );
+    public void setText(String text) {
+        if (label != null)
+            label.setText(text);
+    }
 
-		initWidget( p );
-	}
+    @Override
+    public void onClick(ClickEvent event) {
+        item.setExpanded(!item.getExpanded());
 
-	public void setText( String text )
-	{
-		if( label != null )
-			label.setText( text );
-	}
+        updateImage();
+    }
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		item.setExpanded( !item.getExpanded() );
-
-		updateImage();
-	}
-
-	private void updateImage()
-	{
-		image.setResource( item.getExpanded() ? _openRsrc : _closeRsrc );
-		image.setTitle( item.getExpanded() ? "Reduire" : "Ouvrir" );
-	}
+    private void updateImage() {
+        image.setResource(item.getExpanded() ? _openRsrc : _closeRsrc);
+        image.setTitle(item.getExpanded() ? "Reduire" : "Ouvrir");
+    }
 }

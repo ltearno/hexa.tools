@@ -9,218 +9,191 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class HTreeTableHeader extends ComplexPanel implements ClickHandler
-{
-	ItemImpl m_rootItem = new ItemImpl( null );
-	Element m_thead;
-	ArrayList<Element> m_rows = new ArrayList<Element>();
+public class HTreeTableHeader extends ComplexPanel implements ClickHandler {
+    ItemImpl m_rootItem = new ItemImpl(null);
+    Element m_thead;
+    ArrayList<Element> m_rows = new ArrayList<Element>();
 
-	ArrayList<RowHdrImpl> m_rowHeaders = new ArrayList<RowHdrImpl>();
+    ArrayList<RowHdrImpl> m_rowHeaders = new ArrayList<RowHdrImpl>();
 
-	public HTreeTableHeader()
-	{
-		m_thead = DOM.createTHead();
-		setElement( m_thead );
+    public HTreeTableHeader() {
+        m_thead = DOM.createTHead();
+        setElement(m_thead);
 
-		addDomHandler( this, ClickEvent.getType() );
-	}
+        addDomHandler(this, ClickEvent.getType());
+    }
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		event.stopPropagation();
-		event.preventDefault();
-	}
+    @Override
+    public void onClick(ClickEvent event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
 
-	// means to update the col spans...
-	public void draw()
-	{
-		m_rootItem.updateColSpans();
+    // means to update the col spans...
+    public void draw() {
+        m_rootItem.updateColSpans();
 
-		String nbRows = String.valueOf( m_rows.size() );
-		int nbHeaders = m_rowHeaders.size();
+        String nbRows = String.valueOf(m_rows.size());
+        int nbHeaders = m_rowHeaders.size();
 
-		for( int i = 0; i < nbHeaders; i++ )
-			m_rowHeaders.get( i ).m_td.setAttribute( "rowspan", nbRows );
-	}
+        for (int i = 0; i < nbHeaders; i++)
+            m_rowHeaders.get(i).m_td.setAttribute("rowspan", nbRows);
+    }
 
-	public class RowHdrImpl
-	{
-		Element m_tr;
-		Element m_td;
+    public RowHdrImpl addRowHeader() {
+        RowHdrImpl item = new RowHdrImpl();
+        m_rowHeaders.add(item);
 
-		public void setText( String text )
-		{
-			m_td.setInnerText( text );
-		}
-	}
+        if (m_rows.isEmpty()) {
+            Element tr = DOM.createTR();
+            m_rows.add(tr);
+            m_thead.appendChild(tr);
+        }
 
-	public RowHdrImpl addRowHeader()
-	{
-		RowHdrImpl item = new RowHdrImpl();
-		m_rowHeaders.add( item );
+        item.m_tr = m_rows.get(0);
 
-		if( m_rows.isEmpty() )
-		{
-			Element tr = DOM.createTR();
-			m_rows.add( tr );
-			m_thead.appendChild( tr );
-		}
+        item.m_td = DOM.createTH();
+        item.m_tr.appendChild(item.m_td);
 
-		item.m_tr = m_rows.get( 0 );
+        return item;
+    }
 
-		item.m_td = DOM.createTH();
-		item.m_tr.appendChild( item.m_td );
+    public ItemImpl addItem(ItemImpl parentItem) {
+        ItemImpl item = new ItemImpl(parentItem == null ? m_rootItem : parentItem);
+        int level = item.getLevel();
 
-		return item;
-	}
+        while (m_rows.size() < level + 1) {
+            Element tr = DOM.createTR();
+            m_thead.appendChild(tr);
+            m_rows.add(tr);
+        }
 
-	public class ItemImpl
-	{
-		int m_level = -2;
-		int m_nbLeaves = -1;
+        item.m_tr = m_rows.get(level);
 
-		ItemImpl m_parent;
-		ArrayList<ItemImpl> m_childs = new ArrayList<ItemImpl>();
+        // th is inserted after the last child of our parent
+        item.m_td = DOM.createTH();
+        ItemImpl previousItem = item.getPreviousAtSameLevel();
+        if (previousItem != null)
+            item.m_tr.insertAfter(item.m_td, previousItem.m_td);
+        else
+            item.m_tr.appendChild(item.m_td);
 
-		Element m_tr = null;
-		Element m_td = null;
+        return item;
+    }
 
-		ItemImpl( ItemImpl parent )
-		{
-			m_parent = parent;
-			if( m_parent != null )
-				m_parent.m_childs.add( this );
-		}
+    public class RowHdrImpl {
+        Element m_tr;
+        Element m_td;
 
-		public void setText( String text )
-		{
-			m_td.setInnerText( text );
-		}
+        public void setText(String text) {
+            m_td.setInnerText(text);
+        }
+    }
 
-		public void setWidget( Widget w )
-		{
-			setText( "" );
-			add( w, m_td );
-		}
+    public class ItemImpl {
+        int m_level = -2;
+        int m_nbLeaves = -1;
 
-		void updateColSpans()
-		{
-			for( ItemImpl c : m_childs )
-			{
-				int nbLeaf = c.getNbLeaves();
-				c.m_td.setAttribute( "colspan", String.valueOf( nbLeaf ) );
-				c.updateColSpans();
-			}
-		}
+        ItemImpl m_parent;
+        ArrayList<ItemImpl> m_childs = new ArrayList<ItemImpl>();
 
-		int getNbLeaves()
-		{
-			if( m_nbLeaves == -1 )
-			{
-				if( m_childs.isEmpty() )
-					m_nbLeaves = 1;
-				else
-				{
-					int nb = 0;
-					for( ItemImpl c : m_childs )
-						nb += c.getNbLeaves();
-					m_nbLeaves = nb;
-				}
-			}
+        Element m_tr = null;
+        Element m_td = null;
 
-			return m_nbLeaves;
-		}
+        ItemImpl(ItemImpl parent) {
+            m_parent = parent;
+            if (m_parent != null)
+                m_parent.m_childs.add(this);
+        }
 
-		int getLevel()
-		{
-			if( m_level == -2 )
-			{
-				if( m_parent == null )
-					m_level = -1;
-				else
-					m_level = 1 + m_parent.getLevel();
-			}
+        public void setText(String text) {
+            m_td.setInnerText(text);
+        }
 
-			return m_level;
-		}
+        public void setWidget(Widget w) {
+            setText("");
+            add(w, m_td);
+        }
 
-		ItemImpl getPreviousAtSameLevel()
-		{
-			return getPreviousAtLevel( getLevel() );
-		}
+        void updateColSpans() {
+            for (ItemImpl c : m_childs) {
+                int nbLeaf = c.getNbLeaves();
+                c.m_td.setAttribute("colspan", String.valueOf(nbLeaf));
+                c.updateColSpans();
+            }
+        }
 
-		ItemImpl getLastDescendant( int level )
-		{
-			int myLevel = getLevel();
-			if( level > myLevel )
-				return null;
-			if( myLevel == level )
-				return this;
+        int getNbLeaves() {
+            if (m_nbLeaves == -1) {
+                if (m_childs.isEmpty())
+                    m_nbLeaves = 1;
+                else {
+                    int nb = 0;
+                    for (ItemImpl c : m_childs)
+                        nb += c.getNbLeaves();
+                    m_nbLeaves = nb;
+                }
+            }
 
-			int i = m_childs.size() - 1;
-			while( i >= 0 )
-			{
-				ItemImpl t = getLastDescendant( level );
-				if( t != null )
-					return t;
-				i--;
-			}
+            return m_nbLeaves;
+        }
 
-			return null;
-		}
+        int getLevel() {
+            if (m_level == -2) {
+                if (m_parent == null)
+                    m_level = -1;
+                else
+                    m_level = 1 + m_parent.getLevel();
+            }
 
-		ItemImpl getPreviousAtLevel( int level )
-		{
-			if( m_parent == null )
-				return null;
+            return m_level;
+        }
 
-			ItemImpl position = this;
-			ItemImpl ancestor = m_parent;
-			while( ancestor != null )
-			{
-				int prevIdx = ancestor.m_childs.indexOf( position ) - 1;
-				while( prevIdx >= 0 )
-				{
-					// test getLastDescendant( level )
-					ItemImpl t = ancestor.m_childs.get( prevIdx ).getLastDescendant( level );
-					if( t != null )
-						return t;
-					prevIdx--;
-				}
+        ItemImpl getPreviousAtSameLevel() {
+            return getPreviousAtLevel(getLevel());
+        }
 
-				// did not find, so go to superior parent
-				position = ancestor;
-				ancestor = ancestor.m_parent;
-			}
+        ItemImpl getLastDescendant(int level) {
+            int myLevel = getLevel();
+            if (level > myLevel)
+                return null;
+            if (myLevel == level)
+                return this;
 
-			// did not find, so return null
-			return null;
-		}
-	}
+            int i = m_childs.size() - 1;
+            while (i >= 0) {
+                ItemImpl t = getLastDescendant(level);
+                if (t != null)
+                    return t;
+                i--;
+            }
 
-	public ItemImpl addItem( ItemImpl parentItem )
-	{
-		ItemImpl item = new ItemImpl( parentItem == null ? m_rootItem : parentItem );
-		int level = item.getLevel();
+            return null;
+        }
 
-		while( m_rows.size() < level + 1 )
-		{
-			Element tr = DOM.createTR();
-			m_thead.appendChild( tr );
-			m_rows.add( tr );
-		}
+        ItemImpl getPreviousAtLevel(int level) {
+            if (m_parent == null)
+                return null;
 
-		item.m_tr = m_rows.get( level );
+            ItemImpl position = this;
+            ItemImpl ancestor = m_parent;
+            while (ancestor != null) {
+                int prevIdx = ancestor.m_childs.indexOf(position) - 1;
+                while (prevIdx >= 0) {
+                    // test getLastDescendant( level )
+                    ItemImpl t = ancestor.m_childs.get(prevIdx).getLastDescendant(level);
+                    if (t != null)
+                        return t;
+                    prevIdx--;
+                }
 
-		// th is inserted after the last child of our parent
-		item.m_td = DOM.createTH();
-		ItemImpl previousItem = item.getPreviousAtSameLevel();
-		if( previousItem != null )
-			item.m_tr.insertAfter( item.m_td, previousItem.m_td );
-		else
-			item.m_tr.appendChild( item.m_td );
+                // did not find, so go to superior parent
+                position = ancestor;
+                ancestor = ancestor.m_parent;
+            }
 
-		return item;
-	}
+            // did not find, so return null
+            return null;
+        }
+    }
 }

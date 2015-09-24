@@ -12,76 +12,63 @@ import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.common.HexaTime;
 import fr.lteconsulting.hexa.client.common.text.NumberFormat;
 
-public class HourMinuteControl extends Composite
-{
-	public interface Callback
-	{
-		void onValueChanged( HexaTime newValue );
-	}
+public class HourMinuteControl extends Composite {
+    private static HourMinuteControlUiBinder uiBinder = GWT.create(HourMinuteControlUiBinder.class);
+    Callback callback;
+    HandlerRegistration hourHandlerRegistration;
+    HandlerRegistration minuteHandlerRegistration;
+    @UiField
+    ListBox hour;
+    @UiField
+    ListBox minute;
+    private ChangeHandler changeHandler = new ChangeHandler() {
+        @Override
+        public void onChange(ChangeEvent event) {
+            if (callback != null)
+                callback.onValueChanged(getTime());
+        }
+    };
+    public HourMinuteControl() {
+        initWidget(uiBinder.createAndBindUi(this));
+        NumberFormat fmt = NumberFormat.getFormat("00");
+        for (int h = 0; h < 25; h++)
+            hour.addItem(fmt.format(h), String.valueOf(h));
+        for (int m = 0; m < 60; m += 15)
+            minute.addItem(fmt.format(m), String.valueOf(m));
+    }
 
-	private static HourMinuteControlUiBinder uiBinder = GWT.create( HourMinuteControlUiBinder.class );
+    public HexaTime getTime() {
+        return new HexaTime(Integer.parseInt(hour.getValue(hour.getSelectedIndex())), Integer.parseInt(minute.getValue(minute.getSelectedIndex())), 0);
+    }
 
-	interface HourMinuteControlUiBinder extends UiBinder<Widget, HourMinuteControl>
-	{
-	}
+    public void setTime(HexaTime time) {
+        int h = time.getHours();
+        int m = time.getMinutes();
 
-	Callback callback;
-	HandlerRegistration hourHandlerRegistration;
-	HandlerRegistration minuteHandlerRegistration;
+        hour.setSelectedIndex(h);
+        minute.setSelectedIndex(m / 15);
+    }
 
-	@UiField
-	ListBox hour;
-	@UiField
-	ListBox minute;
+    public void setCallback(Callback callback) {
+        this.callback = callback;
 
-	public HourMinuteControl()
-	{
-		initWidget( uiBinder.createAndBindUi( this ) );
-		NumberFormat fmt = NumberFormat.getFormat( "00" );
-		for( int h = 0; h < 25; h++ )
-			hour.addItem( fmt.format( h ), String.valueOf( h ) );
-		for( int m = 0; m < 60; m += 15 )
-			minute.addItem( fmt.format( m ), String.valueOf( m ) );
-	}
+        // unsubscribe previous registration, if any
+        if (hourHandlerRegistration != null)
+            hourHandlerRegistration.removeHandler();
+        // subscribe to changes in the 'hour' control
+        hourHandlerRegistration = hour.addChangeHandler(changeHandler);
 
-	public void setTime( HexaTime time )
-	{
-		int h = time.getHours();
-		int m = time.getMinutes();
+        // unsubscribe previous registration, if any
+        if (minuteHandlerRegistration != null)
+            minuteHandlerRegistration.removeHandler();
+        // subscribe to changes in the 'hour' control
+        minuteHandlerRegistration = minute.addChangeHandler(changeHandler);
+    }
 
-		hour.setSelectedIndex( h );
-		minute.setSelectedIndex( m / 15 );
-	}
+    public interface Callback {
+        void onValueChanged(HexaTime newValue);
+    }
 
-	public HexaTime getTime()
-	{
-		return new HexaTime( Integer.parseInt( hour.getValue( hour.getSelectedIndex() ) ), Integer.parseInt( minute.getValue( minute.getSelectedIndex() ) ), 0 );
-	}
-
-	public void setCallback( Callback callback )
-	{
-		this.callback = callback;
-
-		// unsubscribe previous registration, if any
-		if( hourHandlerRegistration != null )
-			hourHandlerRegistration.removeHandler();
-		// subscribe to changes in the 'hour' control
-		hourHandlerRegistration = hour.addChangeHandler( changeHandler );
-
-		// unsubscribe previous registration, if any
-		if( minuteHandlerRegistration != null )
-			minuteHandlerRegistration.removeHandler();
-		// subscribe to changes in the 'hour' control
-		minuteHandlerRegistration = minute.addChangeHandler( changeHandler );
-	}
-
-	private ChangeHandler changeHandler = new ChangeHandler()
-	{
-		@Override
-		public void onChange( ChangeEvent event )
-		{
-			if( callback != null )
-				callback.onValueChanged( getTime() );
-		}
-	};
+    interface HourMinuteControlUiBinder extends UiBinder<Widget, HourMinuteControl> {
+    }
 }

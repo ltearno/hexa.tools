@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to="hexademo">
-  <inherits name="com.google.gwt.user.User" />
-  <inherits name="com.google.gwt.json.JSON" />
-  <inherits name="com.google.gwt.user.theme.clean.Clean"/>
-  
-  <inherits name="fr.lteconsulting.hexa.Hexa"/>
-  <inherits name='fr.lteconsulting.hexa.HexaGwtBootstrap'/>
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.json.JSON"/>
+    <inherits name="com.google.gwt.user.theme.clean.Clean"/>
 
-  <source path="client" />
+    <inherits name="fr.lteconsulting.hexa.Hexa"/>
+    <inherits name='fr.lteconsulting.hexa.HexaGwtBootstrap'/>
 
-  <entry-point class="fr.lteconsulting.hexa.demo.client.HexaDemo" />
+    <source path="client"/>
+
+    <entry-point class="fr.lteconsulting.hexa.demo.client.HexaDemo"/>
 </module>

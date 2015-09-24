@@ -8,185 +8,163 @@ import fr.lteconsulting.hexa.databinding.propertyadapters.PropertyAdapter;
 
 /**
  * Manages the binding between a source and a destination.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * The data binding has several options like OneWay, TwoWay, ...<br/>
  * The data propagation can happen synchronously after a data changed, or it can
  * happen asynchronously through a deferred command.
- * 
- * @author Arnaud Tournier
  *
+ * @author Arnaud Tournier
  */
-public class DataBinding
-{
-	private static final Logger LOGGER = Logger.getLogger( DataBinding.class.getName() );
+public class DataBinding {
+    private static final Logger LOGGER = Logger.getLogger(DataBinding.class.getName());
+    private final String logPrefix;
+    private boolean fActivated;
+    private PropertyAdapter source;
+    private Object sourceHandler;
+    private boolean fSettingSource;
+    private PropertyAdapter destination;
+    private Object destinationHandler;
+    private boolean fSettingDestination;
+    private Converter converter;
+    private final Action2<PropertyAdapter, Object> onSourceChanged = new Action2<PropertyAdapter, Object>() {
+        @Override
+        public void exec(PropertyAdapter param, Object cookie) {
+            // prevent us to wake up ourselves
+            if (fSettingSource)
+                return;
 
-	private boolean fActivated;
+            if (logPrefix != null)
+                log("source changed, propagating to destination ...");
 
-	private PropertyAdapter source;
-	private Object sourceHandler;
-	private boolean fSettingSource;
+            if (!fActivated)
+                return;
 
-	private PropertyAdapter destination;
-	private Object destinationHandler;
-	private boolean fSettingDestination;
+            Object value = source.getValue();
+            if (logPrefix != null)
+                log(" - source value : " + value);
 
-	private Converter converter;
+            if (converter != null) {
+                if (logPrefix != null)
+                    log("... converting value ...");
+                value = converter.convert(value);
+                if (logPrefix != null)
+                    log(" - converted to : " + value);
+            }
 
-	private final String logPrefix;
+            fSettingDestination = true;
+            destination.setValue(value);
+            fSettingDestination = false;
 
-	public DataBinding( Object source, String sourceProperty, Object destination, String destinationProperty, Mode bindingMode )
-	{
-		this( new ObjectPropertyAdapter( source, sourceProperty ), new ObjectPropertyAdapter( destination, destinationProperty ), bindingMode, null, null );
-	}
+            if (logPrefix != null)
+                log(" - done propagating source");
+        }
+    };
+    private final Action2<PropertyAdapter, Object> onDestinationChanged = new Action2<PropertyAdapter, Object>() {
+        @Override
+        public void exec(PropertyAdapter param, Object cookie) {
+            // prevent us to wake up ourselves
+            if (fSettingDestination)
+                return;
 
-	public DataBinding( PropertyAdapter source, PropertyAdapter destination, Mode bindingMode, Converter converter, String logPrefix )
-	{
-		this.source = source;
-		this.destination = destination;
-		this.converter = converter;
-		this.logPrefix = logPrefix;
+            if (!fActivated)
+                return;
 
-		switch( bindingMode )
-		{
-			case OneWay:
-				sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
-				break;
-			case OneWayToSource:
-				destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
-				break;
-			case TwoWay:
-				sourceHandler = source.registerPropertyChanged( onSourceChanged, null );
-				destinationHandler = destination.registerPropertyChanged( onDestinationChanged, null );
-				break;
-		}
-	}
+            log("destination changed, propagating to source ...");
 
-	/**
-	 * Activates the data binding and propagates the source to the destination
-	 */
-	public DataBinding activate()
-	{
-		fActivated = true;
+            Object value = destination.getValue();
 
-		log( "activation" );
+            if (converter != null) {
+                log("... converting value ...");
+                value = converter.convertBack(value);
+            }
 
-		onSourceChanged.exec(null, null);
+            fSettingSource = true;
+            source.setValue(value);
+            fSettingSource = false;
 
-		return this;
-	}
+            log("done setting destination to " + value);
+        }
+    };
 
-	/**
-	 * Suspend the data binding. Can be reactivated with {@link activate}
-	 */
-	public DataBinding suspend()
-	{
-		fActivated = false;
-		
-		log( "suspended" );
-		
-		return this;
-	}
+    public DataBinding(Object source, String sourceProperty, Object destination, String destinationProperty, Mode bindingMode) {
+        this(new ObjectPropertyAdapter(source, sourceProperty), new ObjectPropertyAdapter(destination, destinationProperty), bindingMode, null, null);
+    }
 
-	/**
-	 * Terminates the Data Binding activation and cleans up all related
-	 * resources. You should call this method when you want to free the binding,
-	 * in order to lower memory usage.
-	 */
-	public void terminate()
-	{
-		log( "term" );
+    public DataBinding(PropertyAdapter source, PropertyAdapter destination, Mode bindingMode, Converter converter, String logPrefix) {
+        this.source = source;
+        this.destination = destination;
+        this.converter = converter;
+        this.logPrefix = logPrefix;
 
-		fActivated = false;
-		converter = null;
+        switch (bindingMode) {
+            case OneWay:
+                sourceHandler = source.registerPropertyChanged(onSourceChanged, null);
+                break;
+            case OneWayToSource:
+                destinationHandler = destination.registerPropertyChanged(onDestinationChanged, null);
+                break;
+            case TwoWay:
+                sourceHandler = source.registerPropertyChanged(onSourceChanged, null);
+                destinationHandler = destination.registerPropertyChanged(onDestinationChanged, null);
+                break;
+        }
+    }
 
-		if(source != null && sourceHandler != null) {
-			source.removePropertyChangedHandler(sourceHandler);
-		}
+    /**
+     * Activates the data binding and propagates the source to the destination
+     */
+    public DataBinding activate() {
+        fActivated = true;
 
-		if(destination != null && destinationHandler != null) {
-			destination.removePropertyChangedHandler(destinationHandler);
-		}
+        log("activation");
 
-		source = null;
-		sourceHandler = null;
+        onSourceChanged.exec(null, null);
 
-		destination = null;
-		destinationHandler = null;
-	}
+        return this;
+    }
 
-	protected void log( String text )
-	{
-		if( logPrefix == null )
-			return;
-	
-		LOGGER.info( "DATABINDING " + logPrefix + " : " + text );
-	}
+    /**
+     * Suspend the data binding. Can be reactivated with {@link activate}
+     */
+    public DataBinding suspend() {
+        fActivated = false;
 
-	private final Action2<PropertyAdapter, Object> onSourceChanged = new Action2<PropertyAdapter, Object>()
-	{
-		@Override
-		public void exec( PropertyAdapter param, Object cookie )
-		{
-			// prevent us to wake up ourselves
-			if( fSettingSource )
-				return;
+        log("suspended");
 
-			if( logPrefix != null )
-				log( "source changed, propagating to destination ..." );
+        return this;
+    }
 
-			if( !fActivated )
-				return;
+    /**
+     * Terminates the Data Binding activation and cleans up all related
+     * resources. You should call this method when you want to free the binding,
+     * in order to lower memory usage.
+     */
+    public void terminate() {
+        log("term");
 
-			Object value = source.getValue();
-			if( logPrefix != null )
-				log(" - source value : " + value);
+        fActivated = false;
+        converter = null;
 
-			if( converter != null )
-			{
-				if( logPrefix != null )
-					log( "... converting value ..." );
-				value = converter.convert( value );
-				if( logPrefix != null )
-					log(" - converted to : " + value);
-			}
+        if (source != null && sourceHandler != null) {
+            source.removePropertyChangedHandler(sourceHandler);
+        }
 
-			fSettingDestination = true;
-			destination.setValue( value );
-			fSettingDestination = false;
+        if (destination != null && destinationHandler != null) {
+            destination.removePropertyChangedHandler(destinationHandler);
+        }
 
-			if( logPrefix != null )
-				log( " - done propagating source" );
-		}
-	};
+        source = null;
+        sourceHandler = null;
 
-	private final Action2<PropertyAdapter, Object> onDestinationChanged = new Action2<PropertyAdapter, Object>()
-	{
-		@Override
-		public void exec( PropertyAdapter param, Object cookie )
-		{
-			// prevent us to wake up ourselves
-			if( fSettingDestination )
-				return;
-			
-			if( !fActivated )
-				return;
-			
-			log( "destination changed, propagating to source ..." );
+        destination = null;
+        destinationHandler = null;
+    }
 
-			Object value = destination.getValue();
+    protected void log(String text) {
+        if (logPrefix == null)
+            return;
 
-			if( converter != null )
-			{
-				log( "... converting value ..." );
-				value = converter.convertBack( value );
-			}
-
-			fSettingSource = true;
-			source.setValue( value );
-			fSettingSource = false;
-
-			log( "done setting destination to " + value );
-		}
-	};
+        LOGGER.info("DATABINDING " + logPrefix + " : " + text);
+    }
 }
