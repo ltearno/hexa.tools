@@ -11,7 +11,7 @@ public class StringLongConverter extends AbstractConverter<String, Long> {
     @Override
     public Long convert(String value) {
         try {
-            return Long.getLong(value);
+            return Long.parseLong(value);
         } catch (Exception e) {
             return null;
         }
