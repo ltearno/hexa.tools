@@ -141,6 +141,9 @@ class PropertyValues {
      * @param value        the new value of the property
      */
     boolean setValue(Object object, String propertyName, Object value) {
+        if(value == null) {
+            return false;
+        }
         Clazz<?> s = ClassInfo.Clazz(object.getClass());
 
         if (Property.class == getPropertyType(s, propertyName)) {
