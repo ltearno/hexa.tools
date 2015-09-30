@@ -33,6 +33,7 @@ public class ObservableAnnotationProcessor extends BaseAnnotationProcessor {
     protected static final int METHOD_SETTER_INDEX = 4;
     protected static final int FIELD_SETTER_INDEX = 5;
     private static final String TEMPLATE_CLASS = "fr/lteconsulting/hexa/databinding/annotation/processor/TemplateClass.txt";
+
     static String[] getterPrefixes = new String[]{
         "get", "is"
     };

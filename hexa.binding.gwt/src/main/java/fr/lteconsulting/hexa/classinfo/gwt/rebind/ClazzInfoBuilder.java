@@ -15,6 +15,8 @@ import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import fr.lteconsulting.hexa.classinfo.IgnoreInfo;
+import fr.lteconsulting.hexa.classinfo.gwt.TypeHelper;
 
 class ClazzInfoBuilder {
     TreeLogger logger;
@@ -117,11 +119,16 @@ class ClazzInfoBuilder {
         sourceWriter.println("");
 
         // Fields
+        List<String> ignoredFields = new ArrayList<String>();
 
         List<String> fieldClassNames = new ArrayList<String>();
         for (JField field : reflectedType.getFields()) {
-            if (field.isStatic())
+            if (field.isStatic()) {
                 continue; // skip
+            } else if(field.isAnnotationPresent(IgnoreInfo.class)) {
+                ignoredFields.add(field.getName());
+                continue; // skip
+            }
 
             String fieldClassName = field.getName() + "_FieldImpl";
             fieldClassNames.add(fieldClassName);
@@ -144,6 +151,12 @@ class ClazzInfoBuilder {
 
         List<String> methodClassNames = new ArrayList<String>();
         for (JMethod method : reflectedType.getMethods()) {
+            if (method.isStatic() || ignoredFields.contains(TypeHelper.stripSetterOrGetterPrefix(method))) {
+                continue; // skip
+            } else if(method.isAnnotationPresent(IgnoreInfo.class)) {
+                continue; // skip
+            }
+
             String methodClassName = method.getName() + "_MethodImpl";
             while (methodClassNames.contains(methodClassName))
                 methodClassName += "_";
