@@ -6,13 +6,7 @@ import java.util.List;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.core.ext.typeinfo.JField;
-import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.core.ext.typeinfo.JParameter;
-import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
-import com.google.gwt.core.ext.typeinfo.JType;
-import com.google.gwt.core.ext.typeinfo.NotFoundException;
+import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import fr.lteconsulting.hexa.classinfo.IgnoreInfo;
@@ -87,18 +81,17 @@ class ClazzInfoBuilder {
     private void buildClassInfo(SourceWriter sourceWriter) {
         sourceWriter.println("");
 
-        String superClassName;
-        String superclassGeneratedClazz;
+        String superClassName = "null";
+        String superclassGeneratedClazz = null;
 
         JClassType superClass = reflectedType.getSuperclass();
         if (superClass != null) {
-            superClassName = superClass.getQualifiedSourceName() + ".class";
+            if(!ClazzBundleGenerator.getIgnoredTypes().contains(superClass)) {
+                superClassName = superClass.getQualifiedSourceName() + ".class";
 
-            ClazzInfoBuilder superclassGenerator = new ClazzInfoBuilder(logger, context);
-            superclassGeneratedClazz = superclassGenerator.buildClassInfoFor(reflectedType.getSuperclass());
-        } else {
-            superClassName = "null";
-            superclassGeneratedClazz = null;
+                ClazzInfoBuilder superclassGenerator = new ClazzInfoBuilder(logger, context);
+                superclassGeneratedClazz = superclassGenerator.buildClassInfoFor(reflectedType.getSuperclass());
+            }
         }
 
         sourceWriter.println("public " + generatedClassName + "()");

@@ -34,6 +34,8 @@ public class ClazzBundleGenerator extends Generator {
     JClassType askedType;
     Set<JType> introspectedTypes;
 
+    private static Set<JType> ignoredTypes = new HashSet<JType>();
+
     JMethod registerMethod;
 
     // package of the asked type
@@ -65,6 +67,7 @@ public class ClazzBundleGenerator extends Generator {
             clazzBundles.add(askedType);
 
             introspectedTypes = new HashSet<JType>();
+
             // Ensure only one method exists
             if (askedType.getMethods().length > 1) {
                 logger.log(TreeLogger.Type.WARN, "You should only have 1 method " +
@@ -86,6 +89,12 @@ public class ClazzBundleGenerator extends Generator {
                         JType classType = typeOracle.getType(clazz.getName());
                         if (classType != null)
                             introspectedTypes.add(classType);
+                    }
+
+                    for(Class<?> clazz : classes.ignored()) {
+                        JType classType = typeOracle.getType(clazz.getName());
+                        if (classType != null)
+                            ignoredTypes.add(classType);
                     }
                 }
             }
@@ -156,8 +165,10 @@ public class ClazzBundleGenerator extends Generator {
         sourceWriter.println("");
 
         for (JType type : introspectedTypes) {
-            String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll("\\.", "_");
-            sourceWriter.println("public interface " + interfaceName + " extends Clazz<" + type.getQualifiedSourceName() + "> {}");
+            if(!ignoredTypes.contains(type)) {
+                String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll("\\.", "_");
+                sourceWriter.println("public interface " + interfaceName + " extends Clazz<" + type.getQualifiedSourceName() + "> {}");
+            }
         }
         sourceWriter.println("");
 
@@ -165,11 +176,17 @@ public class ClazzBundleGenerator extends Generator {
         sourceWriter.println("{");
         sourceWriter.indent();
         for (JType type : introspectedTypes) {
-            String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll("\\.", "_");
-            sourceWriter.println("ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( " + interfaceName + ".class ) );");
+            if(!ignoredTypes.contains(type)) {
+                String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll("\\.", "_");
+                sourceWriter.println("ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( " + interfaceName + ".class ) );");
+            }
         }
         sourceWriter.outdent();
         sourceWriter.println("}");
         sourceWriter.println("");
+    }
+
+    public static Set<JType> getIgnoredTypes() {
+        return ignoredTypes;
     }
 }
