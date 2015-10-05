@@ -7,162 +7,131 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 
-public class CallSerializer
-{
-	public interface SerializedCallReceiver
-	{
-		void newCall( Class<?> interfaceClass, JSONObject obj );
-	}
+public class CallSerializer {
+    HashMap<Class<?>, Object> broadcastProxies = new HashMap<Class<?>, Object>();
+    private SerializedCallReceiver callReceiver;
 
-	public CallSerializer( SerializedCallReceiver callReceiver )
-	{
-		this.callReceiver = callReceiver;
-	}
+    public CallSerializer(SerializedCallReceiver callReceiver) {
+        this.callReceiver = callReceiver;
+    }
 
-	private SerializedCallReceiver callReceiver;
-	HashMap<Class<?>, Object> broadcastProxies = new HashMap<Class<?>, Object>();
+    public <T> T makeProxy(Class<T> implementedInterface, SerializedCallReceiver callback) {
+        SerializerInvocationHandler handler = new SerializerInvocationHandler(implementedInterface, callback);
 
-	public <T> T makeProxy( Class<T> implementedInterface, SerializedCallReceiver callback )
-	{
-		SerializerInvocationHandler handler = new SerializerInvocationHandler( implementedInterface, callback );
+        @SuppressWarnings("unchecked")
+        T proxy = (T) Proxy.newProxyInstance(implementedInterface.getClassLoader(), new Class<?>[]{implementedInterface}, handler);
 
-		@SuppressWarnings( "unchecked" )
-		T proxy = (T) Proxy.newProxyInstance( implementedInterface.getClassLoader(), new Class<?>[] { implementedInterface }, handler );
+        return proxy;
+    }
 
-		return proxy;
-	}
+    public <T> T queryBroadcastInterface(Class<T> implementedInterface) {
+        @SuppressWarnings("unchecked")
+        T proxy = (T) broadcastProxies.get(implementedInterface);
+        if (proxy != null)
+            return proxy;
 
-	public <T> T queryBroadcastInterface( Class<T> implementedInterface )
-	{
-		@SuppressWarnings( "unchecked" )
-		T proxy = (T) broadcastProxies.get( implementedInterface );
-		if( proxy != null )
-			return proxy;
+        proxy = makeProxy(implementedInterface, callReceiver);
 
-		proxy = makeProxy( implementedInterface, callReceiver );
+        broadcastProxies.put(implementedInterface, proxy);
 
-		broadcastProxies.put( implementedInterface, proxy );
+        return proxy;
+    }
 
-		return proxy;
-	}
+    private Object serializeToJSON(Object obj) {
+        if (obj instanceof String)
+            return (String) obj;
+        if (obj instanceof Boolean)
+            return (Boolean) obj;
+        if (obj instanceof Integer)
+            return (Integer) obj;
 
-	class SerializerInvocationHandler implements InvocationHandler
-	{
-		private Class<?> proxiedClass = null;
-		private SerializedCallReceiver callback = null;
+        if (obj.getClass().isEnum()) {
+            Object values[] = obj.getClass().getEnumConstants();
+            for (int e = 0; e < values.length; e++) {
+                if (obj == values[e]) {
+                    // we found our enum
+                    Method nameMethod = null;
+                    try {
+                        nameMethod = obj.getClass().getMethod("name");
+                    } catch (SecurityException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch (NoSuchMethodException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
 
-		public SerializerInvocationHandler( Class<?> proxiedClass, SerializedCallReceiver callback )
-		{
-			this.proxiedClass = proxiedClass;
-			this.callback = callback;
-		}
+                    String enumName = null;
+                    try {
+                        enumName = (String) nameMethod.invoke(obj);
+                    } catch (IllegalArgumentException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch (IllegalAccessException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch (InvocationTargetException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
 
-		public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
-		{
-			JSONObject json = new JSONObject();
-			json.put( "method", (String) method.getName() );
-			JSONArray jsonArgs = new JSONArray();
-			for( int i = 0; i < args.length; i++ )
-			{
-				JSONObject jsonArg = new JSONObject();
-				jsonArg.put( "type", (String) args[i].getClass().getCanonicalName() );
-				Object jsonArgValue = serializeToJSON( args[i] );
-				jsonArg.put( "value", jsonArgValue );
+                    return enumName;
+                }
+            }
+        }
 
-				jsonArgs.set( i, jsonArg );
-			}
-			json.put( "args", jsonArgs );
+        JSONObject json = new JSONObject();
+        Field fields[] = obj.getClass().getFields();
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            // TODO : not serialize field if final or transient
 
-			// emit the call
-			callback.newCall( proxiedClass, json );
+            Object fieldValue = null;
+            try {
+                fieldValue = field.get(obj);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
 
-			return null;
-		}
-	}
+            json.put(field.getName(), serializeToJSON(fieldValue));
+        }
 
-	private Object serializeToJSON( Object obj )
-	{
-		if( obj instanceof String )
-			return (String) obj;
-		if( obj instanceof Boolean )
-			return (Boolean) obj;
-		if( obj instanceof Integer )
-			return (Integer) obj;
+        return json;
+    }
 
-		if( obj.getClass().isEnum() )
-		{
-			Object values[] = obj.getClass().getEnumConstants();
-			for( int e = 0; e < values.length; e++ )
-			{
-				if( obj == values[e] )
-				{
-					// we found our enum
-					Method nameMethod = null;
-					try
-					{
-						nameMethod = obj.getClass().getMethod( "name" );
-					}
-					catch( SecurityException e1 )
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					catch( NoSuchMethodException e1 )
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+    public interface SerializedCallReceiver {
+        void newCall(Class<?> interfaceClass, JSONObject obj);
+    }
 
-					String enumName = null;
-					try
-					{
-						enumName = (String) nameMethod.invoke( obj );
-					}
-					catch( IllegalArgumentException e1 )
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					catch( IllegalAccessException e1 )
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					catch( InvocationTargetException e1 )
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+    class SerializerInvocationHandler implements InvocationHandler {
+        private Class<?> proxiedClass = null;
+        private SerializedCallReceiver callback = null;
 
-					return enumName;
-				}
-			}
-		}
+        public SerializerInvocationHandler(Class<?> proxiedClass, SerializedCallReceiver callback) {
+            this.proxiedClass = proxiedClass;
+            this.callback = callback;
+        }
 
-		JSONObject json = new JSONObject();
-		Field fields[] = obj.getClass().getFields();
-		for( int i = 0; i < fields.length; i++ )
-		{
-			Field field = fields[i];
-			// TODO : not serialize field if final or transient
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            JSONObject json = new JSONObject();
+            json.put("method", (String) method.getName());
+            JSONArray jsonArgs = new JSONArray();
+            for (int i = 0; i < args.length; i++) {
+                JSONObject jsonArg = new JSONObject();
+                jsonArg.put("type", (String) args[i].getClass().getCanonicalName());
+                Object jsonArgValue = serializeToJSON(args[i]);
+                jsonArg.put("value", jsonArgValue);
 
-			Object fieldValue = null;
-			try
-			{
-				fieldValue = field.get( obj );
-			}
-			catch( IllegalArgumentException e )
-			{
-				e.printStackTrace();
-			}
-			catch( IllegalAccessException e )
-			{
-				e.printStackTrace();
-			}
+                jsonArgs.set(i, jsonArg);
+            }
+            json.put("args", jsonArgs);
 
-			json.put( field.getName(), serializeToJSON( fieldValue ) );
-		}
+            // emit the call
+            callback.newCall(proxiedClass, json);
 
-		return json;
-	}
+            return null;
+        }
+    }
 }

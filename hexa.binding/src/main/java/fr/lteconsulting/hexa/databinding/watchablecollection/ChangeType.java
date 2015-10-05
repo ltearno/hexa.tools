@@ -1,7 +1,6 @@
 package fr.lteconsulting.hexa.databinding.watchablecollection;
 
-public enum ChangeType
-{
-	ADD,
-	REMOVE;
+public enum ChangeType {
+    ADD,
+    REMOVE;
 }

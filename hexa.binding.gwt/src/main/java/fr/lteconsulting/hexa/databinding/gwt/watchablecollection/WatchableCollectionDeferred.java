@@ -17,206 +17,191 @@ import fr.lteconsulting.hexa.databinding.watchablecollection.ChangeType;
  * A Watchable List. Notifications are grouped and
  * are deferred through Scheduler.scheduleDeferred()
  * method.
- * 
- * @author Arnaud
  *
  * @param <T>
+ * @author Arnaud
  */
-public class WatchableCollectionDeferred<T> implements List<T>
-{
-	private final List<T> list;
-	
-	private boolean scheduled;
-	private List<Change> scheduledChanges = new ArrayList<>();
-	
-	private List<Action1<List<Change>>> callbacks = new ArrayList<>();
-	
-	public WatchableCollectionDeferred()
-	{
-		this( new ArrayList<T>() );
-	}
-	
-	public WatchableCollectionDeferred( List<T> list )
-	{
-		this.list = list;
-	}
-	
-	public void addCallback( Action1<List<Change>> callback )
-	{
-		callbacks.add( callback );
-	}
-	
-	public void addCallbackAndSendAll( Action1<List<Change>> callback )
-	{
-		callbacks.add( callback );
-		callback.exec( Change.ForItems( ChangeType.ADD, list, 0 ) );
-	}
-	
-	public void removeCallback( Action1<List<Change>> callback )
-	{
-		callbacks.remove( callback );
-	}
-	
-	private void scheduleChange( Change change )
-	{
-		scheduledChanges.add( change );
-		
-		if( ! scheduled )
-		{
-			Scheduler.get().scheduleDeferred( command );
-			scheduled = true;
-		}
-	}
-	
-	private void scheduleChanges( Collection<Change> changes )
-	{
-		scheduledChanges.addAll( changes );
-		
-		if( ! scheduled )
-		{
-			Scheduler.get().scheduleDeferred( command );
-			scheduled = true;
-		}
-	}
-	
-	private ScheduledCommand command = new ScheduledCommand() {
-		@Override
-		public void execute()
-		{
-			scheduled = false;
-			
-			for( Action1<List<Change>> callback : callbacks )
-				callback.exec( scheduledChanges );
-			
-			scheduledChanges.clear();
-		}
-	};
-	
-	public void add(int arg0, T arg1)
-	{
-		list.add(arg0, arg1);
-		
-		scheduleChange( new Change( ChangeType.ADD, arg1, arg0 ) );
-	}
+public class WatchableCollectionDeferred<T> implements List<T> {
+    private final List<T> list;
 
-	public boolean add(T arg0)
-	{
-		boolean res = list.add(arg0);
-		
-		scheduleChange( new Change( ChangeType.ADD, arg0, list.size()-1 ) );
-		
-		return res;
-	}
+    private boolean scheduled;
+    private List<Change> scheduledChanges = new ArrayList<>();
 
-	public boolean addAll(Collection<? extends T> arg0) {
-		int startIndex = list.size();
-		boolean res = list.addAll(arg0);
-		scheduleChanges( Change.ForItems( ChangeType.ADD, arg0, startIndex ) );
-		return res;
-	}
+    private List<Action1<List<Change>>> callbacks = new ArrayList<>();
+    private ScheduledCommand command = new ScheduledCommand() {
+        @Override
+        public void execute() {
+            scheduled = false;
 
-	public boolean addAll(int arg0, Collection<? extends T> arg1) {
-		boolean res = list.addAll(arg0, arg1);
-		scheduleChanges( Change.ForItems( ChangeType.ADD, arg1, arg0 ) );
-		return res;
-	}
+            for (Action1<List<Change>> callback : callbacks)
+                callback.exec(scheduledChanges);
 
-	public void clear() {
-		Collection<Change> changes = Change.ForItems( ChangeType.REMOVE, list, 0 );
-		list.clear();
-		scheduleChanges( changes );
-	}
+            scheduledChanges.clear();
+        }
+    };
 
-	public boolean contains(Object arg0) {
-		return list.contains(arg0);
-	}
+    public WatchableCollectionDeferred() {
+        this(new ArrayList<T>());
+    }
 
-	public boolean containsAll(Collection<?> arg0) {
-		return list.containsAll(arg0);
-	}
+    public WatchableCollectionDeferred(List<T> list) {
+        this.list = list;
+    }
 
-	public boolean equals(Object arg0) {
-		return list.equals(arg0);
-	}
+    public void addCallback(Action1<List<Change>> callback) {
+        callbacks.add(callback);
+    }
 
-	public T get(int arg0) {
-		return list.get(arg0);
-	}
+    public void addCallbackAndSendAll(Action1<List<Change>> callback) {
+        callbacks.add(callback);
+        callback.exec(Change.ForItems(ChangeType.ADD, list, 0));
+    }
 
-	public int hashCode() {
-		return list.hashCode();
-	}
+    public void removeCallback(Action1<List<Change>> callback) {
+        callbacks.remove(callback);
+    }
 
-	public int indexOf(Object arg0) {
-		return list.indexOf(arg0);
-	}
+    private void scheduleChange(Change change) {
+        scheduledChanges.add(change);
 
-	public boolean isEmpty() {
-		return list.isEmpty();
-	}
+        if (!scheduled) {
+            Scheduler.get().scheduleDeferred(command);
+            scheduled = true;
+        }
+    }
 
-	public Iterator<T> iterator() {
-		return list.iterator();
-	}
+    private void scheduleChanges(Collection<Change> changes) {
+        scheduledChanges.addAll(changes);
 
-	public int lastIndexOf(Object arg0) {
-		return list.lastIndexOf(arg0);
-	}
+        if (!scheduled) {
+            Scheduler.get().scheduleDeferred(command);
+            scheduled = true;
+        }
+    }
 
-	public ListIterator<T> listIterator() {
-		return list.listIterator();
-	}
+    public void add(int arg0, T arg1) {
+        list.add(arg0, arg1);
 
-	public ListIterator<T> listIterator(int arg0) {
-		return list.listIterator(arg0);
-	}
+        scheduleChange(new Change(ChangeType.ADD, arg1, arg0));
+    }
 
-	public T remove(int arg0) {
-		T res = list.remove(arg0);
-		scheduleChange( new Change( ChangeType.REMOVE, res, arg0 ) );
-		return res;
-	}
+    public boolean add(T arg0) {
+        boolean res = list.add(arg0);
 
-	public boolean remove(Object arg0) {
-		int index = list.indexOf( arg0 );
-		boolean res = list.remove(arg0);
-		scheduleChange( new Change( ChangeType.REMOVE, arg0, index ) );
-		return res;
-	}
+        scheduleChange(new Change(ChangeType.ADD, arg0, list.size() - 1));
 
-	public boolean removeAll(Collection<?> arg0) {
-		assert false : "This implementation is bugged";
-		boolean res = list.removeAll(arg0);
-		scheduleChanges( Change.ForItems( ChangeType.REMOVE, arg0, 0 ) );
-		return res;
-	}
+        return res;
+    }
 
-	public boolean retainAll(Collection<?> c) {
-		throw new RuntimeException();
-	}
+    public boolean addAll(Collection<? extends T> arg0) {
+        int startIndex = list.size();
+        boolean res = list.addAll(arg0);
+        scheduleChanges(Change.ForItems(ChangeType.ADD, arg0, startIndex));
+        return res;
+    }
 
-	public T set(int index, T element) {
-		if(list.size()>index)
-			scheduleChange( new Change( ChangeType.REMOVE, list.get(index), index ) );
-		scheduleChange( new Change( ChangeType.ADD, element, index ) );
-		
-		return list.set(index, element);
-	}
+    public boolean addAll(int arg0, Collection<? extends T> arg1) {
+        boolean res = list.addAll(arg0, arg1);
+        scheduleChanges(Change.ForItems(ChangeType.ADD, arg1, arg0));
+        return res;
+    }
 
-	public int size() {
-		return list.size();
-	}
+    public void clear() {
+        Collection<Change> changes = Change.ForItems(ChangeType.REMOVE, list, 0);
+        list.clear();
+        scheduleChanges(changes);
+    }
 
-	public List<T> subList(int fromIndex, int toIndex) {
-		return list.subList(fromIndex, toIndex);
-	}
+    public boolean contains(Object arg0) {
+        return list.contains(arg0);
+    }
 
-	public Object[] toArray() {
-		return list.toArray();
-	}
+    public boolean containsAll(Collection<?> arg0) {
+        return list.containsAll(arg0);
+    }
 
-	@SuppressWarnings( "hiding" )
-	public <T> T[] toArray(T[] a) {
-		return list.toArray(a);
-	}
+    public boolean equals(Object arg0) {
+        return list.equals(arg0);
+    }
+
+    public T get(int arg0) {
+        return list.get(arg0);
+    }
+
+    public int hashCode() {
+        return list.hashCode();
+    }
+
+    public int indexOf(Object arg0) {
+        return list.indexOf(arg0);
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    public Iterator<T> iterator() {
+        return list.iterator();
+    }
+
+    public int lastIndexOf(Object arg0) {
+        return list.lastIndexOf(arg0);
+    }
+
+    public ListIterator<T> listIterator() {
+        return list.listIterator();
+    }
+
+    public ListIterator<T> listIterator(int arg0) {
+        return list.listIterator(arg0);
+    }
+
+    public T remove(int arg0) {
+        T res = list.remove(arg0);
+        scheduleChange(new Change(ChangeType.REMOVE, res, arg0));
+        return res;
+    }
+
+    public boolean remove(Object arg0) {
+        int index = list.indexOf(arg0);
+        boolean res = list.remove(arg0);
+        scheduleChange(new Change(ChangeType.REMOVE, arg0, index));
+        return res;
+    }
+
+    public boolean removeAll(Collection<?> arg0) {
+        assert false : "This implementation is bugged";
+        boolean res = list.removeAll(arg0);
+        scheduleChanges(Change.ForItems(ChangeType.REMOVE, arg0, 0));
+        return res;
+    }
+
+    public boolean retainAll(Collection<?> c) {
+        throw new RuntimeException();
+    }
+
+    public T set(int index, T element) {
+        if (list.size() > index)
+            scheduleChange(new Change(ChangeType.REMOVE, list.get(index), index));
+        scheduleChange(new Change(ChangeType.ADD, element, index));
+
+        return list.set(index, element);
+    }
+
+    public int size() {
+        return list.size();
+    }
+
+    public List<T> subList(int fromIndex, int toIndex) {
+        return list.subList(fromIndex, toIndex);
+    }
+
+    public Object[] toArray() {
+        return list.toArray();
+    }
+
+    @SuppressWarnings("hiding")
+    public <T> T[] toArray(T[] a) {
+        return list.toArray(a);
+    }
 }

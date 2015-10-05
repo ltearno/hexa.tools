@@ -5,140 +5,121 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-public class DatabaseDescription
-{
-	public class TableDescription
-	{
-		public String name;
+public class DatabaseDescription {
+    public HashMap<String, TableDescription> tables = new HashMap<String, TableDescription>();
+    public String name;
 
-		HashMap<String, FieldDescription> fields = new HashMap<String, FieldDescription>();
+    public DatabaseDescription(String name) {
+        this.name = name;
+    }
 
-		HashMap<String, List<String>> unicityConstraints = new HashMap<String, List<String>>();
+    public TableDescription addTable(String tableName) {
+        TableDescription tableDesc = new TableDescription(tableName);
+        tables.put(tableDesc.name, tableDesc);
+        return tableDesc;
+    }
 
-		public TableDescription( String name )
-		{
-			this.name = name;
-		}
+    public class TableDescription {
+        public String name;
 
-		public FieldDescription addField( String name, String type, String canNull, String defaultValue, String extra, String key )
-		{
-			FieldDescription fieldDesc = new FieldDescription( name, type, canNull, defaultValue, extra, key );
-			fields.put( fieldDesc.name, fieldDesc );
-			return fieldDesc;
-		}
+        HashMap<String, FieldDescription> fields = new HashMap<String, FieldDescription>();
 
-		public List<String> addUnicityConstraint( String name )
-		{
-			List<String> columnNames = new ArrayList<String>();
+        HashMap<String, List<String>> unicityConstraints = new HashMap<String, List<String>>();
 
-			unicityConstraints.put( name, columnNames );
+        public TableDescription(String name) {
+            this.name = name;
+        }
 
-			return columnNames;
-		}
-	}
+        public FieldDescription addField(String name, String type, String canNull, String defaultValue, String extra, String key) {
+            FieldDescription fieldDesc = new FieldDescription(name, type, canNull, defaultValue, extra, key);
+            fields.put(fieldDesc.name, fieldDesc);
+            return fieldDesc;
+        }
 
-	public class FieldDescription
-	{
-		public String name;
-		public String type;
-		public String canNull;
-		public String defaultValue;
-		public String extra;
-		public String key;
+        public List<String> addUnicityConstraint(String name) {
+            List<String> columnNames = new ArrayList<String>();
 
-		public boolean primaryKey;
-		public boolean uniqueKey;
-		public boolean multipleIndex;
+            unicityConstraints.put(name, columnNames);
 
-		public String comment;
+            return columnNames;
+        }
+    }
 
-		ArrayList<FieldReference> fieldReferences = new ArrayList<FieldReference>();
+    public class FieldDescription {
+        public String name;
+        public String type;
+        public String canNull;
+        public String defaultValue;
+        public String extra;
+        public String key;
 
-		public FieldDescription( String name, String type, String canNull, String defaultValue, String extra, String key )
-		{
-			this.name = name;
-			this.type = type;
-			this.canNull = canNull;
-			this.defaultValue = defaultValue;
-			this.extra = extra;
-			this.key = key;
+        public boolean primaryKey;
+        public boolean uniqueKey;
+        public boolean multipleIndex;
 
-			if( key.equalsIgnoreCase( "PRI" ) )
-				primaryKey = true;
-			else if( key.equalsIgnoreCase( "UNI" ) )
-				uniqueKey = true;
-			else if( key.equalsIgnoreCase( "MUL" ) )
-				multipleIndex = true;
-		}
+        public String comment;
 
-		public void addReferenceField( String table, String field, String constraintName )
-		{
-			FieldReference referenceToAdd = new FieldReference( table, field );
+        ArrayList<FieldReference> fieldReferences = new ArrayList<FieldReference>();
 
-			// skip if already declared
-			for( FieldReference ref : fieldReferences )
-			{
-				if( ref.equals( referenceToAdd ) )
-				{
-					ref.addConstraintName( constraintName );
-					return;
-				}
-			}
+        public FieldDescription(String name, String type, String canNull, String defaultValue, String extra, String key) {
+            this.name = name;
+            this.type = type;
+            this.canNull = canNull;
+            this.defaultValue = defaultValue;
+            this.extra = extra;
+            this.key = key;
 
-			referenceToAdd.addConstraintName( constraintName );
+            if (key.equalsIgnoreCase("PRI"))
+                primaryKey = true;
+            else if (key.equalsIgnoreCase("UNI"))
+                uniqueKey = true;
+            else if (key.equalsIgnoreCase("MUL"))
+                multipleIndex = true;
+        }
 
-			fieldReferences.add( referenceToAdd );
-		}
+        public void addReferenceField(String table, String field, String constraintName) {
+            FieldReference referenceToAdd = new FieldReference(table, field);
 
-		public boolean hasReference( String table, String field )
-		{
-			for( FieldReference ref : fieldReferences )
-			{
-				if( ref.table.equalsIgnoreCase( table ) && ref.field.equalsIgnoreCase( field ) )
-					return true;
-			}
+            // skip if already declared
+            for (FieldReference ref : fieldReferences) {
+                if (ref.equals(referenceToAdd)) {
+                    ref.addConstraintName(constraintName);
+                    return;
+                }
+            }
 
-			return false;
-		}
-	}
+            referenceToAdd.addConstraintName(constraintName);
 
-	public class FieldReference
-	{
-		public String table;
-		public String field;
+            fieldReferences.add(referenceToAdd);
+        }
 
-		HashSet<String> constraintNames = new HashSet<String>();
+        public boolean hasReference(String table, String field) {
+            for (FieldReference ref : fieldReferences) {
+                if (ref.table.equalsIgnoreCase(table) && ref.field.equalsIgnoreCase(field))
+                    return true;
+            }
 
-		public FieldReference( String table, String field )
-		{
-			this.table = table;
-			this.field = field;
-		}
+            return false;
+        }
+    }
 
-		public void addConstraintName( String constraintName )
-		{
-			constraintNames.add( constraintName );
-		}
+    public class FieldReference {
+        public String table;
+        public String field;
 
-		public boolean equals( FieldReference other )
-		{
-			return table.equalsIgnoreCase( other.table ) && field.equalsIgnoreCase( other.field );
-		}
-	}
+        HashSet<String> constraintNames = new HashSet<String>();
 
-	public HashMap<String, TableDescription> tables = new HashMap<String, TableDescription>();
+        public FieldReference(String table, String field) {
+            this.table = table;
+            this.field = field;
+        }
 
-	public String name;
+        public void addConstraintName(String constraintName) {
+            constraintNames.add(constraintName);
+        }
 
-	public DatabaseDescription( String name )
-	{
-		this.name = name;
-	}
-
-	public TableDescription addTable( String tableName )
-	{
-		TableDescription tableDesc = new TableDescription( tableName );
-		tables.put( tableDesc.name, tableDesc );
-		return tableDesc;
-	}
+        public boolean equals(FieldReference other) {
+            return table.equalsIgnoreCase(other.table) && field.equalsIgnoreCase(other.field);
+        }
+    }
 }

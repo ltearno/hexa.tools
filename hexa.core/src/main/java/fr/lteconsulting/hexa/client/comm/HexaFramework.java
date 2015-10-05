@@ -6,73 +6,70 @@ import com.google.gwt.resources.client.ImageResource;
 
 import fr.lteconsulting.hexa.client.comm.HexaFramework.ImageResources;
 
-public class HexaFramework
-{
-	public interface ImageResources
-	{
-		ImageResource blank();
+interface DefaultImages extends ClientBundle, ImageResources {
+    @Override
+    @Source("blank.png")
+    ImageResource blank();
 
-		ImageResource blank16();
+    @Override
+    @Source("blank16.png")
+    ImageResource blank16();
 
-		ImageResource ok();
+    @Override
+    @Source("16-em-cross.png")
+    ImageResource delete();
 
-		ImageResource cancel();
+    @Override
+    @Source("16-em-plus.png")
+    ImageResource add();
 
-		ImageResource add();
+    @Override
+    @Source("16-em-plus.png")
+    ImageResource addPlus();
 
-		ImageResource delete();
+    @Override
+    @Source("16-em-cross.png")
+    ImageResource cancel();
 
-		ImageResource addPlus();
+    @Override
+    @Source("16-em-check.png")
+    ImageResource ok();
 
-		ImageResource treePlus();
+    @Override
+    @Source("16-arrow-down.png")
+    ImageResource treeMinus();
 
-		ImageResource treeMinus();
+    @Override
+    @Source("16-arrow-right.png")
+    ImageResource treePlus();
 
-		ImageResource dropdown();
-	}
-
-	public static ImageResources images = GWT.create( DefaultImages.class );
+    @Override
+    @Source("dropdown.png")
+    ImageResource dropdown();
 }
 
-interface DefaultImages extends ClientBundle, ImageResources
-{
-	@Override
-	@Source( "blank.png" )
-	ImageResource blank();
+public class HexaFramework {
+    public static ImageResources images = GWT.create(DefaultImages.class);
 
-	@Override
-	@Source( "blank16.png" )
-	ImageResource blank16();
+    public interface ImageResources {
+        ImageResource blank();
 
-	@Override
-	@Source( "16-em-cross.png" )
-	ImageResource delete();
+        ImageResource blank16();
 
-	@Override
-	@Source( "16-em-plus.png" )
-	ImageResource add();
-	
-	@Override
-	@Source( "16-em-plus.png" )
-	ImageResource addPlus();
+        ImageResource ok();
 
-	@Override
-	@Source( "16-em-cross.png" )
-	ImageResource cancel();
+        ImageResource cancel();
 
-	@Override
-	@Source( "16-em-check.png" )
-	ImageResource ok();
+        ImageResource add();
 
-	@Override
-	@Source( "16-arrow-down.png" )
-	ImageResource treeMinus();
+        ImageResource delete();
 
-	@Override
-	@Source( "16-arrow-right.png" )
-	ImageResource treePlus();
-	
-	@Override
-	@Source( "dropdown.png" )
-	ImageResource dropdown();
+        ImageResource addPlus();
+
+        ImageResource treePlus();
+
+        ImageResource treeMinus();
+
+        ImageResource dropdown();
+    }
 }

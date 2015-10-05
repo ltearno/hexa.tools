@@ -5,23 +5,19 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class UiBuilder
-{
-	public static <T extends HasWidgets.ForIsWidget> T addIn( T parent, IsWidget... children )
-	{
-		for( IsWidget widget : children )
-			parent.add( widget );
+public class UiBuilder {
+    public static <T extends HasWidgets.ForIsWidget> T addIn(T parent, IsWidget... children) {
+        for (IsWidget widget : children)
+            parent.add(widget);
 
-		return parent;
-	}
+        return parent;
+    }
 
-	public static HorizontalPanel horiz( IsWidget... children )
-	{
-		return addIn( new HorizontalPanel(), children );
-	}
+    public static HorizontalPanel horiz(IsWidget... children) {
+        return addIn(new HorizontalPanel(), children);
+    }
 
-	public static VerticalPanel vert( IsWidget... children )
-	{
-		return addIn( new VerticalPanel(), children );
-	}
+    public static VerticalPanel vert(IsWidget... children) {
+        return addIn(new VerticalPanel(), children);
+    }
 }

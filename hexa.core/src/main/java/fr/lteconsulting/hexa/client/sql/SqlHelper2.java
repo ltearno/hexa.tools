@@ -14,200 +14,178 @@ import fr.lteconsulting.hexa.classinfo.Field;
 import fr.lteconsulting.hexa.client.sql.SQLiteTypeManagerManager.SQLiteTypeManager;
 import fr.lteconsulting.hexa.client.tools.Func2;
 
-public class SqlHelper2
-{
-	public static class CreateTable
-	{
-		SQLite db;
-		Clazz<?> clazz;
-		String tableName;
-		List<String> autoUpdateTimestampTriggerFields = new ArrayList<String>();
-		List<String> localRecordStateTriggerFields = new ArrayList<String>();
-		boolean fWithLocalRecordDeletedCreateTriggerSql;
+public class SqlHelper2 {
+    public static class CreateTable {
+        SQLite db;
+        Clazz<?> clazz;
+        String tableName;
+        List<String> autoUpdateTimestampTriggerFields = new ArrayList<String>();
+        List<String> localRecordStateTriggerFields = new ArrayList<String>();
+        boolean fWithLocalRecordDeletedCreateTriggerSql;
+        HashMap<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
 
-		class FieldInfo
-		{
-			String name;
-			SQLiteTypeManager typeManager;
-		}
+        private CreateTable(SQLite db) {
+            this.db = db;
+        }
 
-		HashMap<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
+        public static CreateTable WithDb(SQLite db) {
+            return new CreateTable(db);
+        }
 
-		private void registerField( String fieldName, SQLiteTypeManager typeManager )
-		{
-			if( fields.containsKey( fieldName ) )
-				return;
+        private void registerField(String fieldName, SQLiteTypeManager typeManager) {
+            if (fields.containsKey(fieldName))
+                return;
 
-			FieldInfo fi = new FieldInfo();
-			fi.name = fieldName;
-			fi.typeManager = typeManager;
+            FieldInfo fi = new FieldInfo();
+            fi.name = fieldName;
+            fi.typeManager = typeManager;
 
-			fields.put( fieldName, fi );
-		}
+            fields.put(fieldName, fi);
+        }
 
-		private CreateTable( SQLite db )
-		{
-			this.db = db;
-		}
+        public CreateTable FromClass(Class<?> clazz) {
+            this.clazz = ClassInfo.Clazz(clazz);
+            if (this.clazz == null)
+                return null;
 
-		public static CreateTable WithDb( SQLite db )
-		{
-			return new CreateTable( db );
-		}
+            this.tableName = this.clazz.getClassName();
 
-		public CreateTable FromClass( Class<?> clazz )
-		{
-			this.clazz = ClassInfo.Clazz( clazz );
-			if( this.clazz == null )
-				return null;
+            for (Field field : this.clazz.getDeclaredFields()) {
+                SQLiteTypeManager mng = SQLiteTypeManagerManager.get(field.getType());
+                if (mng == null)
+                    continue;
 
-			this.tableName = this.clazz.getClassName();
+                registerField(field.getName(), mng);
+            }
 
-			for( Field field : this.clazz.getDeclaredFields() )
-			{
-				SQLiteTypeManager mng = SQLiteTypeManagerManager.get( field.getType() );
-				if( mng == null )
-					continue;
+            return this;
+        }
 
-				registerField( field.getName(), mng );
-			}
+        public CreateTable WithName(String tableName) {
+            this.tableName = tableName;
 
-			return this;
-		}
+            return this;
+        }
 
-		public CreateTable WithName( String tableName )
-		{
-			this.tableName = tableName;
+        public CreateTable AutoUpdateTimestampTrigger(String fieldName) {
+            registerField(fieldName, SQLiteTypeManagerManager.get(Date.class));
 
-			return this;
-		}
+            autoUpdateTimestampTriggerFields.add(fieldName);
 
-		public CreateTable AutoUpdateTimestampTrigger( String fieldName )
-		{
-			registerField( fieldName, SQLiteTypeManagerManager.get( Date.class ) );
+            return this;
+        }
 
-			autoUpdateTimestampTriggerFields.add( fieldName );
+        public CreateTable LocalRecordStateTrigger(String fieldName) {
+            registerField(fieldName, SQLiteTypeManagerManager.get(int.class));
 
-			return this;
-		}
+            localRecordStateTriggerFields.add(fieldName);
 
-		public CreateTable LocalRecordStateTrigger( String fieldName )
-		{
-			registerField( fieldName, SQLiteTypeManagerManager.get( int.class ) );
+            return this;
+        }
 
-			localRecordStateTriggerFields.add( fieldName );
+        public CreateTable WithTriggerDelete() {
+            fWithLocalRecordDeletedCreateTriggerSql = true;
 
-			return this;
-		}
+            return this;
+        }
 
-		public CreateTable WithTriggerDelete()
-		{
-			fWithLocalRecordDeletedCreateTriggerSql = true;
+        // "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(100));"
+        public boolean Go() {
+            if (clazz == null || tableName == null)
+                return false;
 
-			return this;
-		}
+            StringBuilder sb = new StringBuilder();
 
-		// "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(100));"
-		public boolean Go()
-		{
-			if( clazz == null || tableName == null )
-				return false;
+            sb.append("CREATE TABLE ");
+            sb.append(tableName);
+            sb.append("(");
 
-			StringBuilder sb = new StringBuilder();
+            boolean fComa = false;
 
-			sb.append( "CREATE TABLE " );
-			sb.append( tableName );
-			sb.append( "(" );
+            for (Entry<String, FieldInfo> e : fields.entrySet()) {
+                FieldInfo fi = e.getValue();
+                SQLiteTypeManager mng = fi.typeManager;
+                String fieldName = fi.name;
 
-			boolean fComa = false;
+                if (fComa)
+                    sb.append(", ");
+                else
+                    fComa = true;
 
-			for( Entry<String, FieldInfo> e : fields.entrySet() )
-			{
-				FieldInfo fi = e.getValue();
-				SQLiteTypeManager mng = fi.typeManager;
-				String fieldName = fi.name;
+                sb.append(fieldName);
+                sb.append(" ");
+                String createFieldSql = mng.createFieldSql(fieldName, false, false);
+                if (createFieldSql == null)
+                    return false;
+                sb.append(createFieldSql);
+                sb.append(" ");
+            }
 
-				if( fComa )
-					sb.append( ", " );
-				else
-					fComa = true;
+            sb.append(");");
 
-				sb.append( fieldName );
-				sb.append( " " );
-				String createFieldSql = mng.createFieldSql( fieldName, false, false );
-				if( createFieldSql == null )
-					return false;
-				sb.append( createFieldSql );
-				sb.append( " " );
-			}
+            String sql = sb.toString();
 
-			sb.append( ");" );
+            db.execute(sql);
 
-			String sql = sb.toString();
+            // post creation optional sql.
+            // for trigger creation for example
 
-			db.execute( sql );
+            actionsForFields(autoUpdateTimestampTriggerFields, new Func2<SQLite, FieldInfo, Boolean>() {
+                @Override
+                public Boolean exec(SQLite db, FieldInfo fi) {
+                    String sql = fi.typeManager.autoUpdateTimestampCreateTriggerSql(tableName, fi.name);
 
-			// post creation optional sql.
-			// for trigger creation for example
+                    db.execute(sql);
 
-			actionsForFields( autoUpdateTimestampTriggerFields, new Func2<SQLite, FieldInfo, Boolean>()
-			{
-				@Override
-				public Boolean exec( SQLite db, FieldInfo fi )
-				{
-					String sql = fi.typeManager.autoUpdateTimestampCreateTriggerSql( tableName, fi.name );
+                    return true;
+                }
+            });
 
-					db.execute( sql );
+            actionsForFields(localRecordStateTriggerFields, new Func2<SQLite, FieldInfo, Boolean>() {
+                @Override
+                public Boolean exec(SQLite db, FieldInfo fi) {
+                    return fi.typeManager.localRecordStateCreateTriggerSql(db, tableName, fi.name);
+                }
+            });
 
-					return true;
-				}
-			} );
+            if (fWithLocalRecordDeletedCreateTriggerSql)
+                localRecordDeletedCreateTriggerSql();
 
-			actionsForFields( localRecordStateTriggerFields, new Func2<SQLite, FieldInfo, Boolean>()
-			{
-				@Override
-				public Boolean exec( SQLite db, FieldInfo fi )
-				{
-					return fi.typeManager.localRecordStateCreateTriggerSql( db, tableName, fi.name );
-				}
-			} );
+            return true;
+        }
 
-			if( fWithLocalRecordDeletedCreateTriggerSql )
-				localRecordDeletedCreateTriggerSql();
+        private boolean actionsForFields(List<String> fieldNames, Func2<SQLite, FieldInfo, Boolean> fieldAction) {
+            for (String fieldName : fieldNames) {
+                FieldInfo fi = fields.get(fieldName);
+                if (fi == null)
+                    return false;
 
-			return true;
-		}
+                Boolean res = fieldAction.exec(db, fi);
+                if (!res)
+                    GWT.log("ERROR : actions for field !");
+            }
 
-		private boolean actionsForFields( List<String> fieldNames, Func2<SQLite, FieldInfo, Boolean> fieldAction )
-		{
-			for( String fieldName : fieldNames )
-			{
-				FieldInfo fi = fields.get( fieldName );
-				if( fi == null )
-					return false;
+            return true;
+        }
 
-				Boolean res = fieldAction.exec( db, fi );
-				if( !res )
-					GWT.log( "ERROR : actions for field !" );
-			}
+        public Boolean localRecordDeletedCreateTriggerSql() {
+            String triggerSql = "CREATE TRIGGER IF NOT EXISTS "
+                + tableName
+                + "_deleted AFTER DELETE ON "
+                + tableName
+                + " FOR EACH ROW "
+                + "BEGIN "
+                + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '"
+                + tableName + "'); END";
 
-			return true;
-		}
+            db.execute(triggerSql);
 
-		public Boolean localRecordDeletedCreateTriggerSql()
-		{
-			 String triggerSql = "CREATE TRIGGER IF NOT EXISTS "
-				 + tableName
-				 + "_deleted AFTER DELETE ON "
-				 + tableName
-				 + " FOR EACH ROW "
-				 + "BEGIN "
-				 + "INSERT INTO DeletedRecord (recordId, tableName) VALUES (OLD.id, '"
-				 + tableName + "'); END";
+            return true;
+        }
 
-			 db.execute(triggerSql);
-
-			return true;
-		}
-	}
+        class FieldInfo {
+            String name;
+            SQLiteTypeManager typeManager;
+        }
+    }
 }

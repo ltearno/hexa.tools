@@ -28,9 +28,9 @@ package javax.persistence.criteria;
 
 public enum JoinType {
 
-    INNER, 
+    INNER,
 
-    LEFT, 
+    LEFT,
 
     RIGHT
 }

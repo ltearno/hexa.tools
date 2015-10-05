@@ -2,17 +2,16 @@ package fr.lteconsulting.hexa.client.ui.miracle;
 
 import java.util.Comparator;
 
-public interface DynArrayManager<T>
-{
-	void updateRow( T t );
+public interface DynArrayManager<T> {
+    void updateRow(T t);
 
-	void deleteRow( int ref );
+    void deleteRow(int ref);
 
-	void print( Iterable<T> objects );
+    void print(Iterable<T> objects);
 
-	void printHeaders();
+    void printHeaders();
 
-	void setComparator( Comparator<T> comparator );
+    void setComparator(Comparator<T> comparator);
 
-	void clearAllRows();
+    void clearAllRows();
 }

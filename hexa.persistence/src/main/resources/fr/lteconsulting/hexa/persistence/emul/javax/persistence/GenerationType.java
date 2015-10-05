@@ -1,8 +1,7 @@
 package javax.persistence;
 
-public enum GenerationType
-{
-	SEQUENCE,
-	TABLE,
-	IDENTITY;
+public enum GenerationType {
+    SEQUENCE,
+    TABLE,
+    IDENTITY;
 }

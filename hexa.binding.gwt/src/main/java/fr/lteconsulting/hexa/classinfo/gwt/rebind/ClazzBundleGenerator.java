@@ -21,161 +21,172 @@ import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
 import fr.lteconsulting.hexa.classinfo.gwt.TypeHelper;
 
-public class ClazzBundleGenerator extends Generator
-{
-	// Context and logger for code generation
-	TreeLogger logger;
-	GeneratorContext context;
-	TypeOracle typeOracle;
+public class ClazzBundleGenerator extends Generator {
+    // Context and logger for code generation
+    TreeLogger logger;
+    GeneratorContext context;
+    TypeOracle typeOracle;
 
-	// asked type name
-	String askedTypeName;
+    // asked type name
+    String askedTypeName;
 
-	// type info on the asked class
-	JClassType askedType;
-	Set<JType> introspectedTypes;
+    // type info on the asked class
+    JClassType askedType;
+    Set<JType> introspectedTypes;
 
-	JMethod registerMethod;
+    private static Set<JType> ignoredTypes = new HashSet<JType>();
 
-	// package of the asked type
-	String packageName;
+    JMethod registerMethod;
 
-	// generated class name
-	String generatedClassName;
+    // package of the asked type
+    String packageName;
 
-	// generated class name + package
-	String fullGeneratedClassName;
+    // generated class name
+    String generatedClassName;
 
-	@Override
-	public String generate( TreeLogger logger, GeneratorContext context, String typeName ) throws UnableToCompleteException
-	{
-		// We have already processed all the class bundles
-		if(fullGeneratedClassName != null) {
-			return fullGeneratedClassName;
-		}
-		this.logger = logger;
-		this.context = context;
-		this.askedTypeName = typeName;
+    // generated class name + package
+    String fullGeneratedClassName;
 
-		// get the "reflection" machine of GWT compiler
-		typeOracle = context.getTypeOracle();
-		try {
-			// get classType and save instance variables
-			askedType = typeOracle.getType( typeName );
+    @Override
+    public String generate(TreeLogger logger, GeneratorContext context, String typeName) throws UnableToCompleteException {
+        // We have already processed all the class bundles
+        if (fullGeneratedClassName != null) {
+            return fullGeneratedClassName;
+        }
+        this.logger = logger;
+        this.context = context;
+        this.askedTypeName = typeName;
 
-			List<JClassType> clazzBundles = getClazzBundles();
-			clazzBundles.add(askedType);
+        // get the "reflection" machine of GWT compiler
+        typeOracle = context.getTypeOracle();
+        try {
+            // get classType and save instance variables
+            askedType = typeOracle.getType(typeName);
 
-			introspectedTypes = new HashSet<JType>();
-			// Ensure only one method exists
-			if(askedType.getMethods().length > 1) {
-				logger.log(TreeLogger.Type.WARN, "You should only have 1 method " +
-					"registering the class information, the first method will be used.");
-			}
-			registerMethod = askedType.getMethods()[0];
+            List<JClassType> clazzBundles = getClazzBundles();
+            clazzBundles.add(askedType);
 
-			for(JClassType bundle : clazzBundles) {
-				// All introspected classes will be combined
-				if(bundle.getMethods().length > 0) {
-					JMethod method = bundle.getMethods()[0];
+            introspectedTypes = new HashSet<JType>();
 
-					// list all return types of all methods
-					ReflectedClasses classes = method.getAnnotation(ReflectedClasses.class);
-					if (classes == null || classes.classes() == null || classes.classes().length == 0)
-						continue;
+            // Ensure only one method exists
+            if (askedType.getMethods().length > 1) {
+                logger.log(TreeLogger.Type.WARN, "You should only have 1 method " +
+                    "registering the class information, the first method will be used.");
+            }
+            registerMethod = askedType.getMethods()[0];
 
-					for (Class<?> clazz : classes.classes()) {
-						JType classType = typeOracle.getType(clazz.getName());
-						if (classType != null)
-							introspectedTypes.add(classType);
-					}
-				}
-			}
+            for (JClassType bundle : clazzBundles) {
+                // All introspected classes will be combined
+                if (bundle.getMethods().length > 0) {
+                    JMethod method = bundle.getMethods()[0];
 
-			// Generation information
-			packageName = askedType.getPackage().getName();
-			generatedClassName = askedType.getSimpleSourceName() + "ClazzBundleImpl";
+                    // list all return types of all methods
+                    ReflectedClasses classes = method.getAnnotation(ReflectedClasses.class);
+                    if (classes == null || classes.classes() == null || classes.classes().length == 0)
+                        continue;
 
-			// Generate class source code
-			generateClass();
-		}
-		catch(Exception e) {
-			// record to logger that Map generation threw an exception
-			logger.log( TreeLogger.ERROR, "ERROR when generating " + generatedClassName + " for " + typeName, e );
-		}
+                    for (Class<?> clazz : classes.classes()) {
+                        JType classType = typeOracle.getType(clazz.getName());
+                        if (classType != null)
+                            introspectedTypes.add(classType);
+                    }
 
-		// return the fully qualifed name of the class generated
-		fullGeneratedClassName = packageName + "." + generatedClassName;
-		return fullGeneratedClassName;
-	}
+                    for(Class<?> clazz : classes.ignored()) {
+                        JType classType = typeOracle.getType(clazz.getName());
+                        if (classType != null)
+                            ignoredTypes.add(classType);
+                    }
+                }
+            }
 
-	private List<JClassType> getClazzBundles() {
-		List<JClassType> clazzBundles = new ArrayList<>();
+            // Generation information
+            packageName = askedType.getPackage().getName();
+            generatedClassName = askedType.getSimpleSourceName() + "ClazzBundleImpl";
 
-		// Generate all other class bundles
-		JClassType[] types = typeOracle.getTypes();
-		for(JClassType type : types) {
-			if(TypeHelper.isInstanceOf(type, ClazzBundle.class)) {
-				clazzBundles.add(type);
-			}
-		}
-		return clazzBundles;
-	}
+            // Generate class source code
+            generateClass();
+        } catch (Exception e) {
+            // record to logger that Map generation threw an exception
+            logger.log(TreeLogger.ERROR, "ERROR when generating " + generatedClassName + " for " + typeName, e);
+        }
 
-	private void generateClass()
-	{
-		// get print writer that receives the source code
-		PrintWriter printWriter;
+        // return the fully qualifed name of the class generated
+        fullGeneratedClassName = packageName + "." + generatedClassName;
+        return fullGeneratedClassName;
+    }
 
-		printWriter = context.tryCreate( logger, packageName, generatedClassName );
-		// print writer if null, source code has ALREADY been generated, return
-		if( printWriter == null )
-			return;
+    private List<JClassType> getClazzBundles() {
+        List<JClassType> clazzBundles = new ArrayList<>();
 
-		// init composer, set class properties, create source writer
-		ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory( packageName, generatedClassName );
+        // Generate all other class bundles
+        JClassType[] types = typeOracle.getTypes();
+        for (JClassType type : types) {
+            if (TypeHelper.isInstanceOf(type, ClazzBundle.class)) {
+                clazzBundles.add(type);
+            }
+        }
+        return clazzBundles;
+    }
 
-		// output a class "typeName" + "Impl"
-		// which extends the asked type
-		composer.addImplementedInterface( askedType.getParameterizedQualifiedSourceName() );
+    private void generateClass() {
+        // get print writer that receives the source code
+        PrintWriter printWriter;
 
-		composer.addImport( "fr.lteconsulting.hexa.classinfo.Clazz" );
-		composer.addImport( "fr.lteconsulting.hexa.classinfo.ClassInfo" );
-		composer.addImport( "com.google.gwt.core.shared.GWT" );
+        printWriter = context.tryCreate(logger, packageName, generatedClassName);
+        // print writer if null, source code has ALREADY been generated, return
+        if (printWriter == null)
+            return;
 
-		SourceWriter sourceWriter = composer.createSourceWriter( context, printWriter );
+        // init composer, set class properties, create source writer
+        ClassSourceFileComposerFactory composer = new ClassSourceFileComposerFactory(packageName, generatedClassName);
 
-		// generate the List<String> getMethods(); method
-		generateClass( sourceWriter );
+        // output a class "typeName" + "Impl"
+        // which extends the asked type
+        composer.addImplementedInterface(askedType.getParameterizedQualifiedSourceName());
 
-		// close generated class
-		sourceWriter.outdent();
-		sourceWriter.println( "}" );
+        composer.addImport("fr.lteconsulting.hexa.classinfo.Clazz");
+        composer.addImport("fr.lteconsulting.hexa.classinfo.ClassInfo");
+        composer.addImport("com.google.gwt.core.shared.GWT");
 
-		// commit generated class
-		context.commit( logger, printWriter );
-	}
+        SourceWriter sourceWriter = composer.createSourceWriter(context, printWriter);
 
-	private void generateClass( SourceWriter sourceWriter )
-	{
-		sourceWriter.println( "" );
+        // generate the List<String> getMethods(); method
+        generateClass(sourceWriter);
 
-		for( JType type : introspectedTypes )
-		{
-			String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
-			sourceWriter.println( "public interface " + interfaceName + " extends Clazz<" + type.getQualifiedSourceName() + "> {}" );
-		}
-		sourceWriter.println( "" );
+        // close generated class
+        sourceWriter.outdent();
+        sourceWriter.println("}");
 
-		sourceWriter.println( "public void "+registerMethod.getName()+"()" );
-		sourceWriter.println( "{" );
-		sourceWriter.indent();
-		for(JType type : introspectedTypes) {
-			String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll( "\\.", "_" );
-			sourceWriter.println("ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( " + interfaceName + ".class ) );" );
-		}
-		sourceWriter.outdent();
-		sourceWriter.println( "}" );
-		sourceWriter.println( "" );
-	}
+        // commit generated class
+        context.commit(logger, printWriter);
+    }
+
+    private void generateClass(SourceWriter sourceWriter) {
+        sourceWriter.println("");
+
+        for (JType type : introspectedTypes) {
+            if(!ignoredTypes.contains(type)) {
+                String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll("\\.", "_");
+                sourceWriter.println("public interface " + interfaceName + " extends Clazz<" + type.getQualifiedSourceName() + "> {}");
+            }
+        }
+        sourceWriter.println("");
+
+        sourceWriter.println("public void " + registerMethod.getName() + "()");
+        sourceWriter.println("{");
+        sourceWriter.indent();
+        for (JType type : introspectedTypes) {
+            if(!ignoredTypes.contains(type)) {
+                String interfaceName = "Clazz_" + type.getQualifiedSourceName().replaceAll("\\.", "_");
+                sourceWriter.println("ClassInfo.RegisterClazz( (Clazz<?>) GWT.create( " + interfaceName + ".class ) );");
+            }
+        }
+        sourceWriter.outdent();
+        sourceWriter.println("}");
+        sourceWriter.println("");
+    }
+
+    public static Set<JType> getIgnoredTypes() {
+        return ignoredTypes;
+    }
 }

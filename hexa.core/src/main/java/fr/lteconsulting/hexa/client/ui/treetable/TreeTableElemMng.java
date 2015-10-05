@@ -7,132 +7,113 @@ import java.util.Map.Entry;
 
 import com.google.gwt.user.client.Timer;
 
-public class TreeTableElemMng<T>
-{
-	public interface TreeTableElemMngCallback<T>
-	{
-		int getElementIdentifier( T element );
-	}
+public class TreeTableElemMng<T> {
+    TreeTableElemMngCallback<T> callback;
+    HashMap<Integer, Row> elements = new HashMap<Integer, Row>();
+    HashMap<Integer, Integer> versions = new HashMap<Integer, Integer>();
+    int currentVersion = 0;
+    ArrayList<Row> elementsAdded = new ArrayList<Row>();
+    ArrayList<Integer> elementsToRemove = new ArrayList<Integer>();
+    TreeTable table = null;
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if (elementsToRemove.size() > 0) {
+                int toRemove = elementsToRemove.remove(0);
+                _remove(toRemove);
 
-	TreeTableElemMngCallback<T> callback;
+                timer.schedule(10);
+            }
+        }
+    };
+    public TreeTableElemMng(TreeTable table, TreeTableElemMngCallback<T> callback) {
+        this.table = table;
+        this.callback = callback;
+    }
 
-	HashMap<Integer, Row> elements = new HashMap<Integer, Row>();
-	HashMap<Integer, Integer> versions = new HashMap<Integer, Integer>();
-	int currentVersion = 0;
+    public Row addOrUpdateItemInCurrentVersion(T element, Row parentItem) {
+        int identifier = callback.getElementIdentifier(element);
 
-	ArrayList<Row> elementsAdded = new ArrayList<Row>();
+        versions.put(identifier, currentVersion);
 
-	ArrayList<Integer> elementsToRemove = new ArrayList<Integer>();
-	TreeTable table = null;
-	Timer timer = new Timer()
-	{
-		@Override
-		public void run()
-		{
-			if( elementsToRemove.size() > 0 )
-			{
-				int toRemove = elementsToRemove.remove( 0 );
-				_remove( toRemove );
+        Row item = elements.get(identifier);
+        if (item != null)
+            return item;
 
-				timer.schedule( 10 );
-			}
-		}
-	};
+        item = table.addRow(parentItem);
+        elements.put(identifier, item);
+        item.highLite();
 
-	public TreeTableElemMng( TreeTable table, TreeTableElemMngCallback<T> callback )
-	{
-		this.table = table;
-		this.callback = callback;
-	}
+        return item;
+    }
 
-	public Row addOrUpdateItemInCurrentVersion( T element, Row parentItem )
-	{
-		int identifier = callback.getElementIdentifier( element );
+    public void deleteItemInCurrentVersion(T element, TreeTable table) {
+        int identifier = callback.getElementIdentifier(element);
+        versions.remove(identifier);
 
-		versions.put( identifier, currentVersion );
+        Row item = elements.get(identifier);
+        if (item == null)
+            return;
 
-		Row item = elements.get( identifier );
-		if( item != null )
-			return item;
+        item.remove();
+    }
 
-		item = table.addRow( parentItem );
-		elements.put( identifier, item );
-		item.highLite();
+    public Row getItem(T element, Row parentItem) {
+        int identifier = callback.getElementIdentifier(element);
 
-		return item;
-	}
+        versions.put(identifier, currentVersion + 1);
 
-	public void deleteItemInCurrentVersion( T element, TreeTable table )
-	{
-		int identifier = callback.getElementIdentifier( element );
-		versions.remove( identifier );
+        Row item = elements.get(identifier);
+        if (item != null)
+            return item;
 
-		Row item = elements.get( identifier );
-		if( item == null )
-			return;
+        item = table.addRow(parentItem);
+        elements.put(identifier, item);
+        elementsAdded.add(item);
 
-		item.remove();
-	}
+        return item;
+    }
 
-	public Row getItem( T element, Row parentItem )
-	{
-		int identifier = callback.getElementIdentifier( element );
+    public Row remove(T element) {
+        int identifier = callback.getElementIdentifier(element);
 
-		versions.put( identifier, currentVersion + 1 );
+        return _remove(identifier);
+    }
 
-		Row item = elements.get( identifier );
-		if( item != null )
-			return item;
+    public Row remove(int elementIdentifier) {
+        return _remove(elementIdentifier);
+    }
 
-		item = table.addRow( parentItem );
-		elements.put( identifier, item );
-		elementsAdded.add( item );
+    public Row _remove(int identifier) {
+        versions.remove(identifier);
 
-		return item;
-	}
+        Row item = elements.get(identifier);
+        if (item == null)
+            return null;
 
-	public Row remove( T element )
-	{
-		int identifier = callback.getElementIdentifier( element );
+        elements.remove(identifier);
+        item.remove();
 
-		return _remove( identifier );
-	}
+        return item;
+    }
 
-	public Row remove( int elementIdentifier )
-	{
-		return _remove( elementIdentifier );
-	}
+    public void commitVersion() {
+        currentVersion++;
+        boolean fRearm = false;
 
-	public Row _remove( int identifier )
-	{
-		versions.remove( identifier );
+        for (Iterator<Entry<Integer, Integer>> it = versions.entrySet().iterator(); it.hasNext(); ) {
+            Entry<Integer, Integer> entry = it.next();
+            if (entry.getValue() < currentVersion) {
+                fRearm = true;
+                elementsToRemove.add(entry.getKey());
+            }
+        }
 
-		Row item = elements.get( identifier );
-		if( item == null )
-			return null;
+        if (fRearm || elementsAdded.size() > 0)
+            timer.schedule(10);
+    }
 
-		elements.remove( identifier );
-		item.remove();
-
-		return item;
-	}
-
-	public void commitVersion()
-	{
-		currentVersion++;
-		boolean fRearm = false;
-
-		for( Iterator<Entry<Integer, Integer>> it = versions.entrySet().iterator(); it.hasNext(); )
-		{
-			Entry<Integer, Integer> entry = it.next();
-			if( entry.getValue() < currentVersion )
-			{
-				fRearm = true;
-				elementsToRemove.add( entry.getKey() );
-			}
-		}
-
-		if( fRearm || elementsAdded.size() > 0 )
-			timer.schedule( 10 );
-	}
+    public interface TreeTableElemMngCallback<T> {
+        int getElementIdentifier(T element);
+    }
 }

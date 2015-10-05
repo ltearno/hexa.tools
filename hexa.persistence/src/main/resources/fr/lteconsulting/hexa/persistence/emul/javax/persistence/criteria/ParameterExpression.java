@@ -28,5 +28,5 @@ package javax.persistence.criteria;
 import javax.persistence.Parameter;
 
 
-
-public interface ParameterExpression<T> extends Parameter<T>, Expression<T> {}
+public interface ParameterExpression<T> extends Parameter<T>, Expression<T> {
+}

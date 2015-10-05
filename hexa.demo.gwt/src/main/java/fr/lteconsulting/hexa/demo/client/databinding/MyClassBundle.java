@@ -16,23 +16,21 @@ import fr.lteconsulting.hexa.demo.client.databinding.ui.PersonGrid;
 
 /**
  * List of classes for which we need to have introspection at runtime
- * 
- * @author Arnaud Tournier
  *
+ * @author Arnaud Tournier
  */
-public interface MyClassBundle extends ClazzBundle
-{
-	@ReflectedClasses( classes = {
-			Anchor.class,
-			Button.class,
-			Category.class,
-			CategoryForm.class,
-			DataBindingDemo.class,
-			JavaScriptObject.class,
-			Label.class,
-			Person.class,
-			PersonForm.class,
-			PersonGrid.class,
-			TextBox.class } )
-	void register();
+public interface MyClassBundle extends ClazzBundle {
+    @ReflectedClasses(classes = {
+        Anchor.class,
+        Button.class,
+        Category.class,
+        CategoryForm.class,
+        DataBindingDemo.class,
+        JavaScriptObject.class,
+        Label.class,
+        Person.class,
+        PersonForm.class,
+        PersonGrid.class,
+        TextBox.class})
+    void register();
 }

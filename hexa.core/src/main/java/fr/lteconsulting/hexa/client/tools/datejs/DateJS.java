@@ -12,85 +12,77 @@ import com.google.gwt.resources.client.TextResource;
  * This class wraps calls to the Date.js script
  */
 
-public class DateJS
-{
-	interface DateJSBundle extends ClientBundle
-	{
-		@Source( "date.js" )
-		TextResource DateJs();
-	}
+public class DateJS {
+    private static boolean loaded;
 
-	interface DateFrJSBundle extends ClientBundle
-	{
-		@Source( "date-fr-FR.js" )
-		TextResource DateJsFr();
-	}
+    // tries to parse a textual represented date and
+    // returns a String in the "yyyy-MM-dd" format if successfull, or null if
+    // not
+    public static String parseDate(String text) {
+        // loads the script if not loaded yet
+        if (!loaded) {
+            loaded = true;
 
-	private static boolean loaded;
+            String scriptContent = null;
+            if (LocaleInfo.getCurrentLocale().getLocaleName().startsWith("fr")) {
+                DateFrJSBundle bundle = GWT.create(DateFrJSBundle.class);
+                scriptContent = bundle.DateJsFr().getText();
+            } else {
+                DateJSBundle bundle = GWT.create(DateJSBundle.class);
+                scriptContent = bundle.DateJs().getText();
+            }
 
-	// tries to parse a textual represented date and
-	// returns a String in the "yyyy-MM-dd" format if successfull, or null if
-	// not
-	public static String parseDate( String text )
-	{
-		// loads the script if not loaded yet
-		if( !loaded )
-		{
-			loaded = true;
+            Document doc = Document.get();
+            ScriptElement sqljs = doc.createScriptElement();
+            sqljs.setAttribute("type", "text/javascript");
+            sqljs.setInnerText(scriptContent);
+            doc.getDocumentElement().getFirstChildElement().appendChild(sqljs);
+        }
 
-			String scriptContent = null;
-			if( LocaleInfo.getCurrentLocale().getLocaleName().startsWith( "fr" ) )
-			{
-				DateFrJSBundle bundle = GWT.create( DateFrJSBundle.class );
-				scriptContent = bundle.DateJsFr().getText();
-			}
-			else
-			{
-				DateJSBundle bundle = GWT.create( DateJSBundle.class );
-				scriptContent = bundle.DateJs().getText();
-			}
+        JavaScriptObject date = create(text);
+        if (date == null)
+            return null;
 
-			Document doc = Document.get();
-			ScriptElement sqljs = doc.createScriptElement();
-			sqljs.setAttribute( "type", "text/javascript" );
-			sqljs.setInnerText( scriptContent );
-			doc.getDocumentElement().getFirstChildElement().appendChild( sqljs );
-		}
+        String res = toConformity(date);
 
-		JavaScriptObject date = create( text );
-		if( date == null )
-			return null;
+        return res;
+    }
 
-		String res = toConformity( date );
+    private final static native JavaScriptObject create(String text)
+    /*-{
+        var date;
 
-		return res;
-	}
+        date = $wnd.Date.parseExact(text, "yyyy-MM-dd");
+        if (date == null)
+            date = $wnd.Date.parseExact(text, ["d MMMM yyyy", "d MMM yyyy"]);
+        if (date == null)
+            date = $wnd.Date.parse(text);
 
-	private final static native JavaScriptObject create( String text )
+        //@com.google.gwt.core.client.GWT::log(Ljava/lang/String;)( "JSNative datejs for " + text + " : " + date );
+
+        if (date == null)
+            return null;
+
+        var object = {content: date};
+
+        return object;
+    }-*/;
+
+    // gives the value of the date in DB UTC format
+    private final static native String toConformity(JavaScriptObject date)
 	/*-{
-		var date;
+        if (date.content == null)
+            return "";
+        return date.content.toString("yyyy-MM-dd");
+    }-*/;
 
-		date = $wnd.Date.parseExact( text, "yyyy-MM-dd" );
-		if( date == null )
-			date = $wnd.Date.parseExact( text, ["d MMMM yyyy","d MMM yyyy"] );
-		if( date == null )
-			date = $wnd.Date.parse( text );
+    interface DateJSBundle extends ClientBundle {
+        @Source("date.js")
+        TextResource DateJs();
+    }
 
-		//@com.google.gwt.core.client.GWT::log(Ljava/lang/String;)( "JSNative datejs for " + text + " : " + date );
-
-		if( date == null )
-			return null;
-
-		var object = { content: date };
-
-		return object;
-	}-*/;
-
-	// gives the value of the date in DB UTC format
-	private final static native String toConformity( JavaScriptObject date )
-	/*-{
-		if( date.content == null )
-			return "";
-		return date.content.toString( "yyyy-MM-dd" );
-	}-*/;
+    interface DateFrJSBundle extends ClientBundle {
+        @Source("date-fr-FR.js")
+        TextResource DateJsFr();
+    }
 }

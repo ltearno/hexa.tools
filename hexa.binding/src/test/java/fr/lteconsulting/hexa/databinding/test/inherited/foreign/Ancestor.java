@@ -5,10 +5,10 @@ import fr.lteconsulting.hexa.databinding.annotation.Observable;
 @Observable
 public class Ancestor {
 
-    String ancestorsString;
-    int ancestorsInt;
     public boolean ancestorsBoolean;
     protected int ancestorsProtectedInt;
+    String ancestorsString;
+    int ancestorsInt;
 
     public int getAncestorsProtectedInt() {
         return ancestorsProtectedInt;

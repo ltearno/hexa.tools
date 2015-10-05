@@ -14,50 +14,44 @@ import fr.lteconsulting.hexa.databinding.tools.Property;
 /**
  * This very simple class is just what is needed to use a Widget
  * as an editing form, when using HexaBinding...
- * 
+ * <p/>
  * - There is an Article property which holds the edited article.
  * - The form's fields are automatically detected and two-way bound to the article fields.
- * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
  *
+ * @author Arnaud Tournier
+ *         (c) LTE Consulting - 2015
+ *         http://www.lteconsulting.fr
  */
-public class ArticleForm extends Composite
-{
-	Property<Article> article = new Property<Article>( this, "article", null );
+public class ArticleForm extends Composite {
+    private static ArticleFormUiBinder uiBinder = GWT.create(ArticleFormUiBinder.class);
+    @UiField
+    public TextBox name;
 
-	@UiField
-	public TextBox name;
+    @UiField
+    public TextBox weight;
 
-	@UiField
-	public TextBox weight;
+    @UiField
+    public ListBox<Category> category;
+    Property<Article> article = new Property<Article>(this, "article", null);
 
-	@UiField
-	public ListBox<Category> category;
+    public ArticleForm() {
+        /**
+         * Automatically bind (two-way) the article's fields to our form fields (name, weight and category)
+         */
+        Binder.bind(article).mapTo(this);
 
-	private static ArticleFormUiBinder uiBinder = GWT.create( ArticleFormUiBinder.class );
+        initWidget(uiBinder.createAndBindUi(this));
 
-	interface ArticleFormUiBinder extends UiBinder<Widget, ArticleForm>
-	{
-	}
+        /**
+         * Fill the combo with the possible categories, the category selection will happen through
+         * the data binding mechanism.
+         *
+         * Here, one could have chosen to use dynamic categories !
+         */
+        for (Category c : Repository.getCategories())
+            category.addItem(c.name.getValue(), c);
+    }
 
-	public ArticleForm()
-	{
-		/**
-		 * Automatically bind (two-way) the article's fields to our form fields (name, weight and category)
-		 */
-		Binder.bind( article ).mapTo( this );
-
-		initWidget( uiBinder.createAndBindUi( this ) );
-
-		/**
-		 * Fill the combo with the possible categories, the category selection will happen through
-		 * the data binding mechanism.
-		 * 
-		 * Here, one could have chosen to use dynamic categories !
-		 */
-		for( Category c : Repository.getCategories() )
-			category.addItem( c.name.getValue(), c );
-	}
+    interface ArticleFormUiBinder extends UiBinder<Widget, ArticleForm> {
+    }
 }

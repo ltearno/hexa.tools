@@ -1,6 +1,5 @@
 package javax.persistence;
 
-public enum LockModeType
-{
+public enum LockModeType {
 
 }

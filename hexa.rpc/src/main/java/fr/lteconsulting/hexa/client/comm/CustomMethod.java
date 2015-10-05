@@ -1,6 +1,5 @@
 package fr.lteconsulting.hexa.client.comm;
 
-public @interface CustomMethod
-{
-	String body();
+public @interface CustomMethod {
+    String body();
 }

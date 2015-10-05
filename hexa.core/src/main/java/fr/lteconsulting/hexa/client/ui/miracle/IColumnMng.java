@@ -1,14 +1,13 @@
 package fr.lteconsulting.hexa.client.ui.miracle;
 
-public interface IColumnMng<T>
-{
-	PrintsOn<T> getPrintsOn();
+public interface IColumnMng<T> {
+    PrintsOn<T> getPrintsOn();
 
-	Edits<T> getEdits();
+    Edits<T> getEdits();
 
-	CellClickMng<T> getClicks();
+    CellClickMng<T> getClicks();
 
-	PrintsOn<Void> getHdrPrintsOn();
+    PrintsOn<Void> getHdrPrintsOn();
 
-	CellClickMng<Void> getHdrClickMng();
+    CellClickMng<Void> getHdrClickMng();
 }

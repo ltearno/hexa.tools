@@ -18,203 +18,172 @@ import fr.lteconsulting.hexa.client.interfaces.IBkgndStackPanel;
 import fr.lteconsulting.hexa.client.interfaces.IStackPanel;
 import fr.lteconsulting.hexa.client.interfaces.IStackPanelRow;
 
-public class LayeredAbsoluteStackPanel extends ResizeComposite implements MouseWheelHandler, MouseMoveHandler, KeyUpHandler
-{
-	private IBkgndStackPanel.Callback m_callback = null;
-	private Object m_cookie = null;
+public class LayeredAbsoluteStackPanel extends ResizeComposite implements MouseWheelHandler, MouseMoveHandler, KeyUpHandler {
+    int spaceHeight = 50;
+    private IBkgndStackPanel.Callback m_callback = null;
+    private Object m_cookie = null;
+    private FocusLayoutPanel m_focusPanel = new FocusLayoutPanel();
+    private AbsolutePanel m_canvas = new AbsolutePanel();
+    private AbsolutePanel m_backgroundCanvas = new AbsolutePanel();
+    IBkgndStackPanel.Background bgProxy = new IBkgndStackPanel.Background() {
+        @Override
+        public void setWidgetPosition(Widget w, int x, int y) {
+            m_backgroundCanvas.setWidgetPosition(w, x, y);
+        }
 
-	private FocusLayoutPanel m_focusPanel = new FocusLayoutPanel();
-	private AbsolutePanel m_canvas = new AbsolutePanel();
+        @Override
+        public void removeItem(Widget w) {
+            m_backgroundCanvas.remove(w);
+        }
 
-	private AbsolutePanel m_backgroundCanvas = new AbsolutePanel();
+        @Override
+        public void clearAll() {
+            m_backgroundCanvas.clear();
+        }
 
-	private FlowPanel m_stacksPanel = new FlowPanel();
+        @Override
+        public void add(Widget w, int x, int y) {
+            m_backgroundCanvas.add(w, x, y);
+        }
 
-	private AbsoluteStackPanel m_stackPanel = new AbsoluteStackPanel();
-	
-	int spaceHeight = 50;
-	private ScrollPanel m_scroll = new ScrollPanel();
+        @Override
+        public void add(Widget w) {
+            m_backgroundCanvas.add(w);
+        }
+    };
+    private FlowPanel m_stacksPanel = new FlowPanel();
+    private AbsoluteStackPanel m_stackPanel = new AbsoluteStackPanel();
+    private ScrollPanel m_scroll = new ScrollPanel();
 
-	public LayeredAbsoluteStackPanel()
-	{
-		m_stacksPanel.add( m_stackPanel );
-		m_stacksPanel.setWidth( "100%" );
+    public LayeredAbsoluteStackPanel() {
+        m_stacksPanel.add(m_stackPanel);
+        m_stacksPanel.setWidth("100%");
 
-		m_scroll.setWidget( m_stacksPanel );
-		m_scroll.setSize( "100%", "100%" );
+        m_scroll.setWidget(m_stacksPanel);
+        m_scroll.setSize("100%", "100%");
 
-		m_backgroundCanvas.setSize( "100%", "100%" );
-		m_canvas.add( m_backgroundCanvas, 0, 0 );
-		m_canvas.add( m_scroll, 0, spaceHeight );
-		m_canvas.setSize( "100%", "100%" );
+        m_backgroundCanvas.setSize("100%", "100%");
+        m_canvas.add(m_backgroundCanvas, 0, 0);
+        m_canvas.add(m_scroll, 0, spaceHeight);
+        m_canvas.setSize("100%", "100%");
 
-		m_focusPanel.add( m_canvas );
-		m_focusPanel.addMouseWheelHandler( this );
-		m_focusPanel.addMouseMoveHandler( this );
-		m_focusPanel.addKeyUpHandler( this );
-		m_focusPanel.addStyleName( "AroundPanel" );
-		m_focusPanel.setSize( "100%", "100%" );
+        m_focusPanel.add(m_canvas);
+        m_focusPanel.addMouseWheelHandler(this);
+        m_focusPanel.addMouseMoveHandler(this);
+        m_focusPanel.addKeyUpHandler(this);
+        m_focusPanel.addStyleName("AroundPanel");
+        m_focusPanel.setSize("100%", "100%");
 
-		initWidget( m_focusPanel );
-	}
-	
-	static class FocusLayoutPanel extends FocusPanel implements RequiresResize
-	{
-		@Override
-		public void onResize()
-		{
-			Widget child = getWidget();
-			if( child instanceof RequiresResize )
-				((RequiresResize) child).onResize();
-		}
-	}
+        initWidget(m_focusPanel);
+    }
 
-	public void setCallback( IBkgndStackPanel.Callback callback, Object cookie )
-	{
-		m_callback = callback;
-		m_cookie = cookie;
-	}
-	
-	@Override
-	public void onResize()
-	{
-		super.onResize();
-	}
+    public void setCallback(IBkgndStackPanel.Callback callback, Object cookie) {
+        m_callback = callback;
+        m_cookie = cookie;
+    }
 
-	public void clearBackground()
-	{
-		m_backgroundCanvas.clear();
-	}
+    @Override
+    public void onResize() {
+        super.onResize();
+    }
 
-	IBkgndStackPanel.Background bgProxy = new IBkgndStackPanel.Background()
-	{
-		@Override
-		public void setWidgetPosition( Widget w, int x, int y )
-		{
-			m_backgroundCanvas.setWidgetPosition( w, x, y );
-		}
+    public void clearBackground() {
+        m_backgroundCanvas.clear();
+    }
 
-		@Override
-		public void removeItem( Widget w )
-		{
-			m_backgroundCanvas.remove( w );
-		}
+    public IBkgndStackPanel.Background getBackgroundCanvas() {
+        return bgProxy;
+    }
 
-		@Override
-		public void clearAll()
-		{
-			m_backgroundCanvas.clear();
-		}
+    public IStackPanel getStackPanel() {
+        return m_stackPanel;
+    }
 
-		@Override
-		public void add( Widget w, int x, int y )
-		{
-			m_backgroundCanvas.add( w, x, y );
-		}
+    public IStackPanelSized createSizedPanel(int height) {
+        final AbsoluteStackPanel panel = new AbsoluteStackPanel();
+        final ScrollPanel scroll = new ScrollPanel(panel);
 
-		@Override
-		public void add( Widget w )
-		{
-			m_backgroundCanvas.add( w );
-		}
-	};
+        scroll.setWidth("100%");
+        panel.setWidth("100%");
+        scroll.setHeight(height + "px");
+        m_stacksPanel.add(scroll);
 
-	public IBkgndStackPanel.Background getBackgroundCanvas()
-	{
-		return bgProxy;
-	}
+        return new IStackPanelSized() {
+            @Override
+            public void clear() {
+                panel.clear();
+            }
 
-	public IStackPanel getStackPanel()
-	{
-		return m_stackPanel;
-	}
+            @Override
+            public IStackPanelRow addRow() {
+                return panel.addRow();
+            }
 
-	public interface IStackPanelSized extends IStackPanel
-	{
-		void setHeight( int height );
-	}
+            @Override
+            public void setHeight(int height) {
+                scroll.setHeight(height + "px");
+            }
+        };
+    }
 
-	public IStackPanelSized createSizedPanel( int height )
-	{
-		final AbsoluteStackPanel panel = new AbsoluteStackPanel();
-		final ScrollPanel scroll = new ScrollPanel( panel );
+    public IStackPanel createPanel() {
+        AbsoluteStackPanel panel = new AbsoluteStackPanel();
+        panel.setWidth("100%");
+        m_stacksPanel.add(panel);
 
-		scroll.setWidth( "100%" );
-		panel.setWidth( "100%" );
-		scroll.setHeight( height + "px" );
-		m_stacksPanel.add( scroll );
+        return panel;
+    }
 
-		return new IStackPanelSized()
-		{
-			@Override
-			public void clear()
-			{
-				panel.clear();
-			}
+    @Override
+    public void onMouseWheel(MouseWheelEvent event) {
+        if (m_callback == null)
+            return;
 
-			@Override
-			public IStackPanelRow addRow()
-			{
-				return panel.addRow();
-			}
+        event.preventDefault();
 
-			@Override
-			public void setHeight( int height )
-			{
-				scroll.setHeight( height + "px" );
-			}
-		};
-	}
+        int x = event.getRelativeX(m_canvas.getElement());
 
-	public IStackPanel createPanel()
-	{
-		AbsoluteStackPanel panel = new AbsoluteStackPanel();
-		panel.setWidth( "100%" );
-		m_stacksPanel.add( panel );
+        int delta = event.getDeltaY();
+        if (delta > 0)
+            delta = 1;
+        else if (delta < 0)
+            delta = -1;
 
-		return panel;
-	}
+        m_callback.onMouseWheel(m_cookie, event, x, delta);
+    }
 
-	@Override
-	public void onMouseWheel( MouseWheelEvent event )
-	{
-		if( m_callback == null )
-			return;
+    @Override
+    public void onMouseMove(MouseMoveEvent event) {
+        if (m_callback == null)
+            return;
 
-		event.preventDefault();
+        event.preventDefault();
 
-		int x = event.getRelativeX( m_canvas.getElement() );
+        int x = event.getRelativeX(m_canvas.getElement());
 
-		int delta = event.getDeltaY();
-		if( delta > 0 )
-			delta = 1;
-		else if( delta < 0 )
-			delta = -1;
+        m_callback.onMouseMove(m_cookie, x);
+    }
 
-		m_callback.onMouseWheel( m_cookie, event, x, delta );
-	}
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+        if (m_callback == null)
+            return;
 
-	@Override
-	public void onMouseMove( MouseMoveEvent event )
-	{
-		if( m_callback == null )
-			return;
+        event.preventDefault();
 
-		event.preventDefault();
+        m_callback.onKeyUp(m_cookie, event);
+    }
 
-		int x = event.getRelativeX( m_canvas.getElement() );
+    public interface IStackPanelSized extends IStackPanel {
+        void setHeight(int height);
+    }
 
-		m_callback.onMouseMove( m_cookie, x );
-	}
-
-	@Override
-	public void onKeyUp( KeyUpEvent event )
-	{
-		if( m_callback == null )
-			return;
-
-		event.preventDefault();
-
-		m_callback.onKeyUp( m_cookie, event );
-	}
+    static class FocusLayoutPanel extends FocusPanel implements RequiresResize {
+        @Override
+        public void onResize() {
+            Widget child = getWidget();
+            if (child instanceof RequiresResize)
+                ((RequiresResize) child).onResize();
+        }
+    }
 }

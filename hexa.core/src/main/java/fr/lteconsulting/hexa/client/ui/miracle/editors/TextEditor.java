@@ -11,61 +11,52 @@ import com.google.gwt.user.client.ui.TextBox;
 import fr.lteconsulting.hexa.client.interfaces.IAsyncCallback;
 import fr.lteconsulting.hexa.client.ui.css.Css;
 
-public class TextEditor extends Composite
-{
-	TextBox tb = new TextBox();
+public class TextEditor extends Composite {
+    TextBox tb = new TextBox();
 
-	HandlerRegistration blurRegistration;
-	HandlerRegistration keyUpRegistration;
+    HandlerRegistration blurRegistration;
+    HandlerRegistration keyUpRegistration;
 
-	public TextEditor()
-	{
-		tb.addStyleName( Css.css().borderBoxSizing() );
-		initWidget( tb );
-	}
+    public TextEditor() {
+        tb.addStyleName(Css.css().borderBoxSizing());
+        initWidget(tb);
+    }
 
-	@Override
-	protected void onAttach()
-	{
-		super.onAttach();
+    @Override
+    protected void onAttach() {
+        super.onAttach();
 
-		tb.setFocus( true );
-		tb.selectAll();
-	}
+        tb.setFocus(true);
+        tb.selectAll();
+    }
 
-	public void edit( String currentText, final IAsyncCallback<String> callback, int width, int height )
-	{
-		tb.setWidth( width + "px" );
+    public void edit(String currentText, final IAsyncCallback<String> callback, int width, int height) {
+        tb.setWidth(width + "px");
 
-		tb.setText( currentText );
+        tb.setText(currentText);
 
-		// on lost focus, cancel edition
-		if( blurRegistration != null )
-			blurRegistration.removeHandler();
-		blurRegistration = tb.addBlurHandler( new BlurHandler()
-		{
-			@Override
-			public void onBlur( BlurEvent event )
-			{
-				callback.onSuccess( null );
-			}
-		} );
+        // on lost focus, cancel edition
+        if (blurRegistration != null)
+            blurRegistration.removeHandler();
+        blurRegistration = tb.addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event) {
+                callback.onSuccess(null);
+            }
+        });
 
-		if( keyUpRegistration != null )
-			keyUpRegistration.removeHandler();
-		keyUpRegistration = tb.addKeyUpHandler( new KeyUpHandler()
-		{
-			@Override
-			public void onKeyUp( KeyUpEvent event )
-			{
-				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER )
-				{
-					event.preventDefault();
-					event.stopPropagation();
+        if (keyUpRegistration != null)
+            keyUpRegistration.removeHandler();
+        keyUpRegistration = tb.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-					callback.onSuccess( tb.getText() );
-				}
-			}
-		} );
-	}
+                    callback.onSuccess(tb.getText());
+                }
+            }
+        });
+    }
 }

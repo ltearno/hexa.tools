@@ -7,109 +7,93 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DivTree extends Panel
-{
-	private Node rootNode;
+public class DivTree extends Panel {
+    private Node rootNode;
 
-	public DivTree()
-	{
-		Element div = DOM.createDiv();
-		div.setClassName( "DivTree-Container" );
+    public DivTree() {
+        Element div = DOM.createDiv();
+        div.setClassName("DivTree-Container");
 
-		setElement( div );
+        setElement(div);
 
-		rootNode = new Node( div );
-	}
+        rootNode = new Node(div);
+    }
 
-	public Node getRootNode()
-	{
-		return rootNode;
-	}
+    public Node getRootNode() {
+        return rootNode;
+    }
 
-	class Node
-	{
-		Element nodeContainer;
-		Element nodeDiv;
-		Element childContainer;
+    @Override
+    public boolean remove(Widget child) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-		Widget nodeWidget = null;
+    @Override
+    public Iterator<Widget> iterator() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-		public Node( Element container )
-		{
-			nodeContainer = container;
+    @Override
+    protected void doAttachChildren() {
+    }
 
-			nodeDiv = DOM.createDiv();
-			nodeDiv.setClassName( "DivTree-NodeDiv" );
-			nodeContainer.appendChild( nodeDiv );
-			nodeDiv.setInnerText( "Node salam aleikum salam aleikum salam aleikum salam aleikum salam aleikum salam" );
+    @Override
+    protected void doDetachChildren() {
+    }
 
-			childContainer = DOM.createDiv();
-			// childContainer.getStyle().setDisplay( Display.INLINE_BLOCK );
-			childContainer.setClassName( "DivTree-ChildrenContainer" );
-			nodeContainer.appendChild( childContainer );
-		}
+    class Node {
+        Element nodeContainer;
+        Element nodeDiv;
+        Element childContainer;
 
-		public void setNodeWidget( Widget widget )
-		{
-			widget.removeFromParent();
+        Widget nodeWidget = null;
 
-			if( nodeWidget != null )
-			{
-				try
-				{
-					orphan( nodeWidget );
-				}
-				finally
-				{
-					getElement().removeChild( nodeWidget.getElement() );
-					nodeWidget = null;
-				}
-			}
+        public Node(Element container) {
+            nodeContainer = container;
 
-			nodeWidget = widget;
+            nodeDiv = DOM.createDiv();
+            nodeDiv.setClassName("DivTree-NodeDiv");
+            nodeContainer.appendChild(nodeDiv);
+            nodeDiv.setInnerText("Node salam aleikum salam aleikum salam aleikum salam aleikum salam aleikum salam");
 
-			if( widget != null )
-			{
-				DOM.appendChild( nodeDiv, widget.getElement() );
+            childContainer = DOM.createDiv();
+            // childContainer.getStyle().setDisplay( Display.INLINE_BLOCK );
+            childContainer.setClassName("DivTree-ChildrenContainer");
+            nodeContainer.appendChild(childContainer);
+        }
 
-				adopt( widget );
-			}
-		}
+        public void setNodeWidget(Widget widget) {
+            widget.removeFromParent();
 
-		public Node addNodeChild()
-		{
-			Element childNodeContainer = DOM.createDiv();
-			childNodeContainer.setClassName( "DivTree-NodeContainer" );
+            if (nodeWidget != null) {
+                try {
+                    orphan(nodeWidget);
+                } finally {
+                    getElement().removeChild(nodeWidget.getElement());
+                    nodeWidget = null;
+                }
+            }
 
-			childContainer.appendChild( childNodeContainer );
+            nodeWidget = widget;
 
-			Node childNode = new Node( childNodeContainer );
+            if (widget != null) {
+                DOM.appendChild(nodeDiv, widget.getElement());
 
-			return childNode;
-		}
-	}
+                adopt(widget);
+            }
+        }
 
-	@Override
-	public boolean remove( Widget child )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+        public Node addNodeChild() {
+            Element childNodeContainer = DOM.createDiv();
+            childNodeContainer.setClassName("DivTree-NodeContainer");
 
-	@Override
-	public Iterator<Widget> iterator()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+            childContainer.appendChild(childNodeContainer);
 
-	@Override
-	protected void doAttachChildren()
-	{
-	}
+            Node childNode = new Node(childNodeContainer);
 
-	@Override
-	protected void doDetachChildren()
-	{
-	}
+            return childNode;
+        }
+    }
 }

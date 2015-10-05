@@ -1,6 +1,5 @@
 package java.util;
 
-public class Calendar
-{
+public class Calendar {
 
 }

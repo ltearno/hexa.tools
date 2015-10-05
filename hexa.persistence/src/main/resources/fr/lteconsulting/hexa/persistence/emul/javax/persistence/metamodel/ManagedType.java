@@ -30,9 +30,9 @@ import java.util.Set;
 
 public interface ManagedType<X> extends Type<X> {
 
-     Set<Attribute<? super X, ?>> getAttributes();
+    Set<Attribute<? super X, ?>> getAttributes();
 
-     Set<Attribute<X, ?>> getDeclaredAttributes();
+    Set<Attribute<X, ?>> getDeclaredAttributes();
 
     <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type);
 
@@ -54,29 +54,30 @@ public interface ManagedType<X> extends Type<X> {
 
     <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
 
-    <K, V> MapAttribute<? super X, K, V> getMap(String name, 
-                                                Class<K> keyType, 
+    <K, V> MapAttribute<? super X, K, V> getMap(String name,
+                                                Class<K> keyType,
                                                 Class<V> valueType);
 
-    <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, 
-                                                Class<K> keyType, 
+    <K, V> MapAttribute<X, K, V> getDeclaredMap(String name,
+                                                Class<K> keyType,
                                                 Class<V> valueType);
+
     Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes();
 
     Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes();
 
 
-    Attribute<? super X, ?> getAttribute(String name); 
+    Attribute<? super X, ?> getAttribute(String name);
 
-    Attribute<X, ?> getDeclaredAttribute(String name); 
+    Attribute<X, ?> getDeclaredAttribute(String name);
 
     SingularAttribute<? super X, ?> getSingularAttribute(String name);
 
     SingularAttribute<X, ?> getDeclaredSingularAttribute(String name);
 
-    CollectionAttribute<? super X, ?> getCollection(String name); 
+    CollectionAttribute<? super X, ?> getCollection(String name);
 
-    CollectionAttribute<X, ?> getDeclaredCollection(String name); 
+    CollectionAttribute<X, ?> getDeclaredCollection(String name);
 
     SetAttribute<? super X, ?> getSet(String name);
 
@@ -86,7 +87,7 @@ public interface ManagedType<X> extends Type<X> {
 
     ListAttribute<X, ?> getDeclaredList(String name);
 
-    MapAttribute<? super X, ?, ?> getMap(String name); 
+    MapAttribute<? super X, ?, ?> getMap(String name);
 
     MapAttribute<X, ?, ?> getDeclaredMap(String name);
 }

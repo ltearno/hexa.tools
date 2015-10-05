@@ -14,139 +14,114 @@ import fr.lteconsulting.hexa.databinding.properties.PropertyChangedHandler;
 import fr.lteconsulting.hexa.databinding.watchablecollection.Change;
 import fr.lteconsulting.hexa.databinding.watchablecollection.WatchableCollection;
 
-public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T>
-{
-	HashMap<T, Object> registrations = new HashMap<>();
+public class DynaObjectCollectionManager<T> extends ObjectCollectionManager<T> {
+    HashMap<T, Object> registrations = new HashMap<>();
+    Action1<List<Change>> sourceCallback = new Action1<List<Change>>() {
+        @Override
+        public void exec(List<Change> param) {
+            for (Change c : param) {
+                T record = c.getItem();
+                switch (c.getType()) {
+                    case ADD:
+                        dataPlug.updated(record);
+                        break;
+                    case REMOVE:
+                        dataPlug.deleted(record);
+                        break;
+                }
+            }
+        }
+    };
+    private boolean scheduled = false;
+    private HashSet<T> scheduledUpdates = new HashSet<>();
+    private Scheduler.ScheduledCommand updateRecordsCommand = new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+            HashSet<T> updates = scheduledUpdates;
+            scheduledUpdates = new HashSet<>();
+            scheduled = false;
 
-	protected void onStoredRow( T record, Row row )
-	{
-	}
+            for (T record : updates) {
+                // do we really still listen to that element ? Or is it a late
+                // scheduled event ?
+                if (rows.containsKey(record)) {
+                    GWT.log("UPDATE ON ROW " + record);
+                    getDataPlug().updated(record);
+                    onUpdatedRecord(record);
+                }
+            }
+        }
+    };
+    private PropertyChangedHandler propertyChangeHandler = new PropertyChangedHandler() {
+        @Override
+        public void onPropertyChanged(PropertyChangedEvent event) {
+            @SuppressWarnings("unchecked")
+            T record = (T) event.getSender();
 
-	protected void onForgetRow( T record )
-	{
-	}
+            scheduleChange(record);
+        }
+    };
 
-	protected void onForgotAllRows()
-	{
-	}
-	
-	protected void onUpdatedRecord( T record )
-	{
-	}
-	
-	public DynaObjectCollectionManager( boolean withDeleteColumn )
-	{
-		super( withDeleteColumn );
-	}
+    public DynaObjectCollectionManager(boolean withDeleteColumn) {
+        super(withDeleteColumn);
+    }
 
-	@Override
-	protected void storeRow( T record, Row row )
-	{
-		super.storeRow( record, row );
+    protected void onStoredRow(T record, Row row) {
+    }
 
-		Object registration = Properties.register( record, "*", propertyChangeHandler );
-		registrations.put( record, registration );
+    protected void onForgetRow(T record) {
+    }
 
-		onStoredRow( record, row );
-	}
+    protected void onForgotAllRows() {
+    }
 
-	@Override
-	protected void forgetRow( T record )
-	{
-		onForgetRow( record );
+    protected void onUpdatedRecord(T record) {
+    }
 
-		Object registration = registrations.remove( record );
-		Properties.removeHandler( registration );
+    @Override
+    protected void storeRow(T record, Row row) {
+        super.storeRow(record, row);
 
-		super.forgetRow( record );
-	}
+        Object registration = Properties.register(record, "*", propertyChangeHandler);
+        registrations.put(record, registration);
 
-	@Override
-	protected void forgetAllRows()
-	{
-		onForgotAllRows();
+        onStoredRow(record, row);
+    }
 
-		for( Object registration : registrations.values() )
-			Properties.removeHandler( registration );
-		registrations.clear();
+    @Override
+    protected void forgetRow(T record) {
+        onForgetRow(record);
 
-		super.forgetAllRows();
-	}
+        Object registration = registrations.remove(record);
+        Properties.removeHandler(registration);
 
-	private PropertyChangedHandler propertyChangeHandler = new PropertyChangedHandler()
-	{
-		@Override
-		public void onPropertyChanged( PropertyChangedEvent event )
-		{
-			@SuppressWarnings( "unchecked" )
-			T record = (T) event.getSender();
+        super.forgetRow(record);
+    }
 
-			scheduleChange( record );
-		}
-	};
+    @Override
+    protected void forgetAllRows() {
+        onForgotAllRows();
 
-	private boolean scheduled = false;
-	private HashSet<T> scheduledUpdates = new HashSet<>();
+        for (Object registration : registrations.values())
+            Properties.removeHandler(registration);
+        registrations.clear();
 
-	private void scheduleChange( T record )
-	{
-		boolean isNew = scheduledUpdates.add( record );
-		if( !isNew )
-			return;
+        super.forgetAllRows();
+    }
 
-		if( scheduled )
-			return;
-		scheduled = true;
-		Scheduler.get().scheduleDeferred( updateRecordsCommand );
-	}
+    private void scheduleChange(T record) {
+        boolean isNew = scheduledUpdates.add(record);
+        if (!isNew)
+            return;
 
-	private Scheduler.ScheduledCommand updateRecordsCommand = new Scheduler.ScheduledCommand()
-	{
-		@Override
-		public void execute()
-		{
-			HashSet<T> updates = scheduledUpdates;
-			scheduledUpdates = new HashSet<>();
-			scheduled = false;
-			
-			for( T record : updates )
-			{
-				// do we really still listen to that element ? Or is it a late
-				// scheduled event ?
-				if( rows.containsKey( record ) )
-				{
-					GWT.log( "UPDATE ON ROW " + record );
-					getDataPlug().updated( record );
-					onUpdatedRecord( record );
-				}
-			}
-		}
-	};
+        if (scheduled)
+            return;
+        scheduled = true;
+        Scheduler.get().scheduleDeferred(updateRecordsCommand);
+    }
 
-	public void setDataSource( WatchableCollection<T> source )
-	{
-		source.removeCallback( sourceCallback );
-		source.addCallbackAndSendAll( sourceCallback );
-	}
-
-	Action1<List<Change>> sourceCallback = new Action1<List<Change>>()
-	{
-		@Override
-		public void exec( List<Change> param )
-		{
-			for( Change c : param )
-			{
-				T record = c.getItem();
-				switch( c.getType() )
-				{
-					case ADD:
-						dataPlug.updated( record );
-						break;
-					case REMOVE:
-						dataPlug.deleted( record );
-						break;
-				}
-			}
-		}
-	};
+    public void setDataSource(WatchableCollection<T> source) {
+        source.removeCallback(sourceCallback);
+        source.addCallbackAndSendAll(sourceCallback);
+    }
 }

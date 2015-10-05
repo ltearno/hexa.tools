@@ -1,155 +1,179 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:with type="fr.lteconsulting.hexa.client.css.bindings.SkeletonHexaCss"
-		field="s"></ui:with>
-	<ui:with type="fr.lteconsulting.hexacss.client.Css" field="css"></ui:with>
-	<g:ScrollPanel>
-		<g:HTMLPanel>
-			<div class="{s.container}">
-				<h1>Sample GWT app with Skeleton used through HexaCss</h1>
-				
-				<hr/>
-				
-				<div class="{s.row}">
-					<div class="{s.oneHalfColumn} {s.column}">
-						<h4>Stop coding non-responsive applications. Let users use your applications from anywhere.</h4>
-					</div>
-					<div class="{s.oneHalfColumn} {s.column}">
-						Those are standards GWT buttons. The first one has absolutely no style added :
-						<pre><code>Button b = new Button();</code></pre>
-						<g:Button ui:field="button1">Normal</g:Button>
-						<g:Button ui:field="button2" stylePrimaryName="{s.buttonPrimary}">Primary</g:Button>
-					</div>
-				</div>
-				
-				<hr/>
-				
-				<div class="{s.row}">
-					<div class="{s.column} {s.twelveColumns}">
-						<h4>Intro</h4>
-						<p><a target="_blank" href="http://getskeleton.com/">Skeleton</a> is a dead simple, responsive CSS boilerplate.
-						It has the very basic minimum to start a application, with full responsiveness. So why not base our new <a target="_blank" href="http://www.gwtproject.org/">GWT</a> applications
-						on it ? With <a target="_blank" href="www.lteconsulting.fr/hexacss">HexaCss</a>, using Skeleton is really easy and type-safe. For example,
-						in the Java code and UiBinder, you get the class names auto-completion !</p>
-						
-						<p>Look at the <a target="_blank" href="https://github.com/ltearno/hexa.tools/tree/master/hexa.css/samples/sample5">code</a> of this sample to
-						get an idea on how to use it. It's very simple, just like the usual CssResource.</p>
-						
-						<p>One of the cool things with Skeleton is that it applies styles on HTML elements, so you can use most if the time use GWT widgets 
-						out-of-the-box, they will be already styled.</p>
-						
-						<p>Here are some samples of the GWT / Skeleton / HexaCss possibilities :</p>
-					</div>
-				</div>
-				
-				<hr/>
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with type="fr.lteconsulting.hexa.client.css.bindings.SkeletonHexaCss"
+             field="s"></ui:with>
+    <ui:with type="fr.lteconsulting.hexacss.client.Css" field="css"></ui:with>
+    <g:ScrollPanel>
+        <g:HTMLPanel>
+            <div class="{s.container}">
+                <h1>Sample GWT app with Skeleton used through HexaCss</h1>
 
-				<div class="{s.row}">
-					<h4>The Grid</h4>
-					<div class="{s.column} {s.twelveColumns} {css.exampleColumn}">Twelve</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.oneColumn} {css.exampleColumn}">One</div>
-					<div class="{s.column} {s.elevenColumns} {css.exampleColumn}">Eleven</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.twoColumns} {css.exampleColumn}">Two</div>
-					<div class="{s.column} {s.tenColumns} {css.exampleColumn}">Ten</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.threeColumns} {css.exampleColumn}">Three</div>
-					<div class="{s.column} {s.nineColumns} {css.exampleColumn}">Nine</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.fourColumns} {css.exampleColumn}">Four</div>
-					<div class="{s.column} {s.eightColumns} {css.exampleColumn}">Eight</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.fiveColumns} {css.exampleColumn}">Five</div>
-					<div class="{s.column} {s.sevenColumns} {css.exampleColumn}">Seven</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.sixColumns} {css.exampleColumn}">Six</div>
-					<div class="{s.column} {s.sixColumns} {css.exampleColumn}">Six</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.sevenColumns} {css.exampleColumn}">Seven</div>
-					<div class="{s.column} {s.fiveColumns} {css.exampleColumn}">Five</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.eightColumns} {css.exampleColumn}">Eight</div>
-					<div class="{s.column} {s.fourColumns} {css.exampleColumn}">Four</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.nineColumns} {css.exampleColumn}">Nine</div>
-					<div class="{s.column} {s.threeColumns} {css.exampleColumn}">Three</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.tenColumns} {css.exampleColumn}">Ten</div>
-					<div class="{s.column} {s.twoColumns} {css.exampleColumn}">Two</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.elevenColumns} {css.exampleColumn}">Eleven</div>
-					<div class="{s.column} {s.oneColumn} {css.exampleColumn}">One</div>
-				</div>
-				<div class="{s.row}">
-					<div class="{s.column} {s.twelveColumns} {css.exampleColumn}">Twelve</div>
-				</div>
-				
-				<hr/>
+                <hr/>
 
-				<div class="{s.row}">
-					<div class="{s.column} {s.twelveColumns}">
-						<h4>Forms</h4>
-						<p>This is a form with standard GWT widgets :</p>
-						<form>
-							<div class="{s.row}">
-								<div class="{s.sixColumns} {s.columns}">
-									<label for="exampleEmailInput">Your email</label>
-									<g:TextBox ui:field="textbox" styleName="{s.uFullWidth}"></g:TextBox>
-								</div>
-								<div class="{s.sixColumns} {s.columns}">
-									<label for="exampleRecipientInput">Reason for contacting</label>
-									<g:ListBox ui:field="listbox" styleName="{s.uFullWidth}"></g:ListBox>
-								</div>
-							</div>
-							
-							<label for="exampleMessage">Message</label>
-							<g:TextArea ui:field="textarea" styleName="{s.uFullWidth}"></g:TextArea>
-							
-							<label class="{s.uPullRight}">
-								<g:CheckBox ui:field="checkbox">Send a copy to yourself</g:CheckBox>
-							</label>
-							
-							<g:SubmitButton ui:field="submit" styleName="{s.buttonPrimary}">Submit</g:SubmitButton>
-						</form>
-					</div>
-				</div>
-				
-				<hr/>
-				
-				<div class="{s.row}">
-					<div class="{s.column} {s.twelveColumns}">
-						<h4>Tables</h4>
-						<g:FlexTable ui:field="table" styleName="{s.uFullWidth}"></g:FlexTable>
-					</div>
-				</div>
-				
-				<hr/>
-				
-				<div class="{s.row}">
-					<div class="{s.column} {s.twelveColumns}">
-						<h4>Outro</h4>
-						<p>You can find the HexaCss project here : <a target="_blank" href="www.lteconsulting.fr/hexacss">www.lteconsulting.fr/hexacss</a>, which
-						was made with love by Arnaud Tournier @ <a target="_blank" href="www.lteconsulting.fr">LTE Consulting</a>.</p>
-						
-						<p>The Skeleton project is <a target="_blank" href="http://getskeleton.com/">here</a>.</p>
-						
-						<p>And the GitHub repo containing HexaCss and many other things can be found <a target="_blank" href="https://github.com/ltearno/hexa.tools">here</a>.</p>
-					</div>
-				</div>
-			</div>
-		</g:HTMLPanel>
-	</g:ScrollPanel>
+                <div class="{s.row}">
+                    <div class="{s.oneHalfColumn} {s.column}">
+                        <h4>Stop coding non-responsive applications. Let users use your applications from anywhere.</h4>
+                    </div>
+                    <div class="{s.oneHalfColumn} {s.column}">
+                        Those are standards GWT buttons. The first one has absolutely no style added :
+                        <pre>
+                            <code>Button b = new Button();</code>
+                        </pre>
+                        <g:Button ui:field="button1">Normal</g:Button>
+                        <g:Button ui:field="button2" stylePrimaryName="{s.buttonPrimary}">Primary</g:Button>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="{s.row}">
+                    <div class="{s.column} {s.twelveColumns}">
+                        <h4>Intro</h4>
+                        <p>
+                            <a target="_blank" href="http://getskeleton.com/">Skeleton</a>
+                            is a dead simple, responsive CSS boilerplate.
+                            It has the very basic minimum to start a application, with full responsiveness. So why not
+                            base our new
+                            <a target="_blank" href="http://www.gwtproject.org/">GWT</a>
+                            applications
+                            on it ? With<a target="_blank" href="www.lteconsulting.fr/hexacss">HexaCss</a>, using
+                            Skeleton is really easy and type-safe. For example,
+                            in the Java code and UiBinder, you get the class names auto-completion !
+                        </p>
+
+                        <p>Look at the
+                            <a target="_blank"
+                               href="https://github.com/ltearno/hexa.tools/tree/master/hexa.css/samples/sample5">code
+                            </a>
+                            of this sample to
+                            get an idea on how to use it. It's very simple, just like the usual CssResource.
+                        </p>
+
+                        <p>One of the cool things with Skeleton is that it applies styles on HTML elements, so you can
+                            use most if the time use GWT widgets
+                            out-of-the-box, they will be already styled.
+                        </p>
+
+                        <p>Here are some samples of the GWT / Skeleton / HexaCss possibilities :</p>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="{s.row}">
+                    <h4>The Grid</h4>
+                    <div class="{s.column} {s.twelveColumns} {css.exampleColumn}">Twelve</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.oneColumn} {css.exampleColumn}">One</div>
+                    <div class="{s.column} {s.elevenColumns} {css.exampleColumn}">Eleven</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.twoColumns} {css.exampleColumn}">Two</div>
+                    <div class="{s.column} {s.tenColumns} {css.exampleColumn}">Ten</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.threeColumns} {css.exampleColumn}">Three</div>
+                    <div class="{s.column} {s.nineColumns} {css.exampleColumn}">Nine</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.fourColumns} {css.exampleColumn}">Four</div>
+                    <div class="{s.column} {s.eightColumns} {css.exampleColumn}">Eight</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.fiveColumns} {css.exampleColumn}">Five</div>
+                    <div class="{s.column} {s.sevenColumns} {css.exampleColumn}">Seven</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.sixColumns} {css.exampleColumn}">Six</div>
+                    <div class="{s.column} {s.sixColumns} {css.exampleColumn}">Six</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.sevenColumns} {css.exampleColumn}">Seven</div>
+                    <div class="{s.column} {s.fiveColumns} {css.exampleColumn}">Five</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.eightColumns} {css.exampleColumn}">Eight</div>
+                    <div class="{s.column} {s.fourColumns} {css.exampleColumn}">Four</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.nineColumns} {css.exampleColumn}">Nine</div>
+                    <div class="{s.column} {s.threeColumns} {css.exampleColumn}">Three</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.tenColumns} {css.exampleColumn}">Ten</div>
+                    <div class="{s.column} {s.twoColumns} {css.exampleColumn}">Two</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.elevenColumns} {css.exampleColumn}">Eleven</div>
+                    <div class="{s.column} {s.oneColumn} {css.exampleColumn}">One</div>
+                </div>
+                <div class="{s.row}">
+                    <div class="{s.column} {s.twelveColumns} {css.exampleColumn}">Twelve</div>
+                </div>
+
+                <hr/>
+
+                <div class="{s.row}">
+                    <div class="{s.column} {s.twelveColumns}">
+                        <h4>Forms</h4>
+                        <p>This is a form with standard GWT widgets :</p>
+                        <form>
+                            <div class="{s.row}">
+                                <div class="{s.sixColumns} {s.columns}">
+                                    <label for="exampleEmailInput">Your email</label>
+                                    <g:TextBox ui:field="textbox" styleName="{s.uFullWidth}"></g:TextBox>
+                                </div>
+                                <div class="{s.sixColumns} {s.columns}">
+                                    <label for="exampleRecipientInput">Reason for contacting</label>
+                                    <g:ListBox ui:field="listbox" styleName="{s.uFullWidth}"></g:ListBox>
+                                </div>
+                            </div>
+
+                            <label for="exampleMessage">Message</label>
+                            <g:TextArea ui:field="textarea" styleName="{s.uFullWidth}"></g:TextArea>
+
+                            <label class="{s.uPullRight}">
+                                <g:CheckBox ui:field="checkbox">Send a copy to yourself</g:CheckBox>
+                            </label>
+
+                            <g:SubmitButton ui:field="submit" styleName="{s.buttonPrimary}">Submit</g:SubmitButton>
+                        </form>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="{s.row}">
+                    <div class="{s.column} {s.twelveColumns}">
+                        <h4>Tables</h4>
+                        <g:FlexTable ui:field="table" styleName="{s.uFullWidth}"></g:FlexTable>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="{s.row}">
+                    <div class="{s.column} {s.twelveColumns}">
+                        <h4>Outro</h4>
+                        <p>You can find the HexaCss project here :<a target="_blank"
+                                                                     href="www.lteconsulting.fr/hexacss">
+                            www.lteconsulting.fr/hexacss</a>, which
+                            was made with love by Arnaud Tournier @<a target="_blank" href="www.lteconsulting.fr">LTE
+                                Consulting</a>.
+                        </p>
+
+                        <p>The Skeleton project is<a target="_blank" href="http://getskeleton.com/">here</a>.
+                        </p>
+
+                        <p>And the GitHub repo containing HexaCss and many other things can be found<a target="_blank"
+                                                                                                       href="https://github.com/ltearno/hexa.tools">
+                            here</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </g:HTMLPanel>
+    </g:ScrollPanel>
 </ui:UiBinder> 

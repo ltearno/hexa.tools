@@ -12,63 +12,54 @@ import fr.lteconsulting.hexa.client.interfaces.IHasIntegerId;
 import fr.lteconsulting.hexa.client.tools.DoubleMap;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 
-public abstract class SelectionColumnMng<T extends IHasIntegerId> extends ROColumnMng<T>
-{
-	final DoubleMap<Integer, CheckBox> checkBoxes = new DoubleMap<>();
-	final Set<Integer> selected = new HashSet<>();
+public abstract class SelectionColumnMng<T extends IHasIntegerId> extends ROColumnMng<T> {
+    final DoubleMap<Integer, CheckBox> checkBoxes = new DoubleMap<>();
+    final Set<Integer> selected = new HashSet<>();
+    private ValueChangeHandler<Boolean> valueChangeHandler = new ValueChangeHandler<Boolean>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<Boolean> event) {
+            int recordId = checkBoxes.getReverse((CheckBox) event.getSource());
 
-	protected abstract boolean isDisplayed( int recordId );
+            boolean isSelected = ((CheckBox) event.getSource()).getValue();
+            if (isSelected)
+                selected.add(recordId);
+            else
+                selected.remove(recordId);
+        }
+    };
 
-	public SelectionColumnMng( String title )
-	{
-		super( title );
-	}
+    public SelectionColumnMng(String title) {
+        super(title);
+    }
 
-	public List<Integer> getSelectedRecords()
-	{
-		List<Integer> set = new ArrayList<>();
-		for( int recordId : selected )
-			if( isDisplayed( recordId ) )
-				set.add( recordId );
-		return set;
-	}
+    protected abstract boolean isDisplayed(int recordId);
 
-	@Override
-	public void fillCell( Printer printer, T record )
-	{
-		CheckBox cb = getCheckBoxForRecord( record );
+    public List<Integer> getSelectedRecords() {
+        List<Integer> set = new ArrayList<>();
+        for (int recordId : selected)
+            if (isDisplayed(recordId))
+                set.add(recordId);
+        return set;
+    }
 
-		cb.setValue( selected.contains( record.getId() ), false );
+    @Override
+    public void fillCell(Printer printer, T record) {
+        CheckBox cb = getCheckBoxForRecord(record);
 
-		printer.setWidget( cb );
-	}
+        cb.setValue(selected.contains(record.getId()), false);
 
-	private CheckBox getCheckBoxForRecord( T record )
-	{
-		CheckBox cb = checkBoxes.get( record.getId() );
-		if( cb == null )
-		{
-			cb = new CheckBox();
-			checkBoxes.put( record.getId(), cb );
+        printer.setWidget(cb);
+    }
 
-			cb.addValueChangeHandler( valueChangeHandler );
-		}
+    private CheckBox getCheckBoxForRecord(T record) {
+        CheckBox cb = checkBoxes.get(record.getId());
+        if (cb == null) {
+            cb = new CheckBox();
+            checkBoxes.put(record.getId(), cb);
 
-		return cb;
-	}
+            cb.addValueChangeHandler(valueChangeHandler);
+        }
 
-	private ValueChangeHandler<Boolean> valueChangeHandler = new ValueChangeHandler<Boolean>()
-	{
-		@Override
-		public void onValueChange( ValueChangeEvent<Boolean> event )
-		{
-			int recordId = checkBoxes.getReverse( (CheckBox) event.getSource() );
-
-			boolean isSelected = ((CheckBox) event.getSource()).getValue();
-			if( isSelected )
-				selected.add( recordId );
-			else
-				selected.remove( recordId );
-		}
-	};
+        return cb;
+    }
 }

@@ -5,6 +5,10 @@ package java.text;
  */
 
 public class DecimalFormat {
-	public DecimalFormat(String pattern) {}
-	public String format(int value) {return null;}
+    public DecimalFormat(String pattern) {
+    }
+
+    public String format(int value) {
+        return null;
+    }
 }

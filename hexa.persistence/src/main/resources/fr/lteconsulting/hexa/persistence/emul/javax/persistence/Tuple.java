@@ -32,9 +32,9 @@ public interface Tuple {
 
     <X> X get(TupleElement<X> tupleElement);
 
-    <X> X get(String alias, Class<X> type); 
+    <X> X get(String alias, Class<X> type);
 
-    Object get(String alias); 
+    Object get(String alias);
 
     <X> X get(int i, Class<X> type);
 

@@ -43,7 +43,7 @@ public interface IdentifiableType<X> extends ManagedType<X> {
 
     boolean hasVersionAttribute();
 
-     Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
+    Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
 
     Type<?> getIdType();
 }

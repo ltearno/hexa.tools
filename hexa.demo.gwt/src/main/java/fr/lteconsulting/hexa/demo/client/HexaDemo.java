@@ -16,63 +16,55 @@ import fr.lteconsulting.hexa.demo.client.databinding.DataBindingDemo;
 
 /**
  * The GWT EntryPoint class to demo things from the Hexa Tools library
- * 
- * @author Arnaud Tournier
  *
+ * @author Arnaud Tournier
  */
-public class HexaDemo implements EntryPoint
-{
-	@Override
-	public void onModuleLoad()
-	{
-		CenterPanel centerPanel = new CenterPanel();
-		RootLayoutPanel.get().add( centerPanel );
+public class HexaDemo implements EntryPoint {
+    @Override
+    public void onModuleLoad() {
+        CenterPanel centerPanel = new CenterPanel();
+        RootLayoutPanel.get().add(centerPanel);
 //		centerPanel.setWidget( new Form() );
-		
-		DataBindingDemo dataBindingDemo = new DataBindingDemo();
-		dataBindingDemo.run( centerPanel );
-	}
+
+        DataBindingDemo dataBindingDemo = new DataBindingDemo();
+        dataBindingDemo.run(centerPanel);
+    }
 }
 
-class Form extends ComplexPanel
-{
-	HTMLSnip snip = new HTMLSnip( "<b>Demos</b>"
-			+ "<ul>"
-			+ "<li id='#DATABINDING#'>Data Binding</li>"
-			+ "<li id='#PERSISTENCE#'>Jpa 4 Gwt</li>"
-			+ "</ul>" );
-	
-	Element dataBinding;
-	Element persistence;
-	
-	public Form()
-	{
-		snip.addElement( "DATABINDING" );
-		snip.addElement( "PERSISTENCE" );
-		
-		DivElement main = Document.get().createDivElement();
-		
-		main.setInnerHTML( snip.getSnip() );
-		
-		addDomHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				if( event.getNativeEvent().getEventTarget() == dataBinding.cast() )
-					Window.alert( "Data Binding !" );
-				if( event.getNativeEvent().getEventTarget() == persistence.cast() )
-					Window.alert( "Persistence !" );
-			}
-		}, ClickEvent.getType() );
-	}
-	
-	@Override
-	protected void onLoad()
-	{
-		super.onLoad();
-		
-		dataBinding = Document.get().getElementById( snip.getElementId( "DATABINDING" ) );
-		persistence = Document.get().getElementById( snip.getElementId( "PERSISTENCE" ) );
-	}
+class Form extends ComplexPanel {
+    HTMLSnip snip = new HTMLSnip("<b>Demos</b>"
+        + "<ul>"
+        + "<li id='#DATABINDING#'>Data Binding</li>"
+        + "<li id='#PERSISTENCE#'>Jpa 4 Gwt</li>"
+        + "</ul>");
+
+    Element dataBinding;
+    Element persistence;
+
+    public Form() {
+        snip.addElement("DATABINDING");
+        snip.addElement("PERSISTENCE");
+
+        DivElement main = Document.get().createDivElement();
+
+        main.setInnerHTML(snip.getSnip());
+
+        addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (event.getNativeEvent().getEventTarget() == dataBinding.cast())
+                    Window.alert("Data Binding !");
+                if (event.getNativeEvent().getEventTarget() == persistence.cast())
+                    Window.alert("Persistence !");
+            }
+        }, ClickEvent.getType());
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+
+        dataBinding = Document.get().getElementById(snip.getElementId("DATABINDING"));
+        persistence = Document.get().getElementById(snip.getElementId("PERSISTENCE"));
+    }
 }

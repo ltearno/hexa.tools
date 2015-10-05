@@ -1,15 +1,14 @@
 package fr.lteconsulting.hexa.classinfo.gwt;
 
 
-
 /**
  * To be used with {@link ReflectedClasses} annotation
- * 
+ * <p/>
  * When you inheritDepth this interface, declare a void register() method
  * annotated with {@link ReflectedClasses}.<br/>
  * Call this method to register the use of reflection
  * on listed classes
- * 
+ * <p/>
  * Example:<br/>
  * <pre>
  * // Declare your Bundle :
@@ -24,18 +23,17 @@ package fr.lteconsulting.hexa.classinfo.gwt;
  *      })
  *      void register();
  * }
- * 
+ *
  * // Register it
  * MyBundle bundle = GWT.create( MyBundle.class );
  * bundle.register();
- * 
+ *
  * // Now the DataBinding engine can use those classes.
  * // You can also use them through ClazzInfo :
  * Clazz<MyDTOClass> clazz = ClassInfo.Clazz( MyDTOClass.class );
  * clazz.getMethods(); // and other reflection methods...
  * </pre>
  */
-public interface ClazzBundle
-{
+public interface ClazzBundle {
     void register();
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>fr.lteconsulting</groupId>
@@ -10,7 +11,9 @@
     <artifactId>hexacss-maven-plugin</artifactId>
     <version>1.4-SNAPSHOT</version>
     <name>hexa.css.maven-plugin</name>
-    <description>HexaCss is a tool to efficiently integrate CSS frameworks (like Less, Sass, GSS, ...) with GWT. This is the associated Maven plugin</description>
+    <description>HexaCss is a tool to efficiently integrate CSS frameworks (like Less, Sass, GSS, ...) with GWT. This is
+        the associated Maven plugin
+    </description>
     <url>http://www.lteconsulting.fr/hexacss</url>
     <packaging>maven-plugin</packaging>
     <dependencies>
@@ -79,22 +82,22 @@
                             <pluginExecutions>
                                 <pluginExecution>
                                     <pluginExecutionFilter>
-                                    <groupId>
-											org.apache.maven.plugins
-										</groupId>
-                                    <artifactId>
-											maven-plugin-plugin
-										</artifactId>
-                                    <versionRange>
-											[3.2,)
-										</versionRange>
-                                    <goals>
-                                    <goal>descriptor</goal>
-                                    <goal>helpmojo</goal>
-                                    </goals>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-plugin-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [3.2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>descriptor</goal>
+                                            <goal>helpmojo</goal>
+                                        </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                    <ignore/>
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>

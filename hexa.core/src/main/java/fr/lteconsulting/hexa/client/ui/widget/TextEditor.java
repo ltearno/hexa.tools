@@ -6,58 +6,46 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.TextBox;
 
-public abstract class TextEditor extends GenericEditor<TextBox>
-{
-	protected abstract void onValidate( String newValue );
+public abstract class TextEditor extends GenericEditor<TextBox> {
+    public TextEditor(String text, boolean fShowCancel) {
+        this(text, fShowCancel, true);
+    }
 
-	public TextEditor( String text, boolean fShowCancel )
-	{
-		this( text, fShowCancel, true );
-	}
-	
-	public TextEditor( String text, boolean fShowCancel, boolean fShowValidator )
-	{
-		super( new TextBox(), fShowCancel, fShowValidator );
-		
-		getEditorWidget().addAttachHandler( new AttachEvent.Handler()
-		{
-			@Override
-			public void onAttachOrDetach( AttachEvent event )
-			{
-				getEditorWidget().selectAll();
-			}
-		} );
-		
-		getEditorWidget().addKeyUpHandler( new KeyUpHandler()
-		{
-			@Override
-			public void onKeyUp( KeyUpEvent event )
-			{
-				if( event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER )
-				{
-					onValidate( getEditorWidget().getText() );
-					event.stopPropagation();
-				}
-				else if( event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE )
-				{
-					finishedEdition();
-					event.stopPropagation();
-				}
-			}
-		} );
+    public TextEditor(String text, boolean fShowCancel, boolean fShowValidator) {
+        super(new TextBox(), fShowCancel, fShowValidator);
 
-		getEditorWidget().setText( text );
-	}
+        getEditorWidget().addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent event) {
+                getEditorWidget().selectAll();
+            }
+        });
 
-	@Override
-	protected final void onValidate( TextBox widget )
-	{
-		onValidate( widget.getText() );
-	}
+        getEditorWidget().addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+                    onValidate(getEditorWidget().getText());
+                    event.stopPropagation();
+                } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+                    finishedEdition();
+                    event.stopPropagation();
+                }
+            }
+        });
 
-	protected void displayMessage( String text )
-	{
-		getEditorWidget().setText( text );
-		getEditorWidget().setEnabled( false );
-	}
+        getEditorWidget().setText(text);
+    }
+
+    protected abstract void onValidate(String newValue);
+
+    @Override
+    protected final void onValidate(TextBox widget) {
+        onValidate(widget.getText());
+    }
+
+    protected void displayMessage(String text) {
+        getEditorWidget().setText(text);
+        getEditorWidget().setEnabled(false);
+    }
 }

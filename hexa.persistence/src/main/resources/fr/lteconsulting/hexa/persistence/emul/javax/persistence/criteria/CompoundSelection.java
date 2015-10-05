@@ -26,4 +26,5 @@
 package javax.persistence.criteria;
 
 
-public interface CompoundSelection<X> extends Selection<X> {}
+public interface CompoundSelection<X> extends Selection<X> {
+}

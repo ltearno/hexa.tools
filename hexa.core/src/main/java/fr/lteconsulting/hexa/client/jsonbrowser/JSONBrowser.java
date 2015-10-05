@@ -1,5 +1,4 @@
 package fr.lteconsulting.hexa.client.jsonbrowser;
 
-public interface JSONBrowser
-{
+public interface JSONBrowser {
 }

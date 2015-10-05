@@ -11,37 +11,30 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The form widget that we will use to edit the person objects.
- * 
+ * <p/>
  * Note that it is not bounded to the {@link Person} class. Only the
  * fields are named with the same name as the Person's fields.
- * That means that this form can be reused with other classes having the 
+ * That means that this form can be reused with other classes having the
  * same fields.
- * 
- * @author Arnaud
  *
+ * @author Arnaud
  */
-public class PersonForm extends Composite
-{
-	private static PersonFormUiBinder uiBinder = GWT.create( PersonFormUiBinder.class );
+public class PersonForm extends Composite {
+    private static PersonFormUiBinder uiBinder = GWT.create(PersonFormUiBinder.class);
+    @UiField
+    TextBox firstName;
+    @UiField
+    TextBox lastName;
+    @UiField
+    TextBox preferredColor;
 
-	interface PersonFormUiBinder extends UiBinder<Widget, PersonForm>
-	{
-	}
+    public PersonForm() {
+        initWidget(uiBinder.createAndBindUi(this));
 
-	@UiField
-	TextBox firstName;
+        getElement().getStyle().setBorderWidth(10, Unit.PX);
+        getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
+    }
 
-	@UiField
-	TextBox lastName;
-
-	@UiField
-	TextBox preferredColor;
-
-	public PersonForm()
-	{
-		initWidget( uiBinder.createAndBindUi( this ) );
-		
-		getElement().getStyle().setBorderWidth( 10, Unit.PX );
-		getElement().getStyle().setBorderStyle( BorderStyle.SOLID );
-	}
+    interface PersonFormUiBinder extends UiBinder<Widget, PersonForm> {
+    }
 }

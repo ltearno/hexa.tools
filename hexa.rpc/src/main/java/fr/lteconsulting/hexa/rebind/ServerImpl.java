@@ -6,32 +6,28 @@ import fr.lteconsulting.hexa.client.comm.DataProxyFast;
 import fr.lteconsulting.hexa.client.comm.GenericJSO;
 import com.google.gwt.core.client.JsArray;
 
-public class ServerImpl
-{
-	public interface Proxy<T>
-	{
-		public T create( GenericJSO jso );
-	}
+public class ServerImpl {
+    @SuppressWarnings("unused")
+    private <T> ArrayList<T> deserializeArray(JsArray<GenericJSO> jsoss, Proxy<T> proxy) {
+        ArrayList<T> list = new ArrayList<T>();
+        for (int i = 0; i < jsoss.length(); i++)
+            list.add(proxy.create(jsoss.get(i)));
+        return list;
+    }
 
-	@SuppressWarnings( "unused" )
-	private <T> ArrayList<T> deserializeArray( JsArray<GenericJSO> jsoss, Proxy<T> proxy )
-	{
-		ArrayList<T> list = new ArrayList<T>();
-		for( int i = 0; i < jsoss.length(); i++ )
-			list.add( proxy.create( jsoss.get( i ) ) );
-		return list;
-	}
+    public interface Proxy<T> {
+        public T create(GenericJSO jso);
+    }
 
-	/*
-	 * EXAMPLE DATA PROXY FAST
-	 */
-	interface Daat extends DataProxyFast
-	{
-		int getId();
-	}
+    /*
+     * EXAMPLE DATA PROXY FAST
+     */
+    interface Daat extends DataProxyFast {
+        int getId();
+    }
 
 	/*
-	 * class DaatDataProxyFastFactory implements
+     * class DaatDataProxyFastFactory implements
 	 * DataProxyFastFactories.IDataProxyFastFactory { class DaatImpl extends
 	 * GenericJSO implements Daat { protected DaatImpl() {}
 	 * 

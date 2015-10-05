@@ -11,115 +11,101 @@ import fr.lteconsulting.hexa.client.ui.treetable.event.TableCellDoubleClickEvent
 
 /**
  * @author Arnaud
- *
  */
-public class TreeTableEditorManager
-{
-	public interface TreeTableEditorManagerCallback
-	{
-		// when the cell must be updated by the client
-		public void onTouchCellContent( Row row, int column );
+public class TreeTableEditorManager {
+    private TreeTable m_table = null;
+    private TreeTableEditorManagerCallback m_callback = null;
+    private Row m_currentEditedItem = null;
+    private int m_currentEditedColumn = -1;
+    private Widget m_currentEditor = null;
+    TableCellDoubleClickHandler tableCellDoubleClickHandler = new TableCellDoubleClickHandler() {
+        @Override
+        public void onTableCellDoubleClick(Row item, int column, DoubleClickEvent clickEvent) {
+            editCell(item, column);
+        }
+    };
 
-		// when the editor is constructed, call callback.editorReady( ... )
-		public IEditor editCell( Row row, int column );
-	}
+    public void setTable(TreeTable table, TreeTableEditorManagerCallback callback) {
+        m_table = table;
+        m_callback = callback;
+        m_table.addTableCellDoubleClickHandler(tableCellDoubleClickHandler);
+    }
 
-	private TreeTable m_table = null;
-	private TreeTableEditorManagerCallback m_callback = null;
+    public void editCell(Row item, int column) {
+        // forget edition if already opened at the same place
+        if (m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column)
+            return;
 
-	private Row m_currentEditedItem = null;
-	private int m_currentEditedColumn = -1;
-	private Widget m_currentEditor = null;
+        // remove any previous edition state
+        _RemoveValidator(m_currentEditedItem, m_currentEditedColumn);
 
-	public void setTable( TreeTable table, TreeTableEditorManagerCallback callback )
-	{
-		m_table = table;
-		m_callback = callback;
-		m_table.addTableCellDoubleClickHandler( tableCellDoubleClickHandler );
-	}
+        if (m_callback == null)
+            return;
 
-	public void editCell( Row item, int column )
-	{
-		// forget edition if already opened at the same place
-		if( m_currentEditor != null && m_currentEditedItem == item && m_currentEditedColumn == column )
-			return;
+        // now we really register as editing
+        m_currentEditedItem = item;
+        m_currentEditedColumn = column;
 
-		// remove any previous edition state
-		_RemoveValidator( m_currentEditedItem, m_currentEditedColumn );
+        // get any editor for that cell or forget about it
+        IEditor editor = m_callback.editCell(item, column);
+        if (editor != null)
+            useEditor(item, column, editor);
+    }
 
-		if( m_callback == null )
-			return;
+    private void useEditor(final Row item, final int column, IEditor editor) {
+        // forget any not relevant editor
+        if (m_currentEditedItem != item || m_currentEditedColumn != column)
+            return;
 
-		// now we really register as editing
-		m_currentEditedItem = item;
-		m_currentEditedColumn = column;
+        // store the pixel size of the TD, editor might be gentleful to ask
+        Element td = item.getCell(column).getTdElement();
+        int width = td.getOffsetWidth() - 2;
+        int height = td.getOffsetHeight() - 2;
+        final Size preferredEditorSize = new Size(width, height);
 
-		// get any editor for that cell or forget about it
-		IEditor editor = m_callback.editCell( item, column );
-		if( editor != null )
-			useEditor( item, column, editor );
-	}
+        editor.setHost(new IEditorHost() {
+            @Override
+            public Size getPreferredSize() {
+                return preferredEditorSize;
+            }
 
-	TableCellDoubleClickHandler tableCellDoubleClickHandler = new TableCellDoubleClickHandler()
-	{
-		@Override
-		public void onTableCellDoubleClick( Row item, int column, DoubleClickEvent clickEvent )
-		{
-			editCell( item, column );
-		}
-	};
+            @Override
+            public void finishedEdition() {
+                _RemoveValidator(item, column);
+            }
+        });
 
-	private void useEditor( final Row item, final int column, IEditor editor )
-	{
-		// forget any not relevant editor
-		if( m_currentEditedItem != item || m_currentEditedColumn != column )
-			return;
+        m_currentEditor = editor.getWidget();
+        if (m_currentEditor == null)
+            return;
 
-		// store the pixel size of the TD, editor might be gentleful to ask
-		Element td = item.getCell( column ).getTdElement();
-		int width = td.getOffsetWidth() - 2;
-		int height = td.getOffsetHeight() - 2;
-		final Size preferredEditorSize = new Size( width, height );
+        // display that in the table
+        item.setWidget(column, m_currentEditor);
+    }
 
-		editor.setHost( new IEditorHost()
-		{
-			@Override
-			public Size getPreferredSize()
-			{
-				return preferredEditorSize;
-			}
+    // just replace the validator widget by a text in the table
+    private void _RemoveValidator(Row item, int column) {
+        // already clean ?
+        if (m_currentEditedItem == null && m_currentEditedColumn < 0)
+            return;
 
-			@Override
-			public void finishedEdition()
-			{
-				_RemoveValidator( item, column );
-			}
-		} );
+        // touch the table
+        if (m_callback != null)
+            m_callback.onTouchCellContent(item, column);
 
-		m_currentEditor = editor.getWidget();
-		if( m_currentEditor == null )
-			return;
+        if (m_currentEditor != null)
+            m_currentEditor.removeFromParent();
 
-		// display that in the table
-		item.setWidget( column, m_currentEditor );
-	}
+        m_currentEditor = null;
+        m_currentEditedItem = null;
+        m_currentEditedColumn = -1;
+    }
 
-	// just replace the validator widget by a text in the table
-	private void _RemoveValidator( Row item, int column )
-	{
-		// already clean ?
-		if( m_currentEditedItem == null && m_currentEditedColumn < 0 )
-			return;
+    public interface TreeTableEditorManagerCallback {
+        // when the cell must be updated by the client
+        public void onTouchCellContent(Row row, int column);
 
-		// touch the table
-		if( m_callback != null )
-			m_callback.onTouchCellContent( item, column );
-
-		if( m_currentEditor != null )
-			m_currentEditor.removeFromParent();
-
-		m_currentEditor = null;
-		m_currentEditedItem = null;
-		m_currentEditedColumn = -1;
-	}
+        // when the editor is constructed, call callback.editorReady( ... )
+        public IEditor editCell(Row row, int column);
+    }
 }

@@ -9,56 +9,48 @@ import fr.lteconsulting.hexa.client.datatable.Cell;
 import fr.lteconsulting.hexa.client.datatable.DataTable;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
 
-public abstract class ImageClickColumn<T> implements IColumn<T>
-{
-	protected abstract void onClick( Cell cell );
-	protected abstract int getColumnIdx();
-	
-	String title;
-	ImageResource image;
-	DataTable table;
-	
-	public ImageClickColumn( String title, ImageResource image, DataTable table )
-	{
-		this.title = title;
-		this.image = image;
-		this.table = table;
-		
-		table.addCellClickHandler( handler );
-	}
-	
-	@Override
-	public String getTitle()
-	{
-		return title;
-	}
+public abstract class ImageClickColumn<T> implements IColumn<T> {
+    String title;
+    ImageResource image;
+    DataTable table;
+    private final ClickHandler handler = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            Cell cell = table.getCellForEvent(event.getNativeEvent().<Event>cast());
+            if (cell == null)
+                return;
 
-	@Override
-	public void fillCell( Printer printer, T record )
-	{
-		printer.setHTML( "<img src='" + image.getSafeUri().asString() + "'/>" );
-	}
+            //check our column
+            if (cell.getCellIndex() != getColumnIdx())
+                return;
 
-	@Override
-	public IEditor editCell( T record )
-	{
-		return null;
-	}
-	
-	private final ClickHandler handler = new ClickHandler()
-	{	
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			Cell cell = table.getCellForEvent( event.getNativeEvent().<Event>cast() );
-			if( cell == null )
-				return;
-			
-			//check our column
-			if( cell.getCellIndex() != getColumnIdx() )
-				return;
-			
-			ImageClickColumn.this.onClick( cell );
-		}
-	};
+            ImageClickColumn.this.onClick(cell);
+        }
+    };
+    public ImageClickColumn(String title, ImageResource image, DataTable table) {
+        this.title = title;
+        this.image = image;
+        this.table = table;
+
+        table.addCellClickHandler(handler);
+    }
+
+    protected abstract void onClick(Cell cell);
+
+    protected abstract int getColumnIdx();
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void fillCell(Printer printer, T record) {
+        printer.setHTML("<img src='" + image.getSafeUri().asString() + "'/>");
+    }
+
+    @Override
+    public IEditor editCell(T record) {
+        return null;
+    }
 }

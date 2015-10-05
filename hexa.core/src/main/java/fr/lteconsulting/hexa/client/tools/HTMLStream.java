@@ -13,227 +13,202 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
 
-public class HTMLStream extends ComplexPanel
-{
-	Element div;
+public class HTMLStream extends ComplexPanel {
+    Element div;
 
-	Element currentParagraph = null;
+    Element currentParagraph = null;
 
-	HashMap<String, String> curSet = new HashMap<String, String>();
-	HashMap<String, String> curParCurSet = new HashMap<String, String>();
+    HashMap<String, String> curSet = new HashMap<String, String>();
+    HashMap<String, String> curParCurSet = new HashMap<String, String>();
 
-	public HTMLStream()
-	{
-		div = DOM.createDiv();
-		setElement( div );
-	}
+    public HTMLStream() {
+        div = DOM.createDiv();
+        setElement(div);
+    }
 
-	@Override
-	public void clear()
-	{
-		clearAll();
-	}
+    @Override
+    public void clear() {
+        clearAll();
+    }
 
-	@Override
-	public void add( Widget widget )
-	{
-		addDown( widget );
-	}
+    @Override
+    public void add(Widget widget) {
+        addDown(widget);
+    }
 
-	public HTMLStream clearAll()
-	{
-		WidgetCollection childs = getChildren();
-		while( childs.size() > 0 )
-		{
-			childs.remove( 0 );
-		}
-		div.setInnerHTML( "" );
-		currentParagraph = null;
-		curSet.clear();
-		curParCurSet.clear();
+    public HTMLStream clearAll() {
+        WidgetCollection childs = getChildren();
+        while (childs.size() > 0) {
+            childs.remove(0);
+        }
+        div.setInnerHTML("");
+        currentParagraph = null;
+        curSet.clear();
+        curParCurSet.clear();
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream set( String attr, String value )
-	{
-		if( attr == null )
-			return this;
+    public HTMLStream set(String attr, String value) {
+        if (attr == null)
+            return this;
 
-		if( value == null )
-			curSet.remove( attr );
-		else
-			curSet.put( attr, value );
+        if (value == null)
+            curSet.remove(attr);
+        else
+            curSet.put(attr, value);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream unset( String attr )
-	{
-		return set( attr, null );
-	}
+    public HTMLStream unset(String attr) {
+        return set(attr, null);
+    }
 
-	public HTMLStream bold( boolean fOn )
-	{
-		if( fOn )
-			curSet.put( "weight", FontWeight.BOLD.name() );
-		else
-			curSet.put( "weight", FontWeight.NORMAL.name() );
-		return this;
-	}
+    public HTMLStream bold(boolean fOn) {
+        if (fOn)
+            curSet.put("weight", FontWeight.BOLD.name());
+        else
+            curSet.put("weight", FontWeight.NORMAL.name());
+        return this;
+    }
 
-	public HTMLStream text( String text )
-	{
-		for( Entry<String, String> e : curSet.entrySet() )
-		{
-			assert (e.getValue() != null);
+    public HTMLStream text(String text) {
+        for (Entry<String, String> e : curSet.entrySet()) {
+            assert (e.getValue() != null);
 
-			String curValue = curParCurSet.get( e.getKey() );
-			if( curValue != null && curValue.equals( e.getValue() ) )
-				continue;
+            String curValue = curParCurSet.get(e.getKey());
+            if (curValue != null && curValue.equals(e.getValue()))
+                continue;
 
-			curParCurSet.put( e.getKey(), e.getValue() );
+            curParCurSet.put(e.getKey(), e.getValue());
 
-			// reset the current paragraph so it is recreated with correct
-			// attributes
-			currentParagraph = null;
-		}
+            // reset the current paragraph so it is recreated with correct
+            // attributes
+            currentParagraph = null;
+        }
 
-		for( Entry<String, String> e : curParCurSet.entrySet() )
-		{
-			String wantedValue = curSet.get( e.getKey() );
-			if( wantedValue != null && wantedValue.equals( e.getValue() ) )
-				continue;
+        for (Entry<String, String> e : curParCurSet.entrySet()) {
+            String wantedValue = curSet.get(e.getKey());
+            if (wantedValue != null && wantedValue.equals(e.getValue()))
+                continue;
 
-			if( wantedValue == null )
-				curParCurSet.remove( e.getKey() );
-			else
-				curParCurSet.put( e.getKey(), wantedValue );
+            if (wantedValue == null)
+                curParCurSet.remove(e.getKey());
+            else
+                curParCurSet.put(e.getKey(), wantedValue);
 
-			// reset the current paragraph so it is recreated with correct
-			// attributes
-			currentParagraph = null;
-		}
+            // reset the current paragraph so it is recreated with correct
+            // attributes
+            currentParagraph = null;
+        }
 
-		ensureCurPar();
+        ensureCurPar();
 
-		currentParagraph.setInnerHTML( currentParagraph.getInnerHTML() + text );
+        currentParagraph.setInnerHTML(currentParagraph.getInnerHTML() + text);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream html( String html )
-	{
-		// reset the current paragraph so it is recreated later with correct
-		// attributes
-		currentParagraph = null;
-		curParCurSet.clear();
+    public HTMLStream html(String html) {
+        // reset the current paragraph so it is recreated later with correct
+        // attributes
+        currentParagraph = null;
+        curParCurSet.clear();
 
-		Element wrap = DOM.createSpan();
-		div.appendChild( wrap );
+        Element wrap = DOM.createSpan();
+        div.appendChild(wrap);
 
-		wrap.setInnerHTML( html );
+        wrap.setInnerHTML(html);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream br()
-	{
-		currentParagraph = null;
+    public HTMLStream br() {
+        currentParagraph = null;
 
-		div.appendChild( DOM.createElement( "br" ) );
+        div.appendChild(DOM.createElement("br"));
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream addLeft( Widget widget )
-	{
-		Element container = addPrivate( widget );
+    public HTMLStream addLeft(Widget widget) {
+        Element container = addPrivate(widget);
 
-		container.getStyle().setFloat( Float.LEFT );
+        container.getStyle().setFloat(Float.LEFT);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream addRight( Widget widget )
-	{
-		Element container = addPrivate( widget );
+    public HTMLStream addRight(Widget widget) {
+        Element container = addPrivate(widget);
 
-		container.getStyle().setFloat( Float.RIGHT );
+        container.getStyle().setFloat(Float.RIGHT);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream addDown( Widget widget )
-	{
-		addPrivate( widget );
+    public HTMLStream addDown(Widget widget) {
+        addPrivate(widget);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream addInline( IsWidget widget )
-	{
-		return addInline( widget.asWidget() );
-	}
+    public HTMLStream addInline(IsWidget widget) {
+        return addInline(widget.asWidget());
+    }
 
-	public HTMLStream addInline( Widget widget )
-	{
-		Element element = addInlinePrivate( widget );
-		element.getStyle().setDisplay( Display.INLINE );
+    public HTMLStream addInline(Widget widget) {
+        Element element = addInlinePrivate(widget);
+        element.getStyle().setDisplay(Display.INLINE);
 
-		return this;
-	}
+        return this;
+    }
 
-	public HTMLStream clFl()
-	{
-		currentParagraph = null;
+    public HTMLStream clFl() {
+        currentParagraph = null;
 
-		Element clearer = DOM.createDiv();
-		clearer.getStyle().setProperty( "clear", "both" );
+        Element clearer = DOM.createDiv();
+        clearer.getStyle().setProperty("clear", "both");
 
-		div.appendChild( clearer );
+        div.appendChild(clearer);
 
-		return this;
-	}
+        return this;
+    }
 
-	private Element addPrivate( Widget widget )
-	{
-		currentParagraph = null;
+    private Element addPrivate(Widget widget) {
+        currentParagraph = null;
 
-		Element container = DOM.createDiv();
+        Element container = DOM.createDiv();
 
-		add( widget, container );
+        add(widget, container);
 
-		div.appendChild( container );
+        div.appendChild(container);
 
-		return container;
-	}
+        return container;
+    }
 
-	private Element addInlinePrivate( Widget widget )
-	{
-		currentParagraph = null;
+    private Element addInlinePrivate(Widget widget) {
+        currentParagraph = null;
 
-		add( widget, div );
+        add(widget, div);
 
-		return widget.getElement();
-	}
+        return widget.getElement();
+    }
 
-	private void ensureCurPar()
-	{
-		if( currentParagraph == null )
-		{
-			currentParagraph = DOM.createSpan();
-			div.appendChild( currentParagraph );
+    private void ensureCurPar() {
+        if (currentParagraph == null) {
+            currentParagraph = DOM.createSpan();
+            div.appendChild(currentParagraph);
 
-			for( Entry<String, String> e : curSet.entrySet() )
-			{
-				if( e.getKey().equals( "color" ) )
-					currentParagraph.getStyle().setColor( e.getValue() );
-				else if( e.getKey().equals( "weight" ) )
-					currentParagraph.getStyle().setFontWeight( FontWeight.valueOf( e.getValue() ) );
-				else
-					currentParagraph.getStyle().setProperty( e.getKey(), e.getValue() );
-			}
-		}
-	}
+            for (Entry<String, String> e : curSet.entrySet()) {
+                if (e.getKey().equals("color"))
+                    currentParagraph.getStyle().setColor(e.getValue());
+                else if (e.getKey().equals("weight"))
+                    currentParagraph.getStyle().setFontWeight(FontWeight.valueOf(e.getValue()));
+                else
+                    currentParagraph.getStyle().setProperty(e.getKey(), e.getValue());
+            }
+        }
+    }
 }

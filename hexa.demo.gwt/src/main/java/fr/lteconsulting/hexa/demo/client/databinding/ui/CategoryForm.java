@@ -6,21 +6,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import fr.lteconsulting.hexa.client.databinding.Binder;
 import fr.lteconsulting.hexa.client.databinding.Mode;
 
-public class CategoryForm extends Composite
-{
-	TextBox id = new TextBox();
-	TextBox name = new TextBox();
-	TextBox color = new TextBox();
+public class CategoryForm extends Composite {
+    TextBox id = new TextBox();
+    TextBox name = new TextBox();
+    TextBox color = new TextBox();
 
-	public CategoryForm()
-	{
-		VerticalPanel vp = new VerticalPanel();
-		initWidget( vp );
+    public CategoryForm() {
+        VerticalPanel vp = new VerticalPanel();
+        initWidget(vp);
 
-		vp.add( id );
-		vp.add( name );
-		vp.add( color );
+        vp.add(id);
+        vp.add(name);
+        vp.add(color);
 
-		Binder.Bind( color ).Mode( Mode.OneWay ).DeferActivate().To( getElement().getStyle(), "backgroundColor" );
-	}
+        Binder.Bind(color).Mode(Mode.OneWay).DeferActivate().To(getElement().getStyle(), "backgroundColor");
+    }
 }

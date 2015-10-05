@@ -1,6 +1,5 @@
 package javax.persistence;
 
-public interface Cache
-{
+public interface Cache {
 
 }

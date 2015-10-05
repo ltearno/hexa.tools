@@ -6,41 +6,35 @@ import fr.lteconsulting.hexa.server.qpath.Database;
 import fr.lteconsulting.hexa.server.qpath.DatabaseHelper;
 import fr.lteconsulting.hexa.server.qpath.QPath;
 
-public class DatabaseContext
-{
-	public Database db;
-	public DatabaseHelper dbh;
-	public QPath qpath;
+public class DatabaseContext {
+    public Database db;
+    public DatabaseHelper dbh;
+    public QPath qpath;
 
-	public void init( Connection connection )
-	{
-		db = new Database();
-		db.init( connection );
+    public void init(Connection connection) {
+        db = new Database();
+        db.init(connection);
 
-		dbh = new DatabaseHelper( db );
+        dbh = new DatabaseHelper(db);
 
-		qpath = new QPath();
-		qpath.init( db, dbh );
-	}
+        qpath = new QPath();
+        qpath.init(db, dbh);
+    }
 
-	public void term()
-	{
-		if( qpath != null )
-		{
-			qpath.term();
-			qpath = null;
-		}
+    public void term() {
+        if (qpath != null) {
+            qpath.term();
+            qpath = null;
+        }
 
-		if( dbh != null )
-		{
-			dbh.term();
-			dbh = null;
-		}
+        if (dbh != null) {
+            dbh.term();
+            dbh = null;
+        }
 
-		if( db != null )
-		{
-			db.term();
-			db = null;
-		}
-	}
+        if (db != null) {
+            db.term();
+            db = null;
+        }
+    }
 }

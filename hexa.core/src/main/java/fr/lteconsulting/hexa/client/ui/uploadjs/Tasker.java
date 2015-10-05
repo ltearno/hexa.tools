@@ -6,121 +6,98 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import fr.lteconsulting.hexa.client.tools.Action;
 
-public class Tasker
-{
-	private interface Task
-	{
-	}
+public class Tasker {
+    private final ArrayList<TaskInfo> tasks = new ArrayList<TaskInfo>();
+    private TaskInfo busyOn;
+    private final Action taskFinishedCallback = new Action() {
+        @Override
+        public void exec() {
+            taskEnded();
+        }
+    };
+    private final ScheduledCommand doSomething = new ScheduledCommand() {
+        @Override
+        public void execute() {
+            assert busyOn == null;
 
-	public interface SynchroneTask extends Task
-	{
-		void execute();
-	}
+            if (tasks.isEmpty())
+                return;
 
-	public interface AsynchroneTask extends Task
-	{
-		void execute( Action taskFinishedCallback );
-	}
+            busyOn = tasks.remove(0);
 
-	private class TaskInfo
-	{
-		Task task;
-		Action taskAsyncCallback;
-		Action taskFinishedCallback;
+            if (busyOn.taskAsyncCallback != null) {
+                busyOn.taskAsyncCallback.exec();
 
-		public TaskInfo( Task task, Action taskFinishedCallback )
-		{
-			this.task = task;
-			this.taskFinishedCallback = taskFinishedCallback;
-		}
+                taskEnded();
+            } else if (busyOn.task instanceof SynchroneTask) {
+                SynchroneTask t = (SynchroneTask) busyOn.task;
 
-		public TaskInfo( Action task, Action taskFinishedCallback )
-		{
-			this.taskAsyncCallback = task;
-			this.taskFinishedCallback = taskFinishedCallback;
-		}
-	}
+                t.execute();
 
-	private final ArrayList<TaskInfo> tasks = new ArrayList<TaskInfo>();
-	private TaskInfo busyOn;
+                taskEnded();
+            } else if (busyOn.task instanceof AsynchroneTask) {
+                ((AsynchroneTask) busyOn.task).execute(taskFinishedCallback);
+            }
+        }
+    };
 
-	public Tasker()
-	{
-	}
+    public Tasker() {
+    }
 
-	public void enqueueTask( Action task )
-	{
-		tasks.add( new TaskInfo( task, null ) );
+    public void enqueueTask(Action task) {
+        tasks.add(new TaskInfo(task, null));
 
-		if( tasks.size() == 1 && busyOn == null ) // first task and not busy
-			Scheduler.get().scheduleDeferred( doSomething );
-	}
+        if (tasks.size() == 1 && busyOn == null) // first task and not busy
+            Scheduler.get().scheduleDeferred(doSomething);
+    }
 
-	public void enqueueTask( Task task )
-	{
-		enqueueTask( task, null );
-	}
+    public void enqueueTask(Task task) {
+        enqueueTask(task, null);
+    }
 
-	public void enqueueTask( Task task, Action taskFinishedCallback )
-	{
-		tasks.add( new TaskInfo( task, taskFinishedCallback ) );
+    public void enqueueTask(Task task, Action taskFinishedCallback) {
+        tasks.add(new TaskInfo(task, taskFinishedCallback));
 
-		if( tasks.size() == 1 && busyOn == null ) // first task and not busy
-			Scheduler.get().scheduleDeferred( doSomething );
-	}
+        if (tasks.size() == 1 && busyOn == null) // first task and not busy
+            Scheduler.get().scheduleDeferred(doSomething);
+    }
 
-	private void taskEnded()
-	{
-		assert busyOn != null;
+    private void taskEnded() {
+        assert busyOn != null;
 
-		if( busyOn.taskFinishedCallback != null )
-			busyOn.taskFinishedCallback.exec();
+        if (busyOn.taskFinishedCallback != null)
+            busyOn.taskFinishedCallback.exec();
 
-		busyOn = null;
+        busyOn = null;
 
-		if( !tasks.isEmpty() )
-			Scheduler.get().scheduleDeferred( doSomething );
-	}
+        if (!tasks.isEmpty())
+            Scheduler.get().scheduleDeferred(doSomething);
+    }
 
-	private final ScheduledCommand doSomething = new ScheduledCommand()
-	{
-		@Override
-		public void execute()
-		{
-			assert busyOn == null;
+    private interface Task {
+    }
 
-			if( tasks.isEmpty() )
-				return;
+    public interface SynchroneTask extends Task {
+        void execute();
+    }
 
-			busyOn = tasks.remove( 0 );
+    public interface AsynchroneTask extends Task {
+        void execute(Action taskFinishedCallback);
+    }
 
-			if( busyOn.taskAsyncCallback != null )
-			{
-				busyOn.taskAsyncCallback.exec();
+    private class TaskInfo {
+        Task task;
+        Action taskAsyncCallback;
+        Action taskFinishedCallback;
 
-				taskEnded();
-			}
-			else if( busyOn.task instanceof SynchroneTask )
-			{
-				SynchroneTask t = (SynchroneTask) busyOn.task;
+        public TaskInfo(Task task, Action taskFinishedCallback) {
+            this.task = task;
+            this.taskFinishedCallback = taskFinishedCallback;
+        }
 
-				t.execute();
-
-				taskEnded();
-			}
-			else if( busyOn.task instanceof AsynchroneTask )
-			{
-				((AsynchroneTask) busyOn.task).execute( taskFinishedCallback );
-			}
-		}
-	};
-
-	private final Action taskFinishedCallback = new Action()
-	{
-		@Override
-		public void exec()
-		{
-			taskEnded();
-		}
-	};
+        public TaskInfo(Action task, Action taskFinishedCallback) {
+            this.taskAsyncCallback = task;
+            this.taskFinishedCallback = taskFinishedCallback;
+        }
+    }
 }

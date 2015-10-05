@@ -15,95 +15,79 @@ import fr.lteconsulting.hexa.client.comm.GenericJSO;
 import fr.lteconsulting.hexa.client.interfaces.ICriteriaFieldMng;
 import fr.lteconsulting.hexa.client.ui.Styles;
 
-public class Criteria extends Composite
-{
-	public static String getBeautifulText( String searchString )
-	{
-		return CriteriaInternal.getBeautifulText( searchString );
-	}
+public class Criteria extends Composite {
+    boolean fMode; // false == no criteria displayed
+    SimplePanel spot = new SimplePanel();
+    Anchor searchButton = new Anchor("Click to specify your research...");
+    String criteriaSpotId = DOM.createUniqueId();
+    String removeButtonId = DOM.createUniqueId();
+    HTMLPanel panel = new HTMLPanel("<div><a id='" + removeButtonId + "' href='#' style='float:right'>remove</a><div id='" + criteriaSpotId + "'/></div>");
+    CriteriaInternal realCriteria;
+    public Criteria(ICriteriaFieldMng[] criteriaMngs) {
+        realCriteria = new CriteriaInternal(criteriaMngs);
 
-	boolean fMode; // false == no criteria displayed
-	SimplePanel spot = new SimplePanel();
+        spot.addStyleName(Styles.CSS.framedPanel());
+        initWidget(spot);
 
-	Anchor searchButton = new Anchor( "Click to specify your research..." );
+        panel.add(realCriteria, criteriaSpotId);
+        setMode(false);
 
-	String criteriaSpotId = DOM.createUniqueId();
-	String removeButtonId = DOM.createUniqueId();
+        Anchor a = new Anchor("remove");
+        a.getElement().getStyle().setFloat(Style.Float.RIGHT);
+        a.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                event.preventDefault();
+                event.stopPropagation();
+                setMode(false);
+            }
+        });
+        panel.addAndReplaceElement(a, removeButtonId);
 
-	HTMLPanel panel = new HTMLPanel( "<div><a id='" + removeButtonId + "' href='#' style='float:right'>remove</a><div id='" + criteriaSpotId + "'/></div>" );
-	CriteriaInternal realCriteria;
+        searchButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                setMode(true);
+            }
+        });
+    }
 
-	public Criteria( ICriteriaFieldMng[] criteriaMngs )
-	{
-		realCriteria = new CriteriaInternal( criteriaMngs );
+    public static String getBeautifulText(String searchString) {
+        return CriteriaInternal.getBeautifulText(searchString);
+    }
 
-		spot.addStyleName( Styles.CSS.framedPanel() );
-		initWidget( spot );
+    public JSONObject getSearchJson() {
+        if (!fMode)
+            return null;
 
-		panel.add( realCriteria, criteriaSpotId );
-		setMode( false );
+        return realCriteria.getSearchJson().isObject();
+    }
 
-		Anchor a = new Anchor( "remove" );
-		a.getElement().getStyle().setFloat( Style.Float.RIGHT );
-		a.addClickHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				event.preventDefault();
-				event.stopPropagation();
-				setMode( false );
-			}
-		} );
-		panel.addAndReplaceElement( a, removeButtonId );
+    public JavaScriptObject getSearchJs() {
+        JSONObject obj = getSearchJson();
 
-		searchButton.addClickHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				setMode( true );
-			}
-		} );
-	}
+        if (obj == null)
+            return null;
 
-	public JSONObject getSearchJson()
-	{
-		if( !fMode )
-			return null;
+        return obj.getJavaScriptObject();
+    }
 
-		return realCriteria.getSearchJson().isObject();
-	}
+    public void setSearchString(GenericJSO jso) {
+        if (jso == null) {
+            setMode(false);
+            return;
+        }
 
-	public JavaScriptObject getSearchJs()
-	{
-		JSONObject obj = getSearchJson();
+        setMode(true);
+        realCriteria.setSearchString(jso);
+    }
 
-		if( obj == null )
-			return null;
+    void setMode(boolean fMode) {
+        this.fMode = fMode;
 
-		return obj.getJavaScriptObject();
-	}
-
-	public void setSearchString( GenericJSO jso )
-	{
-		if( jso == null )
-		{
-			setMode( false );
-			return;
-		}
-
-		setMode( true );
-		realCriteria.setSearchString( jso );
-	}
-
-	void setMode( boolean fMode )
-	{
-		this.fMode = fMode;
-
-		if( fMode )
-			spot.setWidget( panel );
-		else
-			spot.setWidget( searchButton );
-	}
+        if (fMode)
+            spot.setWidget(panel);
+        else
+            spot.setWidget(searchButton);
+    }
 }

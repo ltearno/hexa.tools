@@ -5,59 +5,54 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Composite;
 
-public abstract class NumberBox extends Composite
-{
-	protected TextBox textBox;
+public abstract class NumberBox extends Composite {
+    protected TextBox textBox;
 
-	String allowedChars;
-	boolean allowDecimal;
-	boolean allowNegative;
+    String allowedChars;
+    boolean allowDecimal;
+    boolean allowNegative;
+    private final KeyPressHandler keyPressHandler = new KeyPressHandler() {
+        @Override
+        public void onKeyPress(KeyPressEvent event) {
+            String key = stringFromCharCode(event.getCharCode());
+            if (key == null || key.isEmpty())
+                return;
 
-	public NumberBox( String placeholder, boolean allowDecimal, boolean allowNegative )
-	{
-		allowedChars = "0123456789";
-		this.allowDecimal = allowDecimal;
-		this.allowNegative = allowNegative;
+            assert key.length() == 1;
 
-		textBox = UiUtils.textBox( placeholder );
+            char c = key.charAt(0);
+            if (c == 0)
+                return;
 
-		textBox.addKeyPressHandler( keyPressHandler );
+            String value = textBox.getText();
 
-		initWidget( textBox );
-	}
+            String allowed = allowedChars;
 
-	private final KeyPressHandler keyPressHandler = new KeyPressHandler()
-	{
-		@Override
-		public void onKeyPress( KeyPressEvent event )
-		{
-			String key = stringFromCharCode( event.getCharCode() );
-			if( key == null || key.isEmpty() )
-				return;
+            if (allowNegative && (value == null || value.isEmpty()))
+                allowed += "-";
 
-			assert key.length() == 1;
+            if (allowDecimal && !value.isEmpty() && !value.contains(",") && !value.contains("."))
+                allowed += ".,";
 
-			char c = key.charAt( 0 );
-			if( c == 0 )
-				return;
+            if (allowed.indexOf(c) < 0)
+                event.preventDefault();
+        }
+    };
 
-			String value = textBox.getText();
+    public NumberBox(String placeholder, boolean allowDecimal, boolean allowNegative) {
+        allowedChars = "0123456789";
+        this.allowDecimal = allowDecimal;
+        this.allowNegative = allowNegative;
 
-			String allowed = allowedChars;
+        textBox = UiUtils.textBox(placeholder);
 
-			if( allowNegative && (value == null || value.isEmpty()) )
-				allowed += "-";
+        textBox.addKeyPressHandler(keyPressHandler);
 
-			if( allowDecimal && !value.isEmpty() && !value.contains( "," ) && !value.contains( "." ) )
-				allowed += ".,";
+        initWidget(textBox);
+    }
 
-			if( allowed.indexOf( c ) < 0 )
-				event.preventDefault();
-		}
-	};
-
-	private static native String stringFromCharCode( int key )
-	/*-{
-		return String.fromCharCode(key);
-	}-*/;
+    private static native String stringFromCharCode(int key)
+    /*-{
+        return String.fromCharCode(key);
+    }-*/;
 }

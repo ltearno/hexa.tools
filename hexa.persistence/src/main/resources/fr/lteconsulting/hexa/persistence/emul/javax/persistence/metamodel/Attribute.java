@@ -28,6 +28,21 @@ package javax.persistence.metamodel;
 
 public interface Attribute<X, Y> {
 
+    String getName();
+
+    PersistentAttributeType getPersistentAttributeType();
+
+    ManagedType<X> getDeclaringType();
+
+    Class<Y> getJavaType();
+
+    boolean isAssociation();
+
+    // TODO This is not emulated in the GWT implementation
+    //java.lang.reflect.Member getJavaMember();
+
+    boolean isCollection();
+
     public static enum PersistentAttributeType {
 
         MANY_TO_ONE,
@@ -44,19 +59,4 @@ public interface Attribute<X, Y> {
 
         ELEMENT_COLLECTION
     }
-
-    String getName();
-
-    PersistentAttributeType getPersistentAttributeType();
-
-    ManagedType<X> getDeclaringType();
-
-    Class<Y> getJavaType();
-
-    // TODO This is not emulated in the GWT implementation
-    //java.lang.reflect.Member getJavaMember();
-
-    boolean isAssociation();
-
-    boolean isCollection();
 }

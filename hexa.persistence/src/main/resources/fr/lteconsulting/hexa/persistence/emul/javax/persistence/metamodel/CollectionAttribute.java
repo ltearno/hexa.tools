@@ -26,5 +26,6 @@
 package javax.persistence.metamodel;
 
 
-public interface CollectionAttribute<X, E> 
-    extends PluralAttribute<X, java.util.Collection<E>, E> {}
+public interface CollectionAttribute<X, E>
+    extends PluralAttribute<X, java.util.Collection<E>, E> {
+}

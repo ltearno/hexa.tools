@@ -9,94 +9,81 @@ import java.util.Set;
 import fr.lteconsulting.hexa.client.ui.treetable.Row;
 import fr.lteconsulting.hexa.client.ui.treetable.TreeTable;
 
-public class HierarchySet<T>
-{
-	public interface IHierarchyLevel<T>
-	{
-		public String getName();
+public class HierarchySet<T> {
+    ArrayList<IHierarchyLevel<T>> hierarchy = new ArrayList<IHierarchyLevel<T>>();
+    HashMap<String, Row> items = new HashMap<String, Row>();
+    HashMap<Row, IHierarchyAccumulator<T>> accumulators = new HashMap<Row, IHierarchyAccumulator<T>>();
 
-		public String getIdentifier( T record );
+    public void resetDisplay() {
+        items.clear();
+        accumulators.clear();
+    }
 
-		public void fillRow( Row row, T record );
+    public void clearHierarchy() {
+        hierarchy.clear();
+    }
 
-		public IHierarchyAccumulator<T> getNewAccumulator();
-	}
+    public void add(IHierarchyLevel<T> item) {
+        hierarchy.add(item);
+    }
 
-	ArrayList<IHierarchyLevel<T>> hierarchy = new ArrayList<IHierarchyLevel<T>>();
+    public Row getParentItem(TreeTable table, T element) {
+        Row itemParent = null;
+        String itemAddress = "";
+        for (IHierarchyLevel<T> h : hierarchy) {
+            itemAddress += "-" + h.getIdentifier(element);
+            Row item = items.get(itemAddress);
+            if (item == null) {
+                item = table.addRow(itemParent);
 
-	public interface IHierarchyAccumulator<T>
-	{
-		public void add( T element );
+                h.fillRow(item, element);
 
-		public void fillRow( Row row );
-	}
+                // TODO : FIx the bug that prevents to do that...
+                // table.setExpanded( item, false );
 
-	HashMap<String, Row> items = new HashMap<String, Row>();
-	HashMap<Row, IHierarchyAccumulator<T>> accumulators = new HashMap<Row, IHierarchyAccumulator<T>>();
+                items.put(itemAddress, item);
+                accumulators.put(item, h.getNewAccumulator());
+            }
 
-	public void resetDisplay()
-	{
-		items.clear();
-		accumulators.clear();
-	}
+            IHierarchyAccumulator<T> accu = accumulators.get(item);
+            if (accu != null)
+                accu.add(element);
 
-	public void clearHierarchy()
-	{
-		hierarchy.clear();
-	}
+            itemParent = item;
+        }
 
-	public void add( IHierarchyLevel<T> item )
-	{
-		hierarchy.add( item );
-	}
+        return itemParent;
+    }
 
-	public Row getParentItem( TreeTable table, T element )
-	{
-		Row itemParent = null;
-		String itemAddress = "";
-		for( IHierarchyLevel<T> h : hierarchy )
-		{
-			itemAddress += "-" + h.getIdentifier( element );
-			Row item = items.get( itemAddress );
-			if( item == null )
-			{
-				item = table.addRow( itemParent );
+    public Row createItem(TreeTable table, T element) {
+        Row itemParent = getParentItem(table, element);
 
-				h.fillRow( item, element );
+        return table.addRow(itemParent);
+    }
 
-				// TODO : FIx the bug that prevents to do that...
-				// table.setExpanded( item, false );
+    public void displayAccumulators(TreeTable table) {
+        Set<Entry<Row, IHierarchyAccumulator<T>>> set = accumulators.entrySet();
+        for (Iterator<Entry<Row, IHierarchyAccumulator<T>>> i = set.iterator(); i.hasNext(); ) {
+            Entry<Row, IHierarchyAccumulator<T>> entry = i.next();
 
-				items.put( itemAddress, item );
-				accumulators.put( item, h.getNewAccumulator() );
-			}
+            if (entry.getValue() != null)
+                entry.getValue().fillRow(entry.getKey());
+        }
+    }
 
-			IHierarchyAccumulator<T> accu = accumulators.get( item );
-			if( accu != null )
-				accu.add( element );
+    public interface IHierarchyLevel<T> {
+        public String getName();
 
-			itemParent = item;
-		}
+        public String getIdentifier(T record);
 
-		return itemParent;
-	}
+        public void fillRow(Row row, T record);
 
-	public Row createItem( TreeTable table, T element )
-	{
-		Row itemParent = getParentItem( table, element );
+        public IHierarchyAccumulator<T> getNewAccumulator();
+    }
 
-		return table.addRow( itemParent );
-	}
+    public interface IHierarchyAccumulator<T> {
+        public void add(T element);
 
-	public void displayAccumulators( TreeTable table )
-	{
-		Set<Entry<Row, IHierarchyAccumulator<T>>> set = accumulators.entrySet();
-		for( Iterator<Entry<Row, IHierarchyAccumulator<T>>> i = set.iterator(); i.hasNext(); )
-		{
-			Entry<Row, IHierarchyAccumulator<T>> entry = i.next();
-
-			if( entry.getValue() != null )
-				entry.getValue().fillRow( entry.getKey() );
-		}
-	}
+        public void fillRow(Row row);
+    }
 }

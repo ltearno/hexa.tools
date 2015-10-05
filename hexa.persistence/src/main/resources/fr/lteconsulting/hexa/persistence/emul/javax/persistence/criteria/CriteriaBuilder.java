@@ -63,6 +63,7 @@ public interface CriteriaBuilder {
     <N extends Number> Expression<N> min(Expression<N> x);
 
     <X extends Comparable<? super X>> Expression<X> greatest(Expression<X> x);
+
     <X extends Comparable<? super X>> Expression<X> least(Expression<X> x);
 
     Expression<Long> count(Expression<?> x);
@@ -259,14 +260,6 @@ public interface CriteriaBuilder {
 
     Expression<String> substring(Expression<String> x, int from, int len);
 
-    public static enum Trimspec { 
-
-        LEADING,
-        TRAILING, 
-
-        BOTH 
-    }
-
     Expression<String> trim(Expression<String> x);
 
     Expression<String> trim(Trimspec ts, Expression<String> x);
@@ -299,14 +292,6 @@ public interface CriteriaBuilder {
 
     Expression<java.sql.Time> currentTime();
 
-    public static interface In<T> extends Predicate {
-
-         Expression<T> getExpression();
-         In<T> value(T value);
-
-         In<T> value(Expression<? extends T> value);
-     }
-
     <T> In<T> in(Expression<? extends T> expression);
 
     <Y> Expression<Y> coalesce(Expression<? extends Y> x, Expression<? extends Y> y);
@@ -317,15 +302,39 @@ public interface CriteriaBuilder {
 
     <Y> Expression<Y> nullif(Expression<Y> x, Y y);
 
-    public static interface Coalesce<T> extends Expression<T> {
-
-         Coalesce<T> value(T value);
-
-         Coalesce<T> value(Expression<? extends T> value);
-    }
     <T> Coalesce<T> coalesce();
 
-    public static interface SimpleCase<C,R> extends Expression<R> {
+    <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expression);
+
+    <R> Case<R> selectCase();
+
+    <T> Expression<T> function(String name, Class<T> type, Expression<?>... args);
+
+    public static enum Trimspec {
+
+        LEADING,
+        TRAILING,
+
+        BOTH
+    }
+
+    public static interface In<T> extends Predicate {
+
+        Expression<T> getExpression();
+
+        In<T> value(T value);
+
+        In<T> value(Expression<? extends T> value);
+    }
+
+    public static interface Coalesce<T> extends Expression<T> {
+
+        Coalesce<T> value(T value);
+
+        Coalesce<T> value(Expression<? extends T> value);
+    }
+
+    public static interface SimpleCase<C, R> extends Expression<R> {
 
         Expression<C> getExpression();
 
@@ -338,8 +347,6 @@ public interface CriteriaBuilder {
         Expression<R> otherwise(Expression<? extends R> result);
     }
 
-    <C, R> SimpleCase<C,R> selectCase(Expression<? extends C> expression);
-
     public static interface Case<R> extends Expression<R> {
 
         Case<R> when(Expression<Boolean> condition, R result);
@@ -350,10 +357,6 @@ public interface CriteriaBuilder {
 
         Expression<R> otherwise(Expression<? extends R> result);
     }
-
-    <R> Case<R> selectCase();
-
-   <T> Expression<T> function(String name, Class<T> type, Expression<?>... args);
 
 }
 

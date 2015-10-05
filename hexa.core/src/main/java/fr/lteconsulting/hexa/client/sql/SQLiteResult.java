@@ -7,133 +7,111 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
-public class SQLiteResult implements Iterable<SQLiteResult.Row>
-{
-	private final JSONObject root;
+public class SQLiteResult implements Iterable<SQLiteResult.Row> {
+    private final JSONObject root;
 
-	public SQLiteResult( JavaScriptObject jso )
-	{
-		this.root = new JSONObject( jso );
-	}
-	
-	public int size()
-	{
-		return root.size();
-	}
+    public SQLiteResult(JavaScriptObject jso) {
+        this.root = new JSONObject(jso);
+    }
 
-	public Row getRow( int rowIdx )
-	{
-		JSONArray row = root.get( "" + rowIdx ).isArray();
-		return new Row( row );
-	}
+    public int size() {
+        return root.size();
+    }
 
-	public static class Cell
-	{
-		public String column;
-		public String value;
-	}
+    public Row getRow(int rowIdx) {
+        JSONArray row = root.get("" + rowIdx).isArray();
+        return new Row(row);
+    }
 
-	public static class Row implements Iterable<Cell>
-	{
-		JSONArray row;
+    @Override
+    public Iterator<Row> iterator() {
+        return new Iterator<SQLiteResult.Row>() {
+            int current = 0;
 
-		Row( JSONArray row )
-		{
-			this.row = row;
-		}
+            @Override
+            public void remove() {
+                assert false;
+            }
 
-		public Row()
-		{
-			row = new JSONArray();
-		}
+            @Override
+            public Row next() {
+                JSONArray row = root.get("" + current).isArray();
+                current++;
+                return new Row(row);
+            }
 
-		public void addCell( String columnName, String value )
-		{
-			JSONObject cell = new JSONObject();
-			cell.put( "column", new JSONString( columnName ) );
-			cell.put( "value", new JSONString( value ) );
-			row.set( row.size(), cell );
-		}
+            @Override
+            public boolean hasNext() {
+                return current < root.size();
+            }
+        };
+    }
 
-		public String getColumnValue( String columnName )
-		{
-			for( int i=0; i<row.size(); i++ )
-			{
-				JSONObject cellJson = row.get( i ).isObject();
-				if( cellJson.get( "column" ).isString().stringValue().equals( columnName ) )
-					return cellJson.get( "value" ).isString().stringValue();
-			}
+    public static class Cell {
+        public String column;
+        public String value;
+    }
 
-			return null;
-		}
+    public static class Row implements Iterable<Cell> {
+        JSONArray row;
 
-		@Override
-		public String toString()
-		{
-			return row.toString();
-		}
+        Row(JSONArray row) {
+            this.row = row;
+        }
 
-		@Override
-		public Iterator<Cell> iterator()
-		{
-			return new Iterator<SQLiteResult.Cell>()
-			{
-				int current = 0;
+        public Row() {
+            row = new JSONArray();
+        }
 
-				@Override
-				public void remove()
-				{
-					assert false;
-				}
+        public void addCell(String columnName, String value) {
+            JSONObject cell = new JSONObject();
+            cell.put("column", new JSONString(columnName));
+            cell.put("value", new JSONString(value));
+            row.set(row.size(), cell);
+        }
 
-				@Override
-				public Cell next()
-				{
-					JSONObject cellJson = row.get( current ).isObject();
-					current++;
+        public String getColumnValue(String columnName) {
+            for (int i = 0; i < row.size(); i++) {
+                JSONObject cellJson = row.get(i).isObject();
+                if (cellJson.get("column").isString().stringValue().equals(columnName))
+                    return cellJson.get("value").isString().stringValue();
+            }
 
-					Cell cell = new Cell();
-					cell.column = cellJson.get( "column" ).isString().stringValue();
-					cell.value = cellJson.get( "value" ).isString().stringValue();
+            return null;
+        }
 
-					return cell;
-				}
+        @Override
+        public String toString() {
+            return row.toString();
+        }
 
-				@Override
-				public boolean hasNext()
-				{
-					return current < row.size();
-				}
-			};
-		}
-	}
+        @Override
+        public Iterator<Cell> iterator() {
+            return new Iterator<SQLiteResult.Cell>() {
+                int current = 0;
 
-	@Override
-	public Iterator<Row> iterator()
-	{
-		return new Iterator<SQLiteResult.Row>()
-		{
-			int current = 0;
+                @Override
+                public void remove() {
+                    assert false;
+                }
 
-			@Override
-			public void remove()
-			{
-				assert false;
-			}
+                @Override
+                public Cell next() {
+                    JSONObject cellJson = row.get(current).isObject();
+                    current++;
 
-			@Override
-			public Row next()
-			{
-				JSONArray row = root.get( "" + current ).isArray();
-				current++;
-				return new Row( row );
-			}
+                    Cell cell = new Cell();
+                    cell.column = cellJson.get("column").isString().stringValue();
+                    cell.value = cellJson.get("value").isString().stringValue();
 
-			@Override
-			public boolean hasNext()
-			{
-				return current < root.size();
-			}
-		};
-	}
+                    return cell;
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return current < row.size();
+                }
+            };
+        }
+    }
 }

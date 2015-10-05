@@ -16,159 +16,136 @@ import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CenterPanel extends Panel implements HasOneWidget, RequiresResize, ProvidesResize
-{
-	private static CenterPanelUiBinder uiBinder = GWT.create( CenterPanelUiBinder.class );
+public class CenterPanel extends Panel implements HasOneWidget, RequiresResize, ProvidesResize {
+    private static CenterPanelUiBinder uiBinder = GWT.create(CenterPanelUiBinder.class);
+    @UiField
+    DivElement containerElement;
+    Widget widget;
 
-	interface CenterPanelUiBinder extends UiBinder<Element, CenterPanel>
-	{
-	}
+    public CenterPanel() {
+        Element main = uiBinder.createAndBindUi(this);
+        setElement(main);
+    }
 
-	@UiField
-	DivElement containerElement;
+    public CenterPanel(Widget child) {
+        this();
+        setWidget(child);
+    }
 
-	Widget widget;
+    @Override
+    public void onResize() {
+        if (widget == null && widget instanceof RequiresResize)
+            ((RequiresResize) widget).onResize();
+    }
 
-	public CenterPanel()
-	{
-		Element main = uiBinder.createAndBindUi( this );
-		setElement( main );
-	}
+    /**
+     * Adds a widget to this panel.
+     *
+     * @param w the child widget to be added
+     */
+    @Override
+    public void add(Widget w) {
+        if (widget != null)
+            throw new IllegalStateException("SimplePanel can only contain one child widget");
 
-	public CenterPanel( Widget child )
-	{
-		this();
-		setWidget( child );
-	}
+        setWidget(w);
+    }
 
-	@Override
-	public void onResize()
-	{
-		if( widget == null && widget instanceof RequiresResize )
-			((RequiresResize) widget).onResize();
-	}
+    /**
+     * Gets the panel's child widget.
+     *
+     * @return the child widget, or <code>null</code> if none is present
+     */
+    @Override
+    public Widget getWidget() {
+        return widget;
+    }
 
-	/**
-	 * Adds a widget to this panel.
-	 * 
-	 * @param w
-	 *            the child widget to be added
-	 */
-	@Override
-	public void add( Widget w )
-	{
-		if( widget != null )
-			throw new IllegalStateException( "SimplePanel can only contain one child widget" );
+    /**
+     * Sets this panel's widget. Any existing child widget will be removed.
+     *
+     * @param w the panel's new widget, or <code>null</code> to clear the
+     *          panel
+     */
+    @Override
+    public void setWidget(Widget w) {
+        // Validate
+        if (w == widget)
+            return;
 
-		setWidget( w );
-	}
+        // Detach new child.
+        if (w != null)
+            w.removeFromParent();
 
-	/**
-	 * Gets the panel's child widget.
-	 * 
-	 * @return the child widget, or <code>null</code> if none is present
-	 */
-	@Override
-	public Widget getWidget()
-	{
-		return widget;
-	}
+        // Remove old child.
+        if (widget != null)
+            remove(widget);
 
-	@Override
-	public Iterator<Widget> iterator()
-	{
-		// Return a simple iterator that enumerates the 0 or 1 elements in this
-		// panel.
-		return new Iterator<Widget>()
-		{
-			boolean hasElement = widget != null;
-			Widget returned = null;
+        // Logical attach.
+        widget = w;
 
-			@Override
-			public boolean hasNext()
-			{
-				return hasElement;
-			}
+        if (w != null) {
+            // Physical attach.
+            DOM.appendChild(containerElement, widget.getElement());
 
-			@Override
-			public Widget next()
-			{
-				if( !hasElement || (widget == null) )
-					throw new NoSuchElementException();
+            adopt(w);
+        }
+    }
 
-				hasElement = false;
-				return(returned = widget);
-			}
+    @Override
+    public Iterator<Widget> iterator() {
+        // Return a simple iterator that enumerates the 0 or 1 elements in this
+        // panel.
+        return new Iterator<Widget>() {
+            boolean hasElement = widget != null;
+            Widget returned = null;
 
-			@Override
-			public void remove()
-			{
-				if( returned != null )
-					CenterPanel.this.remove( returned );
-			}
-		};
-	}
+            @Override
+            public boolean hasNext() {
+                return hasElement;
+            }
 
-	@Override
-	public boolean remove( Widget w )
-	{
-		// Validate.
-		if( widget != w )
-			return false;
+            @Override
+            public Widget next() {
+                if (!hasElement || (widget == null))
+                    throw new NoSuchElementException();
 
-		// Orphan.
-		try
-		{
-			orphan( w );
-		}
-		finally
-		{
-			// Physical detach.
-			containerElement.removeChild( w.getElement() );
+                hasElement = false;
+                return (returned = widget);
+            }
 
-			// Logical detach.
-			widget = null;
-		}
-		return true;
-	}
+            @Override
+            public void remove() {
+                if (returned != null)
+                    CenterPanel.this.remove(returned);
+            }
+        };
+    }
 
-	@Override
-	public void setWidget( IsWidget w )
-	{
-		setWidget( asWidgetOrNull( w ) );
-	}
+    @Override
+    public boolean remove(Widget w) {
+        // Validate.
+        if (widget != w)
+            return false;
 
-	/**
-	 * Sets this panel's widget. Any existing child widget will be removed.
-	 * 
-	 * @param w
-	 *            the panel's new widget, or <code>null</code> to clear the
-	 *            panel
-	 */
-	@Override
-	public void setWidget( Widget w )
-	{
-		// Validate
-		if( w == widget )
-			return;
+        // Orphan.
+        try {
+            orphan(w);
+        } finally {
+            // Physical detach.
+            containerElement.removeChild(w.getElement());
 
-		// Detach new child.
-		if( w != null )
-			w.removeFromParent();
+            // Logical detach.
+            widget = null;
+        }
+        return true;
+    }
 
-		// Remove old child.
-		if( widget != null )
-			remove( widget );
+    @Override
+    public void setWidget(IsWidget w) {
+        setWidget(asWidgetOrNull(w));
+    }
 
-		// Logical attach.
-		widget = w;
-
-		if( w != null )
-		{
-			// Physical attach.
-			DOM.appendChild( containerElement, widget.getElement() );
-
-			adopt( w );
-		}
-	}
+    interface CenterPanelUiBinder extends UiBinder<Element, CenterPanel> {
+    }
 }

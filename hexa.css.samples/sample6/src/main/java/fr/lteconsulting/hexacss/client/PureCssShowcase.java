@@ -15,63 +15,51 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The main class of this sample.
- * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
  *
+ * @author Arnaud Tournier
+ *         (c) LTE Consulting - 2015
+ *         http://www.lteconsulting.fr
  */
-public class PureCssShowcase extends Composite
-{
-	private static PureCssShowcaseUiBinder uiBinder = GWT.create( PureCssShowcaseUiBinder.class );
+public class PureCssShowcase extends Composite {
+    private static PureCssShowcaseUiBinder uiBinder = GWT.create(PureCssShowcaseUiBinder.class);
+    @UiField
+    Button button1;
+    @UiField
+    Button button2;
+    @UiField
+    FlexTable table;
+    @UiField
+    TextBox textbox;
+    @UiField
+    TextArea textarea;
+    @UiField
+    CheckBox checkbox;
+    @UiField
+    SubmitButton submit;
+    @UiField
+    ListBox listbox;
 
-	interface PureCssShowcaseUiBinder extends UiBinder<Widget, PureCssShowcase>
-	{
-	}
-	
-	@UiField
-	Button button1;
-	
-	@UiField
-	Button button2;
-	
-	@UiField
-	FlexTable table;
-	
-	@UiField
-	TextBox textbox;
-	
-	@UiField
-	TextArea textarea;
-	
-	@UiField
-	CheckBox checkbox;
-	
-	@UiField
-	SubmitButton submit;
-	
-	@UiField
-	ListBox listbox;
+    public PureCssShowcase() {
+        initWidget(uiBinder.createAndBindUi(this));
 
-	public PureCssShowcase()
-	{
-		initWidget( uiBinder.createAndBindUi( this ) );
-		
-		// Because those can't be set through uibinder xml
-		textbox.getElement().setId( "exampleEmailInput" );
-		textbox.getElement().setPropertyString( "type", "email" );
-		textbox.getElement().setPropertyString( "placeholder", "test@mail.com" );
-		textarea.getElement().setId( "exampleMessage" );
-		textarea.getElement().setPropertyString( "placeholder", "Hi Dave …" );
-		listbox.getElement().setId( "exampleRecipientInput" );
-		
-		listbox.addItem( "Questions" );
-		listbox.addItem( "Admirations" );
-		listbox.addItem( "What else ?" );
-		
+        // Because those can't be set through uibinder xml
+        textbox.getElement().setId("exampleEmailInput");
+        textbox.getElement().setPropertyString("type", "email");
+        textbox.getElement().setPropertyString("placeholder", "test@mail.com");
+        textarea.getElement().setId("exampleMessage");
+        textarea.getElement().setPropertyString("placeholder", "Hi Dave …");
+        listbox.getElement().setId("exampleRecipientInput");
+
+        listbox.addItem("Questions");
+        listbox.addItem("Admirations");
+        listbox.addItem("What else ?");
+
 //		// table fill
-		for(int j=0;j<10;j++)
-			for(int i=0;i<5;i++)
-				table.setText( j, i, "Cell " + i + ", " + j );
-	}
+        for (int j = 0; j < 10; j++)
+            for (int i = 0; i < 5; i++)
+                table.setText(j, i, "Cell " + i + ", " + j);
+    }
+
+    interface PureCssShowcaseUiBinder extends UiBinder<Widget, PureCssShowcase> {
+    }
 }

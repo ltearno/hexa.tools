@@ -5,23 +5,20 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 
 /**
  * This sample displays the {@link SkeletonShowcase} widget written with UiBinder.
- * 
+ * <p/>
  * This widget uses HexaCss to bind to the CSS files.
- * 
+ * <p/>
  * The theme files directly come from free Skeleton CSS file that can be found on :
  * - http://getskeleton.com/
- * 
- * @author Arnaud Tournier
- * (c) LTE Consulting - 2015
- * http://www.lteconsulting.fr
  *
+ * @author Arnaud Tournier
+ *         (c) LTE Consulting - 2015
+ *         http://www.lteconsulting.fr
  */
-public class Application implements EntryPoint
-{
-	@Override
-	public void onModuleLoad()
-	{
-		SkeletonShowcase showCase = new SkeletonShowcase();
-		RootLayoutPanel.get().add( showCase );
-	}
+public class Application implements EntryPoint {
+    @Override
+    public void onModuleLoad() {
+        SkeletonShowcase showCase = new SkeletonShowcase();
+        RootLayoutPanel.get().add(showCase);
+    }
 }

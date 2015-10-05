@@ -37,6 +37,7 @@ import java.util.Set;
 public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
 
     Set<Join<X, ?>> getJoins();
+
     boolean isCorrelated();
 
     From<Z, X> getCorrelationParent();
@@ -61,23 +62,23 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
 
     <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt);
 
-    <X, Y> Join<X, Y> join(String attributeName);	
+    <X, Y> Join<X, Y> join(String attributeName);
 
-    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName);	
+    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName);
 
-    <X, Y> SetJoin<X, Y> joinSet(String attributeName);	
+    <X, Y> SetJoin<X, Y> joinSet(String attributeName);
 
     <X, Y> ListJoin<X, Y> joinList(String attributeName);
 
-    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName);	
+    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName);
 
     <X, Y> Join<X, Y> join(String attributeName, JoinType jt);
 
-    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);	
+    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
 
-    <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);	
+    <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
 
-    <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);	
+    <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
 
-    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);	
+    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
 }

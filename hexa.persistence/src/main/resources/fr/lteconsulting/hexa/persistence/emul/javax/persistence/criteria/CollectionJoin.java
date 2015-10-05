@@ -29,8 +29,8 @@ import java.util.Collection;
 import javax.persistence.metamodel.CollectionAttribute;
 
 
-public interface CollectionJoin<Z, E> 
-		extends PluralJoin<Z, Collection<E>, E> {
+public interface CollectionJoin<Z, E>
+    extends PluralJoin<Z, Collection<E>, E> {
 
     CollectionAttribute<? super Z, E> getModel();
 }

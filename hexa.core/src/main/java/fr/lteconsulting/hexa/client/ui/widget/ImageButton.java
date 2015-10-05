@@ -9,52 +9,45 @@ import com.google.gwt.user.client.ui.Image;
 
 import fr.lteconsulting.hexa.client.css.HexaCss;
 
-public class ImageButton extends Image implements ClickHandler
-{
-	public interface Callback
-	{
-		void onClick( Object cookie );
-	}
+public class ImageButton extends Image implements ClickHandler {
+    Object cookie = null;
+    Callback callback = null;
+    boolean enabled = true;
+    public
+    @UiConstructor
+    ImageButton(ImageResource resource, String title) {
+        super(resource);
+        setTitle(title);
 
-	interface Css extends HexaCss
-	{
-		static final Css CSS = GWT.create( Css.class );
+        addStyleName(Css.CSS.main());
+    }
 
-		String main();
-	}
+    public void setCallback(Callback callback, Object cookie) {
+        this.callback = callback;
+        this.cookie = cookie;
 
-	Object cookie = null;
-	Callback callback = null;
-	boolean enabled = true;
+        addClickHandler(this);
+    }
 
-	public @UiConstructor
-	ImageButton( ImageResource resource, String title )
-	{
-		super( resource );
-		setTitle( title );
+    @Override
+    public void onClick(ClickEvent event) {
+        assert (callback != null);
 
-		addStyleName( Css.CSS.main() );
-	}
+        if (enabled)
+            callback.onClick(cookie);
+    }
 
-	public void setCallback( Callback callback, Object cookie )
-	{
-		this.callback = callback;
-		this.cookie = cookie;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-		addClickHandler( this );
-	}
+    public interface Callback {
+        void onClick(Object cookie);
+    }
 
-	@Override
-	public void onClick( ClickEvent event )
-	{
-		assert (callback != null);
+    interface Css extends HexaCss {
+        static final Css CSS = GWT.create(Css.class);
 
-		if( enabled )
-			callback.onClick( cookie );
-	}
-
-	public void setEnabled( boolean enabled )
-	{
-		this.enabled = enabled;
-	}
+        String main();
+    }
 }

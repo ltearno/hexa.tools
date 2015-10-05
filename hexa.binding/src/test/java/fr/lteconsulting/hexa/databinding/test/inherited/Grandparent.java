@@ -6,8 +6,8 @@ import fr.lteconsulting.hexa.databinding.test.inherited.foreign.Ancestor;
 @Observable(inherit = true)
 public class Grandparent extends Ancestor {
 
+    protected int grandparentsProtectedNumber;
     String grandparentsString;
     int grandparentsNumber;
-    protected int grandparentsProtectedNumber;
     private double grandparentsDouble;
 }

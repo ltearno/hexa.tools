@@ -7,26 +7,25 @@ import fr.lteconsulting.hexa.client.ui.miracle.Size;
 
 /**
  * This interface models a table cell
- * 
+ *
  * @author Arnaud
  */
-public interface Cell extends Printer
-{
-	void scrollIntoView();
+public interface Cell extends Printer {
+    void scrollIntoView();
 
-	void addClassName( String className );
+    void addClassName(String className);
 
-	void removeClassName( String className );
+    void removeClassName(String className);
 
-	Cell getNextCell();
+    Cell getNextCell();
 
-	Cell getPreviousCell();
+    Cell getPreviousCell();
 
-	Row getParentRow();
+    Row getParentRow();
 
-	int getCellIndex();
+    int getCellIndex();
 
-	Size getDisplaySize();
+    Size getDisplaySize();
 
-	TableCellElement getTd();
+    TableCellElement getTd();
 }

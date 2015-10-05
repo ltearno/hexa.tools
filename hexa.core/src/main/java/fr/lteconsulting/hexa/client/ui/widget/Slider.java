@@ -10,104 +10,100 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import fr.lteconsulting.hexa.client.tools.JQuery;
 
-public class Slider extends Widget
-{
-	public interface Callback
-	{
-		void onSliderValueChange( int value, Object cookie );
-	}
+public class Slider extends Widget {
+    Callback callback;
+    Object cookie;
+    public Slider(int min, int max, int step, String[] captions, Callback callback, Object cookie) {
+        JQuery.ensureScriptsLoaded();
 
-	Callback callback;
-	Object cookie;
+        this.callback = callback;
+        this.cookie = cookie;
 
-	public Slider( int min, int max, int step, String[] captions, Callback callback, Object cookie )
-	{
-		JQuery.ensureScriptsLoaded();
+        int maxLength = 0;
+        for (String s : captions)
+            maxLength = Math.max(s.length(), maxLength);
 
-		this.callback = callback;
-		this.cookie = cookie;
+        maxLength = (maxLength + 1) / 2;
 
-		int maxLength = 0;
-		for( String s : captions )
-			maxLength = Math.max( s.length(), maxLength );
+        setElement(Document.get().createDivElement());
+        getElement().getStyle().setMargin(10, Unit.PX);
+        getElement().getStyle().setMarginRight(maxLength, Unit.EM);
+        build(getElement(), min, max, step);
 
-		maxLength = (maxLength + 1) / 2;
+        if (captions == null || captions.length < max - min)
+            return;
+        for (int i = min; i <= max; i++) {
+            Element caption = DOM.createDiv();
+            caption.getStyle().setPosition(Position.ABSOLUTE);
+            caption.getStyle().setLeft(30, Unit.PX);
+            // caption.getStyle().setWidth( width - 30, Unit.PX );
+            caption.getStyle().setWidth(maxLength, Unit.EM);
+            caption.getStyle().setBottom((double) ((i - min) * 100) / (double) (max - min), Unit.PCT);
+            caption.getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
+            caption.getStyle().setCursor(Cursor.DEFAULT);
+            caption.setInnerText(captions[i - min]);
 
-		setElement( Document.get().createDivElement() );
-		getElement().getStyle().setMargin( 10, Unit.PX );
-		getElement().getStyle().setMarginRight( maxLength, Unit.EM );
-		build( getElement(), min, max, step );
+            double h = 1.2;
+            caption.getStyle().setHeight(h, Unit.EM);
+            caption.getStyle().setMarginBottom(-h / 2, Unit.EM);
 
-		if( captions == null || captions.length < max - min )
-			return;
-		for( int i = min; i <= max; i++ )
-		{
-			Element caption = DOM.createDiv();
-			caption.getStyle().setPosition( Position.ABSOLUTE );
-			caption.getStyle().setLeft( 30, Unit.PX );
-			// caption.getStyle().setWidth( width - 30, Unit.PX );
-			caption.getStyle().setWidth( maxLength, Unit.EM );
-			caption.getStyle().setBottom( (double) ((i - min) * 100) / (double) (max - min), Unit.PCT );
-			caption.getStyle().setVerticalAlign( VerticalAlign.MIDDLE );
-			caption.getStyle().setCursor( Cursor.DEFAULT );
-			caption.setInnerText( captions[i - min] );
+            getElement().appendChild(caption);
+        }
+    }
 
-			double h = 1.2;
-			caption.getStyle().setHeight( h, Unit.EM );
-			caption.getStyle().setMarginBottom( -h / 2, Unit.EM );
+    public void setAnimate(boolean fAnimate) {
+        setAnimateImpl(getElement(), fAnimate);
+    }
 
-			getElement().appendChild( caption );
-		}
-	}
+    public int getValue() {
+        return getValueImpl(getElement());
+    }
 
-	public void setAnimate( boolean fAnimate )
-	{
-		setAnimateImpl( getElement(), fAnimate );
-	}
+    public void setValue(int value) {
+        Callback cb = callback;
+        callback = null;
+        setValueImpl(getElement(), value);
+        callback = cb;
+    }
 
-	public void setValue( int value )
-	{
-		Callback cb = callback;
-		callback = null;
-		setValueImpl( getElement(), value );
-		callback = cb;
-	}
+    private void onSliderChangeImpl(int value) {
+        if (callback == null)
+            return;
 
-	public int getValue()
-	{
-		return getValueImpl( getElement() );
-	}
+        callback.onSliderValueChange(value, cookie);
+    }
 
-	private void onSliderChangeImpl( int value )
-	{
-		if( callback == null )
-			return;
+    private final native void build(Element e, int minValue, int maxValue, int stepValue)
+    /*-{
+        var me = this;
+        var onSliderChange = function (event, ui) {
+            me.@fr.lteconsulting.hexa.client.ui.widget.Slider::onSliderChangeImpl(I)(ui.value);
+        };
+        $wnd.$(e).slider({
+            min: minValue,
+            max: maxValue,
+            step: stepValue,
+            orientation: 'vertical',
+            change: onSliderChange
+        });
+    }-*/;
 
-		callback.onSliderValueChange( value, cookie );
-	}
-
-	private final native void build( Element e, int minValue, int maxValue, int stepValue )
+    private final native void setValueImpl(Element e, int value)
 	/*-{
-		var me = this;
-		var onSliderChange = function( event, ui )
-		{
-			me.@fr.lteconsulting.hexa.client.ui.widget.Slider::onSliderChangeImpl(I)( ui.value );
-		};
-		$wnd.$( e ).slider( {min:minValue, max:maxValue, step:stepValue, orientation:'vertical', change: onSliderChange } );
-	}-*/;
+        $wnd.$(e).slider("value", value);
+    }-*/;
 
-	private final native void setValueImpl( Element e, int value )
+    private final native int getValueImpl(Element e)
 	/*-{
-		$wnd.$( e ).slider( "value", value );
-	}-*/;
+        return $wnd.$(e).slider("value");
+    }-*/;
 
-	private final native int getValueImpl( Element e )
+    private final native void setAnimateImpl(Element e, boolean fAnimate)
 	/*-{
-		return $wnd.$( e ).slider( "value" );
-	}-*/;
+        $wnd.$(e).slider("option", {animate: fAnimate});
+    }-*/;
 
-	private final native void setAnimateImpl( Element e, boolean fAnimate )
-	/*-{
-		$wnd.$( e ).slider( "option", { animate:fAnimate } );
-	}-*/;
+    public interface Callback {
+        void onSliderValueChange(int value, Object cookie);
+    }
 }
