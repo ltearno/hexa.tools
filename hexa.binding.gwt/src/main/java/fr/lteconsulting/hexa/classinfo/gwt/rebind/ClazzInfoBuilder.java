@@ -226,10 +226,14 @@ class ClazzInfoBuilder {
         sourceWriter.println("public void setValue( Object object, Object value )");
         sourceWriter.println("{");
         sourceWriter.indent();
-        if (field.getType().isPrimitive() != null)
-            sourceWriter.println("setValueInternal_int( object, (Integer) value );");
-        else
+        JPrimitiveType primitive = field.getType().isPrimitive();
+        if (primitive != null) {
+            String name = primitive.getQualifiedSourceName();
+            String boxedName = primitive.getQualifiedBoxedSourceName();
+            sourceWriter.println("setValueInternal_"+name+"( object, ("+boxedName+") value );");
+        } else {
             sourceWriter.println("setValueInternal_Object( object, value );");
+        }
         sourceWriter.outdent();
         sourceWriter.println("}");
         sourceWriter.println("");
@@ -237,10 +241,13 @@ class ClazzInfoBuilder {
         sourceWriter.println("public <OUT> OUT getValue( Object object )");
         sourceWriter.println("{");
         sourceWriter.indent();
-        if (field.getType().isPrimitive() != null)
-            sourceWriter.println("return (OUT) (Integer) getValueInternal_int( object );");
-        else
+        if (primitive != null) {
+            String name = primitive.getQualifiedSourceName();
+            String boxedName = primitive.getQualifiedBoxedSourceName();
+            sourceWriter.println("return (OUT) ("+boxedName+") getValueInternal_"+name+"( object );");
+        } else {
             sourceWriter.println("return (OUT) getValueInternal_Object( object );");
+        }
         sourceWriter.outdent();
         sourceWriter.println("}");
         sourceWriter.println("");
@@ -253,20 +260,25 @@ class ClazzInfoBuilder {
         sourceWriter.println("}-*/;");
         sourceWriter.println("");
 
-        sourceWriter.println("private native final void setValueInternal_int( Object object, int value )");
-        sourceWriter.println("/*-{");
-        sourceWriter.indent();
-        sourceWriter.println("object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + " = value;");
-        sourceWriter.outdent();
-        sourceWriter.println("}-*/;");
-        sourceWriter.println("");
-        sourceWriter.println("private native final int getValueInternal_int( Object object )");
-        sourceWriter.println("/*-{");
-        sourceWriter.indent();
-        sourceWriter.println("return object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + ";");
-        sourceWriter.outdent();
-        sourceWriter.println("}-*/;");
-        sourceWriter.println("");
+        if (primitive != null) {
+            String name = primitive.getQualifiedSourceName();
+            String boxedName = primitive.getQualifiedBoxedSourceName();
+            sourceWriter.println("private native final void setValueInternal_"+name+"( Object object, "+boxedName+" value )");
+            sourceWriter.println("/*-{");
+            sourceWriter.indent();
+            sourceWriter.println("object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + " = value;");
+            sourceWriter.outdent();
+            sourceWriter.println("}-*/;");
+            sourceWriter.println("");
+            sourceWriter.println("private native final "+name+" getValueInternal_"+name+"( Object object )");
+            sourceWriter.println("/*-{");
+            sourceWriter.indent();
+            sourceWriter.println("return object.@" + reflectedType.getQualifiedSourceName() + "::" + field.getName() + ";");
+            sourceWriter.outdent();
+            sourceWriter.println("}-*/;");
+            sourceWriter.println("");
+        }
+
         sourceWriter.println("private native final void setValueInternal_Object( Object object, Object value )");
         sourceWriter.println("/*-{");
         sourceWriter.indent();

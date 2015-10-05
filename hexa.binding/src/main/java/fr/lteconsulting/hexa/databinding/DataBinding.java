@@ -27,6 +27,7 @@ public class DataBinding {
     private Object destinationHandler;
     private boolean fSettingDestination;
     private Converter converter;
+
     private final Action2<PropertyAdapter, Object> onSourceChanged = new Action2<PropertyAdapter, Object>() {
         @Override
         public void exec(PropertyAdapter param, Object cookie) {
@@ -45,8 +46,9 @@ public class DataBinding {
                 log(" - source value : " + value);
 
             if (converter != null) {
-                if (logPrefix != null)
+                if (logPrefix != null) {
                     log("... converting value ...");
+                }
                 value = converter.convert(value);
                 if (logPrefix != null)
                     log(" - converted to : " + value);
@@ -60,6 +62,7 @@ public class DataBinding {
                 log(" - done propagating source");
         }
     };
+
     private final Action2<PropertyAdapter, Object> onDestinationChanged = new Action2<PropertyAdapter, Object>() {
         @Override
         public void exec(PropertyAdapter param, Object cookie) {
@@ -125,7 +128,7 @@ public class DataBinding {
     }
 
     /**
-     * Suspend the data binding. Can be reactivated with {@link activate}
+     * Suspend the data binding. Can be reactivated with {@link #activate}
      */
     public DataBinding suspend() {
         fActivated = false;
