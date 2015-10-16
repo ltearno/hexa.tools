@@ -23,8 +23,8 @@
         <!--<module>hexa.demo.gwt</module> -->
         <!--<module>hexa.gwt.archetype</module>-->
         <!--<module>hexa.persistence</module>-->
-        <!--<module>hexa.rpc</module>-->
-        <!--<module>hexa.spring</module>-->
+        <module>hexa.rpc</module>
+        <module>hexa.spring</module>
         <module>hexa.utils</module>
     </modules>
     <licenses>
