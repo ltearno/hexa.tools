@@ -35,12 +35,14 @@
                 <version>2.7.0</version>
                 <executions>
                     <execution>
+                        <id>compile</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                     </execution>
                     <execution>
+                        <id>test</id>
                         <phase>test</phase>
                         <goals>
                             <goal>test</goal>
