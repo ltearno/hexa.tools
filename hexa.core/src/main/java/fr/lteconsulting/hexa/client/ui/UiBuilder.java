@@ -3,7 +3,8 @@ package fr.lteconsulting.hexa.client.ui;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
+
+import fr.lteconsulting.hexa.client.ui.widget.VerticalPanel;
 
 public class UiBuilder
 {
