@@ -8,7 +8,7 @@ import fr.lteconsulting.hexa.databinding.Converter;
  */
 public class EnumConverter implements Converter {
 
-    private Enum[] values;
+    private Enum<?>[] values;
 
     private boolean toOrdinal;
 
@@ -16,7 +16,7 @@ public class EnumConverter implements Converter {
      * Default constructor, won't use the enums ordinal value by default.
      * @see #EnumConverter(Enum[] values, boolean toOrdinal)
      */
-    public EnumConverter(Enum[] values) {
+    public EnumConverter(Enum<?>[] values) {
         this(values, false);
     }
 
@@ -24,7 +24,7 @@ public class EnumConverter implements Converter {
      * Constructor to define whether or not the enum should be used as its
      * ordinal value, otherwise it will simply call toString on the enum.
      */
-    public EnumConverter(Enum[] values, boolean toOrdinal) {
+    public EnumConverter(Enum<?>[] values, boolean toOrdinal) {
         this.values = values;
         this.toOrdinal = toOrdinal;
     }
@@ -42,7 +42,7 @@ public class EnumConverter implements Converter {
 
     @Override
     public Object convertBack(Object value) {
-        Enum e = null;
+        Enum<?> e = null;
         try {
             if (value instanceof Integer) {
                 e = values[(Integer) value];
@@ -55,7 +55,7 @@ public class EnumConverter implements Converter {
                 catch(NumberFormatException | IndexOutOfBoundsException ex) {
                     // Failed to find by ordinal value
                     // Try find by enum name string
-                    for(Enum val : values) {
+                    for(Enum<?> val : values) {
                         if(val.name().equals(value)) {
                             e = val;
                             break;

@@ -13,7 +13,8 @@ public class Parent extends Grandparent {
 
     HashMap<String, List<Integer>> parentsMap;
 
-    private double parentsPrivateNoGetterSetter;
+    @SuppressWarnings("unused")
+	private double parentsPrivateNoGetterSetter;
     private double parentsPrivateHasGetterSetter;
 
     public double getParentsPrivateHasGetterSetter() {

@@ -9,5 +9,6 @@ public class Grandparent extends Ancestor {
     String grandparentsString;
     int grandparentsNumber;
     protected int grandparentsProtectedNumber;
-    private double grandparentsDouble;
+    @SuppressWarnings("unused")
+	private double grandparentsDouble;
 }

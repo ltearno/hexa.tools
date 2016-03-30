@@ -7,7 +7,8 @@ public class Child extends Parent {
 
     String childsString;
 
-    private double childsPrivateNoGetterSetter;
+    @SuppressWarnings("unused")
+	private double childsPrivateNoGetterSetter;
     private double childsPrivateHasGetterSetter;
 
     public double getChildsPrivateHasGetterSetter() {
