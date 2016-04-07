@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.client.application.archi;
 
-public interface ActivityMapper
+public interface ActivityMapper<Place>
 {
-	Activity getActivity( Place place );
+	Activity<Place> getActivity( Place place );
 }

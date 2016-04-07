@@ -3,15 +3,15 @@ package fr.lteconsulting.hexa.client.application.archi;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
-public class ActivityMng
+public class ActivityMng<Place>
 {
 	AcceptsOneWidget appWidget = null;
-	Activity currentActivity = null;
-	ActivityMapper activityMapper = null;
-	PlaceController placeController = null;
-	ActivityFilter activityFilter = null;
+	Activity<Place> currentActivity = null;
+	ActivityMapper<Place> activityMapper = null;
+	PlaceController<Place> placeController = null;
+	ActivityFilter<Place> activityFilter = null;
 
-	public void init( AcceptsOneWidget appWidget, ActivityMapper activityMapper, PlaceController placeController, ActivityFilter activityFilter )
+	public void init( AcceptsOneWidget appWidget, ActivityMapper<Place> activityMapper, PlaceController<Place> placeController, ActivityFilter<Place> activityFilter )
 	{
 		this.placeController = placeController;
 		this.appWidget = appWidget;
@@ -36,10 +36,10 @@ public class ActivityMng
 
 	public void setPlace( Place place )
 	{
-		Activity activity = activityMapper.getActivity( place );
+		Activity<Place> activity = activityMapper.getActivity( place );
 
 		// filter the place by application
-		Activity res = activityFilter.canEnter( activity, place );
+		Activity<Place> res = activityFilter.canEnter( activity, place );
 		if( res == null )
 			currentActivity = activity;
 		else

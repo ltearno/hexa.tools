@@ -15,14 +15,14 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
 import fr.lteconsulting.hexa.client.tools.HexaTools;
 
-public class PlaceController implements ValueChangeHandler<String>
+public class PlaceController<Place> implements ValueChangeHandler<String>
 {
-	ActivityMng activityMng = null;
-	PlaceTokenizer placeTokenizer = null;
+	ActivityMng<Place> activityMng = null;
+	PlaceTokenizer<Place> placeTokenizer = null;
 
 	private Place currentPlace = null;
 
-	public void init( ActivityMng activityMng, PlaceTokenizer placeTokenizer )
+	public void init( ActivityMng<Place> activityMng, PlaceTokenizer<Place> placeTokenizer )
 	{
 		this.activityMng = activityMng;
 		this.placeTokenizer = placeTokenizer;

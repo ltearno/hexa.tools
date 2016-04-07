@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.client.application.archi;
 
-public interface ActivityFilter
+public interface ActivityFilter<Place>
 {
-	Activity canEnter( Activity activity, Place place );
+	Activity<Place> canEnter( Activity<Place> activity, Place place );
 }

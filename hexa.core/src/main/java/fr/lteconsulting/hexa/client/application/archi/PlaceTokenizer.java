@@ -1,6 +1,6 @@
 package fr.lteconsulting.hexa.client.application.archi;
 
-public interface PlaceTokenizer
+public interface PlaceTokenizer<Place>
 {
 	String getToken( Place place );
 

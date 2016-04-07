@@ -2,11 +2,9 @@ package fr.lteconsulting.hexa.client.application.archi;
 
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
-public interface Activity
+public interface Activity<Place>
 {
-	// an init or constructor method should take specific Place and
-	// ClientFactory in parameter...
-	void start( AcceptsOneWidget container, PlaceController placeController );
+	void start( AcceptsOneWidget container, PlaceController<Place> placeController );
 
 	String mayStop();
 }
