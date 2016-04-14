@@ -24,4 +24,14 @@ class JsTools
 	/*-{
 		return o[name] || null;
 	}-*/;
+
+	static native <T> T get( Object o, int index )
+	/*-{
+		return o[index] || null;
+	}-*/;
+
+	public static native <I, O> O castAny( I o )
+	/*-{
+		return o;
+	}-*/;
 }
