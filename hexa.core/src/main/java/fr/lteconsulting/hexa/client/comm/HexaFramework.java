@@ -29,6 +29,8 @@ public class HexaFramework
 		ImageResource treeMinus();
 
 		ImageResource dropdown();
+
+		ImageResource ellipsis();
 	}
 
 	public static ImageResources images = GWT.create( DefaultImages.class );
@@ -51,7 +53,7 @@ interface DefaultImages extends ClientBundle, ImageResources
 	@Override
 	@Source( "16-em-plus.png" )
 	ImageResource add();
-	
+
 	@Override
 	@Source( "16-em-plus.png" )
 	ImageResource addPlus();
@@ -71,8 +73,12 @@ interface DefaultImages extends ClientBundle, ImageResources
 	@Override
 	@Source( "16-arrow-right.png" )
 	ImageResource treePlus();
-	
+
 	@Override
 	@Source( "dropdown.png" )
 	ImageResource dropdown();
+	
+	@Override
+	@Source( "ellipsis.png" )
+	ImageResource ellipsis();
 }
