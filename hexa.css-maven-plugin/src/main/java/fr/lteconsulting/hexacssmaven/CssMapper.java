@@ -75,9 +75,17 @@ public class CssMapper
 	{
 		List<String> lines = Files.readAllLines( Paths.get( mappingPath ), StandardCharsets.UTF_8 );
 
+		Set<String> done = new HashSet<>();
 		List<String[]> renames = new ArrayList<>();
 		for( String line : lines )
-			renames.add( line.split( "=" ) );
+		{
+			String[] parts = line.split( "=" );
+			if( done.contains( parts[0] ) )
+				continue;
+			else
+				done.add( parts[0] );
+			renames.add( parts );
+		}
 
 		Collections.sort( renames, new Comparator<String[]>()
 		{
@@ -91,6 +99,8 @@ public class CssMapper
 		for( String[] line : renames )
 		{
 			log.debug( line[1] + " => " + line[0] );
+			if( !input.contains( "." + line[1] ) )
+				log.warn( "not found ." + line[1] + " css rule in the source file, mapping to ." + line[0] );
 			input = input.replaceAll( "\\." + line[1], "." + line[0] );
 			usedClassNames.add( line[0] );
 		}
