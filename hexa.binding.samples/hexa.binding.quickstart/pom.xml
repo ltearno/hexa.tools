@@ -5,7 +5,7 @@
     <groupId>fr.lteconsulting</groupId>
     <artifactId>hexa.binding.samples.quickstart</artifactId>
     <packaging>war</packaging>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <name>Hexa Binding GWT Quick Start</name>
     <properties>
         <!-- Convenience property to set the GWT version -->
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding.gwt</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

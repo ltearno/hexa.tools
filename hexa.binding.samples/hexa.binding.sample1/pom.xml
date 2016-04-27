@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.lteconsulting</groupId>
     <artifactId>hexa.binding.sample1</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
     <name>hexa.binding.sample1</name>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hexa.binding.version>1.4-SNAPSHOT</hexa.binding.version>
+        <hexa.binding.version>1.4</hexa.binding.version>
     </properties>
     <dependencies>
         <dependency>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.lteconsulting</groupId>
     <artifactId>hexa.binding.sample2</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <name>hexa.binding.sample2</name>
     <url>http://maven.apache.org</url>
     <packaging>war</packaging>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.css</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -137,7 +137,7 @@
             <plugin>
                 <groupId>fr.lteconsulting</groupId>
                 <artifactId>hexacss-maven-plugin</artifactId>
-                <version>1.4-SNAPSHOT</version>
+                <version>1.4</version>
                 <configuration>
                     <sourceDirectory>classpath:fr/lteconsulting/hexa/client/css/bindings</sourceDirectory>
                     <mappingFile>${project.build.directory}/${project.build.finalName}/sample/hexas-css.mapping</mappingFile>

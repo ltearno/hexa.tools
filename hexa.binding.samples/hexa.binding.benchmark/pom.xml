@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>fr.lteconsulting</groupId>
-        <version>1.4-SNAPSHOT</version>
+        <version>1.4</version>
         <artifactId>hexa.binding.samples</artifactId>
     </parent>
     <artifactId>hexa.binding.benchmark</artifactId>

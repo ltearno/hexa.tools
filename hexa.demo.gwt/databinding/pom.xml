@@ -6,7 +6,7 @@
     <artifactId>hexa.demo.gwt.databinding</artifactId>
     <name>hexa.demo.gwt.databinding</name>
     <url>http://www.lteconsulting.fr</url>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>war</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,19 +40,19 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.core</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.css</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -131,7 +131,7 @@
             <plugin>
                 <groupId>fr.lteconsulting</groupId>
                 <artifactId>hexacss-maven-plugin</artifactId>
-                <version>1.4-SNAPSHOT</version>
+                <version>1.4</version>
                 <configuration>
                     <sourceDirectory>src/main/webapp/css</sourceDirectory>
                     <mappingFile>${project.build.directory}/${project.build.finalName}/application/hexas-css.mapping</mappingFile>

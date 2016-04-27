@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.lteconsulting</groupId>
     <artifactId>hexa.css.sample2</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <name>hexa.css.sample2</name>
     <packaging>war</packaging>
     <properties>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.css</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -107,7 +107,7 @@
             <plugin>
                 <groupId>fr.lteconsulting</groupId>
                 <artifactId>hexacss-maven-plugin</artifactId>
-                <version>1.4-SNAPSHOT</version>
+                <version>1.4</version>
                 <configuration>
                     <sourceDirectory>src/main/css</sourceDirectory>
                     <mappingFile>${project.build.directory}/${project.build.finalName}/sample2/hexas-css.mapping</mappingFile>
