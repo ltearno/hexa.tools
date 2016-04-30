@@ -17,6 +17,9 @@ public class XMLHttpRequest
 	@JsProperty
 	public native void setOnreadystatechange( ReadyStateHandler handler );
 
+	@JsMethod
+	public native void setRequestHeader( String headerName, String value );
+
 	@JsProperty
 	public native int getReadyState();
 
