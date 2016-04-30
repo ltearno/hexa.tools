@@ -13,6 +13,11 @@ public class Ajax
 {
 	public static Promise<String, Object> sendRequest( String method, String url )
 	{
+		return sendRequest( method, url, null );
+	}
+
+	public static Promise<String, Object> sendRequest( String method, String url, Object data )
+	{
 		return new Promise<>( new Executor<String, Object>()
 		{
 			@Override
@@ -21,6 +26,11 @@ public class Ajax
 				XMLHttpRequest req = new XMLHttpRequest();
 
 				req.open( method, url, true );
+
+				if( data != null )
+				{
+					req.setRequestHeader( "Content-Type", "application/json" );
+				}
 
 				req.setOnreadystatechange( event -> {
 					if( req.getReadyState() == 4 )
@@ -32,19 +42,24 @@ public class Ajax
 					}
 				} );
 
-				req.send( null );
+				req.send( data != null ? JSON.stringify( data ) : null );
 			}
 		} );
 	}
 
 	public static <T> Promise<T, Object> sendRequestAndConvertDto( String method, String url, Class<T> convertedClass )
 	{
+		return sendRequestAndConvertDto( method, url, null, convertedClass );
+	}
+
+	public static <T> Promise<T, Object> sendRequestAndConvertDto( String method, String url, Object data, Class<T> convertedClass )
+	{
 		return new Promise<>( new Executor<T, Object>()
 		{
 			@Override
 			public void execute( Resolver<T> resolver, Rejector<Object> rejecter )
 			{
-				Ajax.sendRequest( method, url ).then( new Resolution<String>()
+				Ajax.sendRequest( method, url, data ).then( new Resolution<String>()
 				{
 					@Override
 					public void resolved( String value )
@@ -68,12 +83,17 @@ public class Ajax
 
 	public static <T> Promise<JsArray<T>, Object> sendRequestAndConvertDtoList( String method, String url, Class<T> convertedClass )
 	{
+		return sendRequestAndConvertDtoList( method, url, null, convertedClass );
+	}
+
+	public static <T> Promise<JsArray<T>, Object> sendRequestAndConvertDtoList( String method, String url, Object data, Class<T> convertedClass )
+	{
 		return new Promise<>( new Executor<JsArray<T>, Object>()
 		{
 			@Override
 			public void execute( Resolver<JsArray<T>> resolver, Rejector<Object> rejecter )
 			{
-				Ajax.sendRequest( method, url ).then( new Resolution<String>()
+				Ajax.sendRequest( method, url, data ).then( new Resolution<String>()
 				{
 					@Override
 					public void resolved( String value )
