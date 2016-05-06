@@ -5,6 +5,7 @@ public class CLASS_NAME
 	public static native Object get()
 	/*-{
 		var component = $wnd.COMPONENT_CLASS_FQN;
+		var proto = component.prototype;
 		
 		component.parameters = component.parameters || [
 			PARAMETERS
@@ -23,6 +24,8 @@ public class CLASS_NAME
 		})
 		ROUTECONFIGS
 		];
+		
+		PROPERTIES
 
 		return component;
 	}-*/;

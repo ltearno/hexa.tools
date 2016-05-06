@@ -45,11 +45,20 @@ public class JsArray<T>
 
 	@JsMethod
 	public native void splice( int start, int length );
+	
+	@JsMethod
+	public native JsArray<T> slice( int start );
 
 	@JsOverlay
 	public final T get( int index )
 	{
 		return JsTools.get( this, index );
+	}
+
+	@JsOverlay
+	public final void set( int index, T value )
+	{
+		JsTools.set( this, index, value );
 	}
 
 	@JsOverlay
