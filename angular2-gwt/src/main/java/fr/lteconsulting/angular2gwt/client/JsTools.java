@@ -17,13 +17,23 @@ public class JsTools
 	@JsMethod( namespace = "console", name = "log" )
 	public static native void log( String message );
 
-	static native <T> T get( Object o, int index )
+	public static native <T> T get( Object o, int index )
 	/*-{
 		return o[index] || null;
 	}-*/;
 	
-	static native <T> void set( Object o, int index, T value )
+	public static native <T> T get( Object o, String propertyName )
+	/*-{
+		return o[propertyName] || null;
+	}-*/;
+	
+	public static native <T> void set( Object o, int index, T value )
 	/*-{
 		o[index] = value;
+	}-*/;
+	
+	public static native <T> void set( Object o, String propertyName, T value )
+	/*-{
+		o[propertyName] = value;
 	}-*/;
 }
