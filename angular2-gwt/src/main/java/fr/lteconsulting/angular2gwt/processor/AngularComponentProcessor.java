@@ -30,6 +30,7 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import fr.lteconsulting.angular2gwt.Component;
+import fr.lteconsulting.angular2gwt.Injectable;
 import fr.lteconsulting.angular2gwt.Input;
 import fr.lteconsulting.angular2gwt.Output;
 import fr.lteconsulting.angular2gwt.RouteConfigs;
@@ -39,20 +40,32 @@ import fr.lteconsulting.angular2gwt.client.interop.angular.Router;
 import fr.lteconsulting.angular2gwt.client.interop.angular.RouterDirectives;
 import fr.lteconsulting.angular2gwt.client.interop.angular.RouterProviders;
 
-@SupportedAnnotationTypes( AngularComponentProcessor.AnnotationFqn )
+@SupportedAnnotationTypes( { AngularComponentProcessor.ComponentAnnotationFqn, AngularComponentProcessor.InjectableAnnotationFqn } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 public class AngularComponentProcessor extends AbstractProcessor
 {
-	public final static String AnnotationFqn = "fr.lteconsulting.angular2gwt.Component";
+	public final static String ComponentAnnotationFqn = "fr.lteconsulting.angular2gwt.Component";
+	public final static String InjectableAnnotationFqn = "fr.lteconsulting.angular2gwt.Injectable";
 
-	private final static String HELPER_CLASS_SUFFIX = "_AngularComponent";
+	private final static String COMPONENT_HELPER_CLASS_SUFFIX = "_AngularComponent";
+	private final static String INJECTABLE_HELPER_CLASS_SUFFIX = "_AngularInjectable";
+
+	public AngularComponentProcessor()
+	{
+		initSpecialFqns();
+	}
 
 	@Override
 	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
 	{
-		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( AnnotationFqn ) ) ) )
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( ComponentAnnotationFqn ) ) ) )
 		{
-			processClass( element );
+			processComponent( element );
+		}
+
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( InjectableAnnotationFqn ) ) ) )
+		{
+			processInjectable( element );
 		}
 
 		roundEnv.errorRaised();
@@ -60,12 +73,15 @@ public class AngularComponentProcessor extends AbstractProcessor
 		return true;
 	}
 
-	private void processClass( TypeElement element )
+	// FQN -> javascript name (with or without $wnd)
+	// FQN -> component/injectable accessor
+
+	private void processComponent( TypeElement element )
 	{
 		String template = readResource( "fr/lteconsulting/angular2gwt/processor/AngularComponent.txt" );
 
 		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
-		String angularComponentName = element.getSimpleName() + HELPER_CLASS_SUFFIX;
+		String angularComponentName = element.getSimpleName() + COMPONENT_HELPER_CLASS_SUFFIX;
 
 		template = template.replaceAll( "PACKAGE", packageName );
 		template = template.replaceAll( "CLASS_NAME", angularComponentName );
@@ -99,21 +115,21 @@ public class AngularComponentProcessor extends AbstractProcessor
 
 		// directives
 		StringBuilder directives = new StringBuilder();
-		List<String> directiveClassNames = getAnnotationClassListValue( element, AnnotationFqn, "directives" );
+		List<String> directiveClassNames = getAnnotationClassListValue( element, ComponentAnnotationFqn, "directives" );
 		if( !directiveClassNames.isEmpty() )
 		{
 			directives.append( "directives: [" );
-			directives.append( directiveClassNames.stream().map( name -> RouterDirectives.class.getName().equals( name ) ? "$wnd.ng.router.ROUTER_DIRECTIVES" : ("@" + name + HELPER_CLASS_SUFFIX + "::get()()") ).collect( Collectors.joining( ", " ) ) );
+			directives.append( directiveClassNames.stream().map( name -> getComponentJavascriptName( name ) ).collect( Collectors.joining( ", " ) ) );
 			directives.append( "]," );
 		}
 
 		// providers
 		StringBuilder providers = new StringBuilder();
-		List<String> providerClassNames = getAnnotationClassListValue( element, AnnotationFqn, "providers" );
+		List<String> providerClassNames = getAnnotationClassListValue( element, ComponentAnnotationFqn, "providers" );
 		if( !providerClassNames.isEmpty() )
 		{
 			providers.append( "providers: [" );
-			providers.append( providerClassNames.stream().map( name -> RouterProviders.class.getName().equals( name ) ? "$wnd.ng.router.ROUTER_PROVIDERS" : ("$wnd." + name) ).collect( Collectors.joining( ", " ) ) );
+			providers.append( providerClassNames.stream().map( name -> getProviderJavascriptName( name ) ).collect( Collectors.joining( ", " ) ) );
 			providers.append( "]," );
 		}
 
@@ -247,14 +263,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 					parameters.append( ", " );
 
 				String fqn = p.asType().toString();
-				if( RouteParams.class.getName().equals( fqn ) )
-					parameters.append( "$wnd.ng.router.RouteParams" );
-				else if( Router.class.getName().equals( fqn ) )
-					parameters.append( "$wnd.ng.router.Router" );
-				else if( NgZone.class.getName().equals( fqn ) )
-					parameters.append( "$wnd.ng.core.NgZone" );
-				else
-					parameters.append( "$wnd." + fqn );
+				parameters.append( getJavascriptName( fqn ) );
 			} );
 		}
 
@@ -290,7 +299,110 @@ public class AngularComponentProcessor extends AbstractProcessor
 		}
 	}
 
-	static class RouteConfigDto
+	private HashMap<String, String> specialFqns = new HashMap<>();
+
+	private void initSpecialFqns()
+	{
+		specialFqns.put( RouteParams.class.getName(), "$wnd.ng.router.RouteParams" );
+		specialFqns.put( Router.class.getName(), "$wnd.ng.router.Router" );
+		specialFqns.put( NgZone.class.getName(), "$wnd.ng.core.NgZone" );
+		specialFqns.put( RouterProviders.class.getName(), "$wnd.ng.router.ROUTER_PROVIDERS" );
+		specialFqns.put( RouterDirectives.class.getName(), "$wnd.ng.router.ROUTER_DIRECTIVES" );
+	}
+
+	private String getComponentJavascriptName( String fqn )
+	{
+		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
+		if( element != null )
+		{
+			Component component = element.getAnnotation( Component.class );
+			if( component != null )
+				return "@" + fqn + COMPONENT_HELPER_CLASS_SUFFIX + "::get()()";
+		}
+
+		return getJavascriptName( fqn );
+	}
+
+	private String getProviderJavascriptName( String fqn )
+	{
+		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
+		if( element != null )
+		{
+			Injectable injectable = element.getAnnotation( Injectable.class );
+			if( injectable != null )
+				return "@" + fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "::get()()";
+		}
+
+		return getJavascriptName( fqn );
+	}
+
+	private String getJavascriptName( String fqn )
+	{
+		if( specialFqns.containsKey( fqn ) )
+			return specialFqns.get( fqn );
+
+		// TODO : should take @JsType( namespace, name ) in account
+
+		return "$wnd." + fqn;
+	}
+
+	private void processInjectable( TypeElement element )
+	{
+		String template = readResource( "fr/lteconsulting/angular2gwt/processor/AngularInjectable.txt" );
+
+		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
+		String angularComponentName = element.getSimpleName() + INJECTABLE_HELPER_CLASS_SUFFIX;
+
+		template = template.replaceAll( "PACKAGE", packageName );
+		template = template.replaceAll( "CLASS_NAME", angularComponentName );
+		template = template.replaceAll( "INJECTABLE_CLASS_FQN", element.getQualifiedName().toString() );
+
+		// parameters
+		// trouver le constructeur (soit aucun et c'est bon, soit un seul et
+		// c'est celui la, soit plusieurs et c'est celui qui a @JsConstructor
+		// parcourir ses paramètres, et les ajouter dans les métadonnées
+		StringBuilder parameters = new StringBuilder();
+		List<ExecutableElement> constructors = ElementFilter.constructorsIn( element.getEnclosedElements() );
+		if( constructors != null && !constructors.isEmpty() )
+		{
+			if( constructors.size() > 1 )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "Multiple constructors not yet supported", element );
+				return;
+			}
+
+			ExecutableElement constructor = constructors.get( 0 );
+			constructor.getParameters().forEach( p -> {
+				if( parameters.length() > 0 )
+					parameters.append( ", " );
+
+				String fqn = p.asType().toString();
+				parameters.append( getJavascriptName( fqn ) );
+			} );
+		}
+
+		template = template.replace( "PARAMETERS", parameters.toString() );
+
+		String targetClassFqn = packageName + "." + angularComponentName;
+
+		try
+		{
+			JavaFileObject jfo = processingEnv.getFiler().createSourceFile( targetClassFqn, element );
+
+			OutputStream os = jfo.openOutputStream();
+			PrintWriter pw = new PrintWriter( os );
+			pw.print( template );
+			pw.close();
+			os.close();
+		}
+		catch( IOException e )
+		{
+			e.printStackTrace();
+			processingEnv.getMessager().printMessage( Kind.ERROR, "AngularComponent non généré !" + e, element );
+		}
+	}
+
+	class RouteConfigDto
 	{
 		String path;
 		String name;
@@ -312,7 +424,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		@Override
 		public String toString()
 		{
-			return "{ path: '" + path + "', name: '" + name + "', component: @" + component + HELPER_CLASS_SUFFIX + "::get()(), " + (useAsDefault ? "useAsDefault: true" : "") + "}";
+			return "{ path: '" + path + "', name: '" + name + "', component: " + getComponentJavascriptName( component ) + (useAsDefault ? ", useAsDefault: true" : "") + "}";
 		}
 	}
 
