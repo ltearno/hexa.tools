@@ -30,34 +30,33 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import fr.lteconsulting.angular2gwt.Component;
+import fr.lteconsulting.angular2gwt.Directive;
 import fr.lteconsulting.angular2gwt.Injectable;
 import fr.lteconsulting.angular2gwt.Input;
 import fr.lteconsulting.angular2gwt.Output;
 import fr.lteconsulting.angular2gwt.RouteConfigs;
-import fr.lteconsulting.angular2gwt.client.interop.angular.NgZone;
-import fr.lteconsulting.angular2gwt.client.interop.angular.RouteParams;
-import fr.lteconsulting.angular2gwt.client.interop.angular.Router;
-import fr.lteconsulting.angular2gwt.client.interop.angular.RouterDirectives;
-import fr.lteconsulting.angular2gwt.client.interop.angular.RouterProviders;
+import jsinterop.annotations.JsType;
 
-@SupportedAnnotationTypes( { AngularComponentProcessor.ComponentAnnotationFqn, AngularComponentProcessor.InjectableAnnotationFqn } )
+@SupportedAnnotationTypes( { AngularComponentProcessor.DirectiveAnnotationFqn, AngularComponentProcessor.ComponentAnnotationFqn, AngularComponentProcessor.InjectableAnnotationFqn } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 public class AngularComponentProcessor extends AbstractProcessor
 {
+	public final static String DirectiveAnnotationFqn = "fr.lteconsulting.angular2gwt.Directive";
 	public final static String ComponentAnnotationFqn = "fr.lteconsulting.angular2gwt.Component";
 	public final static String InjectableAnnotationFqn = "fr.lteconsulting.angular2gwt.Injectable";
 
+	private final static String DIRECTIVE_HELPER_CLASS_SUFFIX = "_AngularDirective";
 	private final static String COMPONENT_HELPER_CLASS_SUFFIX = "_AngularComponent";
 	private final static String INJECTABLE_HELPER_CLASS_SUFFIX = "_AngularInjectable";
-
-	public AngularComponentProcessor()
-	{
-		initSpecialFqns();
-	}
 
 	@Override
 	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
 	{
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( DirectiveAnnotationFqn ) ) ) )
+		{
+			processDirective( element );
+		}
+
 		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( ComponentAnnotationFqn ) ) ) )
 		{
 			processComponent( element );
@@ -73,8 +72,67 @@ public class AngularComponentProcessor extends AbstractProcessor
 		return true;
 	}
 
-	// FQN -> javascript name (with or without $wnd)
-	// FQN -> component/injectable accessor
+	private void processDirective( TypeElement element )
+	{
+		String template = readResource( "fr/lteconsulting/angular2gwt/processor/AngularDirective.txt" );
+
+		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
+		String angularDirectiveName = element.getSimpleName() + DIRECTIVE_HELPER_CLASS_SUFFIX;
+
+		template = template.replaceAll( "PACKAGE", packageName );
+		template = template.replaceAll( "CLASS_NAME", angularDirectiveName );
+		template = template.replaceAll( "DIRECTIVE_CLASS_FQN", element.getQualifiedName().toString() );
+
+		Directive directive = element.getAnnotation( Directive.class );
+
+		// selector
+		String aSelector = directive.selector();
+
+		// parameters
+		// trouver le constructeur (soit aucun et c'est bon, soit un seul et
+		// c'est celui la, soit plusieurs et c'est celui qui a @JsConstructor
+		// parcourir ses paramètres, et les ajouter dans les métadonnées
+		StringBuilder parameters = new StringBuilder();
+		List<ExecutableElement> constructors = ElementFilter.constructorsIn( element.getEnclosedElements() );
+		if( constructors != null && !constructors.isEmpty() )
+		{
+			if( constructors.size() > 1 )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "Multiple constructors not yet supported", element );
+				return;
+			}
+
+			ExecutableElement constructor = constructors.get( 0 );
+			constructor.getParameters().forEach( p -> {
+				if( parameters.length() > 0 )
+					parameters.append( ", " );
+
+				String fqn = p.asType().toString();
+				parameters.append( getJavascriptName( fqn ) );
+			} );
+		}
+
+		template = template.replace( "PARAMETERS", parameters.toString() );
+		template = template.replace( "SELECTOR", aSelector );
+
+		String targetClassFqn = packageName + "." + angularDirectiveName;
+
+		try
+		{
+			JavaFileObject jfo = processingEnv.getFiler().createSourceFile( targetClassFqn, element );
+
+			OutputStream os = jfo.openOutputStream();
+			PrintWriter pw = new PrintWriter( os );
+			pw.print( template );
+			pw.close();
+			os.close();
+		}
+		catch( IOException e )
+		{
+			e.printStackTrace();
+			processingEnv.getMessager().printMessage( Kind.ERROR, "AngularDirective not generated !" + e, element );
+		}
+	}
 
 	private void processComponent( TypeElement element )
 	{
@@ -119,7 +177,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		if( !directiveClassNames.isEmpty() )
 		{
 			directives.append( "directives: [" );
-			directives.append( directiveClassNames.stream().map( name -> getComponentJavascriptName( name ) ).collect( Collectors.joining( ", " ) ) );
+			directives.append( directiveClassNames.stream().map( name -> getJavascriptName( name ) ).collect( Collectors.joining( ", " ) ) );
 			directives.append( "]," );
 		}
 
@@ -129,7 +187,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		if( !providerClassNames.isEmpty() )
 		{
 			providers.append( "providers: [" );
-			providers.append( providerClassNames.stream().map( name -> getProviderJavascriptName( name ) ).collect( Collectors.joining( ", " ) ) );
+			providers.append( providerClassNames.stream().map( name -> getJavascriptName( name ) ).collect( Collectors.joining( ", " ) ) );
 			providers.append( "]," );
 		}
 
@@ -299,51 +357,48 @@ public class AngularComponentProcessor extends AbstractProcessor
 		}
 	}
 
-	private HashMap<String, String> specialFqns = new HashMap<>();
-
-	private void initSpecialFqns()
-	{
-		specialFqns.put( RouteParams.class.getName(), "$wnd.ng.router.RouteParams" );
-		specialFqns.put( Router.class.getName(), "$wnd.ng.router.Router" );
-		specialFqns.put( NgZone.class.getName(), "$wnd.ng.core.NgZone" );
-		specialFqns.put( RouterProviders.class.getName(), "$wnd.ng.router.ROUTER_PROVIDERS" );
-		specialFqns.put( RouterDirectives.class.getName(), "$wnd.ng.router.ROUTER_DIRECTIVES" );
-	}
-
-	private String getComponentJavascriptName( String fqn )
-	{
-		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
-		if( element != null )
-		{
-			Component component = element.getAnnotation( Component.class );
-			if( component != null )
-				return "@" + fqn + COMPONENT_HELPER_CLASS_SUFFIX + "::get()()";
-		}
-
-		return getJavascriptName( fqn );
-	}
-
-	private String getProviderJavascriptName( String fqn )
-	{
-		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
-		if( element != null )
-		{
-			Injectable injectable = element.getAnnotation( Injectable.class );
-			if( injectable != null )
-				return "@" + fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "::get()()";
-		}
-
-		return getJavascriptName( fqn );
-	}
-
 	private String getJavascriptName( String fqn )
 	{
-		if( specialFqns.containsKey( fqn ) )
-			return specialFqns.get( fqn );
+		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
+		if( element != null )
+		{
+			if( element.getAnnotation( Directive.class ) != null )
+				return "@" + fqn + DIRECTIVE_HELPER_CLASS_SUFFIX + "::get()()";
 
-		// TODO : should take @JsType( namespace, name ) in account
+			if( element.getAnnotation( Component.class ) != null )
+				return "@" + fqn + COMPONENT_HELPER_CLASS_SUFFIX + "::get()()";
 
-		return "$wnd." + fqn;
+			if( element.getAnnotation( Injectable.class ) != null )
+				return "@" + fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "::get()()";
+
+			String name = element.getSimpleName().toString();
+			String ns = element.getEnclosingElement().toString().replace( "package ", "" );
+
+			Optional<? extends AnnotationMirror> optAM = getElementAnnotation( element, JsType.class.getName() );
+			if( optAM.isPresent() )
+			{
+				AnnotationMirror am = optAM.get();
+
+				Optional<AnnotationValue> optName = getAnnotationValue( am, "name" );
+				if( optName.isPresent() )
+				{
+					name = optName.get().toString();
+					name = name.replaceAll( "\"", "" );
+				}
+
+				Optional<AnnotationValue> optNamespace = getAnnotationValue( am, "namespace" );
+				if( optNamespace.isPresent() )
+				{
+					ns = optNamespace.get().toString();
+					ns = ns.replaceAll( "\"", "" );
+				}
+			}
+
+			return "$wnd" + (ns == null || ns.isEmpty() ? "" : ("." + ns)) + "." + name;
+		}
+
+		return "/* no type element for " + fqn + " ! */ $wnd." + fqn;
+
 	}
 
 	private void processInjectable( TypeElement element )
@@ -424,7 +479,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		@Override
 		public String toString()
 		{
-			return "{ path: '" + path + "', name: '" + name + "', component: " + getComponentJavascriptName( component ) + (useAsDefault ? ", useAsDefault: true" : "") + "}";
+			return "{ path: '" + path + "', name: '" + name + "', component: " + getJavascriptName( component ) + (useAsDefault ? ", useAsDefault: true" : "") + "}";
 		}
 	}
 
@@ -432,18 +487,15 @@ public class AngularComponentProcessor extends AbstractProcessor
 	{
 		List<String> result = new ArrayList<>();
 
-		Optional<? extends AnnotationMirror> optAnnotationMirror = element.getAnnotationMirrors().stream().filter( m -> {
-			return processingEnv.getTypeUtils().isSameType( m.getAnnotationType(), processingEnv.getElementUtils().getTypeElement( annotationFqn ).asType() );
-		} ).findFirst();
+		Optional<? extends AnnotationMirror> optAnnotationMirror = getElementAnnotation( element, annotationFqn );
 
 		if( optAnnotationMirror.isPresent() )
 		{
 			AnnotationMirror annotationMirror = optAnnotationMirror.get();
-			Optional<? extends ExecutableElement> optKey = annotationMirror.getElementValues().keySet().stream().filter( k -> k.getSimpleName().toString().equals( annotationFieldName ) ).findFirst();
-			if( optKey.isPresent() )
+			Optional<AnnotationValue> optValue = getAnnotationValue( annotationMirror, annotationFieldName );
+			if( optValue.isPresent() )
 			{
-				ExecutableElement key = optKey.get();
-				AnnotationValue value = annotationMirror.getElementValues().get( key );
+				AnnotationValue value = optValue.get();
 
 				value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
 				{
@@ -469,6 +521,24 @@ public class AngularComponentProcessor extends AbstractProcessor
 		}
 
 		return result;
+	}
+
+	private Optional<AnnotationValue> getAnnotationValue( AnnotationMirror annotationMirror, String annotationFieldName )
+	{
+		return annotationMirror.getElementValues().entrySet().stream().filter( e -> e.getKey().getSimpleName().toString().equals( annotationFieldName ) ).map( e -> (AnnotationValue) e.getValue() ).findFirst();
+	}
+
+	private Optional<? extends AnnotationMirror> getElementAnnotation( TypeElement element, String annotationFqn )
+	{
+		Optional<? extends AnnotationMirror> optAnnotationMirror = element.getAnnotationMirrors().stream().filter( m -> {
+			return processingEnv.getTypeUtils().isSameType( m.getAnnotationType(), processingEnv.getElementUtils().getTypeElement( annotationFqn ).asType() );
+		} ).findFirst();
+		return optAnnotationMirror;
+	}
+
+	private boolean hasAnnotation( TypeElement element, Class<?> annotationClass )
+	{
+		return getElementAnnotation( element, annotationClass.getName() ).isPresent();
 	}
 
 	@SuppressWarnings( "resource" )
