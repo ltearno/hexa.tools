@@ -11,9 +11,13 @@ public class CLASS_NAME
 		];
 
 		directive.annotations = directive.annotations || [ new $wnd.ng.core.Directive({
-			selector: "SELECTOR"
+			selector: "SELECTOR",
+			HOST
+			INPUTS
 		})
 		];
+		
+		PROPERTIES
 
 		return directive;
 	}-*/;

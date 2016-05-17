@@ -31,6 +31,7 @@ import javax.tools.JavaFileObject;
 
 import fr.lteconsulting.angular2gwt.Component;
 import fr.lteconsulting.angular2gwt.Directive;
+import fr.lteconsulting.angular2gwt.Hosts;
 import fr.lteconsulting.angular2gwt.Injectable;
 import fr.lteconsulting.angular2gwt.Input;
 import fr.lteconsulting.angular2gwt.Output;
@@ -112,8 +113,121 @@ public class AngularComponentProcessor extends AbstractProcessor
 			} );
 		}
 
+		HashMap<String, String> hostsEventActions = new HashMap<>();
+		Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, Hosts.class.getName() );
+		if( hostsAnnotation.isPresent() )
+		{
+			Optional<AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );
+			if( valueOptional.isPresent() )
+			{
+				// list of hosts
+				AnnotationValue value = valueOptional.get();
+				value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+				{
+					@Override
+					public Void visitArray( List<? extends AnnotationValue> vals, Void p )
+					{
+						for( AnnotationValue v : vals )
+						{
+							// v is a Host
+							v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+							{
+								@Override
+								public Void visitAnnotation( AnnotationMirror annotationMirror, Void p )
+								{
+									value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+									{
+										@Override
+										public Void visitArray( List<? extends AnnotationValue> vals, Void p )
+										{
+											for( AnnotationValue v : vals )
+											{
+												v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+												{
+													@Override
+													public Void visitAnnotation( AnnotationMirror annotationMirror, Void p )
+													{
+														String event = getAnnotationValue( annotationMirror, "event" ).get().toString().replaceAll( "\"", "" );
+														String action = getAnnotationValue( annotationMirror, "action" ).get().toString().replaceAll( "\"", "" );
+
+														hostsEventActions.put( event, action );
+
+														return null;
+													}
+												}, null );
+											}
+
+											return null;
+										}
+									}, null );
+
+									return null;
+								}
+							}, null );
+						}
+						return null;
+					}
+				}, null );
+			}
+		}
+		StringBuilder hostsBuilder = new StringBuilder();
+		if( !hostsEventActions.isEmpty() )
+		{
+			hostsBuilder.append( "host: {" );
+			for( Entry<String, String> entry : hostsEventActions.entrySet() )
+				hostsBuilder.append( "'" + entry.getKey() + "': '" + entry.getValue() + "', \n" );
+			hostsBuilder.append( "}," );
+		}
+
+		// input fields
+		List<String> inputFields = ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).map( f -> f.getSimpleName().toString() ).collect( Collectors.toList() );
+		Map<String, String> methodFields = new HashMap<>();
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).forEach( method -> {
+			String methodName = method.getSimpleName().toString();
+			String fieldName = methodName;
+			if( methodName.startsWith( "set" ) )
+				fieldName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+			else
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method name should begin by 'set'", method );
+			methodFields.put( fieldName, methodName );
+		} );
+		StringBuilder inputs = new StringBuilder();
+		Set<String> inputNames = new HashSet<>();
+		inputNames.addAll( inputFields );
+		inputNames.addAll( methodFields.keySet() );
+		for( String inputName : inputNames )
+		{
+			if( inputs.length() > 0 )
+				inputs.append( ", " );
+			else
+				inputs.append( "inputs: [" );
+			inputs.append( "'" );
+			inputs.append( inputName );
+			inputs.append( "'" );
+		}
+		if( inputs.length() > 0 )
+			inputs.append( "]," );
+		StringBuilder properties = new StringBuilder();
+		if( !methodFields.isEmpty() )
+		{
+			for( Entry<String, String> entry : methodFields.entrySet() )
+			{
+				String fieldName = entry.getKey();
+				String methodName = entry.getValue();
+
+				properties.append( "if( ! ( '" + fieldName + "' in component ) ) {\n" );
+				properties.append( "  Object.defineProperty(proto, '" + fieldName + "', {\n" );
+				properties.append( "    set: function( value ) { this." + methodName + "( value ) }\n" );
+				properties.append( "  });\n" );
+				properties.append( "}\n" );
+			}
+		}
+
 		template = template.replace( "PARAMETERS", parameters.toString() );
 		template = template.replace( "SELECTOR", aSelector );
+		template = template.replace( "HOST", hostsBuilder.toString() );
+		template = template.replace( "INPUTS", inputs.toString() );
+		template = template.replace( "PROPERTIES", properties.toString() );
 
 		String targetClassFqn = packageName + "." + angularDirectiveName;
 
@@ -232,7 +346,6 @@ public class AngularComponentProcessor extends AbstractProcessor
 					}
 				}, null );
 			}
-
 		} );
 		StringBuilder routeConfisBuilder = new StringBuilder();
 		if( !routeConfigs.isEmpty() )
@@ -534,11 +647,6 @@ public class AngularComponentProcessor extends AbstractProcessor
 			return processingEnv.getTypeUtils().isSameType( m.getAnnotationType(), processingEnv.getElementUtils().getTypeElement( annotationFqn ).asType() );
 		} ).findFirst();
 		return optAnnotationMirror;
-	}
-
-	private boolean hasAnnotation( TypeElement element, Class<?> annotationClass )
-	{
-		return getElementAnnotation( element, annotationClass.getName() ).isPresent();
 	}
 
 	@SuppressWarnings( "resource" )
