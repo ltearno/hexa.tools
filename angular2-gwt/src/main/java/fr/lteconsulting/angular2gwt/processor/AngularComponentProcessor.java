@@ -117,7 +117,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, Hosts.class.getName() );
 		if( hostsAnnotation.isPresent() )
 		{
-			Optional<AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );
+			Optional<? extends AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );
 			if( valueOptional.isPresent() )
 			{
 				// list of hosts
@@ -492,14 +492,14 @@ public class AngularComponentProcessor extends AbstractProcessor
 			{
 				AnnotationMirror am = optAM.get();
 
-				Optional<AnnotationValue> optName = getAnnotationValue( am, "name" );
+				Optional<? extends AnnotationValue> optName = getAnnotationValue( am, "name" );
 				if( optName.isPresent() )
 				{
 					name = optName.get().toString();
 					name = name.replaceAll( "\"", "" );
 				}
 
-				Optional<AnnotationValue> optNamespace = getAnnotationValue( am, "namespace" );
+				Optional<? extends AnnotationValue> optNamespace = getAnnotationValue( am, "namespace" );
 				if( optNamespace.isPresent() )
 				{
 					ns = optNamespace.get().toString();
@@ -605,7 +605,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		if( optAnnotationMirror.isPresent() )
 		{
 			AnnotationMirror annotationMirror = optAnnotationMirror.get();
-			Optional<AnnotationValue> optValue = getAnnotationValue( annotationMirror, annotationFieldName );
+			Optional<? extends AnnotationValue> optValue = getAnnotationValue( annotationMirror, annotationFieldName );
 			if( optValue.isPresent() )
 			{
 				AnnotationValue value = optValue.get();
@@ -637,10 +637,17 @@ public class AngularComponentProcessor extends AbstractProcessor
 		return result;
 	}
 
-	@SuppressWarnings( "unchecked" )
 	private Optional<AnnotationValue> getAnnotationValue( AnnotationMirror annotationMirror, String annotationFieldName )
 	{
-		return (Optional<AnnotationValue>) annotationMirror.getElementValues().entrySet().stream().filter( e -> e.getKey().getSimpleName().toString().equals( annotationFieldName ) ).map( e -> e.getValue() ).findFirst();
+		for(Entry<? extends ExecutableElement, ? extends AnnotationValue> e : annotationMirror.getElementValues().entrySet())
+		{
+			if( e.getKey().getSimpleName().toString().equals( annotationFieldName ) )
+			{
+				return Optional.of( e.getValue());
+			}
+		}
+		
+		return Optional.empty();
 	}
 
 	private Optional<? extends AnnotationMirror> getElementAnnotation( TypeElement element, String annotationFqn )
@@ -651,6 +658,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 		return optAnnotationMirror;
 	}
 
+	@SuppressWarnings( "resource" )
 	private static String readResource( String fqn )
 	{
 		try
