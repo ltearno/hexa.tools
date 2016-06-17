@@ -4,7 +4,7 @@ import jsinterop.annotations.JsFunction;
 
 @FunctionalInterface
 @JsFunction
-public interface Executor<V, E>
+public interface Executor<V>
 {
-	void execute( Resolver<V> resolver, Rejector<E> rejecter );
+	void execute( Resolver<V> resolver, Rejector rejecter );
 }

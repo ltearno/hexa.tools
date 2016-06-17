@@ -4,7 +4,7 @@ import jsinterop.annotations.JsFunction;
 
 @FunctionalInterface
 @JsFunction
-public interface Rejector<T>
+public interface Rejector
 {
-	void reject( T error );
+	void reject( Object error );
 }

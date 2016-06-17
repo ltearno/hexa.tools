@@ -3,25 +3,23 @@ package fr.lteconsulting.angular2gwt.client;
 import fr.lteconsulting.angular2gwt.client.interop.angular.AngularTools;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Executor;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Promise;
-import fr.lteconsulting.angular2gwt.client.interop.promise.Rejection;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Rejector;
-import fr.lteconsulting.angular2gwt.client.interop.promise.Resolution;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Resolver;
 import fr.lteconsulting.angular2gwt.client.interop.xmlhttprequest.XMLHttpRequest;
 
 public class Ajax
 {
-	public static Promise<String, Object> sendRequest( String method, String url )
+	public static Promise<String> sendRequest( String method, String url )
 	{
 		return sendRequest( method, url, null );
 	}
 
-	public static Promise<String, Object> sendRequest( String method, String url, Object data )
+	public static Promise<String> sendRequest( String method, String url, Object data )
 	{
-		return new Promise<>( new Executor<String, Object>()
+		return new Promise<>( new Executor<String>()
 		{
 			@Override
-			public void execute( Resolver<String> resolver, Rejector<Object> rejecter )
+			public void execute( Resolver<String> resolver, Rejector rejecter )
 			{
 				XMLHttpRequest req = new XMLHttpRequest();
 
@@ -47,71 +45,46 @@ public class Ajax
 		} );
 	}
 
-	public static <T> Promise<T, Object> sendRequestAndConvertDto( String method, String url, Class<T> convertedClass )
+	public static <T> Promise<T> sendRequestAndConvertDto( String method, String url, Class<T> convertedClass )
 	{
 		return sendRequestAndConvertDto( method, url, null, convertedClass );
 	}
 
-	public static <T> Promise<T, Object> sendRequestAndConvertDto( String method, String url, Object data, Class<T> convertedClass )
+	public static <T> Promise<T> sendRequestAndConvertDto( String method, String url, Object data, Class<T> convertedClass )
 	{
-		return new Promise<>( new Executor<T, Object>()
+		return new Promise<>( new Executor<T>()
 		{
 			@Override
-			public void execute( Resolver<T> resolver, Rejector<Object> rejecter )
+			public void execute( Resolver<T> resolver, Rejector rejecter )
 			{
-				Ajax.sendRequest( method, url, data ).then( new Resolution<String>()
-				{
-					@Override
-					public void resolved( String value )
-					{
-						Object dto = JSON.parse( value );
-						T convertedDto = AngularTools.convertDto( dto, convertedClass );
+				Ajax.sendRequest( method, url, data ).then( ( value ) -> {
+					Object dto = JSON.parse( value );
+					T convertedDto = AngularTools.convertDto( dto, convertedClass );
 
-						resolver.resolve( convertedDto );
-					}
-				}, new Rejection<Object>()
-				{
-					@Override
-					public void rejected( Object error )
-					{
-						rejecter.reject( "error getting heroes because of: " + error );
-					}
+					resolver.resolve( convertedDto );
+				}, ( error ) -> {
+					rejecter.reject( "error getting heroes because of: " + error );
 				} );
 			}
 		} );
 	}
 
-	public static <T> Promise<JsArray<T>, Object> sendRequestAndConvertDtoList( String method, String url, Class<T> convertedClass )
+	public static <T> Promise<JsArray<T>> sendRequestAndConvertDtoList( String method, String url, Class<T> convertedClass )
 	{
 		return sendRequestAndConvertDtoList( method, url, null, convertedClass );
 	}
 
-	public static <T> Promise<JsArray<T>, Object> sendRequestAndConvertDtoList( String method, String url, Object data, Class<T> convertedClass )
+	public static <T> Promise<JsArray<T>> sendRequestAndConvertDtoList( String method, String url, Object data, Class<T> convertedClass )
 	{
-		return new Promise<>( new Executor<JsArray<T>, Object>()
-		{
-			@Override
-			public void execute( Resolver<JsArray<T>> resolver, Rejector<Object> rejecter )
-			{
-				Ajax.sendRequest( method, url, data ).then( new Resolution<String>()
-				{
-					@Override
-					public void resolved( String value )
-					{
-						JsArray<Object> dtoList = JSON.parse( value );
-						JsArray<T> convertedList = AngularTools.convertDtoList( dtoList, convertedClass );
+		return new Promise<>( ( resolver, rejecter ) -> {
+			Ajax.sendRequest( method, url, data ).then( ( value ) -> {
+				JsArray<Object> dtoList = JSON.parse( value );
+				JsArray<T> convertedList = AngularTools.convertDtoList( dtoList, convertedClass );
 
-						resolver.resolve( convertedList );
-					}
-				}, new Rejection<Object>()
-				{
-					@Override
-					public void rejected( Object error )
-					{
-						rejecter.reject( "error getting heroes because of: " + error );
-					}
-				} );
-			}
+				resolver.resolve( convertedList );
+			}, ( error ) -> {
+				rejecter.reject( "error getting heroes because of: " + error );
+			} );
 		} );
 	}
 }

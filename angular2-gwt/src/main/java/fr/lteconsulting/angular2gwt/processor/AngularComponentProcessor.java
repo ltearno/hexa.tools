@@ -29,6 +29,7 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
+import jsinterop.annotations.JsType;
 import fr.lteconsulting.angular2gwt.Component;
 import fr.lteconsulting.angular2gwt.Directive;
 import fr.lteconsulting.angular2gwt.Hosts;
@@ -36,7 +37,6 @@ import fr.lteconsulting.angular2gwt.Injectable;
 import fr.lteconsulting.angular2gwt.Input;
 import fr.lteconsulting.angular2gwt.Output;
 import fr.lteconsulting.angular2gwt.RouteConfigs;
-import jsinterop.annotations.JsType;
 
 @SupportedAnnotationTypes( { AngularComponentProcessor.DirectiveAnnotationFqn, AngularComponentProcessor.ComponentAnnotationFqn, AngularComponentProcessor.InjectableAnnotationFqn } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
@@ -619,6 +619,7 @@ public class AngularComponentProcessor extends AbstractProcessor
 						{
 							v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
 							{
+								@Override
 								public Void visitType( javax.lang.model.type.TypeMirror t, Void p )
 								{
 									String name = t.toString();
@@ -636,9 +637,10 @@ public class AngularComponentProcessor extends AbstractProcessor
 		return result;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	private Optional<AnnotationValue> getAnnotationValue( AnnotationMirror annotationMirror, String annotationFieldName )
 	{
-		return annotationMirror.getElementValues().entrySet().stream().filter( e -> e.getKey().getSimpleName().toString().equals( annotationFieldName ) ).map( e -> (AnnotationValue) e.getValue() ).findFirst();
+		return (Optional<AnnotationValue>) annotationMirror.getElementValues().entrySet().stream().filter( e -> e.getKey().getSimpleName().toString().equals( annotationFieldName ) ).map( e -> e.getValue() ).findFirst();
 	}
 
 	private Optional<? extends AnnotationMirror> getElementAnnotation( TypeElement element, String annotationFqn )
@@ -649,7 +651,6 @@ public class AngularComponentProcessor extends AbstractProcessor
 		return optAnnotationMirror;
 	}
 
-	@SuppressWarnings( "resource" )
 	private static String readResource( String fqn )
 	{
 		try
