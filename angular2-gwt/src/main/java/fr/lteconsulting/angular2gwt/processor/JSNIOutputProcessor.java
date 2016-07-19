@@ -86,7 +86,7 @@ public class JSNIOutputProcessor
 		String aSelector = annotation.selector();
 		String aTemplate = annotation.template().isEmpty() ? "" : "template: \"" + annotation.template() + "\",";
 		String aTemplateUrl = annotation.templateUrl().isEmpty() ? "" : "templateUrl: \"" + annotation.templateUrl() + "\",";
-		String aStyles = annotation.styles().isEmpty() ? "" : "styles: [" + annotation.styles() + "],";
+		String aStyles = findComponentStyles( annotation );
 		String aStyleUrls = findComponentStyleUrls( annotation );
 		String directives = findComponentDirectives( element );
 		String providers = findComponentProviders( element );
@@ -465,6 +465,25 @@ public class JSNIOutputProcessor
 			directives.append( "]," );
 		}
 		return directives.toString();
+	}
+
+	private String findComponentStyles( Component annotation )
+	{
+		StringBuilder aStyles = new StringBuilder();
+		
+		for( int i = 0; i < annotation.styles().length; i++ )
+		{
+			if( i == 0 )
+				aStyles.append( "styles: [" );
+			else
+				aStyles.append( ", " );
+			aStyles.append( "'" + annotation.styles()[i] + "'" );
+		}
+		
+		if( annotation.styles().length > 0 )
+			aStyles.append( "]," );
+		
+		return aStyles.toString();
 	}
 
 	private String findComponentStyleUrls( Component annotation )

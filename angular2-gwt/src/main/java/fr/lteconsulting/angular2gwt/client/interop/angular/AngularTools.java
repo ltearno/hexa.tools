@@ -1,17 +1,13 @@
 package fr.lteconsulting.angular2gwt.client.interop.angular;
 
 import fr.lteconsulting.angular2gwt.client.JsArray;
-import jsinterop.annotations.JsMethod;
-import jsinterop.annotations.JsPackage;
+import fr.lteconsulting.angular2gwt.client.JsTools;
 
 public class AngularTools
 {
-	@JsMethod( namespace = JsPackage.GLOBAL, name = "lteconsultingConvertObject" )
-	public static native <T> T lteconsultingConvertObject( String prototypeName, Object template );
-
 	public static <T> T convertDto( Object dto, Class<T> targetClass )
 	{
-		T result = AngularTools.lteconsultingConvertObject( targetClass.getName(), dto );
+		T result = JsTools.convertObject( targetClass.getName(), dto );
 		return result;
 	}
 

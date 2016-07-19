@@ -2,7 +2,6 @@ package fr.lteconsulting.angular2gwt.client.interop.angular;
 
 import fr.lteconsulting.angular2gwt.client.JsArray;
 import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType( isNative = true, namespace = JsPackage.GLOBAL, name = "Object" )
@@ -11,8 +10,8 @@ public class ComponentMetadata
 	public String selector;
 	public String template;
 	public String templateUrl;
-	public String styles;
 	
+	public JsArray<String> styles;
 	public JsArray<String> styleUrls;
 	public JsArray<String> inputs;
 	public JsArray<String> outputs;

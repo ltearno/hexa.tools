@@ -8,6 +8,9 @@ import jsinterop.annotations.JsType;
 @JsType( isNative = true, namespace = JsPackage.GLOBAL, name = "Promise" )
 public class Promise<V>
 {
+	@JsMethod( namespace = "Promise", name = "resolve" )
+	public static native <T> Promise<T> resolve( T value );
+	
 	@JsConstructor
 	public Promise( Executor<V> executor )
 	{

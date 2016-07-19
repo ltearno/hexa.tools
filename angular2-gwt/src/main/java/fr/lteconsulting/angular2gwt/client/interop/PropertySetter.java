@@ -5,5 +5,5 @@ import jsinterop.annotations.JsFunction;
 @JsFunction
 public interface PropertySetter
 {
-	void set( Object value );
+	void set( Object object, Object value );
 }

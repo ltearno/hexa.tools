@@ -17,8 +17,14 @@ public class JsTools {
 	@JsMethod(namespace = "console", name = "log")
 	public static native void log(String message);
 
-	@JsMethod(namespace = "Object", name = "defineProperty")
+	@JsMethod(namespace = "lteconsulting", name = "defineProperty")
 	public static native void defineProperty( Object object, String name, PropertyDefinition propertyDefinition );
+	
+	@JsMethod(namespace = "lteconsulting", name = "propertyInObject")
+	public static native boolean propertyInObject( String property, Object object );
+	
+	@JsMethod(namespace = "lteconsulting", name = "convertObject")
+	public static native <T> T convertObject( String prototypeName, Object template );
 
 	public static native <T> T get(Object o, int index)
 	/*-{

@@ -5,5 +5,5 @@ import jsinterop.annotations.JsFunction;
 @JsFunction
 public interface PropertyGetter
 {
-	Object get();
+	Object get( Object object );
 }

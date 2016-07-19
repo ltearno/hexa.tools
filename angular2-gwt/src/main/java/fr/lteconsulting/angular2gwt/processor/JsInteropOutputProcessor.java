@@ -27,6 +27,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import javax.tools.Diagnostic.Kind;
@@ -85,13 +86,14 @@ public class JsInteropOutputProcessor {
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Component");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.ComponentMetadata");
+		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
 
 		String aSelector = annotation.selector();
 		String aTemplate = annotation.template().isEmpty() ? null : annotation.template();
 		String aTemplateUrl = annotation.templateUrl().isEmpty() ? null : annotation.templateUrl();
-		String aStyles = annotation.styles().isEmpty() ? null : annotation.styles();
+		String aStyles = findComponentStyles( annotation );
 		String aStyleUrls = findComponentStyleUrls( annotation );
 		String directives = findComponentDirectives( element, classBlock, generatedAccessorTypestypes );
 		String providers = findComponentProviders( element, classBlock, generatedAccessorTypestypes );
@@ -100,8 +102,8 @@ public class JsInteropOutputProcessor {
 		// TODO : RouteConfigs
 		
 		// input fields
-		Map<String, String> methodFields = findFieldMethods( element );
-		String inputs = findInputs( element, methodFields );
+		List<FieldSetterMethodInformation> fieldsByMethods = findFieldMethods( element );
+		String inputs = findInputs( element, fieldsByMethods );
 		
 		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
 		classBlock.line("private native static AngularComponentConstructorFunction constructorFunction();");
@@ -109,6 +111,9 @@ public class JsInteropOutputProcessor {
 
 		classBlock.line("public static Object getComponentPrototype()");
 		classBlock.block((e) -> {
+			e.line( "JsToolsInjector.inject();" );
+			e.separator();
+			
 			e.line("AngularComponentConstructorFunction constructorFunction = constructorFunction();");
 			
 			if( parameters != null )
@@ -130,7 +135,7 @@ public class JsInteropOutputProcessor {
 				if( aTemplateUrl!=null )
 					i.line( "metadata.templateUrl = [{#}];", aTemplateUrl );
 				if( aStyles != null )
-					i.line( "metadata.styles = [{#}];", aStyles );
+					i.line( "metadata.styles = [{}];", aStyles );
 				if( aStyleUrls != null )
 					i.line( "metadata.styleUrls = [{}];", aStyleUrls );
 				if( directives != null )
@@ -143,7 +148,7 @@ public class JsInteropOutputProcessor {
 					i.line( "metadata.outputs = [{}];", outputs );
 				i.line();
 				i.line("constructorFunction.annotations = JsArray.of( new Component( metadata ) );");
-				buildFieldMethodDefinitions( methodFields, i, javaClassText );
+				buildFieldMethodDefinitions( element.getSimpleName().toString(), fieldsByMethods, i, classBlock, javaClassText );
 			});
 			
 			e.separator();
@@ -178,6 +183,7 @@ public class JsInteropOutputProcessor {
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Injectable");
+		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
 		
@@ -191,6 +197,9 @@ public class JsInteropOutputProcessor {
 		
 		classBlock.line("public static Object getComponentPrototype()");
 		classBlock.block((e) -> {
+			e.line( "JsToolsInjector.inject();" );
+			e.separator();
+			
 			e.line("AngularComponentConstructorFunction constructorFunction = constructorFunction();");
 			
 			if( parameters != null )
@@ -241,30 +250,42 @@ public class JsInteropOutputProcessor {
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Directive");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.DirectiveMetadata");
+		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
+		
+		HashMap<String,String> generatedAccessorTypestypes = new HashMap<>();
+		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypestypes );
 		
 		Directive directive = element.getAnnotation( Directive.class );
 		String aSelector = directive.selector();
 		String host = findDirectiveHostsEventActions( element, classBlock );
 		
 		// input fields
-		Map<String, String> methodFields = findFieldMethods( element );
-		String inputs = findInputs( element, methodFields );
+		List<FieldSetterMethodInformation> fieldsByMethods = findFieldMethods( element );
+		String inputs = findInputs( element, fieldsByMethods );
+		
+		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
+		classBlock.line("private native static AngularComponentConstructorFunction constructorFunction();");
+		
+		classBlock.separator();
 
 		classBlock.line("public static Object getComponentPrototype()");
 		classBlock.block((e) -> {
+			e.line( "JsToolsInjector.inject();" );
+			e.separator();
+			
 			e.line("AngularComponentConstructorFunction constructorFunction = constructorFunction();");
 			
 			e.separator();
 			
 			e.line("if( constructorFunction.parameters == null )").block((i) -> {
-				i.line("constructorFunction.parameters = JsArray.of();");
+				i.line("constructorFunction.parameters = [{}];", parameters);
 			});
 			
 			e.line();
 			e.line("if( constructorFunction.annotations == null )").block((i) -> {
-				i.line("ComponentMetadata metadata = new ComponentMetadata();");
+				i.line("DirectiveMetadata metadata = new DirectiveMetadata();");
 				
 				e.separator();
 				
@@ -278,7 +299,7 @@ public class JsInteropOutputProcessor {
 				
 				i.line("constructorFunction.annotations = JsArray.of( new Directive( metadata ) );");
 				
-				buildFieldMethodDefinitions( methodFields, i, javaClassText );
+				buildFieldMethodDefinitions( element.getSimpleName().toString(), fieldsByMethods, i, classBlock, javaClassText );
 			});
 			
 			e.separator();
@@ -301,6 +322,28 @@ public class JsInteropOutputProcessor {
 			e.printStackTrace();
 			processingEnv.getMessager().printMessage(Kind.ERROR, "AngularDirective could not be generated !" + e, element);
 		}
+	}
+	
+	private String findComponentStyles( Component annotation )
+	{
+		if( annotation.styles().length == 0 )
+			return null;
+		
+		StringBuilder aStyles = new StringBuilder();
+		
+		aStyles.append("JsArray.of( ");
+		
+		for( int i = 0; i < annotation.styles().length; i++ )
+		{
+			if( i > 0 )
+				aStyles.append( ", " );
+			
+			aStyles.append( "\"" + annotation.styles()[i] + "\"" );
+		}
+		
+		aStyles.append(" )");
+		
+		return aStyles.toString();
 	}
 	
 	private String findComponentStyleUrls( Component annotation )
@@ -426,27 +469,40 @@ public class JsInteropOutputProcessor {
 		return "JsArray.of( " + parameters.toString() + " )";
 	}
 	
-	private Map<String, String> findFieldMethods( TypeElement element )
+	private List<FieldSetterMethodInformation> findFieldMethods( TypeElement element )
 	{
-		Map<String, String> methodFields = new HashMap<>();
+		List<FieldSetterMethodInformation> methodFields = new ArrayList<>();
+		
 		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).forEach( method -> {
 			String methodName = method.getSimpleName().toString();
-			String fieldName = methodName;
-			if( methodName.startsWith( "set" ) )
-				fieldName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
-			else
+			
+			if( ! methodName.startsWith( "set" ) )
+			{
 				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method name should begin by 'set'", method );
-			methodFields.put( fieldName, methodName );
+				return;
+			}
+			
+			if( method.getParameters().size() != 1 )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method should have one and only one argument", method );
+				return;
+			}
+			
+			VariableElement parameter = method.getParameters().get( 0 );
+			String fieldName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+			
+			methodFields.add( new FieldSetterMethodInformation(fieldName, methodName, parameter.asType().toString()) );
 		} );
+		
 		return methodFields;
 	}
 	
-	private String findInputs( TypeElement element, Map<String, String> methodFields )
+	private String findInputs( TypeElement element, List<FieldSetterMethodInformation> methodFields )
 	{
 		List<String> inputFields = ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).map( f -> f.getSimpleName().toString() ).collect( Collectors.toList() );
 		Set<String> inputNames = new HashSet<>();
 		inputNames.addAll( inputFields );
-		inputNames.addAll( methodFields.keySet() );
+		inputNames.addAll( methodFields.stream().map( ( i ) -> i.fieldName ).collect( Collectors.toList() ) );
 		
 		if( inputNames .isEmpty() )
 			return null;
@@ -466,36 +522,46 @@ public class JsInteropOutputProcessor {
 		return "JsArray.of( " + inputs.toString() + " )";
 	}
 	
-	private void buildFieldMethodDefinitions( Map<String, String> methodFields, Block block, JavaClassText classText )
+	private static class FieldSetterMethodInformation
 	{
-		boolean add = true;
-		
-		for( Entry<String, String> entry : methodFields.entrySet() )
+		private final String fieldName;
+		private final String setterMethodName;
+		private final String setterArgumentClassName;
+
+		public FieldSetterMethodInformation(String fieldName, String setterMethodName, String setterArgumentClassName)
 		{
-			if( add )
-			{
-				add = false;
-				block.line();
-				
-				classText.addImport( "fr.lteconsulting.angular2gwt.client.JsTools" );
-				classText.addImport( "fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition" );
-			}
-
-			String fieldName = entry.getKey();
-			String methodName = entry.getValue();
-
-			// TODO : should maybe not define the property if it already exists
-			// on the object. Problem is that it's difficult to call 
-			// the 'in' javascript keyword with JsInterop...
-			// we would like to guard the code against :
-			// "if( ! ( '" + fieldName + "' in component ) )"
-
-			block.line("JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( null, (value)-> {", fieldName);
-			block.indent( (l)->{
-				l.javadoc().line( "TODO would like to call : ((ComponentClass) JAVASCRIPT-THIS ).[{method name}](value);", methodName);
-				l.line("throw new RuntimeException( \"NOT YET IMPLEMENTED\" );");
+			this.fieldName = fieldName;
+			this.setterMethodName = setterMethodName;
+			this.setterArgumentClassName = setterArgumentClassName;
+		}
+	}
+	
+	private void buildFieldMethodDefinitions( String componentClassName, List<FieldSetterMethodInformation> fields, Block block, Block additionnalDefinitionsBlock, JavaClassText classText )
+	{
+		if( fields==null || fields.isEmpty() )
+			return;
+		
+		block.separator();
+		
+		classText.addImport( "fr.lteconsulting.angular2gwt.client.JsTools" );
+		classText.addImport( "fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition" );			
+		
+		for( FieldSetterMethodInformation info : fields )
+		{
+			
+			String setterInterfaceName = info.setterMethodName.substring( 0, 1 ).toUpperCase() + info.setterMethodName.substring( 1 ) + "Caller";
+			additionnalDefinitionsBlock.separator();
+			additionnalDefinitionsBlock.line( "interface [{}]", setterInterfaceName ).block((iBlock)->{
+				iBlock.line( "void setValue( [{}] value );", info.setterArgumentClassName );
 			});
-			block.line("} ) );");
+			
+			block.line( "JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( null, (object, value)-> {", info.fieldName );
+			block.indent( (l)->{
+				l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
+				l.line( "[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName, info.setterMethodName );
+				l.line( "methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName );
+			});
+			block.line("} ) );");				
 		}
 	}
 	
