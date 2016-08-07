@@ -3,7 +3,6 @@ package fr.lteconsulting.hexa.client.comm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
@@ -31,13 +30,13 @@ public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests
 		return srv;
 	}
 
-	ArrayList<PendingRequestInfo> pendingRequests = new ArrayList<PendingRequestInfo>();
-	HashMap<String, ResponseJSO> cache = new HashMap<String, ResponseJSO>();
+	private final ArrayList<PendingRequestInfo> pendingRequests = new ArrayList<PendingRequestInfo>();
+	private final HashMap<String, ResponseJSO> cache = new HashMap<String, ResponseJSO>();
 
 	// requests as received by the sendRequest method
-	ArrayList<RequestCallInfo> requestStack = new ArrayList<RequestCallInfo>();
+	private ArrayList<RequestCallInfo> requestStack = new ArrayList<RequestCallInfo>();
 
-	boolean fCallbackingScheduled = false;
+	private boolean fCallbackingScheduled = false;
 
 	class PendingRequestInfo
 	{
@@ -67,7 +66,7 @@ public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests
 		// destroys the data cache if specified so
 		if( fInvalidate )
 		{
-			GWT.log( "Clear cache for request " + request.getUniqueKey() + " / " + request.getExtraInfo(), null );
+			//GWT.log( "CACHE-CLEAR for request " + request.getUniqueKey() + " / " + request.getExtraInfo() );
 			cache.clear();
 		}
 
@@ -76,6 +75,8 @@ public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests
 
 		if( fUseCache )
 		{
+			//GWT.log( "CACHE-STATE for request " + request.getUniqueKey() + " / " + request.getExtraInfo() + " size:" + cache.size() + " hasResponse:" + cache.containsKey( request.getUniqueKey() ) );
+
 			// is the result already in cache ?
 			ResponseJSO cached = cache.get( request.getUniqueKey() );
 			if( cached != null )
