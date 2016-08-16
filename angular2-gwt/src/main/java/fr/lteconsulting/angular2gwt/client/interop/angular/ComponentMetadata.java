@@ -1,10 +1,9 @@
 package fr.lteconsulting.angular2gwt.client.interop.angular;
 
 import fr.lteconsulting.angular2gwt.client.JsArray;
-import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
-@JsType( isNative = true, namespace = JsPackage.GLOBAL, name = "Object" )
+@JsType( isNative = true, namespace = "ng.core", name = "ComponentMetadata" )
 public class ComponentMetadata
 {
 	public String selector;

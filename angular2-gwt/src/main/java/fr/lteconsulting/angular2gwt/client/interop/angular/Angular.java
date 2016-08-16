@@ -10,6 +10,9 @@ public class Angular
 
 	@JsMethod( namespace = "ng.platformBrowserDynamic", name = "bootstrap" )
 	public static native void bootstrap( Object applicationComponent, JsArray<?> providers );
+	
+	@JsMethod( namespace = "ng.platformBrowserDynamic", name = "platformBrowserDynamic" )
+	public static native PlatformBrowserDynamic platformBrowserDynamic();
 
 	@JsMethod( namespace = "ng.core", name = "provide" )
 	public static native <T> T provide( Class<?> provider, Object options );
