@@ -11,6 +11,10 @@ public class RouterConfig
 
 	public Object component;
 
+	public String redirectTo;
+
+	public String pathMatch;
+
 	@JsOverlay
 	public static RouterConfig route( String path, Object component )
 	{
@@ -18,6 +22,18 @@ public class RouterConfig
 
 		res.path = path;
 		res.component = component;
+
+		return res;
+	}
+
+	@JsOverlay
+	public static RouterConfig route( String path, String redirectTo, String pathMatch )
+	{
+		RouterConfig res = new RouterConfig();
+
+		res.path = path;
+		res.redirectTo = redirectTo;
+		res.pathMatch = pathMatch;
 
 		return res;
 	}

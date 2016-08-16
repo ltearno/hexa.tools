@@ -45,9 +45,15 @@ public class JsArray<T>
 
 	@JsMethod
 	public native void splice( int start, int length );
-	
+
 	@JsMethod
 	public native JsArray<T> slice( int start );
+
+	@JsMethod
+	public native T find( JsPredicate<T> predicate );
+
+	@JsMethod
+	public native JsArray<T> filter( JsPredicate<T> predicate );
 
 	@JsOverlay
 	public final T get( int index )

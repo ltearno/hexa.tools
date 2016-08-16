@@ -29618,7 +29618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var lifecycle_hooks_1 = __webpack_require__(157);
 	function hasLifecycleHook(lcInterface, token) {
-	    if ((typeof token) !== (typeof lang_1.Type))
+	    if (!((typeof token) === (typeof lang_1.Type)))
 	        return false;
 	    var proto = token.prototype;
 	    switch (lcInterface) {
@@ -30776,7 +30776,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else if (ast instanceof o.Expression) {
 	            ast.visitExpression(converter, ctx);
 	        }
-	        else if (ast instanceof o.Type) {
+	        else if ((typeof ast) === (typeof o.Type)) {
 	            ast.visitType(converter, ctx);
 	        }
 	        else {
@@ -31242,7 +31242,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else if (ast instanceof o.Expression) {
 	            ast.visitExpression(converter, ctx);
 	        }
-	        else if (ast instanceof o.Type) {
+	        else if ((typeof ast) === (typeof o.Type)) {
 	            ast.visitType(converter, ctx);
 	        }
 	        else {
@@ -39375,7 +39375,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lifecycle_annotations_impl_1 = __webpack_require__(272);
 	var reflection_1 = __webpack_require__(18);
 	function hasLifecycleHook(e, type) {
-	    if ((typeof type) !== (typeof lang_1.Type))
+	    if (!((typeof type) === (typeof lang_1.Type)))
 	        return false;
 	    return e.name in type.prototype;
 	}
@@ -41393,29 +41393,3 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
-
-var lteconsultingConvertObject = (function (prototypes){
-	return function(prototypeName, source){
-		function internal(prototypeName, source){
-			var prototype = prototypes[prototypeName];
-			if( ! prototype ) {
-				prototype = window;
-				var parts = prototypeName.split(".");
-				for(var i in parts)
-					prototype = prototype[parts[i]];
-				
-				prototypes[prototypeName] = prototype;
-			}
-			
-			var result = Object.create(prototype.prototype);
-			if(source)
-			{
-				for (var prop in source)
-					result[prop] = source[prop];
-			}
-			return result;
-		}
-		
-		return internal(prototypeName, source);
-	}
-})({});

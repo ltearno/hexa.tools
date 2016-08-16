@@ -9,4 +9,7 @@ public class Event
 {
 	@JsMethod
 	public native void preventDefault();
+
+	@JsMethod
+	public native void stopPropagation();
 }

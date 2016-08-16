@@ -4,7 +4,7 @@ import jsinterop.annotations.JsFunction;
 
 @JsFunction
 @FunctionalInterface
-public interface JsCallback
+public interface JsPredicate<T>
 {
-	void exec();
+	boolean execute( T value );
 }

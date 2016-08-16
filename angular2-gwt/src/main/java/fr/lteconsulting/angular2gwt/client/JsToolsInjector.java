@@ -38,6 +38,14 @@ public class JsToolsInjector {
 		content += "        return property in object;\n";
 		content += "    },\n";
 		
+		content += "    getObjectProperty: function( object, property ) {\n";
+		content += "        return object[property] || null;\n";
+		content += "    },\n";
+		
+		content += "    setObjectProperty: function( object, property, value ) {\n";
+		content += "        object[property] = value;\n";
+		content += "    },\n";
+		
 		content += "    convertObject: (function (prototypes){\n";
 		content += "        return function(prototypeName, source){\n";
 		content += "            function internal(prototypeName, source){\n";
