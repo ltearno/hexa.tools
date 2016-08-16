@@ -1,5 +1,6 @@
 package fr.lteconsulting.angular2gwt.client;
 
+import fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition;
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsPackage;
 
@@ -17,23 +18,42 @@ public class JsTools
 	@JsMethod( namespace = "console", name = "log" )
 	public static native void log( String message );
 
+	@JsMethod( namespace = "lteconsulting", name = "defineProperty" )
+	public static native void defineProperty( Object object, String name, PropertyDefinition propertyDefinition );
+
+	@JsMethod( namespace = "lteconsulting", name = "propertyInObject" )
+	public static native boolean propertyInObject( String property, Object object );
+
+	@JsMethod( namespace = "lteconsulting", name = "getObjectProperty" )
+	public static native Object getObjectProperty( Object object, String property );
+
+	@JsMethod( namespace = "lteconsulting", name = "setObjectProperty" )
+	public static native void setObjectProperty( Object object, String property, Object value );
+
+	@JsMethod( namespace = "lteconsulting", name = "convertObject" )
+	public static native <T> T convertObject( String prototypeName, Object template );
+
+	@JsMethod( namespace = "window.history", name = "back" )
+	public static native void historyGoBack();
+
 	public static native <T> T get( Object o, int index )
 	/*-{
 		return o[index] || null;
 	}-*/;
-	
-	public static native <T> T get( Object o, String propertyName )
-	/*-{
-		return o[propertyName] || null;
-	}-*/;
-	
+
 	public static native <T> void set( Object o, int index, T value )
 	/*-{
 		o[index] = value;
 	}-*/;
-	
-	public static native <T> void set( Object o, String propertyName, T value )
-	/*-{
-		o[propertyName] = value;
-	}-*/;
+
+	@SuppressWarnings( "unchecked" )
+	public static <T> T get( Object o, String propertyName )
+	{
+		return (T) getObjectProperty( o, propertyName );
+	}
+
+	public static void set( Object o, String propertyName, Object value )
+	{
+		setObjectProperty( o, propertyName, value );
+	}
 }
