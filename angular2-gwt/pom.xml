@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<runTarget>http://localhost:8888/</runTarget>
-		<jsinterop.version>1.0.0-SNAPSHOT</jsinterop.version>
+		<jsinterop.version>1.0.0</jsinterop.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
