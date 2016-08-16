@@ -10,4 +10,5 @@ public class NgModuleMetadata {
 	public JsArray<Object> imports;
 	public JsArray<Object> exports;
 	public JsArray<Object> bootstrap;
+	public JsArray<Object> entryComponents;
 }

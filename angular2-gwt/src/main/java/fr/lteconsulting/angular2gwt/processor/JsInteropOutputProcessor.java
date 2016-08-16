@@ -101,8 +101,9 @@ public class JsInteropOutputProcessor {
 		// imports, exports, declarations, providers, bootstrap
 		String imports = findModuleAttributes( element, "imports", classBlock, generatedAccessorTypestypes );
 		String exports = findModuleAttributes( element, "exports", classBlock, generatedAccessorTypestypes );
-		String declarations = findModuleAttributes( element, "declarations", classBlock, generatedAccessorTypestypes );
 		String providers = findModuleAttributes( element, "providers", classBlock, generatedAccessorTypestypes );
+		String declarations = findModuleAttributes( element, "declarations", classBlock, generatedAccessorTypestypes );
+		String entryComponents = findModuleAttributes( element, "entryComponents", classBlock, generatedAccessorTypestypes );
 		String bootstrap = findModuleAttributes( element, "bootstrap", classBlock, generatedAccessorTypestypes );
 		
 		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
@@ -131,6 +132,8 @@ public class JsInteropOutputProcessor {
 					i.line( "metadata._providers = [{}];", providers );
 				if( bootstrap != null )
 					i.line( "metadata.bootstrap = [{}];", bootstrap );
+				if( entryComponents != null )
+					i.line( "metadata.entryComponents = [{}];", entryComponents );
 				i.separator();
 				i.line("constructorFunction.annotations = JsArray.of( new NgModule( metadata ) );");
 			});
