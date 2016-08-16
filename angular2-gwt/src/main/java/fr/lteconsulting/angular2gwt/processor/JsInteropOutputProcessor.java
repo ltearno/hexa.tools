@@ -6,6 +6,8 @@ import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.D
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.DirectiveAnnotationFqn;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.INJECTABLE_HELPER_CLASS_SUFFIX;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.InjectableAnnotationFqn;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NG_MODULE_HELPER_CLASS_SUFFIX;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NgModuleAnnotationFqn;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,6 +30,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import javax.tools.Diagnostic.Kind;
@@ -38,6 +41,7 @@ import fr.lteconsulting.angular2gwt.Directive;
 import fr.lteconsulting.angular2gwt.Hosts;
 import fr.lteconsulting.angular2gwt.Injectable;
 import fr.lteconsulting.angular2gwt.Input;
+import fr.lteconsulting.angular2gwt.NgModule;
 import fr.lteconsulting.angular2gwt.Output;
 import fr.lteconsulting.roaster.Block;
 import fr.lteconsulting.roaster.JavaClassText;
@@ -51,6 +55,11 @@ public class JsInteropOutputProcessor {
 	}
 
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+		for (TypeElement element : ElementFilter.typesIn(roundEnv
+				.getElementsAnnotatedWith(processingEnv.getElementUtils().getTypeElement(NgModuleAnnotationFqn)))) {
+			processModule(element);
+		}
+
 		for (TypeElement element : ElementFilter.typesIn(roundEnv
 				.getElementsAnnotatedWith(processingEnv.getElementUtils().getTypeElement(ComponentAnnotationFqn)))) {
 			processComponent(element);
@@ -70,6 +79,85 @@ public class JsInteropOutputProcessor {
 
 		return true;
 	}
+	
+	
+	private void processModule(TypeElement element) {
+		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
+		String angularModuleName = element.getSimpleName() + NG_MODULE_HELPER_CLASS_SUFFIX;
+		
+		HashMap<String,String> generatedAccessorTypestypes = new HashMap<>();
+		
+		JavaClassText javaClassText = new JavaClassText(packageName);
+		
+		javaClassText.addImport("jsinterop.annotations.JsProperty");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.NgModule");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.NgModuleMetadata");
+		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
+		
+		Block classBlock = javaClassText.rootBlock().clazz(angularModuleName);
+
+		// imports, exports, declarations, providers, bootstrap
+		String imports = findModuleAttributes( element, "imports", classBlock, generatedAccessorTypestypes );
+		String exports = findModuleAttributes( element, "exports", classBlock, generatedAccessorTypestypes );
+		String declarations = findModuleAttributes( element, "declarations", classBlock, generatedAccessorTypestypes );
+		String providers = findModuleAttributes( element, "providers", classBlock, generatedAccessorTypestypes );
+		String bootstrap = findModuleAttributes( element, "bootstrap", classBlock, generatedAccessorTypestypes );
+		
+		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
+		classBlock.line("private native static AngularComponentConstructorFunction constructorFunction();");
+		classBlock.line();
+
+		classBlock.line("public static Object getComponentPrototype()");
+		classBlock.block((e) -> {
+			e.line( "JsToolsInjector.inject();" );
+			e.separator();
+			
+			e.line("AngularComponentConstructorFunction constructorFunction = constructorFunction();");
+			
+			e.separator();
+			
+			e.line("if( constructorFunction.annotations == null )").block((i) -> {
+				i.line("NgModuleMetadata metadata = new NgModuleMetadata();");
+				i.separator();
+				if( imports != null )
+					i.line( "metadata.imports = [{}];", imports );
+				if( exports != null )
+					i.line( "metadata.exports = [{}];", exports );
+				if( declarations != null )
+					i.line( "metadata.declarations = [{}];", declarations );
+				if( providers != null )
+					i.line( "metadata._providers = [{}];", providers );
+				if( bootstrap != null )
+					i.line( "metadata.bootstrap = [{}];", bootstrap );
+				i.separator();
+				i.line("constructorFunction.annotations = JsArray.of( new NgModule( metadata ) );");
+			});
+			
+			e.separator();
+			
+			e.line("return constructorFunction;");
+		});
+
+		try {
+			String targetClassFqn = packageName + "." + angularModuleName;
+			JavaFileObject jfo = processingEnv.getFiler().createSourceFile(targetClassFqn, element);
+
+			OutputStream os = jfo.openOutputStream();
+			OutputStreamWriter pw = new OutputStreamWriter(os, "UTF-8");
+			StringBuilder sb = new StringBuilder();
+			javaClassText.render(sb);
+			pw.write(sb.toString());
+			pw.close();
+			os.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			processingEnv.getMessager().printMessage(Kind.ERROR, "AngularModule not generated !" + e, element);
+		}
+	}
+	
+	
 
 	private void processComponent(TypeElement element) {
 		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
@@ -99,7 +187,6 @@ public class JsInteropOutputProcessor {
 		String providers = findComponentProviders( element, classBlock, generatedAccessorTypestypes );
 		String outputs = findComponentOutputs( element );
 		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypestypes );
-		// TODO : RouteConfigs
 		
 		// input fields
 		List<FieldSetterMethodInformation> fieldsByMethods = findFieldMethods( element );
@@ -366,6 +453,39 @@ public class JsInteropOutputProcessor {
 		aStyleUrls.append(" )");
 		
 		return aStyleUrls.toString();
+	}
+	
+	/**
+	 * 
+	 * @param element
+	 * @param memberName imports, exports, declarations, providers, bootstrap
+	 * @param classBlock
+	 * @param generatedAccessorTypestypes
+	 * @return
+	 */
+	private String findModuleAttributes( TypeElement element, String memberName, Block classBlock, HashMap<String,String> generatedAccessorTypestypes )
+	{
+		List<String> classNames = getAnnotationClassListValue( element, NgModuleAnnotationFqn, memberName );
+		if( classNames==null || classNames.isEmpty() )
+			return null;
+
+		StringBuilder directives = new StringBuilder();
+
+		directives.append("JsArray.of( ");
+		
+		boolean add = false;
+		if( !classNames.isEmpty() )
+		{
+			directives.append( classNames.stream().map( name -> getConstructorFunctionAccessorName( name, classBlock, generatedAccessorTypestypes ) ).collect( Collectors.joining( ", " ) ) );
+			if( add )
+				directives.append( ", " );
+			else
+				add = true;
+		}
+		
+		directives.append(" )");
+		
+		return directives.toString();
 	}
 	
 	private String findComponentDirectives( TypeElement element, Block classBlock, HashMap<String,String> generatedAccessorTypestypes )
@@ -645,6 +765,13 @@ public class JsInteropOutputProcessor {
 
 			if( element.getAnnotation( Injectable.class ) != null )
 				return fqn + INJECTABLE_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
+
+			if( element.getAnnotation( NgModule.class ) != null )
+				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
+			
+			Optional<? extends TypeMirror> optProviderWrapper = element.getInterfaces().stream().filter((t)->t.toString().equals("fr.lteconsulting.angular2gwt.client.interop.angular.ProviderWrapper")).findFirst();
+			if( optProviderWrapper.isPresent() )
+				return "new " + fqn + "().get()";
 
 			if( generatedAccessorTypestypes.containsKey(fqn))
 				return generatedAccessorTypestypes.get(fqn);
