@@ -30,6 +30,12 @@ public class JsArray<T>
 			result.push( item );
 		return result;
 	}
+	
+	@JsOverlay
+	public final static <T> JsArray<T> empty()
+	{
+		return new JsArray<T>();
+	}
 
 	@JsMethod
 	public native void push( T item );
