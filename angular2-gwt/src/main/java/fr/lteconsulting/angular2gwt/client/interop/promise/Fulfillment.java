@@ -4,9 +4,9 @@ import jsinterop.annotations.JsFunction;
 
 @FunctionalInterface
 @JsFunction
-public interface Rejection<TResult> {
+public interface Fulfillment<T, TResult> {
 	/**
 	 * should return a TResult or Promise<TResult> but unexpressable in Java !
 	 */
-	Object rejected(Object reason);
+	Object fulfilled(T value);
 }

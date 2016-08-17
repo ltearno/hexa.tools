@@ -1,10 +1,7 @@
 package fr.lteconsulting.angular2gwt.client.interop.promise;
 
-import jsinterop.annotations.JsFunction;
+public interface Rejector {
+	void reject();
 
-@FunctionalInterface
-@JsFunction
-public interface Rejector
-{
-	void reject( Object error );
+	void reject(Object reason);
 }

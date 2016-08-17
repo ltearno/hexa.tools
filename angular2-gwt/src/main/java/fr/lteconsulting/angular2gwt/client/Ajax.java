@@ -57,13 +57,15 @@ public class Ajax
 			@Override
 			public void execute( Resolver<T> resolver, Rejector rejecter )
 			{
-				Ajax.sendRequest( method, url, data ).then( ( value ) -> {
+				Ajax.sendRequest( method, url, data ).then( value -> {
 					Object dto = JSON.parse( value );
 					T convertedDto = AngularTools.convertDto( dto, convertedClass );
 
 					resolver.resolve( convertedDto );
+					return null;
 				}, ( error ) -> {
 					rejecter.reject( "error getting heroes because of: " + error );
+					return null;
 				} );
 			}
 		} );
@@ -77,13 +79,15 @@ public class Ajax
 	public static <T> Promise<JsArray<T>> sendRequestAndConvertDtoList( String method, String url, Object data, Class<T> convertedClass )
 	{
 		return new Promise<>( ( resolver, rejecter ) -> {
-			Ajax.sendRequest( method, url, data ).then( ( value ) -> {
+			Ajax.sendRequest( method, url, data ).then( value -> {
 				JsArray<Object> dtoList = JSON.parse( value );
 				JsArray<T> convertedList = AngularTools.convertDtoList( dtoList, convertedClass );
 
 				resolver.resolve( convertedList );
+				return null;
 			}, ( error ) -> {
 				rejecter.reject( "error getting heroes because of: " + error );
+				return null;
 			} );
 		} );
 	}

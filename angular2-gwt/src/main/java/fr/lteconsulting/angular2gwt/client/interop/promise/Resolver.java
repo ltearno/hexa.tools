@@ -1,10 +1,9 @@
 package fr.lteconsulting.angular2gwt.client.interop.promise;
 
-import jsinterop.annotations.JsFunction;
+public interface Resolver<T> {
+	void resolve();
 
-@FunctionalInterface
-@JsFunction
-public interface Resolver<T>
-{
-	void resolve( T value );
+	void resolve(T value);
+
+	void resolve(Promise<T> value);
 }
