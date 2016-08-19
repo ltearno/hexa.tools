@@ -90,6 +90,7 @@ public class JsInteropOutputProcessor {
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
 		javaClassText.addImport("jsinterop.annotations.JsProperty");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsObject");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.NgModule");
@@ -120,20 +121,21 @@ public class JsInteropOutputProcessor {
 			e.separator();
 			
 			e.line("if( constructorFunction.annotations == null )").block((i) -> {
-				i.line("NgModuleMetadata metadata = new NgModuleMetadata();");
-				i.separator();
+				i.line("JsObject options = new JsObject();");
 				if( imports != null )
-					i.line( "metadata.imports = [{}];", imports );
+					i.line( "options.set( \"imports\", [{}] );", imports );
 				if( exports != null )
-					i.line( "metadata.exports = [{}];", exports );
+					i.line( "options.set( \"exports\", [{}] );", exports );
 				if( declarations != null )
-					i.line( "metadata.declarations = [{}];", declarations );
+					i.line( "options.set( \"declarations\", [{}] );", declarations );
 				if( providers != null )
-					i.line( "metadata._providers = [{}];", providers );
+					i.line( "options.set( \"providers\", [{}] );", providers );
 				if( bootstrap != null )
-					i.line( "metadata.bootstrap = [{}];", bootstrap );
+					i.line( "options.set( \"bootstrap\", [{}] );", bootstrap );
 				if( entryComponents != null )
-					i.line( "metadata.entryComponents = [{}];", entryComponents );
+					i.line( "options.set( \"entryComponents\", [{}] );", entryComponents );
+				i.separator();
+				i.line("NgModuleMetadata metadata = new NgModuleMetadata( options );");
 				i.separator();
 				i.line("constructorFunction.annotations = JsArray.of( new NgModule( metadata ) );");
 			});
@@ -173,6 +175,7 @@ public class JsInteropOutputProcessor {
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
 		javaClassText.addImport("jsinterop.annotations.JsProperty");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsObject");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Component");
@@ -217,25 +220,26 @@ public class JsInteropOutputProcessor {
 			e.separator();
 			
 			e.line("if( constructorFunction.annotations == null )").block((i) -> {
-				i.line("ComponentMetadata metadata = new ComponentMetadata();");
-				i.line();
-				i.line("metadata.selector = [{#}];", aSelector );
+				i.line("JsObject options = new JsObject();");
+				i.line("options.set( \"selector\", [{#}] );", aSelector );
 				if( aTemplate != null )
-					i.line( "metadata.template = [{#}];", aTemplate );
+					i.line( "options.set( \"template\", [{#}] );", aTemplate );
 				if( aTemplateUrl!=null )
-					i.line( "metadata.templateUrl = [{#}];", aTemplateUrl );
+					i.line( "options.set( \"templateUrl\", [{#}] );", aTemplateUrl );
 				if( aStyles != null )
-					i.line( "metadata.styles = [{}];", aStyles );
+					i.line( "options.set( \"styles\", [{}] );", aStyles );
 				if( aStyleUrls != null )
-					i.line( "metadata.styleUrls = [{}];", aStyleUrls );
+					i.line( "options.set( \"styleUrls\", [{}] );", aStyleUrls );
 				if( directives != null )
-					i.line( "metadata.directives = [{}];", directives );
+					i.line( "options.set( \"directives\", [{}] );", directives );
 				if( providers != null )
-					i.line( "metadata.providers = [{}];", providers );
+					i.line( "options.set( \"providers\", [{}] );", providers );
 				if( inputs != null )
-					i.line( "metadata.inputs = [{}];", inputs );
+					i.line( "options.set( \"inputs\", [{}] );", inputs );
 				if( outputs != null )
-					i.line( "metadata.outputs = [{}];", outputs );
+					i.line( "options.set( \"outputs\", [{}] );", outputs );
+				i.line();
+				i.line("ComponentMetadata metadata = new ComponentMetadata( options );");
 				i.line();
 				i.line("constructorFunction.annotations = JsArray.of( new Component( metadata ) );");
 				buildFieldMethodDefinitions( element.getSimpleName().toString(), fieldsByMethods, i, classBlock, javaClassText );
@@ -336,6 +340,7 @@ public class JsInteropOutputProcessor {
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
 		javaClassText.addImport("jsinterop.annotations.JsProperty");
+		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsObject");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
 		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Directive");
@@ -375,16 +380,17 @@ public class JsInteropOutputProcessor {
 			
 			e.line();
 			e.line("if( constructorFunction.annotations == null )").block((i) -> {
-				i.line("DirectiveMetadata metadata = new DirectiveMetadata();");
+				i.line("JsObject options = new JsObject();");
+				
+				i.line("options.set( \"selector\", [{#}] );", aSelector );
+				if( host != null )
+					i.line( "options.set( \"host\", [{}] );", host );
+				if( inputs != null )
+					i.line( "options.set( \"inputs\", [{}] );", inputs );
 				
 				e.separator();
 				
-				i.line("metadata.selector = [{#}];", aSelector );
-				if( host != null )
-					i.line( "metadata.host = [{}]", host );
-				if( inputs != null )
-					i.line( "metadata.inputs = [{}];", inputs );
-				
+				i.line("DirectiveMetadata metadata = new DirectiveMetadata( options );");
 				e.separator();
 				
 				i.line("constructorFunction.annotations = JsArray.of( new Directive( metadata ) );");
@@ -614,7 +620,21 @@ public class JsInteropOutputProcessor {
 			VariableElement parameter = method.getParameters().get( 0 );
 			String fieldName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
 			
-			methodFields.add( new FieldSetterMethodInformation(fieldName, methodName, parameter.asType().toString()) );
+			boolean useGetter = false;
+			String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1);
+			Optional<ExecutableElement> optionalGetterMethod = ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getSimpleName().toString().equals(getterMethodName) ).findFirst();
+			if( optionalGetterMethod.isPresent()){
+				ExecutableElement getterMethod = optionalGetterMethod.get();
+				if( ! getterMethod.getParameters().isEmpty() )
+				{
+					processingEnv.getMessager().printMessage( Kind.ERROR, "This method is automatically used as a getter for the " + fieldName + " @Input method. It should not have any argument", getterMethod );
+					return;
+				}
+				
+				useGetter = true;
+			}
+			
+			methodFields.add( new FieldSetterMethodInformation(fieldName, methodName, parameter.asType().toString(), useGetter ? getterMethodName : null) );
 		} );
 		
 		return methodFields;
@@ -650,12 +670,14 @@ public class JsInteropOutputProcessor {
 		private final String fieldName;
 		private final String setterMethodName;
 		private final String setterArgumentClassName;
+		private final String getterMethodName;
 
-		public FieldSetterMethodInformation(String fieldName, String setterMethodName, String setterArgumentClassName)
+		public FieldSetterMethodInformation(String fieldName, String setterMethodName, String setterArgumentClassName, String getterMethodName)
 		{
 			this.fieldName = fieldName;
 			this.setterMethodName = setterMethodName;
 			this.setterArgumentClassName = setterArgumentClassName;
+			this.getterMethodName = getterMethodName;
 		}
 	}
 	
@@ -669,22 +691,57 @@ public class JsInteropOutputProcessor {
 		classText.addImport( "fr.lteconsulting.angular2gwt.client.JsTools" );
 		classText.addImport( "fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition" );			
 		
-		for( FieldSetterMethodInformation info : fields )
-		{
-			
-			String setterInterfaceName = info.setterMethodName.substring( 0, 1 ).toUpperCase() + info.setterMethodName.substring( 1 ) + "Caller";
+		for (FieldSetterMethodInformation info : fields) {
+			String setterInterfaceName = info.setterMethodName.substring(0, 1).toUpperCase()
+					+ info.setterMethodName.substring(1) + "Caller";
 			additionnalDefinitionsBlock.separator();
-			additionnalDefinitionsBlock.line( "interface [{}]", setterInterfaceName ).block((iBlock)->{
-				iBlock.line( "void setValue( [{}] value );", info.setterArgumentClassName );
+			additionnalDefinitionsBlock.line("interface [{}]", setterInterfaceName).block((iBlock) -> {
+				iBlock.line("void setValue( [{}] value );", info.setterArgumentClassName);
 			});
-			
-			block.line( "JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( null, (object, value)-> {", info.fieldName );
-			block.indent( (l)->{
-				l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
-				l.line( "[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName, info.setterMethodName );
-				l.line( "methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName );
+
+			block.line("JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( ", info.fieldName);
+			block.indent(params -> {
+				if (info.getterMethodName == null) {
+					params.line("null,");
+				} else {
+					String getterInterfaceName = info.getterMethodName.substring(0, 1).toUpperCase()
+							+ info.getterMethodName.substring(1) + "Caller";
+					additionnalDefinitionsBlock.separator();
+					additionnalDefinitionsBlock.line("interface [{}]", getterInterfaceName).block((iBlock) -> {
+						iBlock.line("Object getValue();");
+					});
+					
+					params.line("( object ) -> {");
+					params.indent((l) -> {
+						l.line("[{}] component = ([{}]) object;", componentClassName, componentClassName);
+						l.line("[{GetterInterface}] methodCaller = component::[{getterMethod}];", getterInterfaceName,
+								info.getterMethodName);
+						l.line("return methodCaller.getValue();");
+					});
+					params.line("},");
+				}
+				
+				params.line("( object, value ) -> {");
+				params.indent((l) -> {
+					l.line("[{}] component = ([{}]) object;", componentClassName, componentClassName);
+					l.line("[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
+							info.setterMethodName);
+					l.line("methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName);
+				});
+				params.line("}");
 			});
-			block.line("} ) );");				
+			block.line(") );");
+
+//			block.line(
+//					"JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( null, (object, value)-> {",
+//					info.fieldName);
+//			block.indent((l) -> {
+//				l.line("[{}] component = ([{}]) object;", componentClassName, componentClassName);
+//				l.line("[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
+//						info.setterMethodName);
+//				l.line("methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName);
+//			});
+//			block.line("} ) );");
 		}
 	}
 	
