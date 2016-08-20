@@ -26,6 +26,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -43,6 +44,8 @@ import fr.lteconsulting.angular2gwt.Injectable;
 import fr.lteconsulting.angular2gwt.Input;
 import fr.lteconsulting.angular2gwt.NgModule;
 import fr.lteconsulting.angular2gwt.Output;
+import fr.lteconsulting.angular2gwt.ViewChild;
+import fr.lteconsulting.angular2gwt.ViewChildren;
 import fr.lteconsulting.roaster.Block;
 import fr.lteconsulting.roaster.JavaClassText;
 import jsinterop.annotations.JsType;
@@ -162,6 +165,29 @@ public class JsInteropOutputProcessor {
 		}
 	}
 	
+	static class ViewChildrenInfo {
+		boolean isMultiple; // determines if we use ViewChild or ViewChildren
+		String accessCode;
+		
+		static ViewChildrenInfo child(String accessCode){
+			ViewChildrenInfo res = new ViewChildrenInfo();
+			res.isMultiple = false;
+			res.accessCode = accessCode;
+			return res;
+		}
+		
+		static ViewChildrenInfo children(String accessCode){
+			ViewChildrenInfo res = new ViewChildrenInfo();
+			res.isMultiple = true;
+			res.accessCode = accessCode;
+			return res;
+		}
+
+		@Override
+		public String toString() {
+			return "ViewChildrenInfo [isMultiple=" + isMultiple + ", accessCode=" + accessCode + "]";
+		}
+	}
 	
 
 	private void processComponent(TypeElement element) {
@@ -170,7 +196,7 @@ public class JsInteropOutputProcessor {
 
 		Component annotation = element.getAnnotation(Component.class);
 		
-		HashMap<String,String> generatedAccessorTypestypes = new HashMap<>();
+		HashMap<String,String> generatedAccessorTypes = new HashMap<>();
 		
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
@@ -189,14 +215,17 @@ public class JsInteropOutputProcessor {
 		String aTemplateUrl = annotation.templateUrl().isEmpty() ? null : annotation.templateUrl();
 		String aStyles = findComponentStyles( annotation );
 		String aStyleUrls = findComponentStyleUrls( annotation );
-		String directives = findComponentDirectives( element, classBlock, generatedAccessorTypestypes );
-		String providers = findComponentProviders( element, classBlock, generatedAccessorTypestypes );
+		String directives = findComponentDirectives( element, classBlock, generatedAccessorTypes );
+		String providers = findComponentProviders( element, classBlock, generatedAccessorTypes );
 		String outputs = findComponentOutputs( element );
-		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypestypes );
+		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypes );
 		
 		// input fields
 		List<FieldSetterMethodInformation> fieldsByMethods = findFieldMethods( element );
 		String inputs = findInputs( element, fieldsByMethods );
+		
+		// find fields with @ViewChild or @ViewChildren : Map<String, ViewChildrenInfo>
+		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock, generatedAccessorTypes );
 		
 		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
 		classBlock.line("private native static AngularComponentConstructorFunction constructorFunction();");
@@ -238,6 +267,20 @@ public class JsInteropOutputProcessor {
 					i.line( "options.set( \"inputs\", [{}] );", inputs );
 				if( outputs != null )
 					i.line( "options.set( \"outputs\", [{}] );", outputs );
+				if( !viewChildFields.isEmpty()){
+					i.line("JsObject queries = new JsObject();");
+					for(Entry<String, ViewChildrenInfo> entry : viewChildFields.entrySet()){
+						if( entry.getValue().isMultiple ){
+							javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.ViewChildren");
+							i.line("queries.set( [{#}], new ViewChildren( [{}] ) );", entry.getKey(), entry.getValue().accessCode);
+						}
+						else {
+							javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.ViewChild");
+							i.line("queries.set( [{#}], new ViewChild( [{}] ) );", entry.getKey(), entry.getValue().accessCode);
+						}
+					}
+					i.line("options.set( \"queries\", queries );" );
+				}
 				i.line();
 				i.line("ComponentMetadata metadata = new ComponentMetadata( options );");
 				i.line();
@@ -640,6 +683,71 @@ public class JsInteropOutputProcessor {
 		return methodFields;
 	}
 	
+	private Map<String, ViewChildrenInfo> findComponentViewChildFields( TypeElement element, Block classBlock, HashMap<String, String> generatedAccessorTypes ) {
+		Map<String, ViewChildrenInfo> result = new HashMap<>();
+		
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( ViewChild.class ) != null ).forEach(field->{
+			String fieldName = field.getSimpleName().toString();
+			
+			result.put(fieldName, ViewChildrenInfo.child("IS UP TO SOMETHING!"));
+			
+			ViewChild annotation = field.getAnnotation( ViewChild.class );
+			if(annotation.selector()!=null && ! annotation.selector().isEmpty()){
+				result.put(fieldName, ViewChildrenInfo.child("'"+annotation.selector()+"'"));
+			}
+			else {
+				Holder<Boolean> holder = new Holder<>();
+				holder.value = false;
+				
+				Optional<? extends AnnotationMirror> annotationMirror = getElementAnnotation(field, ViewChild.class.getName());
+				classBlock.line("// ANMI : [{}]", annotationMirror.isPresent());
+				annotationMirror.ifPresent(am -> {
+					Optional<AnnotationValue> value = getAnnotationValue(am, "component");
+					value.ifPresent(v->{
+						String componentClassName = v.getValue().toString();
+						String accessorName = getConstructorFunctionAccessorName(componentClassName, classBlock, generatedAccessorTypes);
+						result.put(fieldName, ViewChildrenInfo.child(accessorName));
+						holder.value = true;
+					});
+					
+				});
+				
+				if(!holder.value)
+					processingEnv.getMessager().printMessage(Kind.ERROR, "@ViewChild annotation should specify either a selector or a component !", field);
+			}
+		});
+		
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( ViewChildren.class ) != null ).forEach(field->{
+			String fieldName = field.getSimpleName().toString();
+			
+			ViewChildren annotation = field.getAnnotation( ViewChildren.class );
+			if(annotation.selector()!=null && ! annotation.selector().isEmpty()){
+				result.put(fieldName, ViewChildrenInfo.children("'"+annotation.selector()+"'"));
+			}
+			else {
+				Holder<Boolean> holder = new Holder<>();
+				holder.value = false;
+				
+				Optional<? extends AnnotationMirror> annotationMirror = getElementAnnotation(field, ViewChildren.class.getName());
+				annotationMirror.ifPresent(am -> {
+					Optional<AnnotationValue> value = getAnnotationValue(am, "component");
+					value.ifPresent(v->{
+						String componentClassName = v.getValue().toString();
+						String accessorName = getConstructorFunctionAccessorName(componentClassName, classBlock, generatedAccessorTypes);
+						result.put(fieldName, ViewChildrenInfo.children(accessorName));
+						holder.value = true;
+					});
+					
+				});
+				
+				if(!holder.value)
+					processingEnv.getMessager().printMessage(Kind.ERROR, "@ViewChildren annotation should specify either a selector or a component !", field);
+			}
+		});
+		
+		return result;
+	}
+	
 	private String findInputs( TypeElement element, List<FieldSetterMethodInformation> methodFields )
 	{
 		List<String> inputFields = ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).map( f -> f.getSimpleName().toString() ).collect( Collectors.toList() );
@@ -731,17 +839,6 @@ public class JsInteropOutputProcessor {
 				params.line("}");
 			});
 			block.line(") );");
-
-//			block.line(
-//					"JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( null, (object, value)-> {",
-//					info.fieldName);
-//			block.indent((l) -> {
-//				l.line("[{}] component = ([{}]) object;", componentClassName, componentClassName);
-//				l.line("[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
-//						info.setterMethodName);
-//				l.line("methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName);
-//			});
-//			block.line("} ) );");
 		}
 	}
 	
@@ -786,6 +883,10 @@ public class JsInteropOutputProcessor {
 		return result;
 	}
 
+	private static class Holder<T> {
+		T value;
+	}
+
 	private Optional<AnnotationValue> getAnnotationValue( AnnotationMirror annotationMirror, String annotationFieldName )
 	{
 		for( Entry<? extends ExecutableElement, ? extends AnnotationValue> e : annotationMirror.getElementValues().entrySet() )
@@ -799,7 +900,7 @@ public class JsInteropOutputProcessor {
 		return Optional.empty();
 	}
 
-	private Optional<? extends AnnotationMirror> getElementAnnotation( TypeElement element, String annotationFqn )
+	private Optional<? extends AnnotationMirror> getElementAnnotation( Element element, String annotationFqn )
 	{
 		Optional<? extends AnnotationMirror> optAnnotationMirror = element.getAnnotationMirrors().stream().filter( m -> {
 			return processingEnv.getTypeUtils().isSameType( m.getAnnotationType(), processingEnv.getElementUtils().getTypeElement( annotationFqn ).asType() );
@@ -812,7 +913,7 @@ public class JsInteropOutputProcessor {
 	 * @param fqn
 	 * @return
 	 */
-	private String getConstructorFunctionAccessorName( String fqn, Block classBlock, HashMap<String,String> generatedAccessorTypestypes )
+	private String getConstructorFunctionAccessorName( String fqn, Block classBlock, HashMap<String,String> generatedAccessorTypes )
 	{
 		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
 		if( element != null )
@@ -833,8 +934,8 @@ public class JsInteropOutputProcessor {
 			if( optProviderWrapper.isPresent() )
 				return "new " + fqn + "().get()";
 
-			if( generatedAccessorTypestypes.containsKey(fqn))
-				return generatedAccessorTypestypes.get(fqn);
+			if( generatedAccessorTypes.containsKey(fqn))
+				return generatedAccessorTypes.get(fqn);
 
 			String name = element.getSimpleName().toString();
 			String ns = element.getEnclosingElement().toString().replace( "package ", "" );
@@ -867,7 +968,7 @@ public class JsInteropOutputProcessor {
 			
 			String result = constructorFunctionName + "()";
 			
-			generatedAccessorTypestypes.put(fqn, result );
+			generatedAccessorTypes.put(fqn, result );
 
 			return result;
 		}
