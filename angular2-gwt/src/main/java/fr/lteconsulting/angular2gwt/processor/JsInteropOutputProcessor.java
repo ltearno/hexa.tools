@@ -46,6 +46,7 @@ import fr.lteconsulting.angular2gwt.NgModule;
 import fr.lteconsulting.angular2gwt.Output;
 import fr.lteconsulting.angular2gwt.ViewChild;
 import fr.lteconsulting.angular2gwt.ViewChildren;
+import fr.lteconsulting.angular2gwt.other.Host;
 import fr.lteconsulting.roaster.Block;
 import fr.lteconsulting.roaster.JavaClassText;
 import jsinterop.annotations.JsType;
@@ -242,6 +243,7 @@ public class JsInteropOutputProcessor {
 			{
 				e.line();
 				e.line("if( constructorFunction.parameters == null )").block((i) -> {
+					
 						i.line("constructorFunction.parameters = [{}];", parameters);
 				});
 			}
@@ -608,10 +610,6 @@ public class JsInteropOutputProcessor {
 		return "JsArray.of( "+outputs.toString()+" )";
 	}
 	
-	// parameters
-	// trouver le constructeur (soit aucun et c'est bon, soit un seul et
-	// c'est celui la, soit plusieurs et c'est celui qui a @JsConstructor
-	// parcourir ses paramètres, et les ajouter dans les métadonnées
 	private String findComponentConstructorParameters( TypeElement element, Block classBlock, HashMap<String,String> generatedAccessorTypestypes )
 	{
 		StringBuilder parameters = new StringBuilder();
@@ -629,9 +627,17 @@ public class JsInteropOutputProcessor {
 			constructor.getParameters().forEach( p -> {
 				if( parameters.length() > 0 )
 					parameters.append( ", " );
-
+				
 				String fqn = p.asType().toString();
-				parameters.append( getConstructorFunctionAccessorName( fqn, classBlock, generatedAccessorTypestypes ) );
+				Host host = p.getAnnotation(Host.class);
+				
+				List<String> parts = new ArrayList<>();
+				
+				parts.add( getConstructorFunctionAccessorName( fqn, classBlock, generatedAccessorTypestypes ) );
+				if( host != null )
+					parts.add( "new " + fr.lteconsulting.angular2gwt.client.interop.angular.Host.class.getName() + "()" );
+
+				parameters.append( "JsArray.of( " + concat( parts ) + " )" );
 			} );
 		}
 		
@@ -639,6 +645,13 @@ public class JsInteropOutputProcessor {
 			return null;
 
 		return "JsArray.of( " + parameters.toString() + " )";
+	}
+	
+	private String concat( List<String> s )
+	{
+		StringBuilder sb = new StringBuilder();
+		s.forEach(i -> sb.append((sb.length() == 0 ? "" : ", ") + i));
+		return sb.toString();
 	}
 	
 	private List<FieldSetterMethodInformation> findFieldMethods( TypeElement element )
