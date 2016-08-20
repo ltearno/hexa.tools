@@ -52,6 +52,17 @@ public class JsToolsInjector {
 		content += "        return null;";
 		content += "    },\n";
 		
+		content += "    debugPackage: function( package, packageName ) {\n";
+		content += "        packageName = packageName || ''\n";
+		content += "        for( let childName in package ) {\n";
+		content += "            let child = package[childName];\n";
+		content += "            if( typeof child === 'object' )\n";
+		content += "                lteconsulting.debugPackage( child, packageName + '.' + childName );\n";
+		content += "            else if( typeof child === 'function' )\n";
+		content += "                console.log( 'jsName:' + child.name + ' javaName:' + packageName + '.' + childName );\n";
+		content += "        }\n";
+		content += "    },\n";
+
 		content += "    convertObject: (function (prototypes){\n";
 		content += "        return function(prototypeName, source){\n";
 		content += "            function internal(prototypeName, source){\n";
@@ -75,6 +86,7 @@ public class JsToolsInjector {
 		content += "            return internal(prototypeName, source);\n";
 		content += "        }\n";
 		content += "    })({})\n";
+		
 		content += "};\n";
 		
 		scriptElement.innerHTML = content;

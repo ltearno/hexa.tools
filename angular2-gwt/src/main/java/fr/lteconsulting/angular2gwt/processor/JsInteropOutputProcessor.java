@@ -37,18 +37,29 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
-import fr.lteconsulting.angular2gwt.Component;
-import fr.lteconsulting.angular2gwt.Directive;
-import fr.lteconsulting.angular2gwt.Hosts;
-import fr.lteconsulting.angular2gwt.Injectable;
-import fr.lteconsulting.angular2gwt.Input;
-import fr.lteconsulting.angular2gwt.NgModule;
-import fr.lteconsulting.angular2gwt.Output;
-import fr.lteconsulting.angular2gwt.ViewChild;
-import fr.lteconsulting.angular2gwt.ViewChildren;
-import fr.lteconsulting.angular2gwt.other.Host;
+import fr.lteconsulting.angular2gwt.client.JsArray;
+import fr.lteconsulting.angular2gwt.client.JsObject;
+import fr.lteconsulting.angular2gwt.client.JsTools;
+import fr.lteconsulting.angular2gwt.client.JsToolsInjector;
+import fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition;
+import fr.lteconsulting.angular2gwt.client.interop.ng.AngularComponentConstructorFunction;
+import fr.lteconsulting.angular2gwt.client.interop.ng.ProviderWrapper;
+import fr.lteconsulting.angular2gwt.client.interop.ng.core.ComponentMetadata;
+import fr.lteconsulting.angular2gwt.client.interop.ng.core.DirectiveMetadata;
+import fr.lteconsulting.angular2gwt.client.interop.ng.core.NgModuleMetadata;
+import fr.lteconsulting.angular2gwt.ng.core.Component;
+import fr.lteconsulting.angular2gwt.ng.core.Directive;
+import fr.lteconsulting.angular2gwt.ng.core.Host;
+import fr.lteconsulting.angular2gwt.ng.core.HostsBinding;
+import fr.lteconsulting.angular2gwt.ng.core.Injectable;
+import fr.lteconsulting.angular2gwt.ng.core.Input;
+import fr.lteconsulting.angular2gwt.ng.core.NgModule;
+import fr.lteconsulting.angular2gwt.ng.core.Output;
+import fr.lteconsulting.angular2gwt.ng.core.ViewChild;
+import fr.lteconsulting.angular2gwt.ng.core.ViewChildren;
 import fr.lteconsulting.roaster.Block;
 import fr.lteconsulting.roaster.JavaClassText;
+import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 public class JsInteropOutputProcessor {
@@ -93,13 +104,13 @@ public class JsInteropOutputProcessor {
 		
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
-		javaClassText.addImport("jsinterop.annotations.JsProperty");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsObject");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.NgModule");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.NgModuleMetadata");
-		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
+		javaClassText.addImport(JsProperty.class.getName());
+		javaClassText.addImport(JsObject.class.getName());
+		javaClassText.addImport(JsArray.class.getName());
+		javaClassText.addImport(AngularComponentConstructorFunction.class.getName());
+		javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.NgModule.class.getName());
+		javaClassText.addImport(NgModuleMetadata.class.getName());
+		javaClassText.addImport(JsToolsInjector.class.getName() );
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularModuleName);
 
@@ -201,13 +212,13 @@ public class JsInteropOutputProcessor {
 		
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
-		javaClassText.addImport("jsinterop.annotations.JsProperty");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsObject");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Component");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.ComponentMetadata");
-		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
+		javaClassText.addImport(JsProperty.class.getName());
+		javaClassText.addImport(JsObject.class.getName());
+		javaClassText.addImport(JsArray.class.getName());
+		javaClassText.addImport(AngularComponentConstructorFunction.class.getName());
+		javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.Component.class.getName());
+		javaClassText.addImport(ComponentMetadata.class.getName());
+		javaClassText.addImport(JsToolsInjector.class.getName());
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
 
@@ -273,11 +284,11 @@ public class JsInteropOutputProcessor {
 					i.line("JsObject queries = new JsObject();");
 					for(Entry<String, ViewChildrenInfo> entry : viewChildFields.entrySet()){
 						if( entry.getValue().isMultiple ){
-							javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.ViewChildren");
+							javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.ViewChildren.class.getName());
 							i.line("queries.set( [{#}], new ViewChildren( [{}] ) );", entry.getKey(), entry.getValue().accessCode);
 						}
 						else {
-							javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.ViewChild");
+							javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.ViewChild.class.getName());
 							i.line("queries.set( [{#}], new ViewChild( [{}] ) );", entry.getKey(), entry.getValue().accessCode);
 						}
 					}
@@ -318,11 +329,11 @@ public class JsInteropOutputProcessor {
 
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
-		javaClassText.addImport("jsinterop.annotations.JsProperty");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Injectable");
-		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
+		javaClassText.addImport(JsProperty.class.getName());
+		javaClassText.addImport(JsArray.class.getName());
+		javaClassText.addImport(AngularComponentConstructorFunction.class.getName());
+		javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.Injectable.class.getName());
+		javaClassText.addImport(JsToolsInjector.class.getName());
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
 		
@@ -384,13 +395,14 @@ public class JsInteropOutputProcessor {
 
 		JavaClassText javaClassText = new JavaClassText(packageName);
 		
-		javaClassText.addImport("jsinterop.annotations.JsProperty");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsObject");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.JsArray");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.AngularComponentConstructorFunction");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.Directive");
-		javaClassText.addImport("fr.lteconsulting.angular2gwt.client.interop.angular.DirectiveMetadata");
-		javaClassText.addImport( "fr.lteconsulting.angular2gwt.client.JsToolsInjector" );
+		javaClassText.addImport(JsProperty.class.getName());
+		javaClassText.addImport(JsArray.class.getName());
+		javaClassText.addImport(JsObject.class.getName());
+		javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.Directive.class.getName());
+		javaClassText.addImport(DirectiveMetadata.class.getName());
+		javaClassText.addImport(AngularComponentConstructorFunction.class.getName());
+		javaClassText.addImport(fr.lteconsulting.angular2gwt.client.interop.ng.core.Injectable.class.getName());
+		javaClassText.addImport(JsToolsInjector.class.getName());
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
 		
@@ -635,7 +647,7 @@ public class JsInteropOutputProcessor {
 				
 				parts.add( getConstructorFunctionAccessorName( fqn, classBlock, generatedAccessorTypestypes ) );
 				if( host != null )
-					parts.add( "new " + fr.lteconsulting.angular2gwt.client.interop.angular.Host.class.getName() + "()" );
+					parts.add( "new " + fr.lteconsulting.angular2gwt.client.interop.ng.core.Host.class.getName() + "()" );
 
 				parameters.append( "JsArray.of( " + concat( parts ) + " )" );
 			} );
@@ -809,8 +821,8 @@ public class JsInteropOutputProcessor {
 		
 		block.separator();
 		
-		classText.addImport( "fr.lteconsulting.angular2gwt.client.JsTools" );
-		classText.addImport( "fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition" );			
+		classText.addImport( JsTools.class.getName() );
+		classText.addImport( PropertyDefinition.class.getName() );			
 		
 		for (FieldSetterMethodInformation info : fields) {
 			String setterInterfaceName = info.setterMethodName.substring(0, 1).toUpperCase()
@@ -943,7 +955,7 @@ public class JsInteropOutputProcessor {
 			if( element.getAnnotation( NgModule.class ) != null )
 				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
 			
-			Optional<? extends TypeMirror> optProviderWrapper = element.getInterfaces().stream().filter((t)->t.toString().equals("fr.lteconsulting.angular2gwt.client.interop.angular.ProviderWrapper")).findFirst();
+			Optional<? extends TypeMirror> optProviderWrapper = element.getInterfaces().stream().filter((t)->t.toString().equals(ProviderWrapper.class.getName())).findFirst();
 			if( optProviderWrapper.isPresent() )
 				return "new " + fqn + "().get()";
 
@@ -992,7 +1004,7 @@ public class JsInteropOutputProcessor {
 	private String findDirectiveHostsEventActions( TypeElement element, Block classBlock )
 	{
 		HashMap<String, String> hostsEventActions = new HashMap<>();
-		Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, Hosts.class.getName() );
+		Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, HostsBinding.class.getName() );
 		if( hostsAnnotation.isPresent() )
 		{
 			Optional<? extends AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );

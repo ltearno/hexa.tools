@@ -1,6 +1,6 @@
 package fr.lteconsulting.angular2gwt.client;
 
-import fr.lteconsulting.angular2gwt.client.interop.angular.AngularTools;
+import fr.lteconsulting.angular2gwt.client.interop.ng.AngularTools;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Executor;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Promise;
 import fr.lteconsulting.angular2gwt.client.interop.promise.Rejector;
