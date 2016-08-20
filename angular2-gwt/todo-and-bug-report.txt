@@ -1,3 +1,4 @@
+Donner la possibilité de faire une properiété en lecture seule
 Emmettre une erreur quand le développeur oublie de mettre @JsType
 Réorganiser les packages
 Améliorer les noms des classes angular2gwt
@@ -9,6 +10,9 @@ Utiliser un composant écrite en TS
 Utiliser AngularMaterial
 DONE - Intercept input property changes with ngOnChanges
 Utiliser dans JVM Nashorn
+Material Angular
+
+JsInterop does not generate the type if the constructor is not public or @JsConstructor, but says nothing about
 
 Remonter le bug :
 @Component(selector = "hero-search", templateUrl = "hero-search.component.html", styleUrls = "hero-search.component.css", providers = HeroSearchService.class)

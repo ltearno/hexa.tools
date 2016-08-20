@@ -194,11 +194,6 @@ public class JsInteropOutputProcessor {
 			res.accessCode = accessCode;
 			return res;
 		}
-
-		@Override
-		public String toString() {
-			return "ViewChildrenInfo [isMultiple=" + isMultiple + ", accessCode=" + accessCode + "]";
-		}
 	}
 	
 
@@ -222,7 +217,7 @@ public class JsInteropOutputProcessor {
 		
 		Block classBlock = javaClassText.rootBlock().clazz(angularComponentName);
 
-		String aSelector = annotation.selector();
+		String aSelector = "".equals(annotation.selector()) ? null : annotation.selector();
 		String aTemplate = annotation.template().isEmpty() ? null : annotation.template();
 		String aTemplateUrl = annotation.templateUrl().isEmpty() ? null : annotation.templateUrl();
 		String aStyles = findComponentStyles( annotation );
@@ -232,11 +227,9 @@ public class JsInteropOutputProcessor {
 		String outputs = findComponentOutputs( element );
 		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypes );
 		
-		// input fields
-		List<FieldSetterMethodInformation> fieldsByMethods = findFieldMethods( element );
+		List<FieldSetterMethodInformation> fieldsByMethods = findInputFieldMethods( element );
 		String inputs = findInputs( element, fieldsByMethods );
 		
-		// find fields with @ViewChild or @ViewChildren : Map<String, ViewChildrenInfo>
 		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock, generatedAccessorTypes );
 		
 		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
@@ -263,7 +256,8 @@ public class JsInteropOutputProcessor {
 			
 			e.line("if( constructorFunction.annotations == null )").block((i) -> {
 				i.line("JsObject options = new JsObject();");
-				i.line("options.set( \"selector\", [{#}] );", aSelector );
+				if( aSelector != null )
+					i.line("options.set( \"selector\", [{#}] );", aSelector );
 				if( aTemplate != null )
 					i.line( "options.set( \"template\", [{#}] );", aTemplate );
 				if( aTemplateUrl!=null )
@@ -298,6 +292,7 @@ public class JsInteropOutputProcessor {
 				i.line("ComponentMetadata metadata = new ComponentMetadata( options );");
 				i.line();
 				i.line("constructorFunction.annotations = JsArray.of( new Component( metadata ) );");
+				
 				buildFieldMethodDefinitions( element.getSimpleName().toString(), fieldsByMethods, i, classBlock, javaClassText );
 			});
 			
@@ -414,7 +409,7 @@ public class JsInteropOutputProcessor {
 		String host = findDirectiveHostsEventActions( element, classBlock );
 		
 		// input fields
-		List<FieldSetterMethodInformation> fieldsByMethods = findFieldMethods( element );
+		List<FieldSetterMethodInformation> fieldsByMethods = findInputFieldMethods( element );
 		String inputs = findInputs( element, fieldsByMethods );
 		
 		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
@@ -642,12 +637,15 @@ public class JsInteropOutputProcessor {
 				
 				String fqn = p.asType().toString();
 				Host host = p.getAnnotation(Host.class);
+				fr.lteconsulting.angular2gwt.ng.core.Optional optional = p.getAnnotation(fr.lteconsulting.angular2gwt.ng.core.Optional.class);
 				
 				List<String> parts = new ArrayList<>();
 				
 				parts.add( getConstructorFunctionAccessorName( fqn, classBlock, generatedAccessorTypestypes ) );
 				if( host != null )
 					parts.add( "new " + fr.lteconsulting.angular2gwt.client.interop.ng.core.Host.class.getName() + "()" );
+				if( optional != null )
+					parts.add( "new " + fr.lteconsulting.angular2gwt.client.interop.ng.core.Optional.class.getName() + "()" );
 
 				parameters.append( "JsArray.of( " + concat( parts ) + " )" );
 			} );
@@ -666,7 +664,7 @@ public class JsInteropOutputProcessor {
 		return sb.toString();
 	}
 	
-	private List<FieldSetterMethodInformation> findFieldMethods( TypeElement element )
+	private List<FieldSetterMethodInformation> findInputFieldMethods( TypeElement element )
 	{
 		List<FieldSetterMethodInformation> methodFields = new ArrayList<>();
 		
@@ -714,8 +712,6 @@ public class JsInteropOutputProcessor {
 		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( ViewChild.class ) != null ).forEach(field->{
 			String fieldName = field.getSimpleName().toString();
 			
-			result.put(fieldName, ViewChildrenInfo.child("IS UP TO SOMETHING!"));
-			
 			ViewChild annotation = field.getAnnotation( ViewChild.class );
 			if(annotation.selector()!=null && ! annotation.selector().isEmpty()){
 				result.put(fieldName, ViewChildrenInfo.child("'"+annotation.selector()+"'"));
@@ -725,7 +721,6 @@ public class JsInteropOutputProcessor {
 				holder.value = false;
 				
 				Optional<? extends AnnotationMirror> annotationMirror = getElementAnnotation(field, ViewChild.class.getName());
-				classBlock.line("// ANMI : [{}]", annotationMirror.isPresent());
 				annotationMirror.ifPresent(am -> {
 					Optional<AnnotationValue> value = getAnnotationValue(am, "component");
 					value.ifPresent(v->{
@@ -841,7 +836,7 @@ public class JsInteropOutputProcessor {
 							+ info.getterMethodName.substring(1) + "Caller";
 					additionnalDefinitionsBlock.separator();
 					additionnalDefinitionsBlock.line("interface [{}]", getterInterfaceName).block((iBlock) -> {
-						iBlock.line("Object getValue();");
+						iBlock.line("[{}] getValue();", info.setterArgumentClassName); // should ideally use the getter return type, but should be ok for a while...
 					});
 					
 					params.line("( object ) -> {");
