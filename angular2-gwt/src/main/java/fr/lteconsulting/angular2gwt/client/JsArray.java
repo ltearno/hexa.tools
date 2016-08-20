@@ -45,6 +45,12 @@ public class JsArray<T>
 
 	@JsMethod
 	public native JsArray<T> slice( int start, int end );
+	
+	@JsMethod
+	public native String join();
+	
+	@JsMethod
+	public native String join( String joiner );
 
 	@JsMethod
 	public native int indexOf( T item );

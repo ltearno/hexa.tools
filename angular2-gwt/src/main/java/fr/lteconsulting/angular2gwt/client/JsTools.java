@@ -29,6 +29,9 @@ public class JsTools
 
 	@JsMethod( namespace = "lteconsulting", name = "setObjectProperty" )
 	public static native void setObjectProperty( Object object, String property, Object value );
+	
+	@JsMethod( namespace = "lteconsulting", name = "getObjectIterator" )
+	public static native <T> JsIterator<T> getObjectIterator( Object object );
 
 	@JsMethod( namespace = "lteconsulting", name = "convertObject" )
 	public static native <T> T convertObject( String prototypeName, Object template );

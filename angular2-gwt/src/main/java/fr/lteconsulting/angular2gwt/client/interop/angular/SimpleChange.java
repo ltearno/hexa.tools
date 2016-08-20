@@ -1,5 +1,6 @@
 package fr.lteconsulting.angular2gwt.client.interop.angular;
 
+import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
@@ -7,8 +8,11 @@ import jsinterop.annotations.JsType;
 public class SimpleChange
 {
 	@JsProperty
-	Object previousValue;
+	public Object previousValue;
 
 	@JsProperty
-	Object currentValue;
+	public Object currentValue;
+	
+	@JsMethod
+	public native boolean isFirstChange();
 }

@@ -46,6 +46,12 @@ public class JsToolsInjector {
 		content += "        object[property] = value;\n";
 		content += "    },\n";
 		
+		content += "    getObjectIterator: function( object ) {\n";
+		content += "        if( object[Symbol.iterator] )\n";
+		content += "            return object[Symbol.iterator]();\n";
+		content += "        return null;";
+		content += "    },\n";
+		
 		content += "    convertObject: (function (prototypes){\n";
 		content += "        return function(prototypeName, source){\n";
 		content += "            function internal(prototypeName, source){\n";
