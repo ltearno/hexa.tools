@@ -1,16 +1,21 @@
-DONE - Donner la possibilité de faire une properiété en lecture seule
 Emmettre une erreur quand le développeur oublie de mettre @JsType
-DONE - Réorganiser les packages
+Formatter le code
 Améliorer les noms des classes angular2gwt
 Améliorer les paramètres de route
-Compression GZ
-Importer un widget GWT
-Utiliser un composant écrite en JS
-Utiliser un composant écrite en TS
 Utiliser AngularMaterial
-DONE - Intercept input property changes with ngOnChanges
+Mettre a jour l'archetype
+Pousser une version SNAPSHOT
+Utiliser un composant écrite en JS
+Structurer l'ui de Tour-Of-Heroes
+Compression GZ
+Utiliser un composant écrite en TS
+Importer un widget GWT (bof, il faut mettre GWT en dépendance)
 Utiliser dans JVM Nashorn
-Material Angular
+DONE - Donner la possibilité de faire une properiété en lecture seule
+DONE - Réorganiser les packages
+DONE - Intercept input property changes with ngOnChanges
+
+REMONTER LES BUGS GWT JSINTEROP SUIVANT :
 
 JsInterop does not generate the type if the constructor is not public or @JsConstructor, but says nothing about
 
