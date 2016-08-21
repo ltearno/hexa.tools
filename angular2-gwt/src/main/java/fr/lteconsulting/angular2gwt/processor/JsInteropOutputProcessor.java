@@ -2,12 +2,16 @@ package fr.lteconsulting.angular2gwt.processor;
 
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.COMPONENT_HELPER_CLASS_SUFFIX;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.ComponentAnnotationFqn;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.ComponentConstructorGetterName;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.DIRECTIVE_HELPER_CLASS_SUFFIX;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.DirectiveAnnotationFqn;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.DirectiveConstructorGetterName;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.INJECTABLE_HELPER_CLASS_SUFFIX;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.InjectableAnnotationFqn;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.InjectableConstructorGetterName;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NG_MODULE_HELPER_CLASS_SUFFIX;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NgModuleAnnotationFqn;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NgModuleConstructorGetterName;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -132,7 +136,7 @@ public class JsInteropOutputProcessor
 		classBlock.line( "private native static AngularComponentConstructorFunction constructorFunction();" );
 		classBlock.line();
 
-		classBlock.line( "public static Object getComponentPrototype()" );
+		classBlock.line( "public static Object [{}]()", NgModuleConstructorGetterName );
 		classBlock.block( ( e ) -> {
 			e.line( "JsToolsInjector.inject();" );
 			e.separator();
@@ -250,7 +254,7 @@ public class JsInteropOutputProcessor
 		classBlock.line( "private native static AngularComponentConstructorFunction constructorFunction();" );
 		classBlock.line();
 
-		classBlock.line( "public static Object getComponentPrototype()" );
+		classBlock.line( "public static Object [{}]()", ComponentConstructorGetterName );
 		classBlock.block( ( e ) -> {
 			e.line( "JsToolsInjector.inject();" );
 			e.separator();
@@ -362,7 +366,7 @@ public class JsInteropOutputProcessor
 
 		classBlock.separator();
 
-		classBlock.line( "public static Object getComponentPrototype()" );
+		classBlock.line( "public static Object [{}]()", InjectableConstructorGetterName );
 		classBlock.block( ( e ) -> {
 			e.line( "JsToolsInjector.inject();" );
 			e.separator();
@@ -445,7 +449,7 @@ public class JsInteropOutputProcessor
 
 		classBlock.separator();
 
-		classBlock.line( "public static Object getComponentPrototype()" );
+		classBlock.line( "public static Object [{}]()", DirectiveConstructorGetterName );
 		classBlock.block( ( e ) -> {
 			e.line( "JsToolsInjector.inject();" );
 			e.separator();
@@ -1064,16 +1068,16 @@ public class JsInteropOutputProcessor
 		if( element != null )
 		{
 			if( element.getAnnotation( Directive.class ) != null )
-				return fqn + DIRECTIVE_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
+				return fqn + DIRECTIVE_HELPER_CLASS_SUFFIX + "." + DirectiveConstructorGetterName + "()";
 
 			if( element.getAnnotation( Component.class ) != null )
-				return fqn + COMPONENT_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
+				return fqn + COMPONENT_HELPER_CLASS_SUFFIX + "." + ComponentConstructorGetterName + "()";
 
 			if( element.getAnnotation( Injectable.class ) != null )
-				return fqn + INJECTABLE_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
+				return fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "." + InjectableConstructorGetterName + "()";
 
 			if( element.getAnnotation( NgModule.class ) != null )
-				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + ".getComponentPrototype()";
+				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + "." + NgModuleConstructorGetterName + "()";
 
 			Optional<? extends TypeMirror> optProviderWrapper = element.getInterfaces().stream().filter( ( t ) -> t.toString().equals( ProviderWrapper.class.getName() ) ).findFirst();
 			if( optProviderWrapper.isPresent() )

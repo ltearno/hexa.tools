@@ -21,6 +21,11 @@ public class AngularComponentProcessor extends AbstractProcessor
 	public final static String ComponentAnnotationFqn = "fr.lteconsulting.angular2gwt.ng.core.Component";
 	public final static String InjectableAnnotationFqn = "fr.lteconsulting.angular2gwt.ng.core.Injectable";
 	public final static String NgModuleAnnotationFqn = "fr.lteconsulting.angular2gwt.ng.core.NgModule";
+	
+	public final static String DirectiveConstructorGetterName = "getDirectivePrototype";
+	public final static String ComponentConstructorGetterName = "getComponentPrototype";
+	public final static String InjectableConstructorGetterName = "getInjectablePrototype";
+	public final static String NgModuleConstructorGetterName = "getNgModulePrototype";
 
 	public final static String DIRECTIVE_HELPER_CLASS_SUFFIX = "_AngularDirective";
 	public final static String COMPONENT_HELPER_CLASS_SUFFIX = "_AngularComponent";
