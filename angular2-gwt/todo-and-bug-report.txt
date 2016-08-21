@@ -1,4 +1,3 @@
-Emmettre une erreur quand le développeur oublie de mettre @JsType
 Améliorer les paramètres de route
 Utiliser AngularMaterial
 Mettre a jour l'archetype
@@ -9,6 +8,7 @@ Compression GZ
 Utiliser un composant écrite en TS
 Importer un widget GWT (bof, il faut mettre GWT en dépendance)
 Utiliser dans JVM Nashorn
+DONE - Emmettre une erreur quand le développeur oublie de mettre @JsType
 DONE - Améliorer les noms des classes angular2gwt
 DONE - Formatter le code
 DONE - Donner la possibilité de faire une properiété en lecture seule
