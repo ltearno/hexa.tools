@@ -30,17 +30,19 @@ public class Checks
 		}
 	}
 
-	public void checkIsJsProperty( VariableElement field )
+	public VariableElement checkIsJsProperty( VariableElement field )
 	{
 		boolean hasJsProperty = field.getAnnotation( JsProperty.class ) != null;
 		if( hasJsProperty )
-			return;
+			return field;
 
 		boolean isImplicit = isImplicitJsPropertyOrMethod( field );
 		if( isImplicit )
-			return;
+			return field;
 
 		messager.printMessage( level, "Be careful, this field needs the @JsProperty annotation, or be public of a non native @JsType class", field );
+		
+		return field;
 	}
 	
 	public void checkIsJsMethod( ExecutableElement method )

@@ -692,13 +692,17 @@ public class JsInteropOutputProcessor
 	{
 		StringBuilder outputs = new StringBuilder();
 
-		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Output.class ) != null ).map( f -> f.getSimpleName().toString() ).forEach( name -> {
-			if( outputs.length() > 0 )
-				outputs.append( ", " );
-			outputs.append( "\"" );
-			outputs.append( name );
-			outputs.append( "\"" );
-		} );
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) )
+				.stream()
+				.filter( f -> f.getAnnotation( Output.class ) != null )
+				.map( f -> checks.checkIsJsProperty( f ).getSimpleName().toString() )
+				.forEach( name -> {
+					if( outputs.length() > 0 )
+						outputs.append( ", " );
+					outputs.append( "\"" );
+					outputs.append( name );
+					outputs.append( "\"" );
+				} );
 
 		if( outputs.length() == 0 )
 			return null;
@@ -859,7 +863,7 @@ public class JsInteropOutputProcessor
 			Input input = field.getAnnotation( Input.class );
 			if( input == null )
 				return;
-			
+
 			checks.checkIsJsProperty( field );
 
 			String propertyName = field.getSimpleName().toString();
@@ -875,7 +879,7 @@ public class JsInteropOutputProcessor
 			Input input = method.getAnnotation( Input.class );
 			if( input == null )
 				return;
-			
+
 			checks.checkIsJsMethod( method );
 
 			String methodName = method.getSimpleName().toString();
