@@ -68,34 +68,33 @@ import jsinterop.annotations.JsType;
 public class JsInteropOutputProcessor
 {
 	private final ProcessingEnvironment processingEnv;
+	private final Checks checks;
 
 	public JsInteropOutputProcessor( ProcessingEnvironment processingEnv )
 	{
 		this.processingEnv = processingEnv;
+
+		checks = new Checks( processingEnv.getMessager() );
 	}
 
 	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
 	{
-		for( TypeElement element : ElementFilter.typesIn( roundEnv
-				.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( NgModuleAnnotationFqn ) ) ) )
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( NgModuleAnnotationFqn ) ) ) )
 		{
 			processModule( element );
 		}
 
-		for( TypeElement element : ElementFilter.typesIn( roundEnv
-				.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( ComponentAnnotationFqn ) ) ) )
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( ComponentAnnotationFqn ) ) ) )
 		{
 			processComponent( element );
 		}
 
-		for( TypeElement element : ElementFilter.typesIn( roundEnv
-				.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( DirectiveAnnotationFqn ) ) ) )
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( DirectiveAnnotationFqn ) ) ) )
 		{
 			processDirective( element );
 		}
 
-		for( TypeElement element : ElementFilter.typesIn( roundEnv
-				.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( InjectableAnnotationFqn ) ) ) )
+		for( TypeElement element : ElementFilter.typesIn( roundEnv.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( InjectableAnnotationFqn ) ) ) )
 		{
 			processInjectable( element );
 		}
@@ -107,6 +106,8 @@ public class JsInteropOutputProcessor
 
 	private void processModule( TypeElement element )
 	{
+		checks.checkIsJsTypeNonNative( element );
+
 		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
 		String angularModuleName = element.getSimpleName() + NG_MODULE_HELPER_CLASS_SUFFIX;
 
@@ -190,30 +191,10 @@ public class JsInteropOutputProcessor
 		}
 	}
 
-	static class ViewChildrenInfo
-	{
-		boolean isMultiple; // determines if we use ViewChild or ViewChildren
-		String accessCode;
-
-		static ViewChildrenInfo child( String accessCode )
-		{
-			ViewChildrenInfo res = new ViewChildrenInfo();
-			res.isMultiple = false;
-			res.accessCode = accessCode;
-			return res;
-		}
-
-		static ViewChildrenInfo children( String accessCode )
-		{
-			ViewChildrenInfo res = new ViewChildrenInfo();
-			res.isMultiple = true;
-			res.accessCode = accessCode;
-			return res;
-		}
-	}
-
 	private void processComponent( TypeElement element )
 	{
+		checks.checkIsJsTypeNonNative( element );
+
 		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
 		String angularComponentName = element.getSimpleName() + COMPONENT_HELPER_CLASS_SUFFIX;
 
@@ -339,12 +320,14 @@ public class JsInteropOutputProcessor
 		catch( IOException e )
 		{
 			e.printStackTrace();
-			processingEnv.getMessager().printMessage( Kind.ERROR, "AngularComponent non généré !" + e, element );
+			processingEnv.getMessager().printMessage( Kind.ERROR, "AngularComponent not generated !" + e, element );
 		}
 	}
 
 	private void processInjectable( TypeElement element )
 	{
+		checks.checkIsJsTypeNonNative( element );
+
 		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
 		String angularComponentName = element.getSimpleName() + INJECTABLE_HELPER_CLASS_SUFFIX;
 
@@ -415,6 +398,8 @@ public class JsInteropOutputProcessor
 
 	private void processDirective( TypeElement element )
 	{
+		checks.checkIsJsTypeNonNative( element );
+
 		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
 		String angularComponentName = element.getSimpleName() + DIRECTIVE_HELPER_CLASS_SUFFIX;
 
@@ -507,6 +492,108 @@ public class JsInteropOutputProcessor
 		}
 	}
 
+	/**
+	 * returns the processed accessor or the generated accessor method
+	 * 
+	 * @param fqn
+	 * @return
+	 */
+	private String getConstructorFunctionAccessorName( String fqn, Block classBlock, HashMap<String, String> generatedAccessorTypes )
+	{
+		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
+		if( element != null )
+		{
+			if( element.getAnnotation( Directive.class ) != null )
+				return fqn + DIRECTIVE_HELPER_CLASS_SUFFIX + "." + DirectiveConstructorGetterName + "()";
+
+			if( element.getAnnotation( Component.class ) != null )
+				return fqn + COMPONENT_HELPER_CLASS_SUFFIX + "." + ComponentConstructorGetterName + "()";
+
+			if( element.getAnnotation( Injectable.class ) != null )
+				return fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "." + InjectableConstructorGetterName + "()";
+
+			if( element.getAnnotation( NgModule.class ) != null )
+				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + "." + NgModuleConstructorGetterName + "()";
+
+			Optional<? extends TypeMirror> optProviderWrapper = element.getInterfaces().stream().filter( ( t ) -> t.toString().equals( ProviderWrapper.class.getName() ) ).findFirst();
+			if( optProviderWrapper.isPresent() )
+				return "new " + fqn + "().get()";
+
+			if( generatedAccessorTypes.containsKey( fqn ) )
+				return generatedAccessorTypes.get( fqn );
+
+			String name = element.getSimpleName().toString();
+			String ns = element.getEnclosingElement().toString().replace( "package ", "" );
+
+			Optional<? extends AnnotationMirror> optAM = getElementAnnotation( element, JsType.class.getName() );
+			if( optAM.isPresent() )
+			{
+				AnnotationMirror am = optAM.get();
+
+				Optional<? extends AnnotationValue> optName = getAnnotationValue( am, "name" );
+				if( optName.isPresent() )
+				{
+					name = optName.get().toString();
+					name = name.replaceAll( "\"", "" );
+				}
+
+				Optional<? extends AnnotationValue> optNamespace = getAnnotationValue( am, "namespace" );
+				if( optNamespace.isPresent() )
+				{
+					ns = optNamespace.get().toString();
+					ns = ns.replaceAll( "\"", "" );
+				}
+			}
+
+			String constructorFunctionName = "constructorFunctionOf_" + ns.replaceAll( "\\.", "_" ) + "_" + name;
+
+			classBlock.line( "@JsProperty( namespace = [{#}], name = [{#}] )", ns, name );
+			classBlock.line( "private native static AngularComponentConstructorFunction [{}]();", constructorFunctionName );
+			classBlock.line();
+
+			String result = constructorFunctionName + "()";
+
+			generatedAccessorTypes.put( fqn, result );
+
+			return result;
+		}
+
+		return "/* no type element for " + fqn + " ! */ $wnd." + fqn;
+	}
+
+	/**
+	 * 
+	 * @param element
+	 * @param memberName imports, exports, declarations, providers, bootstrap
+	 * @param classBlock
+	 * @param generatedAccessorTypestypes
+	 * @return
+	 */
+	private String findModuleAttributes( TypeElement element, String memberName, Block classBlock, HashMap<String, String> generatedAccessorTypestypes )
+	{
+		List<String> classNames = getAnnotationClassListValue( element, NgModuleAnnotationFqn, memberName );
+		if( classNames == null || classNames.isEmpty() )
+			return null;
+
+		StringBuilder directives = new StringBuilder();
+
+		directives.append( "JsArray.of( " );
+
+		boolean add = false;
+		if( !classNames.isEmpty() )
+		{
+			directives.append( classNames.stream().map( name -> getConstructorFunctionAccessorName( name, classBlock, generatedAccessorTypestypes ) ).collect( Collectors.joining( ", " ) ) );
+			if( add )
+				directives.append( ", " );
+			else
+				add = true;
+		}
+
+		directives.append( " )" );
+
+		return directives.toString();
+	}
+
 	private String findComponentStyles( Component annotation )
 	{
 		if( annotation.styles().length == 0 )
@@ -549,39 +636,6 @@ public class JsInteropOutputProcessor
 		aStyleUrls.append( " )" );
 
 		return aStyleUrls.toString();
-	}
-
-	/**
-	 * 
-	 * @param element
-	 * @param memberName imports, exports, declarations, providers, bootstrap
-	 * @param classBlock
-	 * @param generatedAccessorTypestypes
-	 * @return
-	 */
-	private String findModuleAttributes( TypeElement element, String memberName, Block classBlock, HashMap<String, String> generatedAccessorTypestypes )
-	{
-		List<String> classNames = getAnnotationClassListValue( element, NgModuleAnnotationFqn, memberName );
-		if( classNames == null || classNames.isEmpty() )
-			return null;
-
-		StringBuilder directives = new StringBuilder();
-
-		directives.append( "JsArray.of( " );
-
-		boolean add = false;
-		if( !classNames.isEmpty() )
-		{
-			directives.append( classNames.stream().map( name -> getConstructorFunctionAccessorName( name, classBlock, generatedAccessorTypestypes ) ).collect( Collectors.joining( ", " ) ) );
-			if( add )
-				directives.append( ", " );
-			else
-				add = true;
-		}
-
-		directives.append( " )" );
-
-		return directives.toString();
 	}
 
 	private String findComponentDirectives( TypeElement element, Block classBlock, HashMap<String, String> generatedAccessorTypestypes )
@@ -690,13 +744,6 @@ public class JsInteropOutputProcessor
 			return null;
 
 		return "JsArray.of( " + parameters.toString() + " )";
-	}
-
-	private String concat( List<String> s )
-	{
-		StringBuilder sb = new StringBuilder();
-		s.forEach( i -> sb.append( (sb.length() == 0 ? "" : ", ") + i ) );
-		return sb.toString();
 	}
 
 	private Map<String, ViewChildrenInfo> findComponentViewChildFields( TypeElement element, Block classBlock, HashMap<String, String> generatedAccessorTypes )
@@ -812,6 +859,8 @@ public class JsInteropOutputProcessor
 			Input input = field.getAnnotation( Input.class );
 			if( input == null )
 				return;
+			
+			checks.checkIsJsProperty( field );
 
 			String propertyName = field.getSimpleName().toString();
 			String inputName = input.name();
@@ -826,6 +875,8 @@ public class JsInteropOutputProcessor
 			Input input = method.getAnnotation( Input.class );
 			if( input == null )
 				return;
+			
+			checks.checkIsJsMethod( method );
 
 			String methodName = method.getSimpleName().toString();
 			if( !methodName.startsWith( "set" ) )
@@ -893,236 +944,6 @@ public class JsInteropOutputProcessor
 		}
 
 		return "JsArray.of( " + sb.toString() + " )";
-	}
-
-	private static class InputInformation
-	{
-		private final String inputName;
-		private final String propertyName;
-
-		public InputInformation( String inputName, String propertyName )
-		{
-			this.inputName = inputName;
-			this.propertyName = propertyName;
-		}
-	}
-
-	private static class PropertyInformation
-	{
-		private final String propertyName;
-		private final String setterMethodName;
-		private final String setterArgumentClassName;
-		private final String getterMethodName;
-		private final String getterReturnClassName;
-
-		public PropertyInformation( String propertyName, String setterMethodName, String setterArgumentClassName, String getterMethodName, String getterReturnClassName )
-		{
-			this.propertyName = propertyName;
-			this.setterMethodName = setterMethodName;
-			this.setterArgumentClassName = setterArgumentClassName;
-			this.getterMethodName = getterMethodName;
-			this.getterReturnClassName = getterReturnClassName;
-		}
-	}
-
-	private void buildPropertiesMethodsDefinitions( String componentClassName, List<PropertyInformation> fields, Block block, Block additionnalDefinitionsBlock, JavaClassText classText )
-	{
-		if( fields == null || fields.isEmpty() )
-			return;
-
-		block.separator();
-
-		classText.addImport( JsTools.class.getName() );
-		classText.addImport( PropertyDefinition.class.getName() );
-
-		for( PropertyInformation info : fields )
-		{
-			block.line( "JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( ", info.propertyName );
-			block.indent( params -> {
-				if( info.getterMethodName == null )
-				{
-					params.line( "null," );
-				}
-				else
-				{
-					String getterInterfaceName = info.getterMethodName.substring( 0, 1 ).toUpperCase()
-							+ info.getterMethodName.substring( 1 ) + "Caller";
-					additionnalDefinitionsBlock.separator();
-					additionnalDefinitionsBlock.line( "interface [{}]", getterInterfaceName ).block( ( iBlock ) -> {
-						iBlock.line( "[{}] getValue();", info.getterReturnClassName );
-					} );
-
-					params.line( "( object ) -> {" );
-					params.indent( ( l ) -> {
-						l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
-						l.line( "[{GetterInterface}] methodCaller = component::[{getterMethod}];", getterInterfaceName,
-								info.getterMethodName );
-						l.line( "return methodCaller.getValue();" );
-					} );
-					params.line( "}," );
-				}
-
-				if( info.setterMethodName == null )
-				{
-					params.line( "null" );
-				}
-				else
-				{
-					String setterInterfaceName = info.setterMethodName.substring( 0, 1 ).toUpperCase()
-							+ info.setterMethodName.substring( 1 ) + "Caller";
-					additionnalDefinitionsBlock.separator();
-					additionnalDefinitionsBlock.line( "interface [{}]", setterInterfaceName ).block( ( iBlock ) -> {
-						iBlock.line( "void setValue( [{}] value );", info.setterArgumentClassName );
-					} );
-
-					params.line( "( object, value ) -> {" );
-					params.indent( ( l ) -> {
-						l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
-						l.line( "[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
-								info.setterMethodName );
-						l.line( "methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName );
-					} );
-					params.line( "}" );
-				}
-			} );
-			block.line( ") );" );
-		}
-	}
-
-	private List<String> getAnnotationClassListValue( TypeElement element, String annotationFqn, String annotationFieldName )
-	{
-		List<String> result = new ArrayList<>();
-
-		Optional<? extends AnnotationMirror> optAnnotationMirror = getElementAnnotation( element, annotationFqn );
-
-		if( optAnnotationMirror.isPresent() )
-		{
-			AnnotationMirror annotationMirror = optAnnotationMirror.get();
-			Optional<? extends AnnotationValue> optValue = getAnnotationValue( annotationMirror, annotationFieldName );
-			if( optValue.isPresent() )
-			{
-				AnnotationValue value = optValue.get();
-
-				value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-				{
-					@Override
-					public Void visitArray( List<? extends AnnotationValue> vals, Void p )
-					{
-						for( AnnotationValue v : vals )
-						{
-							v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-							{
-								@Override
-								public Void visitType( javax.lang.model.type.TypeMirror t, Void p )
-								{
-									String name = t.toString();
-									result.add( name );
-									return null;
-								};
-							}, null );
-						}
-						return null;
-					}
-				}, null );
-			}
-		}
-
-		return result;
-	}
-
-	private static class Holder<T>
-	{
-		T value;
-	}
-
-	private Optional<AnnotationValue> getAnnotationValue( AnnotationMirror annotationMirror, String annotationFieldName )
-	{
-		for( Entry<? extends ExecutableElement, ? extends AnnotationValue> e : annotationMirror.getElementValues().entrySet() )
-		{
-			if( e.getKey().getSimpleName().toString().equals( annotationFieldName ) )
-			{
-				return Optional.of( e.getValue() );
-			}
-		}
-
-		return Optional.empty();
-	}
-
-	private Optional<? extends AnnotationMirror> getElementAnnotation( Element element, String annotationFqn )
-	{
-		Optional<? extends AnnotationMirror> optAnnotationMirror = element.getAnnotationMirrors().stream().filter( m -> {
-			return processingEnv.getTypeUtils().isSameType( m.getAnnotationType(), processingEnv.getElementUtils().getTypeElement( annotationFqn ).asType() );
-		} ).findFirst();
-		return optAnnotationMirror;
-	}
-
-	/**
-	 * returns the processed accessor or the generated accessor method
-	 * 
-	 * @param fqn
-	 * @return
-	 */
-	private String getConstructorFunctionAccessorName( String fqn, Block classBlock, HashMap<String, String> generatedAccessorTypes )
-	{
-		TypeElement element = processingEnv.getElementUtils().getTypeElement( fqn );
-		if( element != null )
-		{
-			if( element.getAnnotation( Directive.class ) != null )
-				return fqn + DIRECTIVE_HELPER_CLASS_SUFFIX + "." + DirectiveConstructorGetterName + "()";
-
-			if( element.getAnnotation( Component.class ) != null )
-				return fqn + COMPONENT_HELPER_CLASS_SUFFIX + "." + ComponentConstructorGetterName + "()";
-
-			if( element.getAnnotation( Injectable.class ) != null )
-				return fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "." + InjectableConstructorGetterName + "()";
-
-			if( element.getAnnotation( NgModule.class ) != null )
-				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + "." + NgModuleConstructorGetterName + "()";
-
-			Optional<? extends TypeMirror> optProviderWrapper = element.getInterfaces().stream().filter( ( t ) -> t.toString().equals( ProviderWrapper.class.getName() ) ).findFirst();
-			if( optProviderWrapper.isPresent() )
-				return "new " + fqn + "().get()";
-
-			if( generatedAccessorTypes.containsKey( fqn ) )
-				return generatedAccessorTypes.get( fqn );
-
-			String name = element.getSimpleName().toString();
-			String ns = element.getEnclosingElement().toString().replace( "package ", "" );
-
-			Optional<? extends AnnotationMirror> optAM = getElementAnnotation( element, JsType.class.getName() );
-			if( optAM.isPresent() )
-			{
-				AnnotationMirror am = optAM.get();
-
-				Optional<? extends AnnotationValue> optName = getAnnotationValue( am, "name" );
-				if( optName.isPresent() )
-				{
-					name = optName.get().toString();
-					name = name.replaceAll( "\"", "" );
-				}
-
-				Optional<? extends AnnotationValue> optNamespace = getAnnotationValue( am, "namespace" );
-				if( optNamespace.isPresent() )
-				{
-					ns = optNamespace.get().toString();
-					ns = ns.replaceAll( "\"", "" );
-				}
-			}
-
-			String constructorFunctionName = "constructorFunctionOf_" + ns.replaceAll( "\\.", "_" ) + "_" + name;
-
-			classBlock.line( "@JsProperty( namespace = [{#}], name = [{#}] )", ns, name );
-			classBlock.line( "private native static AngularComponentConstructorFunction [{}]();", constructorFunctionName );
-			classBlock.line();
-
-			String result = constructorFunctionName + "()";
-
-			generatedAccessorTypes.put( fqn, result );
-
-			return result;
-		}
-
-		return "/* no type element for " + fqn + " ! */ $wnd." + fqn;
 	}
 
 	private String findDirectiveHostsEventActions( TypeElement element, Block classBlock )
@@ -1224,5 +1045,195 @@ public class JsInteropOutputProcessor
 		String createParameters = hosts.stream().map( ( h ) -> "\"" + hostsEventActions.get( h ) + "\"" ).collect( Collectors.joining( ", " ) );
 
 		return "Host.create( " + createParameters + " )";
+	}
+
+	private void buildPropertiesMethodsDefinitions( String componentClassName, List<PropertyInformation> fields, Block block, Block additionnalDefinitionsBlock, JavaClassText classText )
+	{
+		if( fields == null || fields.isEmpty() )
+			return;
+
+		block.separator();
+
+		classText.addImport( JsTools.class.getName() );
+		classText.addImport( PropertyDefinition.class.getName() );
+
+		for( PropertyInformation info : fields )
+		{
+			block.line( "JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( ", info.propertyName );
+			block.indent( params -> {
+				if( info.getterMethodName == null )
+				{
+					params.line( "null," );
+				}
+				else
+				{
+					String getterInterfaceName = info.getterMethodName.substring( 0, 1 ).toUpperCase()
+							+ info.getterMethodName.substring( 1 ) + "Caller";
+					additionnalDefinitionsBlock.separator();
+					additionnalDefinitionsBlock.line( "interface [{}]", getterInterfaceName ).block( ( iBlock ) -> {
+						iBlock.line( "[{}] getValue();", info.getterReturnClassName );
+					} );
+
+					params.line( "( object ) -> {" );
+					params.indent( ( l ) -> {
+						l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
+						l.line( "[{GetterInterface}] methodCaller = component::[{getterMethod}];", getterInterfaceName,
+								info.getterMethodName );
+						l.line( "return methodCaller.getValue();" );
+					} );
+					params.line( "}," );
+				}
+
+				if( info.setterMethodName == null )
+				{
+					params.line( "null" );
+				}
+				else
+				{
+					String setterInterfaceName = info.setterMethodName.substring( 0, 1 ).toUpperCase()
+							+ info.setterMethodName.substring( 1 ) + "Caller";
+					additionnalDefinitionsBlock.separator();
+					additionnalDefinitionsBlock.line( "interface [{}]", setterInterfaceName ).block( ( iBlock ) -> {
+						iBlock.line( "void setValue( [{}] value );", info.setterArgumentClassName );
+					} );
+
+					params.line( "( object, value ) -> {" );
+					params.indent( ( l ) -> {
+						l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
+						l.line( "[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
+								info.setterMethodName );
+						l.line( "methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName );
+					} );
+					params.line( "}" );
+				}
+			} );
+			block.line( ") );" );
+		}
+	}
+
+	static class ViewChildrenInfo
+	{
+		boolean isMultiple; // determines if we use ViewChild or ViewChildren
+		String accessCode;
+
+		static ViewChildrenInfo child( String accessCode )
+		{
+			ViewChildrenInfo res = new ViewChildrenInfo();
+			res.isMultiple = false;
+			res.accessCode = accessCode;
+			return res;
+		}
+
+		static ViewChildrenInfo children( String accessCode )
+		{
+			ViewChildrenInfo res = new ViewChildrenInfo();
+			res.isMultiple = true;
+			res.accessCode = accessCode;
+			return res;
+		}
+	}
+
+	private static class InputInformation
+	{
+		private final String inputName;
+		private final String propertyName;
+
+		public InputInformation( String inputName, String propertyName )
+		{
+			this.inputName = inputName;
+			this.propertyName = propertyName;
+		}
+	}
+
+	private static class PropertyInformation
+	{
+		private final String propertyName;
+		private final String setterMethodName;
+		private final String setterArgumentClassName;
+		private final String getterMethodName;
+		private final String getterReturnClassName;
+
+		public PropertyInformation( String propertyName, String setterMethodName, String setterArgumentClassName, String getterMethodName, String getterReturnClassName )
+		{
+			this.propertyName = propertyName;
+			this.setterMethodName = setterMethodName;
+			this.setterArgumentClassName = setterArgumentClassName;
+			this.getterMethodName = getterMethodName;
+			this.getterReturnClassName = getterReturnClassName;
+		}
+	}
+
+	private static class Holder<T>
+	{
+		T value;
+	}
+
+	private String concat( List<String> s )
+	{
+		StringBuilder sb = new StringBuilder();
+		s.forEach( i -> sb.append( (sb.length() == 0 ? "" : ", ") + i ) );
+		return sb.toString();
+	}
+
+	private Optional<? extends AnnotationMirror> getElementAnnotation( Element element, String annotationFqn )
+	{
+		Optional<? extends AnnotationMirror> optAnnotationMirror = element.getAnnotationMirrors().stream().filter( m -> {
+			return processingEnv.getTypeUtils().isSameType( m.getAnnotationType(), processingEnv.getElementUtils().getTypeElement( annotationFqn ).asType() );
+		} ).findFirst();
+		return optAnnotationMirror;
+	}
+
+	private List<String> getAnnotationClassListValue( TypeElement element, String annotationFqn, String annotationFieldName )
+	{
+		List<String> result = new ArrayList<>();
+
+		Optional<? extends AnnotationMirror> optAnnotationMirror = getElementAnnotation( element, annotationFqn );
+
+		if( optAnnotationMirror.isPresent() )
+		{
+			AnnotationMirror annotationMirror = optAnnotationMirror.get();
+			Optional<? extends AnnotationValue> optValue = getAnnotationValue( annotationMirror, annotationFieldName );
+			if( optValue.isPresent() )
+			{
+				AnnotationValue value = optValue.get();
+
+				value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+				{
+					@Override
+					public Void visitArray( List<? extends AnnotationValue> vals, Void p )
+					{
+						for( AnnotationValue v : vals )
+						{
+							v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+							{
+								@Override
+								public Void visitType( javax.lang.model.type.TypeMirror t, Void p )
+								{
+									String name = t.toString();
+									result.add( name );
+									return null;
+								};
+							}, null );
+						}
+						return null;
+					}
+				}, null );
+			}
+		}
+
+		return result;
+	}
+
+	private Optional<AnnotationValue> getAnnotationValue( AnnotationMirror annotationMirror, String annotationFieldName )
+	{
+		for( Entry<? extends ExecutableElement, ? extends AnnotationValue> e : annotationMirror.getElementValues().entrySet() )
+		{
+			if( e.getKey().getSimpleName().toString().equals( annotationFieldName ) )
+			{
+				return Optional.of( e.getValue() );
+			}
+		}
+
+		return Optional.empty();
 	}
 }
