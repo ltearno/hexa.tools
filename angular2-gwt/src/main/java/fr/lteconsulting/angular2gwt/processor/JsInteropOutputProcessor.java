@@ -14,7 +14,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +29,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
@@ -55,6 +53,7 @@ import fr.lteconsulting.angular2gwt.ng.core.Injectable;
 import fr.lteconsulting.angular2gwt.ng.core.Input;
 import fr.lteconsulting.angular2gwt.ng.core.NgModule;
 import fr.lteconsulting.angular2gwt.ng.core.Output;
+import fr.lteconsulting.angular2gwt.ng.core.PropertyGetter;
 import fr.lteconsulting.angular2gwt.ng.core.ViewChild;
 import fr.lteconsulting.angular2gwt.ng.core.ViewChildren;
 import fr.lteconsulting.roaster.Block;
@@ -227,8 +226,10 @@ public class JsInteropOutputProcessor {
 		String outputs = findComponentOutputs( element );
 		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypes );
 		
-		List<FieldSetterMethodInformation> fieldsByMethods = findInputFieldMethods( element );
-		String inputs = findInputs( element, fieldsByMethods );
+		List<PropertyInformation> propertiesMethodsInfos = new ArrayList<>();
+		String inputs = findInputs( element, propertiesMethodsInfos );
+		
+		findPropertyGetters(element, propertiesMethodsInfos);
 		
 		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock, generatedAccessorTypes );
 		
@@ -293,7 +294,7 @@ public class JsInteropOutputProcessor {
 				i.line();
 				i.line("constructorFunction.annotations = JsArray.of( new Component( metadata ) );");
 				
-				buildFieldMethodDefinitions( element.getSimpleName().toString(), fieldsByMethods, i, classBlock, javaClassText );
+				buildPropertiesMethodsDefinitions( element.getSimpleName().toString(), propertiesMethodsInfos, i, classBlock, javaClassText );
 			});
 			
 			e.separator();
@@ -409,8 +410,10 @@ public class JsInteropOutputProcessor {
 		String host = findDirectiveHostsEventActions( element, classBlock );
 		
 		// input fields
-		List<FieldSetterMethodInformation> fieldsByMethods = findInputFieldMethods( element );
-		String inputs = findInputs( element, fieldsByMethods );
+		List<PropertyInformation> propertiesMethodsInfos = new ArrayList<>();
+		String inputs = findInputs( element, propertiesMethodsInfos );
+		
+		findPropertyGetters(element, propertiesMethodsInfos);
 		
 		classBlock.line("@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName());
 		classBlock.line("private native static AngularComponentConstructorFunction constructorFunction();");
@@ -447,7 +450,7 @@ public class JsInteropOutputProcessor {
 				
 				i.line("constructorFunction.annotations = JsArray.of( new Directive( metadata ) );");
 				
-				buildFieldMethodDefinitions( element.getSimpleName().toString(), fieldsByMethods, i, classBlock, javaClassText );
+				buildPropertiesMethodsDefinitions( element.getSimpleName().toString(), propertiesMethodsInfos, i, classBlock, javaClassText );
 			});
 			
 			e.separator();
@@ -664,48 +667,6 @@ public class JsInteropOutputProcessor {
 		return sb.toString();
 	}
 	
-	private List<FieldSetterMethodInformation> findInputFieldMethods( TypeElement element )
-	{
-		List<FieldSetterMethodInformation> methodFields = new ArrayList<>();
-		
-		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).forEach( method -> {
-			String methodName = method.getSimpleName().toString();
-			
-			if( ! methodName.startsWith( "set" ) )
-			{
-				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method name should begin by 'set'", method );
-				return;
-			}
-			
-			if( method.getParameters().size() != 1 )
-			{
-				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method should have one and only one argument", method );
-				return;
-			}
-			
-			VariableElement parameter = method.getParameters().get( 0 );
-			String fieldName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
-			
-			boolean useGetter = false;
-			String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1);
-			Optional<ExecutableElement> optionalGetterMethod = ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getSimpleName().toString().equals(getterMethodName) ).findFirst();
-			if( optionalGetterMethod.isPresent()){
-				ExecutableElement getterMethod = optionalGetterMethod.get();
-				if( ! getterMethod.getParameters().isEmpty() )
-				{
-					processingEnv.getMessager().printMessage( Kind.ERROR, "This method is automatically used as a getter for the " + fieldName + " @Input method. It should not have any argument", getterMethod );
-					return;
-				}
-				
-				useGetter = true;
-			}
-			
-			methodFields.add( new FieldSetterMethodInformation(fieldName, methodName, parameter.asType().toString(), useGetter ? getterMethodName : null) );
-		} );
-		
-		return methodFields;
-	}
-	
 	private Map<String, ViewChildrenInfo> findComponentViewChildFields( TypeElement element, Block classBlock, HashMap<String, String> generatedAccessorTypes ) {
 		Map<String, ViewChildrenInfo> result = new HashMap<>();
 		
@@ -768,48 +729,157 @@ public class JsInteropOutputProcessor {
 		return result;
 	}
 	
-	private String findInputs( TypeElement element, List<FieldSetterMethodInformation> methodFields )
+	private void findPropertyGetters( TypeElement element, List<PropertyInformation> methodFields )
 	{
-		List<String> inputFields = ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getAnnotation( Input.class ) != null ).map( f -> f.getSimpleName().toString() ).collect( Collectors.toList() );
-		Set<String> inputNames = new HashSet<>();
-		inputNames.addAll( inputFields );
-		inputNames.addAll( methodFields.stream().map( ( i ) -> i.fieldName ).collect( Collectors.toList() ) );
-		
-		if( inputNames .isEmpty() )
-			return null;
-		
-		StringBuilder inputs = new StringBuilder();
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().forEach(method->{
+			PropertyGetter propertyGetter = method.getAnnotation(PropertyGetter.class);
+			if( propertyGetter == null )
+				return;
+			
+			if( ! method.getParameters().isEmpty())
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@PropertyGetter method should have no argument", method );
+				return;
+			}
+			
+			String getterMethodName = method.getSimpleName().toString();
+			String getterReturnTypeName = method.getReturnType().toString();
+			
+			String propertyName = null;
+			if (propertyGetter.name() != null && !propertyGetter.name().trim().isEmpty()) {
+				propertyName = propertyGetter.name().trim();
+			} else {
+				if (!getterMethodName.startsWith("get")) {
+					processingEnv.getMessager().printMessage(Kind.ERROR,
+							"@PropertyGetter method name should begin by 'get', or you should use the 'name' attribute of the @PropertyGetter annotation", method);
+					return;
+				}
 
-		for( String inputName : inputNames )
-		{
-			if( inputs.length() > 0 )
-				inputs.append( ", " );
-
-			inputs.append( "\"" );
-			inputs.append( inputName );
-			inputs.append( "\"" );
-		}
-
-		return "JsArray.of( " + inputs.toString() + " )";
+				propertyName = getterMethodName.substring(3, 4).toLowerCase() + getterMethodName.substring(4);
+			}
+			
+			methodFields.add( new PropertyInformation(propertyName, null, null, getterMethodName, getterReturnTypeName) );
+		});
 	}
 	
-	private static class FieldSetterMethodInformation
+	private String findInputs( TypeElement element, List<PropertyInformation> methodFields )
 	{
-		private final String fieldName;
+		List<InputInformation> inputs = new ArrayList<>();
+		
+		// gather fields
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().forEach(field->{
+			Input input = field.getAnnotation(Input.class);
+			if(input==null)
+				return;
+			
+			String propertyName = field.getSimpleName().toString();
+			String inputName = input.name();
+			if(inputName==null || inputName.trim().isEmpty())
+				inputName = propertyName;
+			
+			inputs.add(new InputInformation(inputName, propertyName));
+		});
+		
+		// gather methods
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().forEach(method->{
+			Input input = method.getAnnotation(Input.class);
+			if( input == null )
+				return;
+			
+			String methodName = method.getSimpleName().toString();
+			if( ! methodName.startsWith( "set" ) )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method name should begin by 'set'", method );
+				return;
+			}
+			
+			if( method.getParameters().size() != 1 )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method should have one and only one argument", method );
+				return;
+			}
+			
+			String propertyName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+			String inputName = input.name();
+			if(inputName==null || inputName.trim().isEmpty())
+				inputName = propertyName;
+			
+			inputs.add(new InputInformation(inputName, propertyName));
+			
+			boolean useGetter = false;
+			String getterMethodName = "get" + propertyName.substring(0, 1).toUpperCase()+propertyName.substring(1);
+			String getterReturnTypeName = null;
+			Optional<ExecutableElement> optionalGetterMethod = ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().filter( f -> f.getSimpleName().toString().equals(getterMethodName) ).findFirst();
+			if( optionalGetterMethod.isPresent()){
+				ExecutableElement getterMethod = optionalGetterMethod.get();
+				if( ! getterMethod.getParameters().isEmpty() )
+				{
+					processingEnv.getMessager().printMessage( Kind.ERROR, "This method is automatically used as a getter for the property '" + propertyName + "' because the "+methodName+" method is annotated with @Input. It should not have any argument", getterMethod );
+					return;
+				}
+				getterReturnTypeName = getterMethod.getReturnType().toString();
+				
+				useGetter = true;
+			}
+			
+			String setterParameterTypeName = method.getParameters().get( 0 ).asType().toString();
+			methodFields.add( new PropertyInformation(propertyName, methodName, setterParameterTypeName, useGetter ? getterMethodName : null, getterReturnTypeName) );
+		});
+		
+		if( inputs.isEmpty() )
+			return null;
+		
+		StringBuilder sb = new StringBuilder();
+
+		for( InputInformation input : inputs )
+		{
+			if( sb.length() > 0 )
+				sb.append( ", " );
+
+			sb.append( "\"" );
+			if( input.inputName.equals(input.propertyName)){
+				sb.append( input.inputName );
+			}
+			else{
+				sb.append( input.propertyName );
+				sb.append(": ");
+				sb.append( input.inputName );
+			}
+			sb.append( "\"" );
+		}
+
+		return "JsArray.of( " + sb.toString() + " )";
+	}
+	
+	private static class InputInformation {
+		private final String inputName;
+		private final String propertyName;
+
+		public InputInformation(String inputName, String propertyName) {
+			this.inputName = inputName;
+			this.propertyName = propertyName;
+		}
+	}
+	
+	private static class PropertyInformation
+	{
+		private final String propertyName;
 		private final String setterMethodName;
 		private final String setterArgumentClassName;
 		private final String getterMethodName;
+		private final String getterReturnClassName;
 
-		public FieldSetterMethodInformation(String fieldName, String setterMethodName, String setterArgumentClassName, String getterMethodName)
+		public PropertyInformation(String propertyName, String setterMethodName, String setterArgumentClassName, String getterMethodName, String getterReturnClassName)
 		{
-			this.fieldName = fieldName;
+			this.propertyName = propertyName;
 			this.setterMethodName = setterMethodName;
 			this.setterArgumentClassName = setterArgumentClassName;
 			this.getterMethodName = getterMethodName;
+			this.getterReturnClassName = getterReturnClassName;
 		}
 	}
 	
-	private void buildFieldMethodDefinitions( String componentClassName, List<FieldSetterMethodInformation> fields, Block block, Block additionnalDefinitionsBlock, JavaClassText classText )
+	private void buildPropertiesMethodsDefinitions( String componentClassName, List<PropertyInformation> fields, Block block, Block additionnalDefinitionsBlock, JavaClassText classText )
 	{
 		if( fields==null || fields.isEmpty() )
 			return;
@@ -819,15 +889,8 @@ public class JsInteropOutputProcessor {
 		classText.addImport( JsTools.class.getName() );
 		classText.addImport( PropertyDefinition.class.getName() );			
 		
-		for (FieldSetterMethodInformation info : fields) {
-			String setterInterfaceName = info.setterMethodName.substring(0, 1).toUpperCase()
-					+ info.setterMethodName.substring(1) + "Caller";
-			additionnalDefinitionsBlock.separator();
-			additionnalDefinitionsBlock.line("interface [{}]", setterInterfaceName).block((iBlock) -> {
-				iBlock.line("void setValue( [{}] value );", info.setterArgumentClassName);
-			});
-
-			block.line("JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( ", info.fieldName);
+		for (PropertyInformation info : fields) {
+			block.line("JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( ", info.propertyName);
 			block.indent(params -> {
 				if (info.getterMethodName == null) {
 					params.line("null,");
@@ -836,7 +899,7 @@ public class JsInteropOutputProcessor {
 							+ info.getterMethodName.substring(1) + "Caller";
 					additionnalDefinitionsBlock.separator();
 					additionnalDefinitionsBlock.line("interface [{}]", getterInterfaceName).block((iBlock) -> {
-						iBlock.line("[{}] getValue();", info.setterArgumentClassName); // should ideally use the getter return type, but should be ok for a while...
+						iBlock.line("[{}] getValue();", info.getterReturnClassName);
 					});
 					
 					params.line("( object ) -> {");
@@ -849,14 +912,25 @@ public class JsInteropOutputProcessor {
 					params.line("},");
 				}
 				
-				params.line("( object, value ) -> {");
-				params.indent((l) -> {
-					l.line("[{}] component = ([{}]) object;", componentClassName, componentClassName);
-					l.line("[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
-							info.setterMethodName);
-					l.line("methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName);
-				});
-				params.line("}");
+				if( info.setterMethodName == null ) {
+					params.line("null");
+				} else {
+					String setterInterfaceName = info.setterMethodName.substring(0, 1).toUpperCase()
+							+ info.setterMethodName.substring(1) + "Caller";
+					additionnalDefinitionsBlock.separator();
+					additionnalDefinitionsBlock.line("interface [{}]", setterInterfaceName).block((iBlock) -> {
+						iBlock.line("void setValue( [{}] value );", info.setterArgumentClassName);
+					});
+					
+					params.line("( object, value ) -> {");
+					params.indent((l) -> {
+						l.line("[{}] component = ([{}]) object;", componentClassName, componentClassName);
+						l.line("[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
+								info.setterMethodName);
+						l.line("methodCaller.setValue( ([{setterArgumentType}]) value );", info.setterArgumentClassName);
+					});
+					params.line("}");
+				}
 			});
 			block.line(") );");
 		}

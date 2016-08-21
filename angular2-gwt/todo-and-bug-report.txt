@@ -1,6 +1,6 @@
-Donner la possibilité de faire une properiété en lecture seule
+DONE - Donner la possibilité de faire une properiété en lecture seule
 Emmettre une erreur quand le développeur oublie de mettre @JsType
-Réorganiser les packages
+DONE - Réorganiser les packages
 Améliorer les noms des classes angular2gwt
 Améliorer les paramètres de route
 Compression GZ
