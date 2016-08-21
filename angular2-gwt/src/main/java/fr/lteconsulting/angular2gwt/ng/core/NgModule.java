@@ -1,6 +1,7 @@
 package fr.lteconsulting.angular2gwt.ng.core;
 
-public @interface NgModule {
+public @interface NgModule
+{
 	Class<?>[] imports() default {};
 
 	Class<?>[] exports() default {};

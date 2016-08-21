@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-
 // TODO add separator => white space if preceded or followed by another thing, nothing otherwise
 public class BlockImpl implements Block, Thing
 {
@@ -34,7 +33,7 @@ public class BlockImpl implements Block, Thing
 		}
 		catch( Exception e )
 		{
-			System.out.println("EXCEPTION : " + e);
+			System.out.println( "EXCEPTION : " + e );
 		}
 	}
 
@@ -72,13 +71,13 @@ public class BlockImpl implements Block, Thing
 
 		return newBlock;
 	}
-	
+
 	@Override
-	public Block indent(Consumer<Block> blockReceiver)
+	public Block indent( Consumer<Block> blockReceiver )
 	{
 		Block block = indent();
-		blockReceiver.accept(block);
-		
+		blockReceiver.accept( block );
+
 		return this;
 	}
 
@@ -97,7 +96,7 @@ public class BlockImpl implements Block, Thing
 
 		return newBlock;
 	}
-	
+
 	@Override
 	public BlockImpl comment()
 	{
@@ -113,9 +112,10 @@ public class BlockImpl implements Block, Thing
 
 		return newBlock;
 	}
-	
+
 	@Override
-	public Block separator() {
+	public Block separator()
+	{
 		// TODO to be implemented
 		return line();
 	}
@@ -126,7 +126,7 @@ public class BlockImpl implements Block, Thing
 		things.add( ( sb ) -> {
 			sb.append( "\n" );
 		} );
-		
+
 		return this;
 	}
 
@@ -188,12 +188,12 @@ public class BlockImpl implements Block, Thing
 
 		return this;
 	}
-	
+
 	@Override
 	public Block addAny( Thing youWant )
 	{
 		things.add( youWant );
-		
+
 		return this;
 	}
 
@@ -206,9 +206,9 @@ public class BlockImpl implements Block, Thing
 		{
 			boolean stringOutput = false;
 			int supposedIndex = start + 2;
-			if( format.length()>supposedIndex && format.charAt(supposedIndex)=='#')
+			if( format.length() > supposedIndex && format.charAt( supposedIndex ) == '#' )
 				stringOutput = true;
-			
+
 			if( paramIndex >= arguments.length )
 			{
 				format = "[ERROR, not enough parameters given in '" + format + "']";

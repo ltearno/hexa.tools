@@ -4,7 +4,7 @@ import jsinterop.annotations.JsFunction;
 
 @FunctionalInterface
 @JsFunction
-@SuppressWarnings("unusable-by-js")
+@SuppressWarnings( "unusable-by-js" )
 public interface Executor<V>
 {
 	void execute( Resolver<V> resolver, Rejector rejecter );

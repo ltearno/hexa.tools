@@ -3,18 +3,20 @@ package fr.lteconsulting.angular2gwt.client;
 import fr.lteconsulting.angular2gwt.client.interop.HTMLDocument;
 import fr.lteconsulting.angular2gwt.client.interop.HTMLElement;
 
-public class JsToolsInjector {
+public class JsToolsInjector
+{
 	private static boolean injected = false;
-	
-	public static void inject() {
+
+	public static void inject()
+	{
 		if( injected )
 			return;
 		injected = true;
-		
+
 		HTMLDocument document = HTMLDocument.get();
-		
+
 		HTMLElement scriptElement = document.createElement( "script" );
-		
+
 		String content = "";
 		content += "lteconsulting = {\n";
 		content += "    defineProperty : function( object, name, definition ) {\n";
@@ -33,25 +35,33 @@ public class JsToolsInjector {
 		content += "\n";
 		content += "        Object.defineProperty( object, name, def );\n";
 		content += "    },\n";
-		
+
 		content += "    propertyInObject: function( property, object ) {\n";
 		content += "        return property in object;\n";
 		content += "    },\n";
-		
+
 		content += "    getObjectProperty: function( object, property ) {\n";
 		content += "        return object[property] || null;\n";
 		content += "    },\n";
-		
+
 		content += "    setObjectProperty: function( object, property, value ) {\n";
 		content += "        object[property] = value;\n";
 		content += "    },\n";
 		
+		content += "    getArrayItem: function( array, index ) {\n";
+		content += "        return array[index] || null;\n";
+		content += "    },\n";
+
+		content += "    setArrayItem: function( array, index, value ) {\n";
+		content += "        array[index] = value;\n";
+		content += "    },\n";
+
 		content += "    getObjectIterator: function( object ) {\n";
 		content += "        if( object[Symbol.iterator] )\n";
 		content += "            return object[Symbol.iterator]();\n";
 		content += "        return null;";
 		content += "    },\n";
-		
+
 		content += "    debugPackage: function( package, packageName ) {\n";
 		content += "        packageName = packageName || ''\n";
 		content += "        for( let childName in package ) {\n";
@@ -86,11 +96,11 @@ public class JsToolsInjector {
 		content += "            return internal(prototypeName, source);\n";
 		content += "        }\n";
 		content += "    })({})\n";
-		
+
 		content += "};\n";
-		
+
 		scriptElement.innerHTML = content;
-		
+
 		document.body.appendChild( scriptElement );
 	}
 }

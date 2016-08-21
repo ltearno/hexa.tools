@@ -29,7 +29,13 @@ public class JsTools
 
 	@JsMethod( namespace = "lteconsulting", name = "setObjectProperty" )
 	public static native void setObjectProperty( Object object, String property, Object value );
-	
+
+	@JsMethod( namespace = "lteconsulting", name = "getArrayItem" )
+	public static native <T> T getArrayItem( Object array, int index );
+
+	@JsMethod( namespace = "lteconsulting", name = "setArrayItem" )
+	public static native void setArrayItem( Object array, int index, Object value );
+
 	@JsMethod( namespace = "lteconsulting", name = "getObjectIterator" )
 	public static native <T> JsIterator<T> getObjectIterator( Object object );
 
@@ -39,15 +45,15 @@ public class JsTools
 	@JsMethod( namespace = "window.history", name = "back" )
 	public static native void historyGoBack();
 
-	public static native <T> T get( Object o, int index )
-	/*-{
-		return o[index] || null;
-	}-*/;
+	public static <T> T get( Object o, int index )
+	{
+		return getArrayItem( o, index );
+	}
 
-	public static native <T> void set( Object o, int index, T value )
-	/*-{
-		o[index] = value;
-	}-*/;
+	public static <T> void set( Object o, int index, T value )
+	{
+		setArrayItem( o, index, value );
+	}
 
 	@SuppressWarnings( "unchecked" )
 	public static <T> T get( Object o, String propertyName )

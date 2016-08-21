@@ -6,8 +6,9 @@ import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
-@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Promise")
-public class Promise<T> {
+@JsType( isNative = true, namespace = JsPackage.GLOBAL, name = "Promise" )
+public class Promise<T>
+{
 	/**
 	 * Creates a new Promise.
 	 * 
@@ -19,7 +20,8 @@ public class Promise<T> {
 	 *            reason or error.
 	 */
 	@JsConstructor
-	public Promise(Executor<T> executor) {
+	public Promise( Executor<T> executor )
+	{
 		// keep the constructor empty because in reality it is implemented in
 		// the javascript world
 	}
@@ -32,7 +34,7 @@ public class Promise<T> {
 	 *            An array of Promises or values.
 	 * @returns A new Promise.
 	 */
-	public static native <T> Promise<T> race(JsArray<?> values);
+	public static native <T> Promise<T> race( JsArray<?> values );
 
 	/**
 	 * Creates a new resolved promise for the provided value.
@@ -41,7 +43,7 @@ public class Promise<T> {
 	 *            A promise.
 	 * @returns A promise whose internal state matches the provided promise.
 	 */
-	public static native <T> Promise<T> resolve(T value);
+	public static native <T> Promise<T> resolve( T value );
 
 	/**
 	 * Creates a new resolved promise for the provided value.
@@ -50,7 +52,7 @@ public class Promise<T> {
 	 *            A promise.
 	 * @returns A promise whose internal state matches the provided promise.
 	 */
-	public static native <T> Promise<T> resolve(Promise<T> value);
+	public static native <T> Promise<T> resolve( Promise<T> value );
 
 	/**
 	 * Creates a new resolved promise .
@@ -66,7 +68,7 @@ public class Promise<T> {
 	 *            The reason the promise was rejected.
 	 * @returns A new rejected Promise.
 	 */
-	public static native <T> Promise<T> reject(Object reason);
+	public static native <T> Promise<T> reject( Object reason );
 
 	/**
 	 * Creates a Promise that is resolved with an array of results when all of
@@ -77,7 +79,7 @@ public class Promise<T> {
 	 * @returns A new Promise resolving to an array with the values parameter's
 	 *          responses.
 	 */
-	public static native Promise<JsArray<?>> all(JsArray<?> values);
+	public static native Promise<JsArray<?>> all( JsArray<?> values );
 
 	/**
 	 * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -88,7 +90,7 @@ public class Promise<T> {
 	 *            The callback to execute when the Promise is rejected.
 	 * @returns A Promise for the completion of which ever callback is executed.
 	 */
-	public native <TResult> Promise<TResult> then(Fulfillment<T, TResult> onfulfilled, Rejection<TResult> onrejected);
+	public native <TResult> Promise<TResult> then( Fulfillment<T, TResult> onfulfilled, Rejection<TResult> onrejected );
 
 	/**
 	 * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -97,7 +99,7 @@ public class Promise<T> {
 	 *            The callback to execute when the Promise is resolved.
 	 * @returns A Promise for the completion of which ever callback is executed.
 	 */
-	public native <TResult> Promise<TResult> then(Fulfillment<T, TResult> onfulfilled);
+	public native <TResult> Promise<TResult> then( Fulfillment<T, TResult> onfulfilled );
 
 	/**
 	 * Since `catch` is a Java keyword, this method is named onCatch
@@ -108,6 +110,6 @@ public class Promise<T> {
 	 *            The callback to execute when the Promise is rejected.
 	 * @returns A Promise for the completion of the callback.
 	 */
-	@JsMethod(name = "catch")
-	public native Promise<T> onCatch(Rejection<T> onrejected);
+	@JsMethod( name = "catch" )
+	public native Promise<T> onCatch( Rejection<T> onrejected );
 }

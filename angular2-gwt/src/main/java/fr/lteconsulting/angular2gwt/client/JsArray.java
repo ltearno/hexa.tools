@@ -30,7 +30,7 @@ public class JsArray<T>
 			result.push( item );
 		return result;
 	}
-	
+
 	@JsOverlay
 	public final static <T> JsArray<T> empty()
 	{
@@ -45,10 +45,10 @@ public class JsArray<T>
 
 	@JsMethod
 	public native JsArray<T> slice( int start, int end );
-	
+
 	@JsMethod
 	public native String join();
-	
+
 	@JsMethod
 	public native String join( String joiner );
 

@@ -14,7 +14,7 @@ public class AngularComponentConstructorFunction
 
 	@JsProperty
 	public JsArray<Object> parameters;
-	
-	@JsProperty( name="prototype" )
+
+	@JsProperty( name = "prototype" )
 	public Object proto;
 }

@@ -8,6 +8,6 @@ public class HTMLElement
 {
 	public String innerHTML;
 	public String innerText;
-	
+
 	public native void appendChild( HTMLElement child );
 }

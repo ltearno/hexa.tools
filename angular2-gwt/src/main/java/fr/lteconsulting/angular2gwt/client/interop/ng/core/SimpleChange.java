@@ -12,7 +12,7 @@ public class SimpleChange
 
 	@JsProperty
 	public Object currentValue;
-	
+
 	@JsMethod
 	public native boolean isFirstChange();
 }

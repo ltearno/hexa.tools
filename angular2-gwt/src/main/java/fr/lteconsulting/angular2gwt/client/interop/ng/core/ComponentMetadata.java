@@ -8,6 +8,7 @@ import jsinterop.annotations.JsType;
 public class ComponentMetadata
 {
 	@JsConstructor
-	public ComponentMetadata( JsObject options ){
+	public ComponentMetadata( JsObject options )
+	{
 	}
 }

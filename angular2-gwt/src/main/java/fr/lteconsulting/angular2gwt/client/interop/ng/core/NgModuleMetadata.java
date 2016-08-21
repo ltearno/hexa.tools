@@ -5,8 +5,10 @@ import jsinterop.annotations.JsConstructor;
 import jsinterop.annotations.JsType;
 
 @JsType( isNative = true, namespace = "ng.core", name = "NgModuleMetadata" )
-public class NgModuleMetadata {
+public class NgModuleMetadata
+{
 	@JsConstructor
-	public NgModuleMetadata( JsObject options ){
+	public NgModuleMetadata( JsObject options )
+	{
 	}
 }
