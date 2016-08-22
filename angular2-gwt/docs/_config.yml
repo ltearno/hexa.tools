@@ -9,7 +9,7 @@ description: >
 baseurl: "/angular2boot"
 url: "http://lteconsulting.fr"
 fixedNav: 'true' # true or false
-theme: purple # green, blue, orange, purple, grey
+# theme: purple # green, blue, orange, purple, grey
 twitterUsername: ltearno
 githubUsername: ltearno/hexa.tools
 dribbbleUsername:
