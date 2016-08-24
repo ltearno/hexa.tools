@@ -2,7 +2,7 @@ package ${package}.client;
 
 import com.google.gwt.core.client.EntryPoint;
 
-import fr.lteconsulting.angular2gwt.client.interop.angular.Angular;
+import fr.lteconsulting.angular2gwt.client.interop.ng.platformBrowserDynamic.PlatformBrowserDynamic;
 
 /**
  * This is the application entry point. It just bootstraps Angular...
@@ -13,10 +13,10 @@ public class Application implements EntryPoint
 	public void onModuleLoad()
 	{
 		/**
-		 * Here we just bootstrap the Angular 2 framework with our application controller.
+		 * Here we just bootstrap the Angular 2 framework with our application module.
 		 * 
-		 * The application controller is implemented in the {@link ApplicationComponent} class
+		 * The application module is implemented in the {@link ApplicationModule} class
 		 */
-		Angular.bootstrap( ApplicationComponent_AngularComponent.get() );
+		PlatformBrowserDynamic.platformBrowserDynamic().bootstrapModule( ApplicationModule_AngularModule.getNgModulePrototype() );
 	}
 }
