@@ -5,13 +5,13 @@ title: Angular 2 Boot
 
 *LATEST NEWS !* Angular2Boot [will be presented](https://oracle.rainfocus.com/scripts/catalog/oow16.jsp?event=javaone&search=angular&search.event=javaone) at **[JavaOne 2016](https://www.oracle.com/javaone/index.html)** this year ! We hope to meet your there and discuss with you !
 
-**Angular2Boot** is an opiniated framework to build web applications in Java 8. It is built upon rock-solid foundations : [Angular 2](https://angular.io/), [GWT](http://www.gwtproject.org/) and [Spring Boot](http://projects.spring.io/spring-boot/).
+**Angular2Boot** is an opiniated framework to build web applications in Java 8. It is built upon rock-solid foundations : [Angular 2](https://angular.io/), [GWT](http://www.gwtproject.org/) and [Spring Boot](http://projects.spring.io/spring-boot/). You can of course use it with any Java backend, like JavaEE with JAX-RS Web services.
 
 It provides a very effective way to build Single Page Applications. The development mode is iterative and quick (live code reload), with the strongly typed qualities of Java and the functionalities brought by modern IDEs. The produced code is easy to deploy (relying on one *jar* only), robust (runs on the JVM) and optimized (Angular 2 change detection and GWT optimized compilation).
 
 Build a starting application in less than 5 minutes and enter into the details to get most of **Angular2Boot** !
 
-*Angular2Boot is ready for Angular 2.0.0-rc.1, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
+*Angular2Boot is ready for Angular 2.0.0-rc.5, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
 
 
 *Here is a presentation video (in French) of how it works, at the Toulouse Angular User Group in June 2016.*
@@ -31,10 +31,10 @@ Use the archetype which builds a fully working Angular2 + SpringBoot application
 mvn archetype:generate \
   -DarchetypeGroupId=fr.lteconsulting \
   -DarchetypeArtifactId=angular2-gwt.archetype \
-  -DarchetypeVersion=1.1
+  -DarchetypeVersion=1.3
 {% endhighlight %}
 
-**Note about the version** : *you can use either the latest release version like in the example above, or the next snapshot version (`1.2-SNAPSHOT` in this case) and benefit from the latest improvements and bug fixes. Features only available in the snapshot version are marked in the documentation. You can expect a new release few days after new features are tested and validated.*
+**Note about the version** : *you can use either the latest release version like in the example above, or the next snapshot version (`1.4-SNAPSHOT` in this case) and benefit from the latest improvements and bug fixes. Features only available in the snapshot version are marked in the documentation. You can expect a new release few days after new features are tested and validated.*
 
 Enter the desired *groupId*, *artifactId*, *version* and *package* and your application will be created in a sub directory named after the choosen *artifactId*.
 
@@ -54,7 +54,7 @@ This will launch the SpringBoot application with a minimal client side Angular 2
 
 # Development mode
 
-During development, building the entire application is too time-consuming. So you can stop the java process we just launched and launch the SpringBoot development mode instead :
+During development, building the entire application is too time-consuming. In order to save your time, you can stop the java process we just launched and launch the SpringBoot development mode instead :
 
 {% highlight bash %}
 mvn spring-boot:run
@@ -62,17 +62,17 @@ mvn spring-boot:run
 
 This will allow to have hot swapping of classes on the server side (to a certain extent, see [documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-hotswapping.html)).
 
-You may also want to have hot reload of client classes, in this case you need to start the GWT Super Dev Mode. But that has to be done in another terminal because we don't want to stop the Spring Boot server !
+You may also want to hot reload client classes when you change them. In this case you need to start the GWT Super Dev Mode. But that has to be done in another terminal because we don't want to stop the Spring Boot server !
 
 {% highlight bash %}
 mvn gwt:run-codeserver
 {% endhighlight %}
 
-You can open the application project in your IDE (see configuration problems that can happen), work on the code and refresh in the browser to get live updates.
+You can open the application project in your IDE (see the chapter on configuration problems that can happen), work on the code and refresh in the browser to get live updates.
 
 # And now, what's next ?
 
-Now that you have a working starting application, you can either continue reading to get more details about what is inside the application you just created. Or you can directly jump to the [how-to](#howto) section.
+Now that you have a working boostrapped application, you can either continue reading to get more details about what is inside the application you just created. Or you can directly jump to the [how-to](#howto) section.
 
 You can also read the [cookbook](cookbook/) to learn advanced and deepened techniques.
 
@@ -97,7 +97,7 @@ Static resources are served from the `src/main/resources/static` directory. You 
 
 Appart from all the `.js` files which are the required runtime scripts, the most important file in the `src/main/resources/static` directory is `index.html`. The browser loads this page to run your application and it contains everything needed to bootstrap it.
 
-Let's inspect some parts of it. You will find a `<base href='/'>` tag which is needed by Angular to make the routing component work. Note that you can remove it if you don't make use of the Router (we will see Routing details later).
+Let's inspect some parts of it. You will find a `<base href='/'>` tag which is needed by Angular to make the routing component work in the default mode. Note that you can remove it if you don't make use of the Router (we will see Routing details later) or if you use the router with the hash strategy on.
 
 Then you will see a bunch of several `<link>` and `<script>` tag to load bootstrap.css (this can be removed) and javascript files. Those provide the Angular runtime which is called by your Java/GWT application.
 
@@ -107,9 +107,9 @@ As we talk about it, the javascript file generated from your Java code is import
 <script src="angular2gwt/angular2gwt.nocache.js"></script>
 {% endhighlight %}
 
-This script bootstraps GWT's core and call your application entry point which is the `onModuleLoad` method of the `Application` class (which in turn bootstraps Angular with your Java classes).
+This script bootstraps GWT's core and call your application entry point which is the `onModuleLoad` method of the `Application` class (which in turn bootstraps Angular with your Java component classes).
 
-The last thing remarkable in this file is this line :
+The last remarkable thing in this file is this line :
 
 {% highlight html %}
 <my-app class="container">Application is loading...</my-app>
