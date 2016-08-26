@@ -2,7 +2,6 @@ package ${package}.client;
 
 import com.google.gwt.core.client.EntryPoint;
 
-import fr.lteconsulting.angular2gwt.client.interop.ng.core.Core;
 import fr.lteconsulting.angular2gwt.client.interop.ng.platformBrowserDynamic.PlatformBrowserDynamic;
 
 /**
@@ -13,7 +12,10 @@ public class Application implements EntryPoint
 	@Override
 	public void onModuleLoad()
 	{
-		/** You can uncomment that line to switch Angular to Production mode */
+		/** 
+		 * You can uncomment that line to switch Angular to Production mode
+		 * The Core class' fqn is fr.lteconsulting.angular2gwt.client.interop.ng.core.Core
+		 * */
 		// Core.enableProdMode();
 		
 		/**
