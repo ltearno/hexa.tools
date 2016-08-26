@@ -50,7 +50,7 @@ Everything should work fine. Now you can run the built application with this :
 java -jar target/YOUR_ARTIFACT_ID.jar
 {% endhighlight %}
 
-This will launch the SpringBoot application with a minimal client side Angular 2 controller. When entering [http://localhost:8080](http://localhost:8080) in your browser, a page should load and write "Your application is working !". It is the sign that everything is bootstraped correctly and that you can begin to work.
+This will launch the SpringBoot application with a minimal client side Angular 2 controller. When entering [http://localhost:8080](http://localhost:8080) in your browser, a page should load and show a "Your application is working !" message. This is the sign that everything has been bootstraped correctly and that you can begin to work. There is also an `input` box, if you change its content the previous title will change too. That's shows that the two-way Angular data binding is working in your application !
 
 # Development mode
 
@@ -121,17 +121,49 @@ We will see that just after the `Application` class.
 
 ## Application.java
 
-This class is the entrypoint of your application, meaning that its `onModuleLoad` method will be the first to be called and it will be called just after the GWT runtimes has been initialized.
+This class is the entrypoint of your application, meaning that its `onModuleLoad` method will be the first to be called and it will be called just after the GWT runtime has been initialized.
 
 Angular2Boot entrypoint classes are very simple, the only thing you find is the Angular bootstrapping call :
 
 {% highlight java %}
-Angular.bootstrap( ApplicationComponent_AngularComponent.get() );
+PlatformBrowserDynamic
+  .platformBrowserDynamic()
+  .bootstrapModule( ApplicationModule_AngularModule.getNgModulePrototype() );
 {% endhighlight %}
 
-The `Angular.bootstrap` method corresponds to the `bootstrap` function of Angular. In fact it is bound to Java through GWT's JsInterop. The other part of the line uses the `ApplicationComponent_AngularComponent.get()` method to retrieve an enhanced (annotated) prototype of the `ApplicationComponent` class. The `ApplicationComponent_AngularComponent` class is automatically generated for you, as you will see.
+The `bootstrapModule` method corresponds to the `bootstrapModule` function of Angular 2's PlatformBrowserDynamic module. In fact it is bound to Java through GWT's JsInterop, so behind the scene it is the same function that is called. The parameter of the `bootstrapModule` is the result of a call to the `ApplicationModule_AngularModule.getNgModulePrototype()` method. This method returns an Angular2-compatible constructor of the `ApplicationModule` class. The `ApplicationModule_AngularModule` class is automatically generated for you by Angular2Boot, as you will see later on.
 
-So here we just say to Angular to start with the `ApplicationComponent` as the root component of our application.
+So here we just say to Angular to start with the `ApplicationModule` as the root module of our application.
+
+Just one word on the commented line of code that shows :
+
+{% highlight java %}
+/** You can uncomment that line to switch Angular to Production mode */
+// Core.enableProdMode();
+{% endhighlight %}
+
+By default, until this line is uncommented Angular will work in debug mode : it will produce helper messages in the console and also add more runtime data associated with the components of the application (helping tools like `Augury` to work). If you deploy your application, don't forget to uncomment this line !
+
+## ApplicationModule.java
+
+[_NgModules_](https://angular.io/docs/ts/latest/guide/ngmodule.html) first appeared in the `rc5` version of Angular2. They allow you to split your application into big functional blocks and reuse them in other applications. They allow the Angular tool to perform more optimizations for you : the modules are statically analyzed by the _Angular Ahead of Time Compiler (ngc)_ and some pruning can happen.
+
+Naturally, your java application too should declare a module. This is done in the `ApplicationModule` class. It reads :
+
+{% highlight java %}
+@NgModule(
+	imports = { 
+		BrowserModule.class, 
+		FormsModule.class },
+	declarations = ApplicationComponent.class,
+	bootstrap = ApplicationComponent.class )
+@JsType
+public class ApplicationModule
+{
+}
+{% endhighlight %}
+
+It defines a module called `ApplicationModule` which imports the Angular `BrowserModule` and `FormsModule`. The first one brings everything that is needed to make Angular 2 work in the browser (it can run in other environments too) and the second one (_FromsModule_) brings useful usual form directives like `ngModel`. The module then declares the `ApplicationComponent` component so that it is avalaible to other modules if needed. And when the module is bootstrapped, it starts with the `ApplicationComponent` component which we will examine right now.
 
 ## ApplicationComponent.java
 
