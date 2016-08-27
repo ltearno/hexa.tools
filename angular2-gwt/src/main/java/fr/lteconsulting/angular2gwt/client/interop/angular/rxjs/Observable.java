@@ -9,6 +9,15 @@ import jsinterop.annotations.JsType;
 @JsType( isNative = true, namespace = "ng.rxjs", name = "Observable" )
 public class Observable<T>
 {
+	public native void forEach( ForEachCallback<T> callback );
+
+	@JsFunction
+	@FunctionalInterface
+	public interface ForEachCallback<T>
+	{
+		void execute( T value );
+	}
+
 	public native Subscription subscribe( Observer<T> observer );
 
 	public native <U> Observable<U> map( MapFunction<T, U> mapFunction );
