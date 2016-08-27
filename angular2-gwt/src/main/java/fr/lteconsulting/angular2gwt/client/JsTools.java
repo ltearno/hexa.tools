@@ -2,19 +2,9 @@ package fr.lteconsulting.angular2gwt.client;
 
 import fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition;
 import jsinterop.annotations.JsMethod;
-import jsinterop.annotations.JsPackage;
 
 public class JsTools
 {
-	@JsMethod( namespace = JsPackage.GLOBAL, name = "setTimeout" )
-	public static native void setTimeout( JsCallback callback, int timeout );
-
-	@JsMethod( namespace = JsPackage.GLOBAL, name = "setInterval" )
-	public static native int setInterval( JsCallback callback, int timeout );
-
-	@JsMethod( namespace = JsPackage.GLOBAL, name = "clearInterval" )
-	public static native void clearInterval( int intervalId );
-
 	@JsMethod( namespace = "console", name = "log" )
 	public static native void log( String message );
 
