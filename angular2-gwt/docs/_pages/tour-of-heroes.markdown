@@ -1527,26 +1527,348 @@ A last thing to do is to add the `HeroDetailComponent` class in the `entryCompon
 
 Refresh the browser and select a hero from the dashboard; the app should navigate directly to that hero’s details.
 
+## Select a Hero in the `HeroesComponent`
+
+We'll do something similar in the `HeroesComponent`.
+
+That component's current template exhibits a "master/detail" style with the list of heroes at the top and details of the selected hero below.
+
+Delete the last line of the template with the `<my-hero-detail>` tags.
+
+We'll no longer show the full `HeroDetailComponent` here. We're going to display the hero detail on its own page and route to it as we did in the dashboard.
+
+But we'll throw in a small twist for variety. When the user selects a hero from the list, we won't go to the detail page. We'll show a mini-detail on this page instead and make the user click a button to navigate to the full detail page.
+
+### Add the mini-detail
+
+Since we again add some HTML to the `HeroesComponent` template, let's move its template into its own file: create a `heroes.component.html` file in the `src/main/resources/static` folder of the application, and move the `HeroesComponent` template content into the html file. Then refer to this file in the `templateUrl` attribute of the `@Component` annotation on the `HeroesComponent` class.
+
+Then, add the following HTML fragment at the bottom of the template where the `<my-hero-detail>` used to be:
+
+{% highlight html %}
+{% raw %}
+<div *ngIf="selectedHero">
+	<h2>{{selectedHero.name | uppercase}} is my hero</h2>
+	<button (click)="gotoDetail()">View Details</button>
+</div>
+{% endraw %}
+{% endhighlight %}
+
+After clicking a hero, the user should seethe mini detail zone appearing below the Hero list.
+
+### Format with the uppercase pipe
+
+Notice that the hero's name is displayed in CAPITAL LETTERS. That's the effect of the `uppercase` pipe that we slipped into the interpolation binding. Look for it right after the pipe operator ( | ).
+
+{% highlight html %}
+{% raw %}
+{{selectedHero.name | uppercase}} is my hero
+{% endraw %}
+{% endhighlight %}
 
 
+Pipes are a good way to format strings, currency amounts, dates and other display data. Angular ships with several pipes and we can write our own.
 
+### Renaming the CSS file
 
+When we did rename the old `ApplicationComponent` to `HeroesComponent`, we forgot to rename the `application.component.css` file to `heroes.component.css`. Let's do it now. Of course, you also need to update the `styleUrls` attribute of the `@Component` annotation in the `HeroesComponent` class.
 
+Now we can see what's going on as we update the component class along the same lines as the dashboard:
 
+- Inject the router in the constructor (along with the `HeroService`)
+- Implement the `gotoDetail` method by calling the `router.navigate` method with a two-part hero-detail link parameters array.
 
+Here's the revised component class:
 
+{% highlight java %}
+@Component(
+		selector = "my-heroes",
+		templateUrl = "heroes.component.html",
+		styleUrls = "heroes.component.css" )
+@JsType
+public class HeroesComponent implements OnInit
+{
+	public Hero selectedHero = null;
+	public JsArray<Hero> heroes;
 
+	private HeroService heroService;
+	private Router router;
 
+	public HeroesComponent( HeroService heroService, Router router )
+	{
+		this.heroService = heroService;
+		this.router = router;
+	}
 
+	@Override
+	public void ngOnInit()
+	{
+		getHeroes();
+	}
 
+	public void onSelect( Hero hero )
+	{
+		selectedHero = hero;
+	}
 
+	public void gotoDetail()
+	{
+		router.navigate( JsArray.of( "/detail", String.valueOf( selectedHero.id ) ) );
+	}
 
+	private void getHeroes()
+	{
+		heroService.getHeroesSlowly().then( heroes -> this.heroes = heroes );
+	}
+}
+{% endhighlight %}
 
+Refresh the browser and start clicking. We can navigate around the app, from the dashboard to hero details and back, for heroes list to the mini-detail to the hero details and back to the heroes again. We can jump back and forth between the dashboard and the heroes.
 
+We've met all of the navigational requirements that propelled this chapter.
 
+## Styling the App
 
+The app is functional but pretty ugly. Our creative designer team provided some CSS files to make it look better.
 
+### A Dashboard with Style
 
+The designers think we should display the dashboard heroes in a row of rectangles. They've given us ~60 lines of CSS for this purpose including some simple media queries for responsive design.
+
+If we paste these ~60 lines into the component `styles` metadata, they'll completely obscure the component logic. Let's not do that. It's easier to edit CSS in a separate `*.css` file anyway.
+
+Add a `dashboard.component.css` file to the app folder and reference that file in the component metadata's `styleUrls` array property like this:
+
+{% highlight java %}
+styleUrls = "dashboard.component.css"
+{% endhighlight %}
+
+Here is the content of the `dashboard.component.css` file :
+
+{% highlight css linenos %}
+[class*='col-'] {
+	float: left;
+}
+
+*, *:after, *:before {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+h3 {
+	text-align: center;
+	margin-bottom: 0;
+}
+
+[class*='col-'] {
+	padding-right: 20px;
+	padding-bottom: 20px;
+}
+
+[class*='col-']:last-of-type {
+	padding-right: 0;
+}
+
+.grid {
+	margin: 0;
+}
+
+.col-1-4 {
+	width: 25%;
+}
+
+.module {
+	padding: 20px;
+	text-align: center;
+	color: #eee;
+	max-height: 120px;
+	min-width: 120px;
+	background-color: #607D8B;
+	border-radius: 2px;
+}
+
+h4 {
+	position: relative;
+}
+
+.module:hover {
+	background-color: #EEE;
+	cursor: pointer;
+	color: #607d8b;
+}
+
+.grid-pad {
+	padding: 10px 0;
+}
+
+.grid-pad>[class*='col-']:last-of-type {
+	padding-right: 20px;
+}
+
+@media ( max-width : 600px) {
+	.module {
+		font-size: 10px;
+		max-height: 75px;
+	}
+}
+
+@media ( max-width : 1024px) {
+	.grid {
+		margin: 0;
+	}
+	.module {
+		min-width: 60px;
+	}
+}
+{% endhighlight %}
+
+### Stylish Hero Details
+
+The designers also gave us CSS styles specifically for the `HeroDetailComponent`.
+
+Add a `hero-detail.component.css` to the app folder and refer to that file inside the `styleUrls` array as we did for `DashboardComponent`. Let's also remove the hero property `@Input` annotation while we are at it.
+
+Here's the content for the `hero-detail.component.css` CSS file.
+
+{% highlight css linenos %}
+label {
+	display: inline-block;
+	width: 3em;
+	margin: .5em 0;
+	color: #607D8B;
+	font-weight: bold;
+}
+
+input {
+	height: 2em;
+	font-size: 1em;
+	padding-left: .4em;
+}
+
+button {
+	margin-top: 20px;
+	font-family: Arial;
+	background-color: #eee;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	cursor: hand;
+}
+
+button:hover {
+	background-color: #cfd8dc;
+}
+
+button:disabled {
+	background-color: #eee;
+	color: #ccc;
+	cursor: auto;
+}
+{% endhighlight %}
+
+### Style the Navigation Links
+
+The designers gave us CSS to make the navigation links in our `ApplicationComponent` look more like selectable buttons. We cooperated by surrounding those links in `<nav>` tags.
+
+Add a `application.component.css` file to the app folder with the following content.
+
+{% highlight css %}
+h1 {
+	font-size: 1.2em;
+	color: #999;
+	margin-bottom: 0;
+}
+
+h2 {
+	font-size: 2em;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+nav a {
+	padding: 5px 10px;
+	text-decoration: none;
+	margin-top: 10px;
+	display: inline-block;
+	background-color: #eee;
+	border-radius: 4px;
+}
+
+nav a:visited, a:link {
+	color: #607D8B;
+}
+
+nav a:hover {
+	color: #039be5;
+	background-color: #CFD8DC;
+}
+
+nav a.active {
+	color: #039be5;
+}
+{% endhighlight %}
+
+Set the `ApplicationComponent`'s `styleUrls` property to this CSS file.
+
+### The routerLinkActive directive
+
+The Angular Router provides a `routerLinkActive` directive we can use to add a class to the HTML navigation element whose route matches the active route. All we have to do is define the style for it. Sweet!
+
+{% highlight java %}
+{% raw %}
+template = "<h1>{{title}}</h1>"
+    + "<nav>"
+    + "<a routerLink='/dashboard' routerLinkActive='active'>Dashboard</a>"
+    + "<a routerLink='/heroes' routerLinkActive='active'>Heroes</a>"
+    + "</nav>"
+    + "<router-outlet></router-outlet>"
+{% endraw %}
+{% endhighlight %}
+
+### Global application styles
+
+When we add styles to a component, we're keeping everything a component needs — HTML, the CSS, the code — together in one convenient place. It's pretty easy to package it all up and re-use the component somewhere else.
+
+We can also create styles at the _application level_ outside of any component.
+
+Our designers provided some basic styles to apply to elements across the entire app. These correspond to the full set of master styles that we introduced earlier (see QuickStart, "Add some style").
+
+Create the file `styles.css`, if it doesn't exist already.
+
+Reference it in the `index.html` file : 
+
+{% highlight html %}
+<link rel="stylesheet" href="styles.css">
+{% endhighlight %}
+
+And while we're at it, remove the reference to the `bootstrap.min.css` file in the `index.html` file. It comes from the Angular2Java archetype and can now be removed...
+
+The content of this file can be found [here](https://raw.githubusercontent.com/angular/angular.io/master/public/docs/_examples/styles.css).
+
+Look at the app now. Our dashboard, heroes, and navigation links are styling!
+
+## Recap
+
+### The Road Behind
+
+We travelled a great distance in this chapter
+
+- We added the _Angular Component Router_ to navigate among different components.
+- We learned how to create router links to represent navigation menu items.
+- We used router link parameters to navigate to the details of user selected hero.
+- We shared the `HeroService` among multiple components.
+- We moved HTML and CSS out of the component file and into their own files.
+- We added the `uppercase` pipe to format data.
+
+### The Road Ahead
+
+We have much of the foundation we need to build an application. We're still missing a key piece: _remote data access_.
+
+In the next chapter, we’ll replace our mock data with data retrieved from a server using http.
+
+# HTTP
 
 
 
