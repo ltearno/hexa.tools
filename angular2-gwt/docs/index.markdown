@@ -5,13 +5,13 @@ title: Angular 2 Boot
 
 *LATEST NEWS !* Angular2Boot [will be presented](https://oracle.rainfocus.com/scripts/catalog/oow16.jsp?event=javaone&search=angular&search.event=javaone) at **[JavaOne 2016](https://www.oracle.com/javaone/index.html)** this year ! We hope to meet your there and discuss with you !
 
-**Angular2Boot** is an opiniated framework to build web applications in Java 8. It is built upon rock-solid foundations : [Angular 2](https://angular.io/), [GWT](http://www.gwtproject.org/) and [Spring Boot](http://projects.spring.io/spring-boot/). You can of course use it with any Java backend, like JavaEE with JAX-RS Web services.
+**Angular2Boot** is an opiniated framework to build web applications in Java 8. It is built upon rock-solid foundations : [Angular 2](https://angular.io/), [GWT](http://www.gwtproject.org/) and [Spring Boot](http://projects.spring.io/spring-boot/). You can of course use it with any Java backend, like JavaEE with JAX-RS Web services or whatever else.
 
-It provides a very effective way to build Single Page Applications. The development mode is iterative and quick (live code reload), with the strongly typed qualities of Java and the functionalities brought by modern IDEs. The produced code is easy to deploy (relying on one *jar* only), robust (runs on the JVM) and optimized (Angular 2 change detection and GWT optimized compilation).
+It provides a very effective way to build _Single Page Applications_. The development mode is iterative and quick (live code reload), with the strongly typed qualities of Java and the functionalities brought by modern IDEs. The produced code is easy to deploy (relying on one *jar* only), robust (runs on the JVM) and optimized (Angular 2 change detection and GWT optimized compilation).
 
 Build a starting application in less than 5 minutes and enter into the details to get most of **Angular2Boot** !
 
-*Angular2Boot is ready for Angular 2.0.0-rc.5, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
+*Angular2Boot is in sync with Angular 2.0.0-rc.5 (_and does not use any deprecated APIs_), see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
 
 
 *Here is a presentation video (in French) of how it works, at the Toulouse Angular User Group in June 2016.*
@@ -267,6 +267,7 @@ You need to install `m2e-apt` component. Otherwise, everything should work out o
 
 Angular version | `angular2-gwt.archetype` versions | `angular2-gwt` versions
 ----------------|-----------------------------------|--------------------------
+`2 rc 5`        | `1.3`, `1.4-SNAPSHOT`             | `1.2`, `1.3-SNAPSHOT`
 `2 beta 17`     | `1.1`, `1.2-SNAPSHOT`             | `1.0`, `1.1-SNAPSHOT`
 `2 beta 16`     | `1.0`                             | `1.0`
 
@@ -276,9 +277,9 @@ Sometimes, after changing a lot of code, the GWT SuperDevMode gets confused and 
 
 # Contact
 
-If you have any question or remark, feel free to use the comment zone at the bottom of the page or to email directly to <contact@lteconsulting.fr>.
+If you have any question or remark, feel free to use the comment zone at the bottom of the page or to email us directly to <contact@lteconsulting.fr>.
 
-License. [Dual commercial / GPLv3](licensing)
+License: [MIT license](licensing)
 
 # Useful links
 

@@ -16,6 +16,11 @@ This how-to follows most of the official Angular 2 tutorial, so it is strongly a
 
 If you have a doubt about the source at any moment you can look at this [project](https://github.com/ltearno/hexa.tools/tree/master/angular2-gwt) sources.
 
+# Summary of this document
+
+* TOC
+{:toc}
+
 # Let's get started
 
 If you have not created a project yet, do it with the following command :
@@ -149,6 +154,7 @@ public class ApplicationComponent
 
 Refresh the browser. We see our hero again. We can edit the hero’s name and see the changes reflected immediately in the `<h2>`.
 
+
 ## The Road We’ve Travelled
 
 Let’s take stock of what we’ve built.
@@ -231,6 +237,7 @@ Now we insert some content between the `<li>` tags that uses the hero template v
 {% endhighlight %}
 
 When the browser refreshes, we see a list of heroes!
+
 
 ### Styling our heroes
 
@@ -343,6 +350,7 @@ public class ApplicationComponent
 {% endraw %}
 {% endhighlight %} 
 
+
 ## Selecting a Hero
 
 We have a list of heroes and we have a single hero displayed in our app. The list and the single hero are not connected in any way. We want the user to select a hero from our list, and have the selected hero appear in the details view. This UI pattern is widely known as "master-detail". In our case, the master is the heroes list and the detail is the selected hero.
@@ -361,7 +369,7 @@ We modify the `<li>` by inserting an Angular event binding to its click event.
 
 Focus on the event binding
 
-{% highlight %}
+{% highlight html %}
 {% raw %}
 (click)='onSelect(hero)
 {% endraw %}
@@ -546,9 +554,8 @@ Add a new class named `HeroDetailComponent` as follows.
 @JsType
 public class HeroDetailComponent
 {
-
 }
-{% endhighlight }
+{% endhighlight %}
 
 We create metadata with the @Component decorator where we specify the selector name that identifies this component's element.
 
@@ -578,10 +585,9 @@ public class HeroDetailComponent
 
 Now our hero detail layout exists only in the `HeroDetailComponent`.
 
-Add the hero property
+#### Add the hero property
 
 Let’s add that `hero` property we were talking about to the component class.
-
 
 {% highlight java %}
 public Hero hero;
@@ -1521,7 +1527,7 @@ public DashboardComponent( HeroService heroService, Router router )
     this.heroService = heroService;
     this.router = router;
 }
-{% endhighlight }
+{% endhighlight %}
 
 A last thing to do is to add the `HeroDetailComponent` class in the `entryComponents` field of the `NgModule` annotation of our root module (`ApplicationModule`).
 
@@ -1870,994 +1876,779 @@ In the next chapter, we’ll replace our mock data with data retrieved from a se
 
 # HTTP
 
+## Getting and Saving Data with HTTP
 
+Our stakeholders appreciate our progress. Now they want to get the hero data from a server, let users add, edit, and delete heroes, and save these changes back to the server.
 
+In this chapter we teach our application to make the corresponding HTTP calls to a remote server's web API.
 
+## Providing HTTP Services
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Add another component and use it inside ApplicationComponent
-
-We will now add a Angular component which role is to display a list of heroes. This component will be called `HeroListComponent` and will handle the `<hero-list>` tag.
-
-It's not our application which will instanciate the component but Angular itself so we have to give it all the information it depends on, in the form of java annotations.
-
-### Component Java class
-
-Create the `HeroListComponent` class, like in this example :
+`Http` is **not** a core Angular module so we need to import it. On the other hand, we should be able to access http services from anywhere in the application. So we register it in the imports array of `ApplicationModule` where we bootstrap the application and its root AppComponent.
 
 {% highlight java %}
-@Component(
-  selector = "hero-list",
-  templateUrl = "hero-list.component.html" )
-@JsType
-public class HeroListComponent
+@NgModule(
+		imports = {
+				BrowserModule.class,
+				FormsModule.class,
+				HttpModule.class, // <- import HttpModule
+				Routes.class },
+        ...
+{% endhighlight %}
+
+## Heroes and HTTP
+
+Look at our current `HeroService` implementation
+
+{% highlight java %}
+public Promise<JsArray<Hero>> getHeroes()
 {
-  @JsProperty
-  private Hero selectedHero;
-
-  @JsProperty
-  private JsArray<Hero> heroes;
-
-  @JsConstructor
-  public HeroListComponent()
-  {
-    heroes = JsArray.of(
-      new Hero( 1, "Ignacio", "Procrastination", "Not found yet" ),
-      new Hero( 2, "Bernardo", "Very clever", "Needs nobody" )
-    );
-  }
-
-  @JsMethod
-  protected void onSelect( Hero hero )
-  {
-    selectedHero = hero;
-  }
+    return Promise.resolve( HEROES );
 }
-{% endhighlight %}
+{%endhighlight %}
 
-The `@Component` annotation specifies that this component handles the `<hero-list>` tag and that its associated html template is located in the **hero-list.component.html**.
+We returned a Promise resolved with mock heroes. It may have seemed like overkill at the time, but we were anticipating the day when we fetched heroes with an HTTP client and we knew that would have to be an asynchronous operation.
 
-The `@JsType`, `@JsProperty` and `@JsMethod` allow Angular to access the controller fields and methods. They will be referenced in the HTML template associated to the component (*hero-list.component.html*).
-
-The constructor simply makes up a hard-coded list of Heroes. Later on will will fetch them from the server through a REST service...
-
-### Component template file
-
-Now we are going to write the HTML template file for our new component. Create a `hero-list.component.html` file in the `src/main/resources/static/` directory, with the following content :
-
-{% highlight html %}
-<div>
-  <ul>
-    <li *ngFor="let hero of heroes" (click)="onSelect(hero)">
-      <span class="badge">{ {hero.id}}</span>
-      { {hero.name}}
-    </li>
-  </ul>
-</div>
-<div *ngIf="selectedHero">
-  <h2>{ {selectedHero.name | uppercase}}</h2>
-  <div class="row">
-    <div class="col-xs-3">Name</div>
-    <div class="col-xs-9">{ { selectedHero.name }}</div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3">Alter Ego</div>
-    <div class="col-xs-9">{ { selectedHero.alterEgo }}</div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3">Power</div>
-    <div class="col-xs-9">{ { selectedHero.power }}</div>
-  </div>
-</div>
-{% endhighlight %}
-
-This template is very simple and is made of two parts. The first one displays a list of Heroes and the second part displays a quick information about the currently selected hero.
-
-The first part uses the `*ngFor` Angular built-in directive to iterate over the Heroes list (the `heroes` field) in the `HeroListComponent` class. For each hero present in the list, a `<li>` tag will be generated, the *id* and *name* of the hero is displayed. And when the user clicks on a hero, the components' `onSelect` method will be called.
-
-When `onSelect` is called, the Java code just updates the `selectedHero` field. And since Angular watches that, it will impact the rendering of the second part of the template.
-
-The `*ngIf="selectedHero"` built-in directive allows to render this part only if `selectedHero` is not null. In this case, its name is displayed (piped to the Uppercase transformer, built-in with Angular).
-
-So we are finished for the moment with this component. Next thing to do is to integrate it with our application.
-
-### Integrating `HeroListComponent` into `ApplicationComponent`
-
-As you know, an Angular application is a cycle-less directed graph of components (this is a big difference with Angular 1). For now our application only contains one component in the graph, which is `ApplicationComponent`. We need to tell to Angular that we want to *inject* the `HeroListComponent` inside.
-
-In order to do that, we need to make the following changes in the `ApplicationComponent` class :
-
-- reference the `HeroListComponent.class` in the directives accessible from the `ApplicationComponent` class.
-- change the template to include the `<hero-list></hero-list>` tag. This tag will be resolved by Angular as what is rendered by the `HeroListComponent` component.
-
-The annotation on `ApplicationComponent` should now look like this (and nothing else is modified in this class) :
+That day has arrived! Let's convert `getHeroes()` to use HTTP:
 
 {% highlight java %}
-@Component(
-  selector = "my-app",
-  template = "<h1>{ {title}}</h1><hero-list></hero-list>",
-  directives = { HeroListComponent.class } )
-{% endhighlight %}
+private Http http;
+private String heroesUrl = "app/heroes"; // URL to web api
 
-### Testing what we have done
-
-Now to run the project, open a terminal in the project folder and type :
-
-{% highlight bash %}
-mvn spring-boot:run
-{% endhighlight %}
-
-This starts the java backend server (Spring Boot). Open another terminal and launch the GWT SuperDevMode with this command :
-
-{% highlight bash %}
-mvn gwt:run-codeserver
-{% endhighlight %}
-
-When both are launched, you can browse `http://localhost:8080` in your preferred browser (a modern one is required). You will see the "Your application is working" message plus the list of the two heroes we have hard coded in `HeroListComponent`. If you click on one hero, a little table should present the selected hero's summary, as illustrated here :
-
-![Application with the HeroListComponent](first-step.png)
-
-Now you can play around with your code, changes should immediately apply when you refresh your browser's page.
-
-### Adding a bit of CSS
-
-Adding encapsulated CSS is very easy with Angular. Here we are going to make the selected hero highlighted.
-
-First in the `HeroListComponent`, set the `styleUrls` field of the `@Component` annotation and create the corresponding CSS file in the `src/main/resources/static` directory.
-
-The annotation now looks like :
-
-{% highlight java %}
-@Component(
-  selector = "my-app",
-  template = "<h1>{ {title}}</h1><hero-list></hero-list>",
-  styleUrls = { "hero-list.component.css" },
-  directives = { HeroListComponent.class } )
-{% endhighlight %}
-
-As you see, we added `styleUrls = { "hero-list.component.css" }` in the annotation.
-
-Now, create the **hero-list.component.css** file and insert the following content :
-
-{% highlight css%}
-.selected {
-	background-color: #CFD8DC !important;
-	color: white;
-}
-{% endhighlight %}
-
-Now we will bind the selected hero to the `.selected` CSS class. This is done by editing the component template file (*hero-list.component.html*). Only the `<li>` tag changes and we add it `[class.selected]="hero === selectedHero"`. The beginning of the file should look like this :
-
-{% highlight html %}
-<div>
-  <ul class="heroes">
-    <li *ngFor="let hero of heroes" [class.selected]="hero === selectedHero" (click)="onSelect(hero)"><span class="badge">{ {hero.id}}</span> { {hero.name}}</li>
-  </ul>
-</div>
-{% endhighlight %}
-
-Now when a generated `<li>` corresponds to the hero in the `selectedHero` field of our component, it will be highlighted.
-
-Refresh your browser and check that it is the case.
-
-## Adding a form component to edit a hero
-
-Now we are going to examine how components can talk to each other and particularly how we can send a particular hero to a component which will make editing the hero possible.
-
-### Creating the HeroFormComponent
-
-We create the HeroForm editing component just like we did before. Create the `HeroFormComponent` as described here :
-
-{% highlight java %}
-@Component(
-  selector = "hero-form",
-  templateUrl = "hero-form.component.html" )
-@JsType
-public class HeroFormComponent
+public HeroService( Http http )
 {
-  @JsProperty
-  private JsArray<String> powers = JsArray.of(
-    "Really Smart",
-    "Super Flexible",
-    "Weather Changer",
-    "Do nothing" );
-
-  @Input
-  @JsProperty
-  private Hero model;
+    this.http = http;
 }
-{% endhighlight %}
 
-**Note** that the `model` field is annotated with the `@Input` annotation. This is **very important** for Angular to know that it will have to fill the value for you (the value will come as the selected hero in the HeroListComponent). If you don't put `@Input` the thing won't work because Angular will not know about this component inputs.
-
-The `powers` field contains all the possible powers for a super-hero. And the `model` field will reference the currently edited hero.
-
-Next, write the component template (in `src/main/resources/static/hero-form.component.html`) :
-
-{% highlight html %}
-<div class="container">
-  <form *ngIf="model != null" #heroForm="ngForm">
-    <h1>{ {model.name}} edition form</h1>
-    <div class="form-group">
-      <label for="name">Name</label> <input type="text" class="form-control" required
-      [(ngModel)]="model.name" ngControl="name" #name="ngForm">
-      <div [hidden]="name.valid || name.pristine" class="alert alert-danger">Name is required</div>
-    </div>
-    <div class="form-group">
-      <label for="alterEgo">Alter Ego</label> <input type="text" class="form-control" [(ngModel)]="model.alterEgo" ngControl="alterEgo">
-    </div>
-    <div class="form-group">
-      <label for="power">Hero Power</label> <select class="form-control" required
-      [(ngModel)]="model.power" ngControl="power" #power="ngForm">
-      <option *ngFor="let p of powers" [value]="p">{ {p}}</option>
-      </select>
-      <div [hidden]="power.valid || power.pristine" class="alert alert-danger">Power is required</div>
-    </div>
-  </form>
-  <div *ngIf="!model">No hero to edit !</div>
-  <button (click)="goBack()" class="btn btn-default">Back</button>
-</div>
-{% endhighlight %}
-
-For detailed information about how forms work in Angular 2, please see this [page](https://angular.io/docs/ts/latest/guide/forms.html).
-
-### Wiring-up
-
-Now we are going to use the form component in conjonction with the hero list, so that when the user selectes a hero, the corresponding form will be displayed.
-
-Edit the `hero-list.component.html` file and add `<hero-form [model]="selectedHero"></hero-form>` at the end so that it looks like this :
-
-{% highlight html %}
-<div>
-  <ul class="heroes">
-    <li *ngFor="let hero of heroes" [class.selected]="hero === selectedHero" (click)="onSelect(hero)"><span class="badge">{ {hero.id}}</span> { {hero.name}}</li>
-  </ul>
-</div>
-<div *ngIf="selectedHero">
-  <h2>{ {selectedHero.name | uppercase}}</h2>
-
-  <div class="row">
-    <div class="col-xs-3">Name</div>
-    <div class="col-xs-9">{ { selectedHero.name }}</div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3">Alter Ego</div>
-    <div class="col-xs-9">{ { selectedHero.alterEgo }}</div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3">Power</div>
-    <div class="col-xs-9">{ { selectedHero.power }}</div>
-  </div>
-
-  <hero-form [model]="selectedHero"></hero-form>
-</div>
-{% endhighlight %}
-
-This instructs Angular to inject the HeroForm component and to bind its `model` field to the `selectedHero` field from the HeroListComponent.
-
-But to be able to inject our HeroFormComponent, Angular must know about it. For that we add the `HeroFormComponent.class` in the list of directives available to the HeroListComponent :
-
-{% highlight java %}
-@Component(
-  selector = "hero-list",
-  templateUrl = "hero-list.component.html",
-  styleUrls = { "hero-list.component.css" },
-  directives = { HeroFormComponent.class } )
-@JsType
-public class HeroListComponent
+public Promise<JsArray<Hero>> getHeroes()
 {
-  ... unchanged ...
+    return http.get( heroesUrl )
+            .toPromise()
+            .<JsArray<Hero>> then( response -> response.json() )
+            .onCatch( this::handleError );
 }
 {% endhighlight %}
 
-Refresh your browser and... You should be able to edit the Heroes !
+### HTTP Promise
 
-![Editing a Hero in the HeroFormComponent](first-step.gif)
+We're still returning a Promise but we're creating it differently.
 
-## Add routing to our application
+The Angular `http.get` returns an RxJS `Observable`. Observables are a powerful way to manage asynchronous data flows. We'll learn about Observables later in this chapter.
 
-*You can also refer to the official Angular [documentation](https://angular.io/docs/ts/latest/guide/router.html) because Angular2Boot uses the same annotation names.*
-
-Now let's add routing in our application. As we add more and more components, it gets useful to base ourselves on Angular routing to help us organize things.
-
-Before anything, we want to make sure that the first tag after the `<head>` in `index.html` is a **`<base href="/">`** tag. If not, add it so the routing mechanism works.
-
-We are going to delegate the routing process in the `ApplicationComponent` component. Let's modify its template and instead of the `<hero-list>` tag, write `<router-outlet>`. This element will be the placeholder used by the routing service to display the right component.
-
-Next we remove the reference to the `HeroListComponent.class` directive because we will provide it when defining the routes.
-
-The Angular routing components need to be injected in our application for the whole thing to work, so we will reference `RouterDirectives.class` as a directive and `RouterProviders.class` as a service provider. Those classes are part of Angular2Boot and are located in the `fr.lteconsulting.angular2gwt.client.interop.angular` package.
-
-The template will look like this :
+For _now_ we get back on familiar ground by immediately by converting that `Observable` to a `Promise` using the `toPromise` operator.
 
 {% highlight java %}
-@Component(
-  selector = "my-app",
-  template = "<h1>{ {title}}</h1><router-outlet></router-outlet>",
-  directives = { RouterDirectives.class },
-  providers = { RouterProviders.class } )
-@JsType
-public class ApplicationComponent
+.toPromise()
+{% endhighlight %}
+
+### Extracting the data in the then callback
+
+In the _promise_'s `then` callback we call the `json()` method of the http `Response` to extract the data within the response.
+
+{% highlight java %}
+.<JsArray<Hero>> then( response -> response.json() )
+{% endhighlight %}
+
+The `then` method is parametrized with the `<JsArray<Hero>>` type because we know that the service returns a javascript array of Heroes.
+
+### Error handling
+
+At the end of `getHeroes()` we `catch` server failures and pass them to an error handler:
+
+{% highlight java %}
+.onCatch( this::handleError );
+{% endhighlight %}
+
+This is a critical step! We must anticipate HTTP failures as they happen frequently for reasons beyond our control.
+
+{% highlight java %}
+private Promise<?> handleError( Object error )
 {
-  ...
+    GWT.log( "An error occurred" + error ); // for demo purposes only
+    return Promise.reject( error );
 }
 {% endhighlight %}
 
-What we have done is to enable the router mechanism that comes with Angular in our application. Now we need to feed it with our routing recommandations. That is done with the `@RouteConfig` annotation. For each route we want to define we have to add an anotation like this (*note that Java allows multiple annotation instances of the same class to be applied on the same language element*).
+In this demo service we log the error to the console; we should do better in real life.
 
-The `@RouteConfig` annotations has the following parameters :
+We've also decided to return a user friendly form of the error to the caller in a rejected promise so that the caller can display a proper error message to the user.
 
-- **path** is the relative url associated with the component that is routed,
-- **name** is the name of this route, used when you link from one route to another,
-- **component** is the class of the component associated to this route
-- **useAsDefault** can be set to `true` to use this route as default.
+### Promises are Promises
 
-We will set the `HeroListComponent` as the default root route and the `HeroFormComponent` as another route with a parameter : the id of the edited hero. This is done simply and the result looks like this :
+Although we made significant _internal_ changes to `getHeroes()`, the public signature did not change. We still return a `Promise`. We won't have to update any of the components that call `getHeroes()`.
+
+### Heroes REST service
+
+Since our last change, instead of using our mocked heroes we are going to make the server side provide them through the network (note that the official tutorial mocks the network requests locally, we are not going to do that, we are going to implement really the service!).
+
+Open the `ApplicationController` class, and remove the REST service part, we are going to implement it in its own class. The `ApplicationController` class now looks like this :
 
 {% highlight java %}
-@Component(
-  selector = "my-app",
-  template = "<h1>{ {title}}</h1><router-outlet></router-outlet>",
-  directives = { HeroListComponent.class, RouterDirectives.class },
-  providers = { RouterProviders.class } )
-@RouteConfig(
-  path= "/",
-  name= "Heroes",
-  useAsDefault= true,
-  component= HeroListComponent.class )
-@RouteConfig(
-  path= "/hero/:id",
-  name= "Hero",
-  component= HeroFormComponent.class )
-@JsType
-public class ApplicationComponent
+@EnableAutoConfiguration
+@ComponentScan( basePackageClasses = ApplicationController.class )
+public class ApplicationController
 {
-	...
+	public static void main( String[] args ) throws Exception
+	{
+		SpringApplication.run( ApplicationController.class, args );
+	}
 }
 {% endhighlight %}
 
-### Calling a route
-
-Now we are going to update the `HeroListComponent` because it does not need to embbed `HeroFormComponent` anymore. The Angular router will do that for us when the correct link will be activated. In order to do that, just remove the `<hero-form [model]="selectedHero"></hero-form>` tag from the `hero-list.component.html` file.
-
-And in the `HeroListComponent` java code, instead of just marking the hero as selected, we will instruct the router to go to a new route. There are several steps involved :
-
-- injecting the router in the `HeroListComponent`,
-- store the reference to the router for further use,
-- ask the router to switch its route when the user selects a hero.
-
-Injecting the router is really easy since we already have provided it in the `ApplicationComponent` component (which is a parent component of `HeroListComponent`). We just add a `Router router` parameter in the constructor, a private `Router router` field and store the instance that is passed through the constructor in the field. This is how dependency injection works in Angular programs !
-
-Now in the `onSelect` method, we want to change the current route. This is done by adding this line :
-
-{%  highlight java %}
-router.navigate( JsArray.of( "Hero", new HeroLink( hero.getId() ) ) );
-{% endhighlight %}
-
-There is a lot here ! `router.navigate(...)` is the method to go to a new route. It takes as `JsArray` as a parameter, which is just a wrapper to the native javascript array. The first element of the array is the route name and the second one is a dto carrying the hero id.
-
-Here is the `HeroLink` class, a very simple `@JsType` pojo :
-
-{%  highlight java %}
-@JsType
-public class HeroLink {
-  @JsProperty int id;
-
-  public HeroLink( int id ) {
-    this.id = id;
-  }
-}
-{% endhighlight %}
-
-*Note*: you can also call a route link from a template by using this syntax : `[routerLink]="[name]"`.
-
-### Receiving a route parameter
-
-Now we need to change the `HeroFormComponent` component so that instead of receiving the model through an `@Input` field, it will receive the hero through the router.
-
-Just as we injected the `Router` service just before, we are going to inject and store a reference to the `RouterParams` in the `HeroFormComponent`'s constructor.
-
-Then we take advantage of the Angular component [life cycle](https://angular.io/docs/ts/latest/guide/lifecycle-hooks.html) and use `RouterParams` reference inside a `ngOnInit` method. In this method we extract the hero id, retreive the corresponding `Hero` instance from the `HeroService` (that we will see right after), and update our `model` field.
-
-The `HeroFormComponent` now looks like this :
-
-{% highlight java %}
-@Component( ... )
-@JsType
-public class HeroFormComponent
-{
-  private RouteParams routeParams;
-
-  private JsArray<String> powers = JsArray.of( ... );
-
-  // no need to use @Input anymore
-  @JsProperty private Hero model;
-
-  @JsConstructor
-  public HeroFormComponent( RouteParams routeParams )
-  {
-    this.routeParams = routeParams;
-  }
-
-  @JsMethod
-  private void ngOnInit()
-  {
-    Object oId = routeParams.get( "id" );
-    int id = Integer.parseInt( String.valueOf( oId ) );
-    // we will see that just after
-    Hero hero = heroService.getHero( id );
-    this.model = hero;
-  }
-}
-{% endhighlight %}
-
-### Creating and injecting a service
-
-Instead of having the collection of heroes in the `HeroListComponent`, we are going to create an Angular service to manage it so that other components like the `HeroFormComponent` can have access to it (through injection).
-
-Let's create a very basic `HeroService` class :
-
-{% highlight java %}
-@JsType
-public class HeroService
-{
-  private JsArray<Hero> heroes;
-
-  public HeroService()
-  {
-    heroes = JsArray.of( new Hero( 1, "Ignacio", "Procrastination", "Not found yet" ), new Hero( 2, "Bernardo", "Very clever", "Needs nobody" ) );
-  }
-
-  public JsArray<Hero> getHeroes()
-  {
-    return heroes;
-  }
-
-  // we will soon be able to use streams
-  // so this code will be much shorter !
-  public Hero getHero( int id )
-  {
-    for( Hero hero : heroes.iterate() )
-    if( hero.getId() == id )
-      return hero;
-    return null;
-  }
-}
-{% endhighlight %}
-
-This is again a very simple class, with a `@JsType` annotation because it needs to be injected by Angular. The `heroes` field has no `@JsProperty` annotation because it does not need to be accessed by Angular, so it will be optimized by the GWT compiler.
-
-The `heroes` field represents our heroes catalog. It is hard coded in the constructor and has a getter for components to get acces to. Later on we will get the heroes list from the server through a json REST service (using Promises together with our `Hero` dto).
-
-Now let's make this service injectable and accessible to other components. Since all components might be interested in getting th hero collection, we will provide it at the application level, by adding it in the `providers` field of the `@Component` annotation on the `ApplicationComponent` class.
-
-{% highlight java %}
-@Component(
-  selector = "my-app",
-  template = "<h1>{ {title}}</h1><router-outlet></router-outlet>",
-  directives = { HeroListComponent.class, RouterDirectives.class },
-  // HERE WE ADD THE HeroService.class :
-  providers = { RouterProviders.class, HeroService.class } )
-{% endhighlight %}
-
-We then fix the `HeroListComponent` to get the `HeroService` injected and to get the hero list from it. In order to get that done, we simply add `HeroService heroService` in the constructor and Angular will inject that for us. Here is what it looks like now :
-
-{% highlight java %}
-@Component( selector = "hero-list", templateUrl = "hero-list.component.html", styleUrls = { "hero-list.component.css" }, directives = { HeroFormComponent.class } )
-@JsType
-public class HeroListComponent
-{
-  private HeroService heroService;
-  private Router router;
-
-  @JsProperty
-  private Hero selectedHero;
-
-  @JsProperty
-  private JsArray<Hero> heroes;
-
-  @JsConstructor
-  public HeroListComponent( HeroService heroService, Router router )
-  {
-    this.heroService = heroService;
-    this.router = router;
-    heroes = heroService.getHeroes();
-  }
-
-  @JsMethod
-  protected void onSelect( Hero hero )
-  {
-    selectedHero = hero;
-
-    router.navigate( JsArray.of( "Hero", new HeroLink( hero.getId() ) ) );
-  }
-}
-{% endhighlight %}
-
-Let's do that in the `HeroFormComponent` too so that we get the hero from the service. We add the service in the constructor of the component and use it in the `ngOnInit` method to get the `Hero` from the id. Here is the new `HeroFormComponent` class content:
-
-{% highlight java %}
-@Component( selector = "hero-form", templateUrl = "hero-form.component.html" )
-@JsType
-public class HeroFormComponent
-{
-  private HeroService heroService;
-  private RouteParams routeParams;
-
-  @JsProperty
-  private JsArray<String> powers = JsArray.of(
-    "Really Smart",
-    "Super Flexible",
-    "Super Hot" );
-
-  @JsProperty private Hero model;
-
-  @JsConstructor
-  public HeroFormComponent( HeroService heroService, RouteParams routeParams )
-  {
-    this.heroService = heroService;
-    this.routeParams = routeParams;
-  }
-
-  @JsMethod
-  private void ngOnInit()
-  {
-    Object oId = routeParams.get( "id" );
-    int id = Integer.parseInt( String.valueOf( oId ) );
-    Hero hero = heroService.getHero( id );
-    this.model = hero;
-  }
-
-  // we add this method to handle the click on
-  // the 'back' button in the template
-  @JsMethod
-  private void goBack()
-  {
-    back();
-  }
-
-  // this is the JsInterop way to declare
-  // the 'window.history.back()' javascript function
-  @JsMethod( namespace = "window.history", name = "back" )
-  private static native void back();
-}
-{% endhighlight %}
-
-Congratulations, at this point your application should work and you have the heroes list contained in a centralized service !
-
-Now what about getting the data from the server and add CRUD operations ?
-
-## Using a REST service instead of hard-coded data (using Promises)
-
-To implement client-server communication we need to do two things : create a Java class in the server package of the application (correctly annotated for Spring Boot), and use `XMLHttpRequest` together with **promises** to get the data in the front side, all of which is nicely wrapped by the Angular2Boot library.
-
-As you will see the `Hero` class that we wrote previously will also serve us on the back-end side.
-
-### Creating a REST service
-
-In fact there is already a REST service in the code generated by the artifact so let's just improve it, it is the `ApplicationController` class. We remove the `test()` method and replace it with a `getHeroes()` method which returns a `List<Hero>`. The return value will automatically be converted to JSON by Spring Boot and will be parsed very easily on the front-end side.
-
-Here is the `ApplicationController` class content :
+Now, in the same package as `ApplicationController`, create a `HeroesController` class with the following content (note that the mocked heroes are a copy of what we did in the client mocked `HeroService`):
 
 {% highlight java %}
 @RestController
-@EnableAutoConfiguration
-public class ApplicationController
+@RequestMapping( "/app/" )
+public class HeroesController
 {
-  // a modifiable list so we can add the CRUD methods later on
-  private List<Hero> heroes = new ArrayList<>( Arrays.asList(
-    new Hero( 1, "Ignacio", "Procrastination", "Not found yet" ),
-    new Hero( 2, "Bernardo", "Very clever", "Needs nobody" ) ) );
+	private static final Collection<Hero> HEROES = new ArrayList<>( Arrays.asList(
+			new Hero( 11, "Mr. Nice" ),
+			new Hero( 12, "Narco" ),
+			new Hero( 13, "Bombasto" ),
+			new Hero( 14, "Celeritas" ),
+			new Hero( 15, "Magneta" ),
+			new Hero( 16, "RubberMan" ),
+			new Hero( 17, "Dynama" ),
+			new Hero( 18, "Dr IQ" ),
+			new Hero( 19, "Magma" ),
+			new Hero( 20, "Tornado" ) ) );
 
-  // will be converted to JSON
-  @RequestMapping( "/heroes" )
-  List<Hero> getHeroes()
-  {
-    return heroes;
-  }
-
-  public static void main( String[] args ) throws Exception
-  {
-    SpringApplication.run( ApplicationController.class, args );
-  }
+	@RequestMapping( "/heroes" )
+	public Collection<Hero> heroes()
+	{
+		return HEROES;
+	}
 }
 {% endhighlight %}
 
-*At this point you may need to restart the `mvn spring-boot:run` command. It is occasionnally necessary when method signatures are changed.*
-
-If you type **http://localhost:8080/heroes** in your browser, you should get the list of heroes, JSON encoded.
-
-### Using `XMLHttpRequest` and `Promises`
-
-Now let's use this service in the application instead of having the list hard-coded in the front.
-
-In the `HeroService` class, we will not return a `JsArray<Hero>` anymore but a `Promise<JsArray<Hero>, String>`. This is sthe standard way of representing asynchronous operations in javascript. This represents the promise of a result (typed with `JsArray<Hero>`) later on, or an error (typed as a `String` if the operation failed). It is possible to chain asynchronous operations by calling the `then(...)` function with a callback which will receive the promise's result (or error if any).
-
-We will keep a reference to the promise in the component because successive calls to the same promise give the same result, and so it holds the result in a kind of way.
-
-#### The dto problem
-
-There is a problem with how javascript works and it prevents to directly use the `Hero` class when doing the ajax query. Because the dto that is received from the ajax call has the `Object` prototype, casting it to a `Hero` in the java code fails completely. Hopefully, Angular2Boot provides a method to convert any javascript object into a `@JsType` object belonging to the java world. This method is `sendRequestAndConvertDtoList` and its sisters and the next code extract will show how to use it.
-
-Here is how the `HeroService` looks like now :
+And since the mocked data is of no use anymore in the client side `HeroService`, we just simply remove it. We also take this opportunity to remove the `getHeroesSlowly` method (you will also need to replace the call to this method by a call to the `getHeroes` method in the `HeroesComponent` class). The class now looks like this :
 
 {% highlight java %}
+@Injectable
 @JsType
 public class HeroService
 {
-  private Promise<JsArray<Hero>, String> heroes;
+	private Http http;
+	private String heroesUrl = "app/heroes"; // URL to web api
 
-  public HeroService()
-  {
-    // initialize the Promise as soon as the service is created
-    heroes = new Promise<>( ( resolver, rejecter ) -> {
-      // send an ajax request to /heroes url
-      Ajax.sendRequestAndConvertDtoList( "GET", "heroes", Hero.class )
-        .then(
-          resolver::resolve, // resolve the promise with the request reply
-          error -> GWT.log( "error getting heroes " + error ) );
-    } );
-  }
+	public HeroService( Http http )
+	{
+		this.http = http;
+	}
 
-  public Promise<JsArray<Hero>, String> getHeroes()
-  {
-    return heroes;
-  }
+	public Promise<JsArray<Hero>> getHeroes()
+	{
+		return http.get( heroesUrl )
+				.toPromise()
+				.<JsArray<Hero>> then( response -> response.json() )
+				.onCatch( ( reason ) -> JsArray.empty() );
+	}
 
-  public Promise<Hero, String> getHero( int id )
-  {
-    return new Promise<>( ( resolver, rejecter ) -> {
-      heroes.then( heroes -> {
-        for( Hero hero : heroes.iterate() )
-          if( hero.getId() == id )
-          {
-          resolver.resolve( hero );
-          return;
-          }
-        rejecter.reject( "no hero found" );
-      }, null );
-    } );
-  }
+	public Promise<Hero> getHero( int id )
+	{
+		return getHeroes().then( heroes -> heroes.find( hero -> hero.id == id ) );
+	}
 }
 {% endhighlight %}
 
-This is quite a lot maybe !
+Restart the spring boot application and GWT development and refresh the browser. See that now the heroes are fetched from the server through the network!
 
-First thing is the `Promise<JsArray<Hero>, String> heroes` field holding the promise to the hero list. We hold it so we can reuse it later on, to find a specific hero for instance.
+## Add, Edit, Delete
 
-#### Making a promise
+Our stakeholders are incredibly pleased with the added flexibility from the API integration, but it doesn't stop there. Next we want to add the capability to add, edit and delete heroes.
 
-The next interesting lines are in the constructor. It is written in java 8 with method reference so it is kind of short for what it does. We first initialize the `heroes` field to a Promise in which we send an ajax request with the **"GET"** method to the **"heroes"** url. Since we use the `sendRequestAndConvertDtoList()` helper method which converts javascript objects to `@JsType` objects, we need to provide it the class of the destination class. This is the `Hero.class` and is the third parameter of this method.
+We'll complete `HeroService` by creating `post`, `put` and `delete` methods to meet our new requirements.
 
-When the ajax call finishes, the `then()` method parameters are called. If it is a success, the call is delegated to the `resolver::resolve` method reference. This means that the ajax result is directly passed to the code which called `getHeroes()`. If there is an error, it logged in the console.
+### Post
 
-#### Taking a promise
+We will be using `post` to add new heroes. Post requests require a little bit more setup than Get requests. For Post requests we create a header and set the content type to `application/json`. We'll call `JSON.stringify` before we post to convert the hero object to a string.
 
-Now the `getHero( int id )` method implementation has to rely somehow on the `getHeroes()` method so it has to return a Promise too.
+### Put
 
-For this it creates a Promise in which it takes the `heroes` promise, finds the searched hero and resolves its own promise with this hero (with the `resolver` variable). If it does not find one, the promise is rejected with the `rejecter` variable.
+Put will be used to update an individual hero. Its structure is very similar to Post requests. The only difference is that we have to change the URL slightly by appending the id of the hero we want to update.
 
-The `HeroFormComponent.ngOnInit` also needs to be refactored to use the promise. It now looks like this :
+### Delete
+
+Delete will be used to delete heroes and its format is like `put` except for the function name.
+
+We add a `onCatch` to handle errors for all three methods.
+
+### Save
+
+We combine the call to the private `post` and `put` methods in a single save method. This simplifies the public API and makes the integration with `HeroDetailComponent` easier. `HeroService` determines which method to call based on the state of the `hero` object. If the hero already has an id we know it's an edit. Otherwise we know it's an add.
+
+After these additions our `HeroService` looks like this:
 
 {% highlight java %}
-@JsMethod
-  private void ngOnInit()
-  {
-    Object oId = routeParams.get( "id" );
-    int id = Integer.parseInt( String.valueOf( oId ) );
-    heroService.getHero( id ).then(
-      hero -> this.model = hero,
-      error -> this.model = null );
-  }
-{% endhighlight %}
-
-The last line in the method takes the hero promise and affects the model to it. In case of error, a `null` hero is affected.
-
-The `HeroListComponent` constructor should also be modified to take the Promise in account :
-
-{% highlight java %}
-@JsConstructor
-public HeroListComponent( HeroService heroService, Router router )
+@Injectable
+@JsType
+public class HeroService
 {
-  this.heroService = heroService;
-  this.router = router;
-  heroService.getHeroes().then( list -> heroes = list, error -> heroes = null );
+	private Http http;
+
+	private static final String heroesUrl = "app/heroes"; // URL to web api
+	private static final Headers headers = new Headers();
+
+	static
+	{
+		headers.append( "Content-Type", "application/json" );
+	}
+
+	public HeroService( Http http )
+	{
+		this.http = http;
+	}
+
+	public Promise<JsArray<Hero>> getHeroes()
+	{
+		return http.get( heroesUrl )
+				.toPromise()
+				.<JsArray<Hero>> then( response -> response.json() )
+				.onCatch( this::handleError );
+	}
+
+	public Promise<Hero> getHero( int id )
+	{
+		return getHeroes().then( heroes -> heroes.find( hero -> hero.id == id ) );
+	}
+
+	public Promise<?> delete( int id )
+	{
+		String url = heroesUrl + "/" + id;
+		return http.delete( url )
+				.toPromise()
+				.then( response -> null )
+				.onCatch( this::handleError );
+	}
+
+	public Promise<Hero> save( Hero hero )
+	{
+		if( hero.id > 0 )
+			return update( hero );
+
+		hero.id = 0; 
+
+		return create( hero );
+	}
+
+	public Promise<Hero> create( Hero hero )
+	{
+		return http.post( heroesUrl,
+				JSON.stringify( hero ),
+				new JsObject().set( "headers", headers ) )
+				.toPromise()
+				.<Hero> then( response -> response.json() )
+				.onCatch( this::handleError );
+	}
+
+	public Promise<Hero> update( Hero hero )
+	{
+		String url = heroesUrl + "/" + hero.id;
+		return http.put( url,
+				JSON.stringify( hero ),
+				new JsObject().set( "headers", headers ) )
+				.toPromise()
+				.<Hero> then( response -> response.json() )
+				.onCatch( this::handleError );
+	}
+
+	private Promise<?> handleError( Object error )
+	{
+		GWT.log( "An error occurred" + error ); // for demo purposes only
+		return Promise.reject( error );
+	}
 }
 {% endhighlight %}
 
-At this point, you can refresh your browser and you should see that the list of heroes now comes from the server (*maybe you have to restart Spring Boot or GWT SuperDevMode sometimes...*).
+## Updating Components
 
-## Add the CRUD operations on the hero list
+Loading heroes using `Http` required no changes outside of `HeroService`, but we added a few new features as well. In the following section we will update our components to use our new methods to add, edit and delete heroes.
 
-Now that we get the list from the server, we will add the other basic operations which are *add* and *remove*.
+### Add/Edit in the HeroDetailComponent
 
-### Service methods
+We already have `HeroDetailComponent` for viewing details about a specific hero. Add and Edit are natural extensions of the detail view, so we are able to reuse `HeroDetailComponent` with a few tweaks.
 
-First since we implement the *add* and *remove* method in the `HeroService`class. Here are the two methods we add :
+The original component was created to render existing data, but to add new data we have to initialize the `hero` property to an empty `Hero` object.
 
-{% highlight java %}
-public Promise<Hero, String> addHero()
-{
-  return new Promise<>( ( resolver, rejecter ) -> {
-    Ajax.sendRequestAndConvertDto( "GET", "addHero", Hero.class ).then( hero -> {
-      heroes.then( heroes -> {
-        heroes.push( hero );
-        resolver.resolve( hero );
-      }, null );
-    }, error -> GWT.log( "error creating hero " + error ) );
-  } );
-}
-
-// avalaible only with the 1.2-SNAPSHOT archetype and 1.1-SNAPSHOT angular2-gwt
-public Promise<Hero, String> updateHero( int heroId )
-{
-  return new Promise<Hero, String>( ( resolver, rejecter ) -> {
-    getHero( heroId ).then( hero -> {
-      GWT.log( "hero sent " + hero );
-      // see the Hero dto sent in the ajax request
-      Ajax.sendRequestAndConvertDto( "POST", "updateHero", hero, Hero.class )
-        .then(
-          heroConfirmed -> resolver.resolve( heroConfirmed ),
-          error -> GWT.log( "error updating hero " + error )
-        );
-    }, error -> GWT.log( "error updating hero " + error ) );
-  } );
-}
-
-public Promise<Boolean, String> removeHero( int id )
-{
-  return new Promise<>( ( resolver, rejecter ) -> {
-    Ajax.sendRequest( "GET", "deleteHero" ).then( text -> {
-      heroes.then( heroes -> {
-        getHero( id ).then( hero -> {
-          int index = heroes.indexOf( hero );
-          if( index >= 0 )
-          heroes.splice( index, 1 );
-          resolver.resolve( true );
-        }, null );
-      }, null );
-    }, error -> GWT.log( "error deleting hero " + error ) );
-  } );
-}
-{% endhighlight %}
-
-You see that both operations rely on the `heroes` promise. This seems quite a lot of code at the beginning, but the good thing is that when we refresh the heroes promise, all other operations will work with the updated data.
-
-On the server side, we add the three methods responding to the `addHero`, `updateHero` (*only available with version 1.2-SNAPSHOT of the archetype*) and `deleteHero` urls. Those are very simple since we don't persist data. Here is the server methods we add to the `ApplicationController` class :
-
-{% highlight java %}
-@RequestMapping( "/addHero" )
-Hero addHero()
-{
-  Hero hero = new Hero( (int) (1000 * Math.random()), "New comer", "None yet", "" );
-  heroes.add( hero );
-  return hero;
-}
-
-// avalaible only with the 1.2-SNAPSHOT archetype and 1.1-SNAPSHOT angular2-gwt
-@RequestMapping( value = "/updateHero", method = RequestMethod.POST )
-Hero updateHero( @RequestBody Hero hero )
-{
-  if( hero == null )
-    return null;
-
-  heroes.stream().filter( h -> h.getId() == hero.getId() ).findFirst().ifPresent( h -> {
-    int index = heroes.indexOf( h );
-    heroes.remove( index );
-    heroes.add( index, hero );
-  } );
-
-  return hero;
-}
-
-@RequestMapping( "/deleteHero" )
-Boolean deleteHero( int id )
-{
-  heroes.stream()
-    .filter( hero -> hero.getId() == id )
-    .findFirst()
-    .ifPresent(
-      hero -> heroes.remove( hero )
-    );
-  return true;
-}
-{% endhighlight %}
-
-Those three methods just change the server's list and return the added/updated `Hero` or true when a hero is deleted. The communication layer is handled by Spring Boot and the browser !
-
-### *Add* and *Remove* buttons
-
-The `HeroListComponent` will trigger those operations through two buttons, one to add a new Hero and one to remove an existing hero.
-
-First we add the buttons in the `HeroListTemplate. The *add* button is put in the list div and calls the `newHero()` method and the delete button is put into the form and calls the `delete` method. The delete method is called with two parameters : the `selectedHero` and the `$event` which represents the dom event corresponding to the click. This makes `hero-list.component.html` looks like this :
-
-{% highlight java %}
-<div>
-  <ul class="heroes">
-    <li *ngFor="let hero of heroes" [class.selected]="hero===selectedHero" (click)="onSelect(hero)">
-      <span class="badge">{ {hero.id}}</span> { {hero.name}}
-    </li>
-  </ul>
-
-  <button (click)="newHero()" class="btn btn-default" >New Hero</button>
-</div>
-<div *ngIf="selectedHero">
-  <h2>{ {selectedHero.name | uppercase}}</h2>
-
-  <div class="row">
-    <div class="col-xs-3">Name</div>
-    <div class="col-xs-9">{ { selectedHero.name }}</div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3">Alter Ego</div>
-    <div class="col-xs-9">{ { selectedHero.alterEgo }}</div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3">Power</div>
-    <div class="col-xs-9">{ { selectedHero.power }}</div>
-  </div>
-
-  <button (click)="deleteHero(selectedHero, $event)" class="btn btn-default">
-    Delete { {selectedHero.name}}
-  </button>
-</div>
-{% endhighlight %}
-
-In the `HeroListComponent` class, we implement the `newHero()` and `deleteHero(...)` methods so that they call the service. All the data is updated automatically because everything happens inside the Angular zone...
-
-{% highlight java %}
-@JsMethod
-private void newHero()
-{
-  heroService.addHero();
-}
-
-@JsMethod
-void deleteHero( Hero hero )
-{
-  if( hero != null )
-  heroService.removeHero( hero.getId() );
-}
-{% endhighlight %}
-
-The last thing is to add the *save* button in the `HeroFormComponent` so that the user can trigger an hero update when he finishes editing one. Let's add that in the template :
-
-{% highlight html %}
-<button (click)="save()" class="btn btn-default">Save</button>
-{% endhighlight %}
-
-This button will call the `save()` method of our component, so we have to implement it :
-
-{% highlight java %}
-@JsMethod
-private void save()
-{
-  if( model != null )
-    heroService.updateHero( model.getId() );
-}
-{% endhighlight %}
-
-Note that there is a last little thing to change in the `Hero` class. Since objects of this class must now be serialized from JSON by Spring Boot when the hero to be updated is received by the REST service, we need to add a default constructor to the `Hero` class. The side effect of this is that we need to annotate constructors differently because of GWT's *JsInterop* system. Note that the constructor with parameters first delegate to the `@JsConstructor` constructor. That's a constraint brought by *JsInterop*.
-
-Here is what we changed in the `Hero` class :
+For that we need to add a default constructor to the `Hero` class. The `@JsContructor` annotation is used to says that when the javascript world will want to create a `Hero` it will use this constructor. Then we have to `@JsIgnore` the other constructor, because only one Java constructor can be exposed to the javascript world:
 
 {% highlight java %}
 @JsType
 public class Hero
 {
-  // internal fields have not changed
-  ...
+	public int id;
+	public String name;
+	
+	@JsConstructor
+	public Hero()
+	{
+	}
 
-  // constructor for the SpringBoot JSON to Java serialization
-  @JsConstructor
-  public Hero()
-  {
-  }
-
-  // constructor to create heroes on the server side
-  @JsIgnore
-  public Hero( int id, String name, String power, String alterEgo )
-  {
-    this();
-
-    this.id = id;
-    this.name = name;
-    this.power = power;
-    this.alterEgo = alterEgo;
-  }
-
-  // getters have not changed
-  ...
+	@JsIgnore
+	public Hero( int id, String name )
+	{
+		this();
+		
+		this.id = id;
+		this.name = name;
+	}
 }
 {% endhighlight %}
 
-With this, you have a little application implementing the CRUD operations on a Java Dto. The `Hero` dto class is used both on the server and client side and require no special serialization service since all the communication happens in the JSON format. The client uses modern javascript paradigms like `Promises` and *ajax* requests. The java 8 lambda expressions help to keep the code relatively small when handling asynchronous operations. And since the code is written in pure Java, one benefits from the great tooling (IDEs, build tools, ...) and the ecosystem.
+In order to differentiate between add and edit we are adding a check to see if an id is passed in the URL. If the id is absent we bind `HeroDetailComponent` to an empty `Hero` object. In either case, any edits made through the UI will be bound back to the same `hero` property.
 
-*At this point you may need to restart the `mvn spring-boot:run` command since it can get a bit confused with the new methods and annotations...*
-
-The live reload of the code is also very appreciable and brings a comfortable development experience.
-
-## Leaving and returning from Angular zones
-
-When you work with asynchronous operations, it could be that you escape from Angular [zones](https://angular.io/docs/js/latest/api/core/NgZone-class.html). If that is so, you can inject the current zone in the component constructor and use the `runOutsideAngular` and `run` methods to leave and return to the Angular zone. Put simply, if you make an asynchronous call, alter a field and have no update in the view, calling `NgZone.run( () -> { /* your code here */ } );` can help. Here is how to use the zone in a component :
+Add a `save` method to `HeroDetailComponent` and call the corresponding `save` method in `HeroesService`.
 
 {% highlight java %}
-@JsType
-@Component( ... )
-public class MyComponent
+public void save()
 {
-  @JsProperty String message;
-
-  private NgZone zone;
-  public MyComponent( NgZone zone )
-  {
-    this.zone = zone;
-  }
-
-  // called on a click so that Angular checks
-  // for updates in the component data
-  @JsMethod
-  private void click()
-  {
-    // do something asynchronous other than
-    // setTimeout, setInterval and so on...
-    doSomethingAsynchrosous( () -> zone.run( () -> message = "update !" ) );
-  }
+    heroService.save( hero )
+            .then( hero -> {
+                goBack();
+                return null;
+            } );
 }
 {% endhighlight %}
 
-## Component interaction
+The same `save` method is used for both add and edit since `HeroService` will know when to call `post` vs `put` based on the state of the `Hero` object.
 
-This page has moved to its own [place](component-interaction/).
+After we save a hero, we redirect the browser back to the previous page using the `goBack()` method.
+
+In order to allow other components to know when the `HeroDetailComponent` updated a hero, we create a `updated` output for our `HeroDetailComponent`:
+
+{% highlight java %}
+@Output
+public EventEmitter<Hero> updated = new EventEmitter<>();
+{% endhighlight %}
+
+We then update the `goBack` method to trigger the `updated` emitter. In this case, we don't need to go back in browser history so we also add a check for that:
+
+{% highlight java %}
+public void goBack()
+{
+    updated.emit( hero );
+    
+    if( hero.id > 0 )
+        JsTools.historyGoBack();
+}
+{% endhighlight %}
+
+Inside the `HeroDetailComponent` html template file, we add the _Save_ button:
+
+{% highlight html %}
+<button (click)="save()">Save</button>
+{% endhighlight %} 
+
+### Add/Delete in the HeroesComponent
+
+We'll be reporting propagated HTTP errors, let's start by adding the following fields to the `HeroesComponent` class:
+
+{% highlight java %}
+public Object error;
+public boolean addingHero;
+{% endhighlight %}
+
+The user can _add_ a new hero by clicking a button and entering a name.
+
+When the user clicks the _Add New Hero_ button, we display the `HeroDetailComponent`. We aren't navigating to the component so it won't receive a hero `id`; as we noted above, that is the component's cue to create and present an empty hero.
+
+Add the following to the heroes component HTML, just below the hero list (`<ul class="heroes">...</ul>`).
+
+{% highlight html %}
+{% raw %}
+<div class="error" *ngIf="error">{{error}}</div>
+
+<button (click)="addHero()">Add New Hero</button>
+
+<div *ngIf="addingHero">
+	<my-hero-detail (updated)="updated($event)"></my-hero-detail>
+</div>
+{% endraw %}
+{% endhighlight %}
+
+The first line will display an error message if there is any. The remaining HTML is for adding heroes.
+
+The user can `delete` an existing hero by clicking a delete button next to the hero's name. Add the following to the heroes component HTML right after the hero name in the repeated `<li>` tag:
+
+{% highlight html %}
+<button class="delete" (click)="deleteHero(hero, $event)">x</button>
+{% endhighlight %}
+
+Add the following to the bottom of the `HeroesComponent` CSS file:
+
+{% highlight css %}
+button.delete {
+	float: right;
+	margin-top: 2px;
+	margin-right: .8em;
+	background-color: gray !important;
+	color: white;
+}
+{% endhighlight %}
+
+
+Now let's fix-up the `HeroesComponent` to support the _add_ and _delete_ actions used in the template. Let's start with _add_.
+
+Implement the click handler for the _Add New Hero_ button.
+
+{% highlight java %}
+public void addHero()
+{
+    addingHero = true;
+    selectedHero = null;
+}
+{% endhighlight %}
+
+The `HeroDetailComponent` does most of the work. All we do is toggle an `*ngIf` flag that swaps it into the DOM when we add a hero and removes it from the DOM when the user is done.
+
+When the `HeroDetailComponent` will have finished its work, it will emit an `updated` event which is catched in our template and delegates the appropriate action to the `updated` method:
+
+{% highlight java %}
+public void updated( Hero savedHero )
+{
+    addingHero = false;
+
+    if( savedHero != null )
+        getHeroes();
+}
+{% endhighlight %}
+
+The delete logic is a bit trickier.
+
+{% highlight java %}
+public void deleteHero( Hero hero, Event event )
+{
+    event.stopPropagation();
+
+    heroService.delete( hero.id ).then( res -> {
+        heroes = heroes.filter( h -> h != hero );
+        if( selectedHero == hero )
+            selectedHero = null;
+        return null;
+    }, error -> this.error = error );
+}
+{% endhighlight %}
+
+Of course we delegate the persistence of hero deletion to the `HeroService`. But the component is still responsible for updating the display. So the _delete_ method removes the deleted hero from the list.
+
+### Implementing the service methods
+
+The new _add_, _update_ and _delete_ methods need to be supported by our _REST_ service. Here is the new implementation in the `HeroesController` class:
+
+{% highlight java %}
+@RestController
+@RequestMapping( "/app/" )
+public class HeroesController
+{
+	private static final Map<Integer, Hero> HEROES = new HashMap<>();
+	private static int nextId = 42;
+
+	static
+	{
+		storeHero( new Hero( 11, "Mr. Nice" ) );
+		storeHero( new Hero( 12, "Narco" ) );
+		storeHero( new Hero( 13, "Bombasto" ) );
+		storeHero( new Hero( 14, "Celeritas" ) );
+		storeHero( new Hero( 15, "Magneta" ) );
+		storeHero( new Hero( 16, "RubberMan" ) );
+		storeHero( new Hero( 17, "Dynama" ) );
+		storeHero( new Hero( 18, "Dr IQ" ) );
+		storeHero( new Hero( 19, "Magma" ) );
+		storeHero( new Hero( 20, "Tornado" ) );
+	}
+
+	private static void storeHero( Hero hero )
+	{
+		HEROES.put( hero.id, hero );
+	}
+
+	@RequestMapping( value = "/heroes", method = RequestMethod.GET )
+	public Collection<Hero> getHeroes()
+	{
+		return HEROES.values();
+	}
+
+	@RequestMapping( value = "/heroes", method = RequestMethod.POST, produces = "application/json" )
+	Hero addHero( @RequestBody Hero hero )
+	{
+		hero.id = nextId++;
+
+		storeHero( hero );
+
+		return hero;
+	}
+
+	@RequestMapping( value = "/heroes/{id}", method = RequestMethod.PUT, produces = "application/json" )
+	Hero updateHero( @PathVariable( "id" ) int id, @RequestBody Hero hero )
+	{
+		assert hero.id == id;
+
+		storeHero( hero );
+
+		return hero;
+	}
+
+	@RequestMapping( value = "/heroes/{id}", method = RequestMethod.DELETE )
+	Boolean deleteHero( @PathVariable( "id" ) int id )
+	{
+		return HEROES.remove( id ) != null;
+	}
+}
+{% endhighlight %}
+
+## Observables
+
+Each `Http` method returns an `Observable` of HTTP `Response` objects.
+
+Our `HeroService` converts that `Observable` into a `Promise` and returns the promise to the caller. In this section we learn to return the `Observable` directly and discuss when and why that might be a good thing to do.
+
+### Background
+
+An _observable_ is a stream of events that we can process with array-like operators.
+
+Recall that our `HeroService` quickly chained the `toPromise` operator to the `Observable` result of `http.get`. That operator converted the `Observable` into a `Promise` and we passed that promise back to the caller.
+
+Converting to a promise is often a good choice. We typically ask `http` to fetch a single chunk of data. When we receive the data, we're done. A single result in the form of a promise is easy for the calling component to consume and it helps that promises are widely understood by JavaScript programmers.
+
+But requests aren't always "one and done". We may start one request, then cancel it, and make a different request before the server has responded to the first request. Such a _request-cancel-new-request_ sequence is difficult to implement with _Promises_. It's easy with _Observables_ as we'll see.
+
+### Search-by-name
+
+We're going to add a _hero search_ feature to the Tour of Heroes. As the user types a name into a search box, we'll make repeated HTTP requests for heroes filtered by that name.
+
+We start by creating `HeroSearchService` that sends search queries to our server's web api.
+
+{% highlight java %}
+@Injectable
+@JsType
+public class HeroSearchService
+{
+	private Http http;
+
+	public HeroSearchService( Http http )
+	{
+		this.http = http;
+	}
+
+	public Observable<JsArray<Hero>> search( String term )
+	{
+		return http.get( "app/heroes/?name=" + term )
+				.map( response -> response.json() );
+	}
+}
+{% endhighlight %}
+
+The `http.get()` call in `HeroSearchService` is similar to the one in the `HeroService`, although the URL now has a query string. Another notable difference: we no longer call `toPromise`, we simply return the observable instead.
+
+### HeroSearchComponent
+
+Let's create a new `HeroSearchComponent` that calls this new `HeroSearchService`.
+
+The component template is simple — just a text box and a list of matching search results.
+
+{% highlight html %}
+{% raw %}
+<div id="search-component">
+	<h4>Hero Search</h4>
+	<input #searchBox id="search-box" (keyup)="search(searchBox.value)" />
+	<div>
+		<div *ngFor="let hero of heroes | async" (click)="gotoDetail(hero)"
+			class="search-result">{{hero.name}}</div>
+	</div>
+</div>
+{% endraw %}
+{% endhighlight %}
+
+We'll also want to add styles for the new component.
+
+{% highlight css %}
+.search-result {
+	border-bottom: 1px solid gray;
+	border-left: 1px solid gray;
+	border-right: 1px solid gray;
+	width: 195px;
+	height: 20px;
+	padding: 5px;
+	background-color: white;
+	cursor: pointer;
+}
+
+#search-box {
+	width: 200px;
+	height: 20px;
+}
+{% endhighlight %}
+
+As the user types in the search box, a _keyup_ event binding calls the component's `search` method with the new search box value.
+
+The `*ngFor` repeats _hero_ objects from the component's `heroes` property. No surprise there.
+
+But, as we'll soon see, the `heroes` property is now an _Observable_ of hero arrays, rather than just a hero array. The `*ngFor` can't do anything with an `Observable` until we flow it through the async pipe (`AsyncPipe`). The async pipe subscribes to the `Observable` and produces the array of heroes to `*ngFor`.
+
+Time to create the `HeroSearchComponent` class.
+
+{% highlight java %}
+@Component(
+		selector = "hero-search",
+		templateUrl = "hero-search.component.html",
+		styleUrls = "hero-search.component.css",
+		providers = HeroSearchService.class )
+@JsType
+public class HeroSearchComponent implements OnInit
+{
+	public Observable<JsArray<Hero>> heroes;
+
+	private Subject<String> searchTerms = new Subject<>();
+	private HeroSearchService heroSearchService;
+	private Router router;
+
+	public HeroSearchComponent( HeroSearchService heroSearchService, Router router )
+	{
+		this.heroSearchService = heroSearchService;
+		this.router = router;
+	}
+
+	public void search( String term )
+	{
+		searchTerms.next( term );
+	}
+
+	@Override
+	public void ngOnInit()
+	{
+		heroes = searchTerms
+				.debounceTime( 300 )
+				.distinctUntilChanged()
+				.switchMap( ( term, index ) -> {
+					if( term != null && !term.isEmpty() )
+						return heroSearchService.search( term );
+					else
+						return Observable.of( JsArray.<Hero> empty() );
+				} )
+				.onError( reason -> {
+					GWT.log( "error: " + reason );
+					return Observable.of( JsArray.<Hero> empty() );
+				} );
+	}
+
+	public void gotoDetail( Hero hero )
+	{
+		router.navigate( JsArray.of( "/detail", String.valueOf( hero.id ) ) );
+	}
+}
+{% endhighlight %}
+
+#### Search terms
+
+Let's focus on the `searchTerms`:
+
+{% highlight java %}
+private Subject<String> searchTerms = new Subject<>();
+
+public void search( String term )
+{
+    searchTerms.next( term );
+}
+{% endhighlight %}
+
+A `Subject` is a producer of an _observable_ event stream; `searchTerms` produces an `Observable` of strings, the filter criteria for the name search.
+
+Each call to `search` puts a new string into this subject's observable stream by calling `next`.
+
+
+#### Initialize the **_heroes_** property (_**ngOnInit**_)
+
+A `Subject` is also an `Observable`. We're going to turn the stream of search terms into a stream of `Hero` arrays and assign the result to the `heroes` property.
+
+{% highlight java %}
+public Observable<JsArray<Hero>> heroes;
+
+@Override
+public void ngOnInit()
+{
+    heroes = searchTerms
+            .debounceTime( 300 )
+            .distinctUntilChanged()
+            .switchMap( ( term, index ) -> {
+                if( term != null && !term.isEmpty() )
+                    return heroSearchService.search( term );
+                else
+                    return Observable.of( JsArray.<Hero> empty() );
+            } )
+            .onError( reason -> {
+                GWT.log( "error: " + reason );
+                return Observable.of( JsArray.<Hero> empty() );
+            } );
+}
+{% endhighlight %}
+
+If we passed every user keystroke directly to the `HeroSearchService`, we'd unleash a storm of HTTP requests. Bad idea. We don't want to tax our server resources and burn through our cellular network data plan.
+
+Fortunately, we can chain `Observable` operators to the string `Observable` that reduce the request flow. We'll make fewer calls to the `HeroSearchService` and still get timely results. Here's how:
+
+- `debounceTime(300)` waits until the flow of new string events pauses for 300 milliseconds before passing along the latest string. We'll never make requests more frequently than 300ms.
+- `distinctUntilChanged` ensures that we only send a request if the filter text changed. There's no point in repeating a request for the same search term.
+- `switchMap` calls our search service for each search term that makes it through the `debounce` and `distinctUntilChanged` gauntlet. It cancels and discards previous search observables, returning only the latest search service observable.
+- `catch` intercepts a failed observable. Our simple example prints the error to the console; a real life application should do better. Then we return an observable containing an empty array to clear the search result.
+
+### Add the search component to the dashboard
+
+We add the hero search HTML element to the bottom of the `DashboardComponent` template.
+
+{% highlight html %}
+{% raw %}
+<h3>Top Heroes</h3>
+<div class="grid grid-pad">
+	<div *ngFor="let hero of heroes" (click)="gotoDetail(hero)"
+		class="col-1-4">
+		<div class="module hero">
+			<h4>{{hero.name}}</h4>
+		</div>
+	</div>
+</div>
+<hero-search></hero-search>
+{% endraw %}
+{% endhighlight %}
+
+And finally, we add the `HeroSearchComponent` to the declarations array of the `ApplicationModule` class:
+
+{% highlight java %}
+declarations = {
+        ApplicationComponent.class,
+        DashboardComponent.class,
+        HeroesComponent.class,
+        HeroDetailComponent.class,
+        HeroSearchComponent.class
+},
+{% endhighlight %}
+
+### Implementing the back-end search service
+
+One thing left is to implement the backend search function. In the `HeroesController` class, we add this method:
+
+{% highlight java %}
+@RequestMapping(
+        value = "/heroes",
+        params = { "name" },
+        method = RequestMethod.GET,
+        produces = "application/json" )
+List<Hero> getHeroes( @RequestParam String name )
+{
+    return HEROES.values().stream()
+            .filter( hero -> hero.name.toLowerCase().contains( name.toLowerCase() ) )
+            .collect( Collectors.toList() );
+}
+{% endhighlight %}
+
+Run the app again, go to the _Dashboard_, and enter some text in the search box. You should get results just under the search box, if you click on one of them, you will be redirected to the _hero_'s detail.
+
+## Home Stretch
+
+We are at the end of our journey for now, but we have accomplished a lot.
+
+- We added the necessary dependencies to use HTTP in our application.
+- We refactored `HeroService` to load heroes from a web API.
+- We extended `HeroService` to support post, put and delete methods.
+- We updated our components to allow adding, editing and deleting of heroes.
+- We learned how to use Observables.
