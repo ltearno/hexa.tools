@@ -1,7 +1,6 @@
 package ${package}.client;
 
 import fr.lteconsulting.angular2gwt.ng.core.Component;
-import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 /**
@@ -16,6 +15,5 @@ import jsinterop.annotations.JsType;
 @JsType
 public class ApplicationComponent
 {
-	@JsProperty
-	private String title = "Your application is working !";
+	public String title = "Your application is working !";
 }
