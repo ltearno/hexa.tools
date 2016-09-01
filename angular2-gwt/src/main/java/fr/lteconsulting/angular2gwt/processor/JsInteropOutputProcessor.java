@@ -760,7 +760,7 @@ public class JsInteropOutputProcessor
 			ViewChild annotation = field.getAnnotation( ViewChild.class );
 			if( annotation.selector() != null && !annotation.selector().isEmpty() )
 			{
-				result.put( fieldName, ViewChildrenInfo.child( "'" + annotation.selector() + "'" ) );
+				result.put( fieldName, ViewChildrenInfo.child( "\"" + annotation.selector() + "\"" ) );
 			}
 			else
 			{
@@ -790,7 +790,7 @@ public class JsInteropOutputProcessor
 			ViewChildren annotation = field.getAnnotation( ViewChildren.class );
 			if( annotation.selector() != null && !annotation.selector().isEmpty() )
 			{
-				result.put( fieldName, ViewChildrenInfo.children( "'" + annotation.selector() + "'" ) );
+				result.put( fieldName, ViewChildrenInfo.children( "\"" + annotation.selector() + "\"" ) );
 			}
 			else
 			{
