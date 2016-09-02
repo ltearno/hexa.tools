@@ -10,9 +10,16 @@ You may want to integrate legacy GWT widgets in your new Angular application. Ma
 
 It is possible to integrate widgets in a Angular2Boot project.
 
+**NOTE** The following tutorial's code can be found on github at this address [github.com/ltearno/widgets-integration](https://github.com/ltearno/widgets-integration).
+
 ## Prerequisites
 
-You must use at least the `1.3-SNAPSHOT` version of `angular2gwt` library in your project. If you don't, you won't get the `WidgetAdapterPanel` class needed to integrate with legacy widgets.
+**NOTE** You must use at least the `1.3-SNAPSHOT` version of `angular2gwt` library in your project. If you don't, you won't get the `WidgetAdapterPanel` class needed to integrate with legacy widgets.
+
+## Summary of this document
+
+* TOC
+{:toc}
 
 ## Scenario
 
