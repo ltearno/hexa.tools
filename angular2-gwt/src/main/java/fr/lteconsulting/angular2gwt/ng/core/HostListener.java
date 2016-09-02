@@ -6,14 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Binds an Host element property to the annotated field
+ * Binds an Host element event to the annotated method
  */
 @Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.FIELD )
-public @interface HostBinding
+@Target( ElementType.METHOD )
+public @interface HostListener
 {
 	/**
-	 * Property name, by default the name of the method
+	 * Event name, by default the name of the method
+	 * 
+	 * @return
 	 */
 	String value() default "";
 }

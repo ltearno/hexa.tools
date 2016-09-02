@@ -52,7 +52,8 @@ import fr.lteconsulting.angular2gwt.client.interop.ng.core.NgModuleMetadata;
 import fr.lteconsulting.angular2gwt.ng.core.Component;
 import fr.lteconsulting.angular2gwt.ng.core.Directive;
 import fr.lteconsulting.angular2gwt.ng.core.Host;
-import fr.lteconsulting.angular2gwt.ng.core.HostsBinding;
+import fr.lteconsulting.angular2gwt.ng.core.HostBinding;
+import fr.lteconsulting.angular2gwt.ng.core.HostListener;
 import fr.lteconsulting.angular2gwt.ng.core.Injectable;
 import fr.lteconsulting.angular2gwt.ng.core.Input;
 import fr.lteconsulting.angular2gwt.ng.core.NgModule;
@@ -1033,108 +1034,152 @@ public class JsInteropOutputProcessor
 
 	private String findDirectiveHostsEventActions( TypeElement element, Block classBlock )
 	{
-		HashMap<String, String> hostsEventActions = new HashMap<>();
-		Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, HostsBinding.class.getName() );
-		if( hostsAnnotation.isPresent() )
-		{
-			Optional<? extends AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );
-			if( valueOptional.isPresent() )
-			{
-				// list of hosts
-				AnnotationValue value = valueOptional.get();
-				value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-				{
-					@Override
-					public Void visitArray( List<? extends AnnotationValue> vals, Void p )
-					{
-						for( AnnotationValue v : vals )
-						{
-							// v is a Host
-							v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-							{
-								@Override
-								public Void visitAnnotation( AnnotationMirror annotationMirror, Void p )
-								{
-									value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-									{
-										@Override
-										public Void visitArray( List<? extends AnnotationValue> vals, Void p )
-										{
-											for( AnnotationValue v : vals )
-											{
-												v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-												{
-													@Override
-													public Void visitAnnotation( AnnotationMirror annotationMirror,
-															Void p )
-													{
-														String event = getAnnotationValue( annotationMirror, "event" )
-																.get().toString().replaceAll( "\"", "" );
-														String action = getAnnotationValue( annotationMirror, "action" )
-																.get().toString().replaceAll( "\"", "" );
+		List<String> hostsEventActions = new ArrayList<>();
 
-														hostsEventActions.put( event, action );
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) )
+				.stream()
+				.filter( method -> method.getAnnotation( HostListener.class ) != null )
+				.forEach( method -> {
+					checks.checkIsJsMethod( method );
 
-														return null;
-													}
-												}, null );
-											}
+					HostListener hostListener = method.getAnnotation( HostListener.class );
 
-											return null;
-										}
-									}, null );
+					String eventName = hostListener.value();
+					if( "".equals( eventName ) )
+						eventName = method.getSimpleName().toString();
 
-									return null;
-								}
-							}, null );
-						}
-						return null;
-					}
-				}, null );
-			}
-		}
+					hostsEventActions.add( ".set( \"(" + eventName + ")\", \"" + method.getSimpleName().toString() + "()\" )" );
+				} );
+
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) )
+				.stream()
+				.filter( field -> field.getAnnotation( HostBinding.class ) != null )
+				.forEach( field -> {
+					checks.checkIsJsProperty( field );
+					
+					HostBinding hostBinding = field.getAnnotation( HostBinding.class );
+
+					String propertyName = hostBinding.value();
+					if( "".equals( propertyName ) )
+						propertyName = field.getSimpleName().toString();
+
+					hostsEventActions.add( ".set( \"[" + propertyName + "]\", \"" + field.getSimpleName().toString() + "\" )" );
+				} );
 
 		if( hostsEventActions.isEmpty() )
 			return null;
 
-		classBlock.separator();
+		return "new JsObject()" + hostsEventActions.stream().collect( Collectors.joining() );
 
-		List<String> hosts = new ArrayList<>( hostsEventActions.keySet() );
+		/*
+		 * Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, HostsBinding.class.getName() );
+		 * if( hostsAnnotation.isPresent() )
+		 * {
+		 * Optional<? extends AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );
+		 * if( valueOptional.isPresent() )
+		 * {
+		 * // list of hosts
+		 * AnnotationValue value = valueOptional.get();
+		 * value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+		 * {
+		 * 
+		 * @Override
+		 * public Void visitArray( List<? extends AnnotationValue> vals, Void p )
+		 * {
+		 * for( AnnotationValue v : vals )
+		 * {
+		 * // v is a Host
+		 * v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+		 * {
+		 * 
+		 * @Override
+		 * public Void visitAnnotation( AnnotationMirror annotationMirror, Void p )
+		 * {
+		 * value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+		 * {
+		 * 
+		 * @Override
+		 * public Void visitArray( List<? extends AnnotationValue> vals, Void p )
+		 * {
+		 * for( AnnotationValue v : vals )
+		 * {
+		 * v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
+		 * {
+		 * 
+		 * @Override
+		 * public Void visitAnnotation( AnnotationMirror annotationMirror,
+		 * Void p )
+		 * {
+		 * String event = getAnnotationValue( annotationMirror, "event" )
+		 * .get().toString().replaceAll( "\"", "" );
+		 * String action = getAnnotationValue( annotationMirror, "action" )
+		 * .get().toString().replaceAll( "\"", "" );
+		 * 
+		 * hostsEventActions.put( event, action );
+		 * 
+		 * return null;
+		 * }
+		 * }, null );
+		 * }
+		 * 
+		 * return null;
+		 * }
+		 * }, null );
+		 * 
+		 * return null;
+		 * }
+		 * }, null );
+		 * }
+		 * return null;
+		 * }
+		 * }, null );
+		 * }
+		 * }
+		 */
 
-		Map<String, String> accronyms = new HashMap<>();
-		int i = 0;
-		for( String hostName : hosts )
-			accronyms.put( hostName, "host_" + i++ );
-
-		classBlock.line( "@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = \"Object\")" );
-		classBlock.line( "static class Host" );
-		classBlock.block( ( b ) -> {
-			for( String hostName : hosts )
-			{
-				b.line( "@JsProperty( name=[{#}])", hostName );
-				b.line( "String [{}];", accronyms.get( hostName ) );
-			}
-
-			b.separator();
-
-			String createFormalParameters = hosts.stream().map( ( h ) -> "String " + accronyms.get( h ) )
-					.collect( Collectors.joining( ", " ) );
-
-			b.line( "static Host create([{}])", createFormalParameters );
-			b.block( ( c ) -> {
-				b.line( "Host host = new Host();" );
-				b.separator();
-				for( String hostName : hosts )
-					b.line( "host.[{}] = [{}];", accronyms.get( hostName ), accronyms.get( hostName ) );
-				b.separator();
-				b.line( "return host;" );
-			} );
-		} );
-
-		String createParameters = hosts.stream().map( ( h ) -> "\"" + hostsEventActions.get( h ) + "\"" )
-				.collect( Collectors.joining( ", " ) );
-
-		return "Host.create( " + createParameters + " )";
+		/*
+		 * if( hostsEventActions.isEmpty() )
+		 * return null;
+		 * 
+		 * classBlock.separator();
+		 * 
+		 * List<String> hosts = new ArrayList<>( hostsEventActions.keySet() );
+		 * 
+		 * Map<String, String> accronyms = new HashMap<>();
+		 * int i = 0;
+		 * for( String hostName : hosts )
+		 * accronyms.put( hostName, "host_" + i++ );
+		 * 
+		 * classBlock.line( "@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = \"Object\")" );
+		 * classBlock.line( "static class Host" );
+		 * classBlock.block( ( b ) -> {
+		 * for( String hostName : hosts )
+		 * {
+		 * b.line( "@JsProperty( name=[{#}])", hostName );
+		 * b.line( "String [{}];", accronyms.get( hostName ) );
+		 * }
+		 * 
+		 * b.separator();
+		 * 
+		 * String createFormalParameters = hosts.stream().map( ( h ) -> "String " + accronyms.get( h ) )
+		 * .collect( Collectors.joining( ", " ) );
+		 * 
+		 * b.line( "static Host create([{}])", createFormalParameters );
+		 * b.block( ( c ) -> {
+		 * b.line( "Host host = new Host();" );
+		 * b.separator();
+		 * for( String hostName : hosts )
+		 * b.line( "host.[{}] = [{}];", accronyms.get( hostName ), accronyms.get( hostName ) );
+		 * b.separator();
+		 * b.line( "return host;" );
+		 * } );
+		 * } );
+		 * 
+		 * String createParameters = hosts.stream().map( ( h ) -> "\"" + hostsEventActions.get( h ) + "\"" )
+		 * .collect( Collectors.joining( ", " ) );
+		 * 
+		 * return "Host.create( " + createParameters + " )";
+		 */
 	}
 
 	private void buildPropertiesMethodsDefinitions( String componentClassName, List<PropertyInformation> fields,
