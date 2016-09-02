@@ -229,14 +229,15 @@ public class JsInteropOutputProcessor
 		String providers = findComponentProviders( element, classBlock, generatedAccessorTypes );
 		String outputs = findComponentOutputs( element );
 		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypes );
+		String host = findDirectiveHostsEventActions( element, classBlock );
+		String animations = findAnimationProviders( element );
 
 		List<PropertyInformation> propertiesMethodsInfos = new ArrayList<>();
 		String inputs = findInputs( element, propertiesMethodsInfos );
 
 		findPropertyGetters( element, propertiesMethodsInfos );
 
-		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock,
-				generatedAccessorTypes );
+		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock, generatedAccessorTypes );
 
 		classBlock.line( "@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName() );
 		classBlock.line( "private native static AngularComponentConstructorFunction constructorFunction();" );
@@ -280,6 +281,10 @@ public class JsInteropOutputProcessor
 					i.line( "options.set( \"inputs\", [{}] );", inputs );
 				if( outputs != null )
 					i.line( "options.set( \"outputs\", [{}] );", outputs );
+				if( host != null )
+					i.line( "options.set( \"host\", [{}] );", host );
+				if( animations != null )
+					i.line( "options.set( \"animations\", [{}] );", animations );
 				if( !viewChildFields.isEmpty() )
 				{
 					i.line( "JsObject queries = new JsObject();" );
@@ -434,6 +439,7 @@ public class JsInteropOutputProcessor
 		Directive directive = element.getAnnotation( Directive.class );
 		String aSelector = directive.selector();
 		String host = findDirectiveHostsEventActions( element, classBlock );
+		String animations = findAnimationProviders( element );
 
 		// input fields
 		List<PropertyInformation> propertiesMethodsInfos = new ArrayList<>();
@@ -468,6 +474,8 @@ public class JsInteropOutputProcessor
 					i.line( "options.set( \"host\", [{}] );", host );
 				if( inputs != null )
 					i.line( "options.set( \"inputs\", [{}] );", inputs );
+				if( animations != null )
+					i.line( "options.set( \"animations\", [{}] );", animations );
 
 				e.separator();
 
@@ -698,16 +706,33 @@ public class JsInteropOutputProcessor
 
 		providers.append( "JsArray.of( " );
 
-		boolean add = false;
 		if( !providerClassNames.isEmpty() )
 		{
 			providers.append( providerClassNames.stream()
 					.map( name -> getConstructorFunctionAccessorName( name, classBlock, generatedAccessorTypestypes ) )
 					.collect( Collectors.joining( ", " ) ) );
-			if( add )
-				providers.append( ", " );
-			else
-				add = true;
+		}
+
+		providers.append( " )" );
+
+		return providers.toString();
+	}
+
+	private String findAnimationProviders( TypeElement element )
+	{
+		List<String> animationProviderClassNames = getAnnotationClassListValue( element, ComponentAnnotationFqn, "animations" );
+		if( animationProviderClassNames == null || animationProviderClassNames.isEmpty() )
+			return null;
+
+		StringBuilder providers = new StringBuilder();
+
+		providers.append( "JsArray.of( " );
+
+		if( !animationProviderClassNames.isEmpty() )
+		{
+			providers.append( animationProviderClassNames.stream()
+					.map( name -> "new " + name + "().get()" )
+					.collect( Collectors.joining( ", " ) ) );
 		}
 
 		providers.append( " )" );
@@ -1056,7 +1081,7 @@ public class JsInteropOutputProcessor
 				.filter( field -> field.getAnnotation( HostBinding.class ) != null )
 				.forEach( field -> {
 					checks.checkIsJsProperty( field );
-					
+
 					HostBinding hostBinding = field.getAnnotation( HostBinding.class );
 
 					String propertyName = hostBinding.value();

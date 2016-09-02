@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import fr.lteconsulting.angular2gwt.client.interop.ng.AnimationProvider;
+
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
 public @interface Component
@@ -22,4 +24,6 @@ public @interface Component
 	Class<?>[] directives() default {};
 
 	Class<?>[] providers() default {};
+
+	Class<? extends AnimationProvider>[] animations() default {};
 }
