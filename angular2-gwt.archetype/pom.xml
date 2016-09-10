@@ -9,7 +9,7 @@
     </parent>
     <groupId>fr.lteconsulting</groupId>
     <artifactId>angular2-gwt.archetype</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>maven-archetype</packaging>
     <name>angular2-gwt.archetype</name>
     <url>http://www.lteconsulting.fr</url>
