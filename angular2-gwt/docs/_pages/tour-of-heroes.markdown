@@ -29,7 +29,7 @@ If you have not created a project yet, do it with the following command :
 mvn archetype:generate \
   -DarchetypeGroupId=fr.lteconsulting \
   -DarchetypeArtifactId=angular2-gwt.archetype \
-  -DarchetypeVersion=1.3
+  -DarchetypeVersion=1.4
 {% endhighlight %}
 
 Go into the project folder and build it to check that everything is ok :
@@ -38,7 +38,7 @@ Go into the project folder and build it to check that everything is ok :
 mvn clean install
 {% endhighlight %}
 
-You can now import the project in your IDE.
+You can now import the project in your IDE. (Note that if you use Eclipse you need to install the `m2e-apt` extension).
 
 Meanwhile, we are going to launch the development mode with hot reload on both server and client sides. In two terminals, launch those two commands :
 

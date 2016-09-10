@@ -31,10 +31,10 @@ Use the archetype which builds a fully working Angular2 + SpringBoot application
 mvn archetype:generate \
   -DarchetypeGroupId=fr.lteconsulting \
   -DarchetypeArtifactId=angular2-gwt.archetype \
-  -DarchetypeVersion=1.3
+  -DarchetypeVersion=1.4
 {% endhighlight %}
 
-**Note about the version** : *you can use either the latest release version like in the example above, or the next snapshot version (`1.4-SNAPSHOT` in this case) and benefit from the latest improvements and bug fixes. Features only available in the snapshot version are marked in the documentation. You can expect a new release few days after new features are tested and validated.*
+**Note about the version** : *you can use either the latest release version like in the example above, or the next snapshot version (`1.5-SNAPSHOT` in this case) and benefit from the latest improvements and bug fixes. Features only available in the snapshot version are marked in the documentation. You can expect a new release few days after new features are tested and validated.*
 
 Enter the desired *groupId*, *artifactId*, *version* and *package* and your application will be created in a sub directory named after the choosen *artifactId*.
 
@@ -265,11 +265,12 @@ You need to install `m2e-apt` component. Otherwise, everything should work out o
 
 ## Version matrix
 
-Angular version | `angular2-gwt.archetype` versions | `angular2-gwt` versions
-----------------|-----------------------------------|--------------------------
-`2 rc 5`        | `1.3`, `1.4-SNAPSHOT`             | `1.2`, `1.3-SNAPSHOT`
-`2 beta 17`     | `1.1`, `1.2-SNAPSHOT`             | `1.0`, `1.1-SNAPSHOT`
-`2 beta 16`     | `1.0`                             | `1.0`
+Angular version   | `angular2-gwt.archetype` versions | `angular2-gwt` versions
+------------------|-----------------------------------|--------------------------
+`2.0 rc 6`        | `1.4`, `1.5-SNAPSHOT`             | `1.3`, `1.4-SNAPSHOT`
+`2.0 rc 5`        | `1.3`, `1.4-SNAPSHOT`             | `1.2`, `1.3-SNAPSHOT`
+`2.0 beta 17`     | `1.1`, `1.2-SNAPSHOT`             | `1.0`, `1.1-SNAPSHOT`
+`2.0 beta 16`     | `1.0`                             | `1.0`
 
 ## Troubleshooting
 
