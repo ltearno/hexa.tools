@@ -11,7 +11,7 @@ It provides a very effective way to build _Single Page Applications_. The develo
 
 Build a starting application in less than 5 minutes and enter into the details to get most of **Angular2Boot** !
 
-*Angular2Boot is in sync with Angular 2.0.0-rc.5 (_and does not use any deprecated APIs_), see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
+*Angular2Boot is in sync with Angular 2.0.0-rc.6, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
 
 
 *Here is a presentation video (in French) of how it works, at the Toulouse Angular User Group in June 2016.*
