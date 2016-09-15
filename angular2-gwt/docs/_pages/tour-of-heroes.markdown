@@ -35,7 +35,7 @@ mvn archetype:generate \
 _Here is also the same command in only one line, for you to copy-paste easily:_
 
 {% highlight bash %}
-mvn archetype:generate -DarchetypeGroupId=fr.lteconsulting -DarchetypeArtifactId=angular2-gwt.archetype -DarchetypeVersion=1.4
+mvn archetype:generate -DarchetypeGroupId=fr.lteconsulting -DarchetypeArtifactId=angular2-gwt.archetype -DarchetypeVersion=1.5
 {% endhighlight %}
 
 Go into the project folder and build it to check that everything is ok :
@@ -381,7 +381,7 @@ Focus on the event binding
 
 {% highlight html %}
 {% raw %}
-(click)='onSelect(hero)
+(click)='onSelect(hero)'
 {% endraw %}
 {% endhighlight %}
 

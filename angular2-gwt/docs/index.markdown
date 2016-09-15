@@ -3,6 +3,8 @@ layout: page
 title: Angular 2 Boot
 ---
 
+*Angular2Boot is in sync with Angular 2.0.0, see the [Angular release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
+
 *LATEST NEWS !* Angular2Boot [will be presented](https://oracle.rainfocus.com/scripts/catalog/oow16.jsp?event=javaone&search=angular&search.event=javaone) at **[JavaOne 2016](https://www.oracle.com/javaone/index.html)** this year ! We hope to meet your there and discuss with you !
 
 **Angular2Boot** is an opiniated framework to build web applications in Java 8. It is built upon rock-solid foundations : [Angular 2](https://angular.io/), [GWT](http://www.gwtproject.org/) and [Spring Boot](http://projects.spring.io/spring-boot/). You can of course use it with any Java backend, like JavaEE with JAX-RS Web services or whatever else.
@@ -10,8 +12,6 @@ title: Angular 2 Boot
 It provides a very effective way to build _Single Page Applications_. The development mode is iterative and quick (live code reload), with the strongly typed qualities of Java and the functionalities brought by modern IDEs. The produced code is easy to deploy (relying on one *jar* only), robust (runs on the JVM) and optimized (Angular 2 change detection and GWT optimized compilation).
 
 Build a starting application in less than 5 minutes and enter into the details to get most of **Angular2Boot** !
-
-*Angular2Boot is in sync with Angular 2.0.0, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
 
 
 *Here is a presentation video (in French) of how it works, at the Toulouse Angular User Group in June 2016.*
