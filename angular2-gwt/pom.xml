@@ -10,7 +10,7 @@
 	
 	<groupId>fr.lteconsulting</groupId>
 	<artifactId>angular2-gwt</artifactId>
-	<version>1.5</version>
+	<version>1.6-SNAPSHOT</version>
 	
 	<name>Angular 2 with GWT library</name>
 	<description>Allows to develop Angular 2 applications with GWT</description>
