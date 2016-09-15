@@ -11,7 +11,7 @@ It provides a very effective way to build _Single Page Applications_. The develo
 
 Build a starting application in less than 5 minutes and enter into the details to get most of **Angular2Boot** !
 
-*Angular2Boot is in sync with Angular 2.0.0-rc.6, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
+*Angular2Boot is in sync with Angular 2.0.0, see the [release notes](https://github.com/angular/angular/blob/master/CHANGELOG.md) !*
 
 
 *Here is a presentation video (in French) of how it works, at the Toulouse Angular User Group in June 2016.*
@@ -31,7 +31,7 @@ Use the archetype which builds a fully working Angular2 + SpringBoot application
 mvn archetype:generate \
   -DarchetypeGroupId=fr.lteconsulting \
   -DarchetypeArtifactId=angular2-gwt.archetype \
-  -DarchetypeVersion=1.4
+  -DarchetypeVersion=1.5
 {% endhighlight %}
 
 **Note about the version** : *you can use either the latest release version like in the example above, or the next snapshot version (`1.5-SNAPSHOT` in this case) and benefit from the latest improvements and bug fixes. Features only available in the snapshot version are marked in the documentation. You can expect a new release few days after new features are tested and validated.*
@@ -72,7 +72,7 @@ You can open the application project in your IDE (see the chapter on configurati
 
 # And now, what's next ?
 
-Now that you have a working boostrapped application, you can either continue reading to get more details about what is inside the application you just created. Or you can jump into the Tour of Heroes [tutorial](tutorial/) to learn the basics about creating an Angular2Boot application.
+Now that you have a working boostrapped application, you can either continue reading to get more details about what is inside the application you just created. Or you can jump into the Tour of Heroes [tutorial](tutorial/) to learn the basic concepts of Angular 2 and about creating an Angular2Boot application.
 
 You can also read the [cookbook](cookbook/) to learn advanced and deepened techniques.
 
@@ -152,8 +152,8 @@ Naturally, your java application too should declare a module. This is done in th
 
 {% highlight java %}
 @NgModule(
-	imports = { 
-		BrowserModule.class, 
+	imports = {
+		BrowserModule.class,
 		FormsModule.class },
 	declarations = ApplicationComponent.class,
 	bootstrap = ApplicationComponent.class )
@@ -265,12 +265,13 @@ You need to install `m2e-apt` component. Otherwise, everything should work out o
 
 ## Version matrix
 
-Angular version   | `angular2-gwt.archetype` versions | `angular2-gwt` versions
-------------------|-----------------------------------|--------------------------
-`2.0 rc 6`        | `1.4`, `1.5-SNAPSHOT`             | `1.3`, `1.4-SNAPSHOT`
-`2.0 rc 5`        | `1.3`, `1.4-SNAPSHOT`             | `1.2`, `1.3-SNAPSHOT`
-`2.0 beta 17`     | `1.1`, `1.2-SNAPSHOT`             | `1.0`, `1.1-SNAPSHOT`
-`2.0 beta 16`     | `1.0`                             | `1.0`
+Angular version     | `angular2-gwt.archetype` versions | `angular2-gwt` versions
+--------------------|-----------------------------------|--------------------------
+`2.0.0`             | `1.5`, `1.6-SNAPSHOT`             | `1.5`, `1.6-SNAPSHOT`
+`2.0.0 rc 6`        | `1.4`, `1.5-SNAPSHOT`             | `1.3`, `1.4-SNAPSHOT`
+`2.0.0 rc 5`        | `1.3`, `1.4-SNAPSHOT`             | `1.2`, `1.3-SNAPSHOT`
+`2.0.0 beta 17`     | `1.1`, `1.2-SNAPSHOT`             | `1.0`, `1.1-SNAPSHOT`
+`2.0.0 beta 16`     | `1.0`                             | `1.0`
 
 ## Troubleshooting
 

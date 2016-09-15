@@ -29,7 +29,13 @@ If you have not created a project yet, do it with the following command :
 mvn archetype:generate \
   -DarchetypeGroupId=fr.lteconsulting \
   -DarchetypeArtifactId=angular2-gwt.archetype \
-  -DarchetypeVersion=1.4
+  -DarchetypeVersion=1.5
+{% endhighlight %}
+
+_Here is also the same command in only one line, for you to copy-paste easily:_
+
+{% highlight bash %}
+mvn archetype:generate -DarchetypeGroupId=fr.lteconsulting -DarchetypeArtifactId=angular2-gwt.archetype -DarchetypeVersion=1.4
 {% endhighlight %}
 
 Go into the project folder and build it to check that everything is ok :
@@ -38,7 +44,7 @@ Go into the project folder and build it to check that everything is ok :
 mvn clean install
 {% endhighlight %}
 
-You can now import the project in your IDE. (Note that if you use Eclipse you need to install the `m2e-apt` extension).
+You can now import the project in your IDE. (Note that if you use Eclipse you need to install the `m2e-apt` extension and go to `Windows`>`Preferences`>`Maven`>`Annotation Processing` and select to automatically configure JDT APT. You will have to restart Eclipse after the installation).
 
 Meanwhile, we are going to launch the development mode with hot reload on both server and client sides. In two terminals, launch those two commands :
 
@@ -60,15 +66,17 @@ Now go to the url `http://localhost:8080` and you should see your application ru
 First let's modify the `ApplicationComponent` class so that it looks like this :
 
 {% highlight java %}
+{% raw %}
 @Component(
   selector = "my-app",
-  template = "<h1>{ {title}}</h1><h2>{ {hero}} details!</h2>" )
+  template = "<h1>{{title}}</h1><h2>{{hero}} details!</h2>" )
 @JsType
 public class ApplicationComponent
 {
   public String title = "Tour of Heroes";
   public String hero = "Windstorm";
 }
+{% endraw %}
 {% endhighlight %}
 
 Refresh your browser, and it should display the `title` and `hero` properties. This is the _interpolation_ form of one-way data binding.
@@ -117,10 +125,12 @@ The browser refreshes and continues to display our hero’s name.
 Displaying a name is good, but we want to see all of our hero’s properties. We’ll add a `<div>` for our hero’s `id` property and another `<div>` for our hero’s `name`. Our template now looks like that :
 
 {% highlight java %}
-template = "<h1>{ {title}}</h1>"
-  + "<h2>{ {hero.name}} details!</h2>"
-  + "<div><label>id: </label>{ {hero.id}}</div>"
-  + "<div><label>name: </label>{ {hero.name}}</div>"
+{% raw %}
+template = "<h1>{{title}}</h1>"
+  + "<h2>{{hero.name}} details!</h2>"
+  + "<div><label>id: </label>{{hero.id}}</div>"
+  + "<div><label>name: </label>{{hero.name}}</div>"
+{% endraw %}
 {% endhighlight %}
 
 ## Editing Our Hero
@@ -348,7 +358,7 @@ public class ApplicationComponent
 	public JsArray<Hero> heroes = HEROES;
 }
 {% endraw %}
-{% endhighlight %} 
+{% endhighlight %}
 
 
 ## Selecting a Hero
@@ -768,7 +778,7 @@ public class HeroService
 			new Hero( 18, "Dr IQ" ),
 			new Hero( 19, "Magma" ),
 			new Hero( 20, "Tornado" ) );
-	
+
 	public JsArray<Hero> getHeroes()
 	{
 		return HEROES;
@@ -868,7 +878,7 @@ public class ApplicationComponent implements OnInit
 	{
 		getHeroes();
 	}
-	
+
 	public void getHeroes()
 	{
 		heroes = heroService.getHeroes();
@@ -1012,7 +1022,7 @@ The initial steps are:
 -- `@Component` template `<h1>` element, which contains a binding to `title`
 - Add a `<my-heroes>` element to the app template just below the heading so we still see the heroes.
 - Add `HeroesComponent` to the declarations array of `ApplicationModule` so Angular recognizes the `<my-heroes>` tags.
-- Check that `bootstrap` in the `ApplicationModule` is set to `ApplicationComponent.class` and not `HeroesComponent.class` (when we did the refactoring your IDE might have updated this value) 
+- Check that `bootstrap` in the `ApplicationModule` is set to `ApplicationComponent.class` and not `HeroesComponent.class` (when we did the refactoring your IDE might have updated this value)
 - Add `HeroService` to the providers array of `ApplicationModule` because we'll need it in every other view.
 - Remove `HeroService` from the `HeroesComponent` providers array since it has been promoted.
 
@@ -1128,7 +1138,7 @@ You also need to add the `HeroesComponent.class` in the `entryComponents` attrib
 public class ApplicationModule
 {
 }
-{% endhighlight %} 
+{% endhighlight %}
 
 ### Router Outlet
 
@@ -1353,8 +1363,8 @@ The `/detail/` part of that URL is constant. The trailing numeric `id` part chan
 Here's the route definition we'll use.
 
 {% highlight java %}
-RouterConfig.route( 
-    "detail/:id", 
+RouterConfig.route(
+    "detail/:id",
     HeroDetailComponent_AngularComponent.getComponentPrototype() )
 {% endhighlight %}
 
@@ -1843,7 +1853,7 @@ Our designers provided some basic styles to apply to elements across the entire 
 
 Create the file `styles.css`, if it doesn't exist already.
 
-Reference it in the `index.html` file : 
+Reference it in the `index.html` file :
 
 {% highlight html %}
 <link rel="stylesheet" href="styles.css">
@@ -2127,7 +2137,7 @@ public class HeroService
 		if( hero.id > 0 )
 			return update( hero );
 
-		hero.id = 0; 
+		hero.id = 0;
 
 		return create( hero );
 	}
@@ -2179,7 +2189,7 @@ public class Hero
 {
 	public int id;
 	public String name;
-	
+
 	@JsConstructor
 	public Hero()
 	{
@@ -2189,7 +2199,7 @@ public class Hero
 	public Hero( int id, String name )
 	{
 		this();
-		
+
 		this.id = id;
 		this.name = name;
 	}
@@ -2228,7 +2238,7 @@ We then update the `goBack` method to trigger the `updated` emitter. In this cas
 public void goBack()
 {
     updated.emit( hero );
-    
+
     if( hero.id > 0 )
         JsTools.historyGoBack();
 }
@@ -2238,7 +2248,7 @@ Inside the `HeroDetailComponent` html template file, we add the _Save_ button:
 
 {% highlight html %}
 <button (click)="save()">Save</button>
-{% endhighlight %} 
+{% endhighlight %}
 
 ### Add/Delete in the HeroesComponent
 
