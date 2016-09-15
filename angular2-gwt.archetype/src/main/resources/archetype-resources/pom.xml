@@ -21,6 +21,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -33,7 +34,8 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- Needed mainly to get the EntryPoint class -->
+		
+		<!-- Needed to get the EntryPoint class -->
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
@@ -46,21 +48,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- Needed by the GWT compiler -->
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
-			<version>${gwt.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- Library to integrate with Angular2 -->
+		
+		<!-- Library to integrate GWT with Angular2 -->
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>angular2-gwt</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -76,6 +73,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
@@ -105,6 +103,7 @@
 					<persistentunitcachedir>${basedir}/target/gwt-unitCache</persistentunitcachedir>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -116,11 +115,12 @@
 					<dependency>
 						<groupId>org.springframework</groupId>
 						<artifactId>springloaded</artifactId>
-						<version>1.2.0.RELEASE</version>
+						<version>1.2.6.RELEASE</version>
 					</dependency>
 				</dependencies>
 			</plugin>
 		</plugins>
+		
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
