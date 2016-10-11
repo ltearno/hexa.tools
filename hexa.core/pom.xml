@@ -8,7 +8,7 @@
         <version>1.4</version>
     </parent>
     <artifactId>hexa.core</artifactId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
     <name>hexa.core</name>
     <url>http://www.lteconsulting.fr</url>
     <packaging>jar</packaging>
