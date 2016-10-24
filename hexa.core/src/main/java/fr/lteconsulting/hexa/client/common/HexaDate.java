@@ -193,7 +193,7 @@ public class HexaDate
 					month--;
 					day = GetDaysInMonth( year, month );
 
-					if( month < 1 )
+					if( month < 0 )
 					{
 						month = 11;
 						day = GetDaysInMonth( year, month );
@@ -321,7 +321,7 @@ public class HexaDate
 
 	/**
 	 * sets the day of the month
-	 * 
+	 *
 	 * @param date
 	 */
 	public void setDate( int date )
