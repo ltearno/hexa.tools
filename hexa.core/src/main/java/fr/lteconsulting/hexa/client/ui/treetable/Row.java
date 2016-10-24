@@ -13,6 +13,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+
 import fr.lteconsulting.hexa.client.interfaces.IAsyncCallback;
 import fr.lteconsulting.hexa.client.tools.JQuery;
 import fr.lteconsulting.hexa.client.ui.miracle.Printer;
@@ -87,7 +88,7 @@ public class Row
 	{
 		assert (this.treeTable.m_nbColumns > 0) : "Table should have at least one column before adding items";
 
-		Row newItem = new Row(this.treeTable);
+		Row newItem = new Row( this.treeTable );
 		newItem.m_tr = DOM.createTR();
 		newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
@@ -169,7 +170,7 @@ public class Row
 		if( parentItem == null )
 			parentItem = this.treeTable.m_rootItem;
 
-		Row newItem = new Row(this.treeTable);
+		Row newItem = new Row( this.treeTable );
 		newItem.m_tr = Document.get().createTRElement();
 		newItem.m_tr.setPropertyObject( "linkedItem", newItem );
 
@@ -604,7 +605,13 @@ public class Row
 				public void onFinished()
 				{
 					// physical remove
-					Row.this.treeTable.m_body.removeChild( tr );
+					try
+					{
+						Row.this.treeTable.m_body.removeChild( tr );
+					}
+					catch( Exception e )
+					{
+					}
 				}
 			} );
 		}
@@ -708,6 +715,6 @@ public class Row
 	public boolean isDisplayed()
 	{
 		String display = m_tr.getStyle().getDisplay();
-		return display==null || !display.equalsIgnoreCase( "none" );
+		return display == null || !display.equalsIgnoreCase( "none" );
 	}
 }
