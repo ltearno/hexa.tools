@@ -295,6 +295,22 @@ public class CalendarPeriod
 		return 1;
 	}
 
+	public String GetLeftBoundary()
+	{
+		if( periods == null || periods.isEmpty() )
+			return CalendarFunctions.TIME_BEGIN;
+
+		return periods.get( 0 ).getFrom();
+	}
+
+	public String GetRightBoundary()
+	{
+		if( periods == null || periods.isEmpty() )
+			return CalendarFunctions.TIME_END;
+
+		return periods.get( periods.size() - 1 ).getTo();
+	}
+
 	public int GetLeastBoundaries( PeriodBoundaries boundaries ) // String from
 																	// and to as
 																	// attributes
