@@ -18,19 +18,24 @@ import fr.lteconsulting.hexa.client.tools.HexaTools;
 /**
  * Place controller
  * 
- * <p>Associate the url's hash with Place objects and give them to the 
+ * <p>
+ * Associate the url's hash with Place objects and give them to the
  * activity manager.
  * 
- * <p>When the url's hash part changes, a string token corresponding to
+ * <p>
+ * When the url's hash part changes, a string token corresponding to
  * the hash part is emitted and received by the Place controller.
  * 
- * <p>The controller then ask the tokenizer to transform the token
+ * <p>
+ * The controller then ask the tokenizer to transform the token
  * into a Place object.
  * 
- * <p>The Place object is then given to the Activity Manager to start
+ * <p>
+ * The Place object is then given to the Activity Manager to start
  * the correct activity in its view.
  * 
- * <p>When an activity requires to go to another place, it calls the 
+ * <p>
+ * When an activity requires to go to another place, it calls the
  * 'goTo' method which will ask the tokenizer to transform the required place
  * into a string which is set as the url's hash part. This in turn triggers
  * the previously mentionned mechanism.
@@ -51,10 +56,15 @@ public class PlaceController<Place> implements ValueChangeHandler<String>
 
 	public void goTo( Place place )
 	{
-		if( activityMng.mayStop() )
+		goTo( place, true );
+	}
+
+	public void goTo( Place place, boolean fireEvent )
+	{
+		if( !fireEvent || activityMng.mayStop() )
 		{
 			String token = placeTokenizer.getToken( place );
-			History.newItem( token );
+			History.newItem( token, fireEvent );
 		}
 	}
 
