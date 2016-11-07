@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>angular2-gwt-integration</artifactId>
-	<version>1.6-SNAPSHOT</version>
+	<version>1.6</version>
 
 	<name>Angular 2 with GWT library, integration module</name>
 	<description>Allows to develop Angular 2 applications with GWT legacy applications</description>
@@ -64,6 +64,9 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<compilerArgument>-parameters</compilerArgument>
+					<testCompilerArgument>-parameters</testCompilerArgument>
+					<useIncrementalCompilation>false</useIncrementalCompilation>
 				</configuration>
 			</plugin>
 			<plugin>

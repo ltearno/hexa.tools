@@ -53,9 +53,17 @@
 		<dependency>
 			<groupId>fr.lteconsulting</groupId>
 			<artifactId>angular2-gwt</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- Use this to integrate with legacy applications
+		<dependency>
+			<groupId>fr.lteconsulting</groupId>
+			<artifactId>angular2-gwt.integration</artifactId>
+			<version>1.6</version>
+			<scope>provided</scope>
+		</dependency> -->
 	</dependencies>
 	
 	<build>
