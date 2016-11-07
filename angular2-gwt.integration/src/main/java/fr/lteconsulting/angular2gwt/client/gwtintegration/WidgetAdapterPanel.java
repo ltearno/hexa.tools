@@ -1,4 +1,4 @@
-package fr.lteconsulting.angular2gwt.client;
+package fr.lteconsulting.angular2gwt.client.gwtintegration;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.RootPanel;
