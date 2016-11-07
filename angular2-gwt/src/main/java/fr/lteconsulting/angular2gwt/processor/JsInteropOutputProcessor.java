@@ -41,9 +41,7 @@ import javax.tools.JavaFileObject;
 
 import fr.lteconsulting.angular2gwt.client.JsArray;
 import fr.lteconsulting.angular2gwt.client.JsObject;
-import fr.lteconsulting.angular2gwt.client.JsTools;
 import fr.lteconsulting.angular2gwt.client.JsToolsInjector;
-import fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition;
 import fr.lteconsulting.angular2gwt.client.interop.ng.AngularComponentConstructorFunction;
 import fr.lteconsulting.angular2gwt.client.interop.ng.ProviderWrapper;
 import fr.lteconsulting.angular2gwt.client.interop.ng.core.ComponentMetadata;
@@ -231,13 +229,12 @@ public class JsInteropOutputProcessor
 		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypes );
 		String host = findDirectiveHostsEventActions( element, classBlock );
 		String animations = findAnimationProviders( element );
+		String inputs = findInputs( element );
 
-		List<PropertyInformation> propertiesMethodsInfos = new ArrayList<>();
-		String inputs = findInputs( element, propertiesMethodsInfos );
+		findPropertyGetters( element );
 
-		findPropertyGetters( element, propertiesMethodsInfos );
-
-		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock, generatedAccessorTypes );
+		Map<String, ViewChildrenInfo> viewChildFields = findComponentViewChildFields( element, classBlock,
+				generatedAccessorTypes );
 
 		classBlock.line( "@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName() );
 		classBlock.line( "private native static AngularComponentConstructorFunction constructorFunction();" );
@@ -311,9 +308,6 @@ public class JsInteropOutputProcessor
 				i.line( "ComponentMetadata metadata = new ComponentMetadata( options );" );
 				i.line();
 				i.line( "constructorFunction.annotations = JsArray.of( new Component( metadata ) );" );
-
-				buildPropertiesMethodsDefinitions( element.getSimpleName().toString(), propertiesMethodsInfos, i,
-						classBlock, javaClassText );
 			} );
 
 			e.separator();
@@ -442,10 +436,9 @@ public class JsInteropOutputProcessor
 		String animations = findAnimationProviders( element );
 
 		// input fields
-		List<PropertyInformation> propertiesMethodsInfos = new ArrayList<>();
-		String inputs = findInputs( element, propertiesMethodsInfos );
+		String inputs = findInputs( element );
 
-		findPropertyGetters( element, propertiesMethodsInfos );
+		findPropertyGetters( element );
 
 		classBlock.line( "@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName() );
 		classBlock.line( "private native static AngularComponentConstructorFunction constructorFunction();" );
@@ -483,9 +476,6 @@ public class JsInteropOutputProcessor
 				e.separator();
 
 				i.line( "constructorFunction.annotations = JsArray.of( new Directive( metadata ) );" );
-
-				buildPropertiesMethodsDefinitions( element.getSimpleName().toString(), propertiesMethodsInfos, i,
-						classBlock, javaClassText );
 			} );
 
 			e.separator();
@@ -720,7 +710,8 @@ public class JsInteropOutputProcessor
 
 	private String findAnimationProviders( TypeElement element )
 	{
-		List<String> animationProviderClassNames = getAnnotationClassListValue( element, ComponentAnnotationFqn, "animations" );
+		List<String> animationProviderClassNames = getAnnotationClassListValue( element, ComponentAnnotationFqn,
+				"animations" );
 		if( animationProviderClassNames == null || animationProviderClassNames.isEmpty() )
 			return null;
 
@@ -730,8 +721,7 @@ public class JsInteropOutputProcessor
 
 		if( !animationProviderClassNames.isEmpty() )
 		{
-			providers.append( animationProviderClassNames.stream()
-					.map( name -> "new " + name + "().get()" )
+			providers.append( animationProviderClassNames.stream().map( name -> "new " + name + "().get()" )
 					.collect( Collectors.joining( ", " ) ) );
 		}
 
@@ -760,7 +750,8 @@ public class JsInteropOutputProcessor
 		return "JsArray.of( " + outputs.toString() + " )";
 	}
 
-	private String findComponentConstructorParameters( TypeElement element, Block classBlock, HashMap<String, String> generatedAccessorTypestypes )
+	private String findComponentConstructorParameters( TypeElement element, Block classBlock,
+			HashMap<String, String> generatedAccessorTypestypes )
 	{
 		StringBuilder parameters = new StringBuilder();
 
@@ -827,14 +818,13 @@ public class JsInteropOutputProcessor
 		return "JsArray.of( " + parameters.toString() + " )";
 	}
 
-	private Map<String, ViewChildrenInfo> findComponentViewChildFields( TypeElement element, Block classBlock, HashMap<String, String> generatedAccessorTypes )
+	private Map<String, ViewChildrenInfo> findComponentViewChildFields( TypeElement element, Block classBlock,
+			HashMap<String, String> generatedAccessorTypes )
 	{
 		Map<String, ViewChildrenInfo> result = new HashMap<>();
 
-		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.filter( f -> f.getAnnotation( ViewChild.class ) != null )
-				.forEach( field -> {
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream()
+				.filter( f -> f.getAnnotation( ViewChild.class ) != null ).forEach( field -> {
 					String fieldName = field.getSimpleName().toString();
 
 					ViewChild annotation = field.getAnnotation( ViewChild.class );
@@ -867,10 +857,8 @@ public class JsInteropOutputProcessor
 					}
 				} );
 
-		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.filter( f -> f.getAnnotation( ViewChildren.class ) != null )
-				.forEach( field -> {
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream()
+				.filter( f -> f.getAnnotation( ViewChildren.class ) != null ).forEach( field -> {
 					String fieldName = field.getSimpleName().toString();
 
 					ViewChildren annotation = field.getAnnotation( ViewChildren.class );
@@ -907,128 +895,89 @@ public class JsInteropOutputProcessor
 		return result;
 	}
 
-	private void findPropertyGetters( TypeElement element, List<PropertyInformation> methodFields )
+	private void findPropertyGetters( TypeElement element )
 	{
-		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.forEach( method -> {
-					PropertyGetter propertyGetter = method.getAnnotation( PropertyGetter.class );
-					if( propertyGetter == null )
-						return;
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().forEach( method -> {
+			PropertyGetter propertyGetter = method.getAnnotation( PropertyGetter.class );
+			if( propertyGetter == null )
+				return;
 
-					if( !method.getParameters().isEmpty() )
-					{
-						processingEnv.getMessager().printMessage( Kind.ERROR, "@PropertyGetter method should have no argument",
-								method );
-						return;
-					}
+			if( !method.getParameters().isEmpty() )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@PropertyGetter method should have no argument",
+						method );
+				return;
+			}
 
-					String getterMethodName = method.getSimpleName().toString();
-					String getterReturnTypeName = method.getReturnType().toString();
-
-					String propertyName = null;
-					if( propertyGetter.name() != null && !propertyGetter.name().trim().isEmpty() )
-					{
-						propertyName = propertyGetter.name().trim();
-					}
-					else
-					{
-						if( !getterMethodName.startsWith( "get" ) )
-						{
-							processingEnv.getMessager().printMessage( Kind.ERROR,
-									"@PropertyGetter method name should begin by 'get', or you should use the 'name' attribute of the @PropertyGetter annotation",
-									method );
-							return;
-						}
-
-						propertyName = getterMethodName.substring( 3, 4 ).toLowerCase() + getterMethodName.substring( 4 );
-					}
-
-					methodFields.add( new PropertyInformation( propertyName, null, null, getterMethodName, getterReturnTypeName ) );
-				} );
+			String getterMethodName = method.getSimpleName().toString();
+			if( propertyGetter.name() != null && !propertyGetter.name().trim().isEmpty() )
+			{
+			}
+			else
+			{
+				if( !getterMethodName.startsWith( "get" ) )
+				{
+					processingEnv.getMessager().printMessage( Kind.ERROR,
+							"@PropertyGetter method name should begin by 'get', or you should use the 'name' attribute of the @PropertyGetter annotation",
+							method );
+					return;
+				}
+			}
+		} );
 	}
 
-	private String findInputs( TypeElement element, List<PropertyInformation> methodFields )
+	private String findInputs( TypeElement element )
 	{
 		List<InputInformation> inputs = new ArrayList<>();
 
 		// gather fields
-		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.forEach( field -> {
-					Input input = field.getAnnotation( Input.class );
-					if( input == null )
-						return;
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().forEach( field -> {
+			Input input = field.getAnnotation( Input.class );
+			if( input == null )
+				return;
 
-					checks.checkIsJsProperty( field );
+			checks.checkIsJsProperty( field );
 
-					String propertyName = field.getSimpleName().toString();
-					String inputName = input.name();
-					if( inputName == null || inputName.trim().isEmpty() )
-						inputName = propertyName;
+			String propertyName = field.getSimpleName().toString();
+			String inputName = input.name();
+			if( inputName == null || inputName.trim().isEmpty() )
+				inputName = propertyName;
 
-					inputs.add( new InputInformation( inputName, propertyName ) );
-				} );
+			inputs.add( new InputInformation( inputName, propertyName ) );
+		} );
 
 		// gather methods
-		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.forEach( method -> {
-					Input input = method.getAnnotation( Input.class );
-					if( input == null )
-						return;
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream().forEach( method -> {
+			Input input = method.getAnnotation( Input.class );
+			if( input == null )
+				return;
 
-					checks.checkIsJsMethod( method );
+			checks.checkIsJsProperty( method );
 
-					String methodName = method.getSimpleName().toString();
-					if( !methodName.startsWith( "set" ) )
-					{
-						processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method name should begin by 'set'",
-								method );
-						return;
-					}
+			// TODO get property name from JsInterop if possible!
 
-					if( method.getParameters().size() != 1 )
-					{
-						processingEnv.getMessager().printMessage( Kind.ERROR,
-								"@Input method should have one and only one argument", method );
-						return;
-					}
+			String methodName = method.getSimpleName().toString();
+			if( !methodName.startsWith( "set" ) )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR, "@Input method name should begin by 'set'",
+						method );
+				return;
+			}
 
-					String propertyName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
-					String inputName = input.name();
-					if( inputName == null || inputName.trim().isEmpty() )
-						inputName = propertyName;
+			if( method.getParameters().size() != 1 )
+			{
+				processingEnv.getMessager().printMessage( Kind.ERROR,
+						"@Input method should have one and only one argument", method );
+				return;
+			}
 
-					inputs.add( new InputInformation( inputName, propertyName ) );
+			String propertyName = methodName.substring( 3, 4 ).toLowerCase() + methodName.substring( 4 );
+			String inputName = input.name();
+			if( inputName == null || inputName.trim().isEmpty() )
+				inputName = propertyName;
 
-					boolean useGetter = false;
-					String getterMethodName = "get" + propertyName.substring( 0, 1 ).toUpperCase() + propertyName.substring( 1 );
-					String getterReturnTypeName = null;
-					Optional<ExecutableElement> optionalGetterMethod = ElementFilter
-							.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream()
-							.filter( f -> f.getSimpleName().toString().equals( getterMethodName ) ).findFirst();
-					if( optionalGetterMethod.isPresent() )
-					{
-						ExecutableElement getterMethod = optionalGetterMethod.get();
-						if( !getterMethod.getParameters().isEmpty() )
-						{
-							processingEnv.getMessager().printMessage( Kind.ERROR,
-									"This method is automatically used as a getter for the property '" + propertyName
-											+ "' because the " + methodName
-											+ " method is annotated with @Input. It should not have any argument",
-									getterMethod );
-							return;
-						}
-						getterReturnTypeName = getterMethod.getReturnType().toString();
-
-						useGetter = true;
-					}
-
-					String setterParameterTypeName = method.getParameters().get( 0 ).asType().toString();
-					methodFields.add( new PropertyInformation( propertyName, methodName, setterParameterTypeName,
-							useGetter ? getterMethodName : null, getterReturnTypeName ) );
-				} );
+			inputs.add( new InputInformation( inputName, propertyName ) );
+		} );
 
 		if( inputs.isEmpty() )
 			return null;
@@ -1061,10 +1010,8 @@ public class JsInteropOutputProcessor
 	{
 		List<String> hostsEventActions = new ArrayList<>();
 
-		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.filter( method -> method.getAnnotation( HostListener.class ) != null )
-				.forEach( method -> {
+		ElementFilter.methodsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream()
+				.filter( method -> method.getAnnotation( HostListener.class ) != null ).forEach( method -> {
 					checks.checkIsJsMethod( method );
 
 					HostListener hostListener = method.getAnnotation( HostListener.class );
@@ -1073,13 +1020,12 @@ public class JsInteropOutputProcessor
 					if( "".equals( eventName ) )
 						eventName = method.getSimpleName().toString();
 
-					hostsEventActions.add( ".set( \"(" + eventName + ")\", \"" + method.getSimpleName().toString() + "()\" )" );
+					hostsEventActions
+							.add( ".set( \"(" + eventName + ")\", \"" + method.getSimpleName().toString() + "()\" )" );
 				} );
 
-		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) )
-				.stream()
-				.filter( field -> field.getAnnotation( HostBinding.class ) != null )
-				.forEach( field -> {
+		ElementFilter.fieldsIn( processingEnv.getElementUtils().getAllMembers( element ) ).stream()
+				.filter( field -> field.getAnnotation( HostBinding.class ) != null ).forEach( field -> {
 					checks.checkIsJsProperty( field );
 
 					HostBinding hostBinding = field.getAnnotation( HostBinding.class );
@@ -1088,190 +1034,14 @@ public class JsInteropOutputProcessor
 					if( "".equals( propertyName ) )
 						propertyName = field.getSimpleName().toString();
 
-					hostsEventActions.add( ".set( \"[" + propertyName + "]\", \"" + field.getSimpleName().toString() + "\" )" );
+					hostsEventActions
+							.add( ".set( \"[" + propertyName + "]\", \"" + field.getSimpleName().toString() + "\" )" );
 				} );
 
 		if( hostsEventActions.isEmpty() )
 			return null;
 
 		return "new JsObject()" + hostsEventActions.stream().collect( Collectors.joining() );
-
-		/*
-		 * Optional<? extends AnnotationMirror> hostsAnnotation = getElementAnnotation( element, HostsBinding.class.getName() );
-		 * if( hostsAnnotation.isPresent() )
-		 * {
-		 * Optional<? extends AnnotationValue> valueOptional = getAnnotationValue( hostsAnnotation.get(), "value" );
-		 * if( valueOptional.isPresent() )
-		 * {
-		 * // list of hosts
-		 * AnnotationValue value = valueOptional.get();
-		 * value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-		 * {
-		 * 
-		 * @Override
-		 * public Void visitArray( List<? extends AnnotationValue> vals, Void p )
-		 * {
-		 * for( AnnotationValue v : vals )
-		 * {
-		 * // v is a Host
-		 * v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-		 * {
-		 * 
-		 * @Override
-		 * public Void visitAnnotation( AnnotationMirror annotationMirror, Void p )
-		 * {
-		 * value.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-		 * {
-		 * 
-		 * @Override
-		 * public Void visitArray( List<? extends AnnotationValue> vals, Void p )
-		 * {
-		 * for( AnnotationValue v : vals )
-		 * {
-		 * v.accept( new SimpleAnnotationValueVisitor8<Void, Void>()
-		 * {
-		 * 
-		 * @Override
-		 * public Void visitAnnotation( AnnotationMirror annotationMirror,
-		 * Void p )
-		 * {
-		 * String event = getAnnotationValue( annotationMirror, "event" )
-		 * .get().toString().replaceAll( "\"", "" );
-		 * String action = getAnnotationValue( annotationMirror, "action" )
-		 * .get().toString().replaceAll( "\"", "" );
-		 * 
-		 * hostsEventActions.put( event, action );
-		 * 
-		 * return null;
-		 * }
-		 * }, null );
-		 * }
-		 * 
-		 * return null;
-		 * }
-		 * }, null );
-		 * 
-		 * return null;
-		 * }
-		 * }, null );
-		 * }
-		 * return null;
-		 * }
-		 * }, null );
-		 * }
-		 * }
-		 */
-
-		/*
-		 * if( hostsEventActions.isEmpty() )
-		 * return null;
-		 * 
-		 * classBlock.separator();
-		 * 
-		 * List<String> hosts = new ArrayList<>( hostsEventActions.keySet() );
-		 * 
-		 * Map<String, String> accronyms = new HashMap<>();
-		 * int i = 0;
-		 * for( String hostName : hosts )
-		 * accronyms.put( hostName, "host_" + i++ );
-		 * 
-		 * classBlock.line( "@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = \"Object\")" );
-		 * classBlock.line( "static class Host" );
-		 * classBlock.block( ( b ) -> {
-		 * for( String hostName : hosts )
-		 * {
-		 * b.line( "@JsProperty( name=[{#}])", hostName );
-		 * b.line( "String [{}];", accronyms.get( hostName ) );
-		 * }
-		 * 
-		 * b.separator();
-		 * 
-		 * String createFormalParameters = hosts.stream().map( ( h ) -> "String " + accronyms.get( h ) )
-		 * .collect( Collectors.joining( ", " ) );
-		 * 
-		 * b.line( "static Host create([{}])", createFormalParameters );
-		 * b.block( ( c ) -> {
-		 * b.line( "Host host = new Host();" );
-		 * b.separator();
-		 * for( String hostName : hosts )
-		 * b.line( "host.[{}] = [{}];", accronyms.get( hostName ), accronyms.get( hostName ) );
-		 * b.separator();
-		 * b.line( "return host;" );
-		 * } );
-		 * } );
-		 * 
-		 * String createParameters = hosts.stream().map( ( h ) -> "\"" + hostsEventActions.get( h ) + "\"" )
-		 * .collect( Collectors.joining( ", " ) );
-		 * 
-		 * return "Host.create( " + createParameters + " )";
-		 */
-	}
-
-	private void buildPropertiesMethodsDefinitions( String componentClassName, List<PropertyInformation> fields,
-			Block block, Block additionnalDefinitionsBlock, JavaClassText classText )
-	{
-		if( fields == null || fields.isEmpty() )
-			return;
-
-		block.separator();
-
-		classText.addImport( JsTools.class.getName() );
-		classText.addImport( PropertyDefinition.class.getName() );
-
-		for( PropertyInformation info : fields )
-		{
-			block.line( "JsTools.defineProperty( constructorFunction.proto, [{#}], PropertyDefinition.create( ",
-					info.propertyName );
-			block.indent( params -> {
-				if( info.getterMethodName == null )
-				{
-					params.line( "null," );
-				}
-				else
-				{
-					String getterInterfaceName = info.getterMethodName.substring( 0, 1 ).toUpperCase()
-							+ info.getterMethodName.substring( 1 ) + "Caller";
-					additionnalDefinitionsBlock.separator();
-					additionnalDefinitionsBlock.line( "interface [{}]", getterInterfaceName ).block( ( iBlock ) -> {
-						iBlock.line( "[{}] getValue();", info.getterReturnClassName );
-					} );
-
-					params.line( "( object ) -> {" );
-					params.indent( ( l ) -> {
-						l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
-						l.line( "[{GetterInterface}] methodCaller = component::[{getterMethod}];", getterInterfaceName,
-								info.getterMethodName );
-						l.line( "return methodCaller.getValue();" );
-					} );
-					params.line( "}," );
-				}
-
-				if( info.setterMethodName == null )
-				{
-					params.line( "null" );
-				}
-				else
-				{
-					String setterInterfaceName = info.setterMethodName.substring( 0, 1 ).toUpperCase()
-							+ info.setterMethodName.substring( 1 ) + "Caller";
-					additionnalDefinitionsBlock.separator();
-					additionnalDefinitionsBlock.line( "interface [{}]", setterInterfaceName ).block( ( iBlock ) -> {
-						iBlock.line( "void setValue( [{}] value );", info.setterArgumentClassName );
-					} );
-
-					params.line( "( object, value ) -> {" );
-					params.indent( ( l ) -> {
-						l.line( "[{}] component = ([{}]) object;", componentClassName, componentClassName );
-						l.line( "[{SetterInterface}] methodCaller = component::[{setterMethod}];", setterInterfaceName,
-								info.setterMethodName );
-						l.line( "methodCaller.setValue( ([{setterArgumentType}]) value );",
-								info.setterArgumentClassName );
-					} );
-					params.line( "}" );
-				}
-			} );
-			block.line( ") );" );
-		}
 	}
 
 	static class ViewChildrenInfo
@@ -1305,25 +1075,6 @@ public class JsInteropOutputProcessor
 		{
 			this.inputName = inputName;
 			this.propertyName = propertyName;
-		}
-	}
-
-	private static class PropertyInformation
-	{
-		private final String propertyName;
-		private final String setterMethodName;
-		private final String setterArgumentClassName;
-		private final String getterMethodName;
-		private final String getterReturnClassName;
-
-		public PropertyInformation( String propertyName, String setterMethodName, String setterArgumentClassName,
-				String getterMethodName, String getterReturnClassName )
-		{
-			this.propertyName = propertyName;
-			this.setterMethodName = setterMethodName;
-			this.setterArgumentClassName = setterArgumentClassName;
-			this.getterMethodName = getterMethodName;
-			this.getterReturnClassName = getterReturnClassName;
 		}
 	}
 

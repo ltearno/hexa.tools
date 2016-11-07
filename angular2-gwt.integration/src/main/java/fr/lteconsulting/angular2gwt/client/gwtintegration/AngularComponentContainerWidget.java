@@ -13,8 +13,6 @@ public class AngularComponentContainerWidget<T> extends Widget
 	private ApplicationRef applicationRef;
 	private ComponentRef componentRef;
 
-	// TODO : how to get a reference pointer to the created Angular component ?
-	// maybe by adding the angular/gwt object ref in the dom node...
 	public AngularComponentContainerWidget( ComponentFactory factory, ApplicationRef applicationRef )
 	{
 		this.factory = factory;

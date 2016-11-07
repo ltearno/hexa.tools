@@ -14,19 +14,21 @@ Have a look at the [Angular documentation](https://angular.io/docs/ts/latest/coo
 
 ## Using `@Input` to intercept property changes in a setter
 
-It is possible to use the `@Input` annotation on a setter method and this one will intercept when Angular sets the corresponding property component. Your setter method must respect the *JavaBean* setter naming convention.
+It is possible to use the `@Input` annotation on a setter method and this one will intercept when Angular sets the corresponding property component. Your setter method must respect the *JavaBean* setter naming convention. You also need to annotate your setter method with `@JsProperty`so that your method is converted into a javascript property by GWT.
 
 Here is an example of a setter in a component that will receive the 'message' input value from its parent component :
 
 {% highlight java %}
-@Input @JsMethod
+@Input
+@Jsproperty
 private void setTimeout( int seconds )
 {
   this.seconds = seconds;
   // do something on setting the property value...
 }
 
-@Input @JsMethod
+@Input
+@JsProperty
 private void setMessage( String message )
 {
   // do something on setting the 'message' property

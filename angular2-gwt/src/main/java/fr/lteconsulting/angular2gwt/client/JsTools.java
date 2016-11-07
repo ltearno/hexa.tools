@@ -1,15 +1,11 @@
 package fr.lteconsulting.angular2gwt.client;
 
-import fr.lteconsulting.angular2gwt.client.interop.PropertyDefinition;
 import jsinterop.annotations.JsMethod;
 
 public class JsTools
 {
 	@JsMethod( namespace = "console", name = "log" )
 	public static native void log( String message );
-
-	@JsMethod( namespace = "lteconsulting", name = "defineProperty" )
-	public static native void defineProperty( Object object, String name, PropertyDefinition propertyDefinition );
 
 	@JsMethod( namespace = "lteconsulting", name = "propertyInObject" )
 	public static native boolean propertyInObject( String property, Object object );

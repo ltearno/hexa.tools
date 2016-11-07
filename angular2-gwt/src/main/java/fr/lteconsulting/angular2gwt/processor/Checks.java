@@ -4,7 +4,6 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic.Kind;
 
 import jsinterop.annotations.JsMethod;
@@ -30,7 +29,7 @@ public class Checks
 		}
 	}
 
-	public VariableElement checkIsJsProperty( VariableElement field )
+	public <T extends Element> T checkIsJsProperty( T field )
 	{
 		boolean hasJsProperty = field.getAnnotation( JsProperty.class ) != null;
 		if( hasJsProperty )
