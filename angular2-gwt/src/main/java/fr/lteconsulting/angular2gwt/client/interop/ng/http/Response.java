@@ -6,4 +6,6 @@ import jsinterop.annotations.JsType;
 public class Response
 {
 	public final native <T> T json();
+	
+	public final native String text();
 }

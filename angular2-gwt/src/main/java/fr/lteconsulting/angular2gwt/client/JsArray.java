@@ -40,6 +40,15 @@ public class JsArray<T>
 	@JsMethod
 	public native void push( T item );
 
+	@JsMethod
+	public native T pop();
+
+	@JsMethod
+	public native T shift();
+
+	@JsMethod
+	public native void unshift( T item );
+
 	@JsProperty( name = "length" )
 	public native int length();
 
