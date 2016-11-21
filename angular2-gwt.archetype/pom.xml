@@ -11,7 +11,7 @@
 	
     <groupId>fr.lteconsulting</groupId>
     <artifactId>angular2-gwt.archetype</artifactId>
-    <version>1.7</version>
+    <version>1.8-SNAPSHOT</version>
 	
     <packaging>maven-archetype</packaging>
 	
