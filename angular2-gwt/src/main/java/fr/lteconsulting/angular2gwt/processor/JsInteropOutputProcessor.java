@@ -12,6 +12,9 @@ import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.I
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NG_MODULE_HELPER_CLASS_SUFFIX;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NgModuleAnnotationFqn;
 import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.NgModuleConstructorGetterName;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.PIPE_HELPER_CLASS_SUFFIX;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.PipeAnnotationFqn;
+import static fr.lteconsulting.angular2gwt.processor.AngularComponentProcessor.PipeConstructorGetterName;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,6 +50,7 @@ import fr.lteconsulting.angular2gwt.client.interop.ng.ProviderWrapper;
 import fr.lteconsulting.angular2gwt.client.interop.ng.core.ComponentMetadata;
 import fr.lteconsulting.angular2gwt.client.interop.ng.core.DirectiveMetadata;
 import fr.lteconsulting.angular2gwt.client.interop.ng.core.NgModuleMetadata;
+import fr.lteconsulting.angular2gwt.client.interop.ng.core.PipeMetadata;
 import fr.lteconsulting.angular2gwt.ng.core.Component;
 import fr.lteconsulting.angular2gwt.ng.core.Directive;
 import fr.lteconsulting.angular2gwt.ng.core.Host;
@@ -56,6 +60,7 @@ import fr.lteconsulting.angular2gwt.ng.core.Injectable;
 import fr.lteconsulting.angular2gwt.ng.core.Input;
 import fr.lteconsulting.angular2gwt.ng.core.NgModule;
 import fr.lteconsulting.angular2gwt.ng.core.Output;
+import fr.lteconsulting.angular2gwt.ng.core.Pipe;
 import fr.lteconsulting.angular2gwt.ng.core.PropertyGetter;
 import fr.lteconsulting.angular2gwt.ng.core.ViewChild;
 import fr.lteconsulting.angular2gwt.ng.core.ViewChildren;
@@ -94,6 +99,12 @@ public class JsInteropOutputProcessor
 				.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( DirectiveAnnotationFqn ) ) ) )
 		{
 			processDirective( element );
+		}
+
+		for( TypeElement element : ElementFilter.typesIn( roundEnv
+				.getElementsAnnotatedWith( processingEnv.getElementUtils().getTypeElement( PipeAnnotationFqn ) ) ) )
+		{
+			processPipe( element );
 		}
 
 		for( TypeElement element : ElementFilter.typesIn( roundEnv
@@ -407,6 +418,91 @@ public class JsInteropOutputProcessor
 		}
 	}
 
+	private void processPipe( TypeElement element )
+	{
+		checks.checkIsJsTypeNonNative( element );
+
+		String packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
+		String angularPipeName = element.getSimpleName() + PIPE_HELPER_CLASS_SUFFIX;
+
+		JavaClassText javaClassText = new JavaClassText( packageName );
+
+		Pipe pipe = element.getAnnotation( Pipe.class );
+		String pipeName = pipe.name();
+		boolean purePipe = pipe.pure();
+
+		javaClassText.addImport( JsProperty.class.getName() );
+		javaClassText.addImport( JsArray.class.getName() );
+		javaClassText.addImport( JsObject.class.getName() );
+		javaClassText.addImport( fr.lteconsulting.angular2gwt.client.interop.ng.core.Pipe.class.getName() );
+		javaClassText.addImport( PipeMetadata.class.getName() );
+		javaClassText.addImport( AngularComponentConstructorFunction.class.getName() );
+		javaClassText.addImport( JsToolsInjector.class.getName() );
+
+		Block classBlock = javaClassText.rootBlock().clazz( angularPipeName );
+
+		HashMap<String, String> generatedAccessorTypestypes = new HashMap<>();
+		String parameters = findComponentConstructorParameters( element, classBlock, generatedAccessorTypestypes );
+
+		classBlock.line( "@JsProperty( namespace = [{#}], name = [{#}] )", packageName, element.getSimpleName() );
+		classBlock.line( "private native static AngularComponentConstructorFunction constructorFunction();" );
+
+		classBlock.separator();
+
+		classBlock.line( "public static Object [{}]()", PipeConstructorGetterName );
+		classBlock.block( ( e ) -> {
+			e.line( "JsToolsInjector.inject();" );
+			e.separator();
+
+			e.line( "AngularComponentConstructorFunction constructorFunction = constructorFunction();" );
+
+			e.separator();
+
+			e.line( "if( constructorFunction.parameters == null )" ).block( ( i ) -> {
+				i.line( "constructorFunction.parameters = [{}];", parameters );
+			} );
+
+			e.separator();
+
+			e.line( "if( constructorFunction.annotations == null )" ).block( ( i ) -> {
+				i.line( "JsObject options = new JsObject();" );
+
+				i.line( "options.set( \"name\", [{#}] );", pipeName );
+				i.line( "options.set( \"pure\", [{}] );", purePipe );
+
+				e.separator();
+
+				i.line( "PipeMetadata metadata = new PipeMetadata( options );" );
+				e.separator();
+
+				i.line( "constructorFunction.annotations = JsArray.of( new Pipe( metadata ) );" );
+			} );
+
+			e.separator();
+
+			e.line( "return constructorFunction;" );
+		} );
+
+		try
+		{
+			String targetClassFqn = packageName + "." + angularPipeName;
+			JavaFileObject jfo = processingEnv.getFiler().createSourceFile( targetClassFqn, element );
+
+			OutputStream os = jfo.openOutputStream();
+			OutputStreamWriter pw = new OutputStreamWriter( os, "UTF-8" );
+			StringBuilder sb = new StringBuilder();
+			javaClassText.render( sb );
+			pw.write( sb.toString() );
+			pw.close();
+			os.close();
+		}
+		catch( IOException e )
+		{
+			e.printStackTrace();
+			processingEnv.getMessager().printMessage( Kind.ERROR, "AngularPipe could not be generated !" + e, element );
+		}
+	}
+
 	private void processDirective( TypeElement element )
 	{
 		checks.checkIsJsTypeNonNative( element );
@@ -524,6 +620,9 @@ public class JsInteropOutputProcessor
 
 			if( element.getAnnotation( Injectable.class ) != null )
 				return fqn + INJECTABLE_HELPER_CLASS_SUFFIX + "." + InjectableConstructorGetterName + "()";
+
+			if( element.getAnnotation( Pipe.class ) != null )
+				return fqn + PIPE_HELPER_CLASS_SUFFIX + "." + PipeConstructorGetterName + "()";
 
 			if( element.getAnnotation( NgModule.class ) != null )
 				return fqn + NG_MODULE_HELPER_CLASS_SUFFIX + "." + NgModuleConstructorGetterName + "()";
