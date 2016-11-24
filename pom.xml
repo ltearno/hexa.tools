@@ -26,9 +26,6 @@
         <module>hexa.rpc</module>
         <module>hexa.spring</module>
         <module>hexa.utils</module>
-        <module>angular2-gwt</module>
-		<module>angular2-gwt.archetype</module>
-		<module>angular2-gwt.integration</module>
     </modules>
     <licenses>
         <license>
