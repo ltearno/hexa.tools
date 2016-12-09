@@ -16,10 +16,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class Raphael extends Panel
 {
-
 	private RaphaelJS overlay;
 
-	// private final ArrayList<Shape> shapes = new ArrayList<Shape>();
 	ShapeCollection shapes = new ShapeCollection( this );
 
 	/**
@@ -356,12 +354,6 @@ public class Raphael extends Panel
 			}
 
 			return 0;
-		}
-
-		@Override
-		public Shape clone()
-		{
-			return new Shape( el.clone() );
 		}
 
 	}

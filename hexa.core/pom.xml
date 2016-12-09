@@ -8,7 +8,7 @@
         <version>1.4</version>
     </parent>
     <artifactId>hexa.core</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <name>hexa.core</name>
     <url>http://www.lteconsulting.fr</url>
     <packaging>jar</packaging>
@@ -38,12 +38,6 @@
             <artifactId>gwt-codeserver</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.gwtbootstrap</groupId>
-            <artifactId>gwt-bootstrap</artifactId>
-            <version>2.0.4.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
@@ -57,7 +51,7 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding.gwt</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>fr.lteconsulting</groupId>

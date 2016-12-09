@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.classinfo.gwt.rebind;
+package fr.lteconsulting.hexa.rebind.classinfo;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

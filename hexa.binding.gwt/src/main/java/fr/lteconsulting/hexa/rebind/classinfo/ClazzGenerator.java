@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.classinfo.gwt.rebind;
+package fr.lteconsulting.hexa.rebind.classinfo;
 
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.1/distro-source/core/src/gwt-module.dtd">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.7.0//EN" "http://gwtproject.org/doctype/2.7.0/gwt-module.dtd">
 <module>
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name='fr.lteconsulting.hexa.HexaUtils' />
 
-	<super-source path="classinfo/gwt/emul" />
+	<super-source path="emul/classinfo" />
 	
-	<source path="classinfo" excludes="classinfo/gwt/rebind,classinfo/gwt/emul" />
+	<source path="classinfo" />
 
-	<generate-with class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzGenerator">
+	<generate-with class="fr.lteconsulting.hexa.rebind.classinfo.ClazzGenerator">
 		<when-type-assignable class="fr.lteconsulting.hexa.classinfo.Clazz" />
 	</generate-with>
 
-	<generate-with class="fr.lteconsulting.hexa.classinfo.gwt.rebind.ClazzBundleGenerator">
+	<generate-with class="fr.lteconsulting.hexa.rebind.classinfo.ClazzBundleGenerator">
 		<when-type-assignable class="fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle" />
 	</generate-with>
 </module>

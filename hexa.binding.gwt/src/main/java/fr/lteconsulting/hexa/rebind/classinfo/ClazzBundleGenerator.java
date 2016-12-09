@@ -1,4 +1,4 @@
-package fr.lteconsulting.hexa.classinfo.gwt.rebind;
+package fr.lteconsulting.hexa.rebind.classinfo;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -19,7 +19,6 @@ import com.google.gwt.user.rebind.SourceWriter;
 
 import fr.lteconsulting.hexa.classinfo.gwt.ClazzBundle;
 import fr.lteconsulting.hexa.classinfo.gwt.ReflectedClasses;
-import fr.lteconsulting.hexa.classinfo.gwt.TypeHelper;
 
 public class ClazzBundleGenerator extends Generator
 {

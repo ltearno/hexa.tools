@@ -87,8 +87,7 @@ public class RaphaelJS extends JavaScriptObject
 		{
 		}
 
-		@Override
-		public final native Element clone() /*-{
+		public final native Element cloneElement() /*-{
 											return this.clone();
 											}-*/;
 
@@ -707,7 +706,7 @@ public class RaphaelJS extends JavaScriptObject
 										this.safari();
 										}-*/;
 
-	public final native Element clone( Element el )/*-{
+	public final native Element cloneElement( Element el )/*-{
 													return el.clone();
 													}-*/;
 }

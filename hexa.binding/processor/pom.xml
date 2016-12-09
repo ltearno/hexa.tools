@@ -9,7 +9,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>hexa.binding.processor</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <dependencies>
         <dependency>
             <groupId>fr.lteconsulting</groupId>

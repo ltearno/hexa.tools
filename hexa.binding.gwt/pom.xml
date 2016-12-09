@@ -8,9 +8,9 @@
         <version>1.4</version>
     </parent>
     <artifactId>hexa.binding.gwt</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <name>hexa.binding.gwt</name>
-    <description>HexaBinding (gwt version) is a tool used when some data binding repetitive glue code is written by the developper. This library does it instead.</description>
+    <description>HexaBinding (gwt version) is a tool used when some data binding repetitive glue code is written by the developer. This library does it instead.</description>
     <url>http://www.lteconsulting.fr/hexabinding</url>
     <packaging>jar</packaging>
     <dependencies>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>fr.lteconsulting</groupId>
             <artifactId>hexa.binding</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
