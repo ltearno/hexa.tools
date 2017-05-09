@@ -2,6 +2,7 @@ package fr.lteconsulting.hexa.rebind;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -877,10 +878,15 @@ public class ServiceGenerator extends Generator
 					// assume pType is one that is serializable...
 					String elementType = pType.getQualifiedSourceName();
 
-					// Assume DataProxy
 					String proxyName = registerProxy( pType );
-					sw.println( "List<" + elementType + "> param" + i + " = deserializeArray( response.getArray(" + i + "), " + proxyName + " );" );
+					if( proxyName != null )
+						sw.println( "List<" + elementType + "> param" + i + " = deserializeArray( response.getArray(" + i + "), " + proxyName + " );" );
 				}
+			}
+			else if( isJsType( cbParamTypes[i] ) )
+			{
+				String elementType = cbParamTypes[i].getQualifiedSourceName();
+				sw.println( elementType + " param" + i + " = (" + elementType + ")(Object)response.getJSO(" + i + ");" );
 			}
 			else if( isJSOType( cbParamTypes[i] ) )
 			{
@@ -928,6 +934,12 @@ public class ServiceGenerator extends Generator
 
 	String registerProxy( JClassType pType )
 	{
+		if( isJsType( pType ) )
+		{
+			sw.println( "ERROR : CANNOT RECEIVE A JAVA LIST OF JSTYPE OBJECT ! " + pType );
+			return null;
+		}
+
 		proxiesToGenerate.put( pType.getQualifiedSourceName(), pType );
 		return getProxyName( pType );
 	}
@@ -967,6 +979,24 @@ public class ServiceGenerator extends Generator
 		sw.outdent();
 		sw.println( "};" );
 		sw.println();
+	}
+
+	boolean isJsType( JType type )
+	{
+		JClassType cType = type.isClass();
+		if( cType == null )
+			cType = type.isInterface();
+		if( cType == null )
+			return false;
+
+		Annotation[] annotations = cType.getDeclaredAnnotations();
+		for( Annotation annotation : annotations )
+		{
+			if( "jsinterop.annotations.JsType".equals( annotation.annotationType().getName() ) )
+				return true;
+		}
+
+		return false;
 	}
 
 	boolean isJSOType( JType type )
