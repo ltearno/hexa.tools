@@ -14,7 +14,6 @@ import fr.lteconsulting.hexa.client.comm.HexaFramework;
 
 /**
  * @author Arnaud
- * 
  */
 public class Validator<T extends Widget> extends Composite implements ClickHandler, KeyUpHandler
 {
@@ -45,25 +44,11 @@ public class Validator<T extends Widget> extends Composite implements ClickHandl
 		{
 			m_table.setWidget( 0, 0, m_editor );
 
-			// try to set a key up handler on the editor, if possible
-			try
-			{
-				HasKeyUpHandlers iHasKeyUpHandlers = (HasKeyUpHandlers) m_editor;
-				iHasKeyUpHandlers.addKeyUpHandler( this );
-			}
-			catch( Exception e )
-			{
-			}
+			if( m_editor instanceof HasKeyUpHandlers )
+				((HasKeyUpHandlers) m_editor).addKeyUpHandler( this );
 
-			// try to set focus on the editor, if possible
-			try
-			{
-				Focusable iFocusable = (Focusable) m_editor;
-				iFocusable.setFocus( true );
-			}
-			catch( Exception e )
-			{
-			}
+			if( m_editor instanceof Focusable )
+				((Focusable) m_editor).setFocus( true );
 		}
 
 		m_table.setWidget( 0, 1, m_okBut );

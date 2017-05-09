@@ -1,21 +1,23 @@
 package fr.lteconsulting.hexa.client.ui.widget;
 
-import java.util.ArrayList;
-
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import fr.lteconsulting.hexa.client.common.HexaDate;
 import fr.lteconsulting.hexa.client.interfaces.IValueChangeHandler;
 import fr.lteconsulting.hexa.client.ui.dialog.MyPopupPanel;
 
-public class DateSelector extends Composite implements JQDatepicker.Callback
+import java.util.ArrayList;
+
+public class DateSelector extends Composite
 {
 	boolean enabled = true;
 	TextBox textBox = new TextBox();
 	MyPopupPanel popup = null;
-	JQDatepicker datePicker = null;
+	DatePicker datePicker = null;
 
 	ArrayList<IValueChangeHandler<HexaDate>> handlers = new ArrayList<IValueChangeHandler<HexaDate>>();
 
@@ -28,9 +30,9 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 			@Override
 			public void onFocus( FocusEvent event )
 			{
-				if( ! enabled )
+				if( !enabled )
 					return;
-				
+
 				showPopup();
 			}
 		} );
@@ -55,12 +57,12 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 			textBox.setText( "" );
 			return;
 		}
-		
+
 		String display = hexaDate.getDisplayString();
-		
+
 		textBox.setText( display );
 		if( datePicker != null )
-			datePicker.setValueString( hexaDate.getString() );
+			datePicker.setCurrentMonth( hexaDate );
 	}
 
 	public void setDate( HexaDate date, boolean fFireEvent )
@@ -86,8 +88,17 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 	{
 		if( datePicker == null )
 		{
-			datePicker = new JQDatepicker( true );
-			datePicker.setCallback( this );
+			datePicker = new DatePicker();
+			datePicker.setAvailablePeriod( "a" );
+			datePicker.addValueChangeHandler( new ValueChangeHandler<HexaDate>()
+			{
+				@Override public void onValueChange( ValueChangeEvent<HexaDate> valueChangeEvent )
+				{
+					hidePopup();
+
+					setDate( valueChangeEvent.getValue(), true );
+				}
+			} );
 		}
 
 		if( popup == null )
@@ -100,22 +111,13 @@ public class DateSelector extends Composite implements JQDatepicker.Callback
 
 		HexaDate hexaDate = getDate();
 		if( hexaDate != null )
-			datePicker.setValueString( hexaDate.getString() );
+			datePicker.setCurrentMonth( hexaDate );
 	}
 
 	private void hidePopup()
 	{
 		if( popup != null )
 			popup.hide();
-	}
-
-	@Override
-	public void onDateSelected( String text )
-	{
-		hidePopup();
-		
-		HexaDate date = new HexaDate( text );
-		setDate( date, true );
 	}
 
 	private void fire( HexaDate date )
