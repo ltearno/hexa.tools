@@ -3,6 +3,7 @@ package fr.lteconsulting.hexa.client.comm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
@@ -149,7 +150,10 @@ public class CachedServerComm implements XRPCRequest, AcceptsRPCRequests
 				// we give back results in the order requests have been made,
 				// here we may need to wait for other responses to arrive
 				if( !info.fResultReceived )
+				{
+					GWT.log( "cannot give further results are we are still waiting for previous one..." );
 					return;
+				}
 
 				requestStack.remove( 0 );
 
