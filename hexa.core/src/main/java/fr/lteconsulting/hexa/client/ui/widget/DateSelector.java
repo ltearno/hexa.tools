@@ -109,9 +109,7 @@ public class DateSelector extends Composite
 
 		popup.showRelativeTo( textBox );
 
-		HexaDate hexaDate = getDate();
-		if( hexaDate != null )
-			datePicker.setCurrentMonth( hexaDate );
+		datePicker.setCurrentMonth( getDate() );
 	}
 
 	private void hidePopup()

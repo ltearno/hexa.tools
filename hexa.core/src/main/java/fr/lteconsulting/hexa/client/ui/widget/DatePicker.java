@@ -61,7 +61,10 @@ public class DatePicker extends Widget implements HasValueChangeHandlers<HexaDat
 
 	public void setCurrentMonth( HexaDate selectedMonth )
 	{
-		CalendarPeriod availablePeriods = available != null ? available.getFlat() : Calendar.get().Parse( "n" ).getFlat();
+		if( selectedMonth == null || !selectedMonth.isValid() )
+			selectedMonth = new HexaDate();
+
+		CalendarPeriod availablePeriods = available != null ? available.getFlat() : Calendar.get().Parse( "a" ).getFlat();
 
 		int today = new HexaDate().toInt();
 
