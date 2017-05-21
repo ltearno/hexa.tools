@@ -107,9 +107,9 @@ public class DateSelector extends Composite
 			popup.setWidget( datePicker );
 		}
 
-		popup.showRelativeTo( textBox );
-
 		datePicker.setCurrentMonth( getDate() );
+
+		popup.showRelativeTo( textBox );
 	}
 
 	private void hidePopup()
